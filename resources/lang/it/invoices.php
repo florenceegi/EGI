@@ -170,5 +170,6 @@ return [
     // Misc
     'tagline' => 'Piattaforma di Tokenizzazione Asset',
     'invoice' => 'Fattura',
+    'loading' => 'Caricamento in corso...',
 ];
 

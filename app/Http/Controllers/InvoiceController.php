@@ -42,14 +42,16 @@ class InvoiceController extends Controller {
      * @param Request $request
      * @return View
      */
-    public function index(Request $request): View {
+    public function index(Request $request) {
         try {
             $user = Auth::user();
             $activeTab = $request->get('tab', 'sales');
+            $isPartial = $request->get('partial') || $request->ajax();
 
             $this->logger->info('InvoiceController: Displaying invoices dashboard', [
                 'user_id' => $user->id,
                 'active_tab' => $activeTab,
+                'is_partial' => $isPartial,
             ]);
 
             // Get filters from request
@@ -72,6 +74,14 @@ class InvoiceController extends Controller {
             $aggregations = $activeTab === 'aggregations'
                 ? $this->invoiceService->getUserAggregations($user, $filters)
                 : collect();
+            
+            // If partial request for aggregations, return only that tab
+            if ($isPartial && $activeTab === 'aggregations') {
+                return view('account.invoices.partials.aggregations-tab', [
+                    'aggregations' => $aggregations,
+                    'filters' => $filters,
+                ]);
+            }
 
             // Get user invoice preferences
             $preferences = $user->invoicePreferences ?? new UserInvoicePreference();
@@ -283,6 +293,111 @@ class InvoiceController extends Controller {
                 'invoice_id' => $id,
                 'error_message' => $e->getMessage(),
             ], $e);
+        }
+    }
+
+    /**
+     * Get aggregation details (items or buyers) via AJAX
+     *
+     * @param int $aggregationId
+     * @param string $type 'items' or 'buyers'
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAggregationDetails(int $aggregationId, string $type)
+    {
+        try {
+            $user = Auth::user();
+            
+            $aggregation = \App\Models\InvoiceAggregation::findOrFail($aggregationId);
+            
+            // Check authorization
+            if ($aggregation->user_id !== $user->id) {
+                abort(403, __('invoices.errors.unauthorized'));
+            }
+
+            $distributionIds = $aggregation->metadata['distribution_ids'] ?? [];
+            
+            if ($type === 'items') {
+                // Load items
+                $distributions = \App\Models\PaymentDistribution::whereIn('id', $distributionIds)
+                    ->with('egi')
+                    ->get();
+                
+                $items = $distributions->filter(function($dist) {
+                    return $dist->egi !== null;
+                })->map(function($dist) {
+                    return [
+                        'egi_id' => $dist->egi_id,
+                        'egi_id_padded' => str_pad($dist->egi_id, 7, '0', STR_PAD_LEFT),
+                        'title' => $dist->egi->title,
+                        'thumbnail_url' => $dist->egi->thumbnail_image_url,
+                        'amount' => $dist->amount_eur,
+                        'amount_formatted' => number_format($dist->amount_eur, 2, ',', '.'),
+                    ];
+                })->values();
+                
+                return response()->json(['items' => $items]);
+                
+            } elseif ($type === 'buyers') {
+                // Load buyers
+                $distributions = \App\Models\PaymentDistribution::whereIn('id', $distributionIds)
+                    ->with('egi.blockchain.buyer')
+                    ->get();
+                
+                // Group by buyer
+                $buyerData = [];
+                foreach($distributions as $dist) {
+                    if($dist->egi && $dist->egi->blockchain && $dist->egi->blockchain->buyer) {
+                        $buyer = $dist->egi->blockchain->buyer;
+                        $buyerId = $buyer->id;
+                        
+                        if(!isset($buyerData[$buyerId])) {
+                            $buyerData[$buyerId] = [
+                                'user' => $buyer,
+                                'count' => 0,
+                                'total' => 0
+                            ];
+                        }
+                        
+                        $buyerData[$buyerId]['count']++;
+                        $buyerData[$buyerId]['total'] += $dist->amount_eur;
+                    }
+                }
+                
+                $buyers = collect($buyerData)->map(function($data) {
+                    $buyerRoute = match ($data['user']->usertype ?? 'creator') {
+                        'creator' => route('creator.home', $data['user']->id),
+                        'collector' => route('collector.home', $data['user']->id),
+                        'commissioner' => route('profile.show'),
+                        default => route('creator.home', $data['user']->id),
+                    };
+                    
+                    return [
+                        'name' => $data['user']->name,
+                        'avatar_url' => $data['user']->profile_photo_url,
+                        'profile_url' => $buyerRoute,
+                        'count' => $data['count'],
+                        'total' => $data['total'],
+                        'total_formatted' => number_format($data['total'], 2, ',', '.'),
+                    ];
+                })->values();
+                
+                return response()->json(['buyers' => $buyers]);
+            }
+            
+            return response()->json(['error' => 'Invalid type'], 400);
+            
+        } catch (\Exception $e) {
+            $this->logger->error('InvoiceController: Failed to load aggregation details', [
+                'user_id' => Auth::id(),
+                'aggregation_id' => $aggregationId,
+                'type' => $type,
+                'error_message' => $e->getMessage(),
+            ]);
+            
+            return response()->json([
+                'error' => __('invoices.errors.export_error')
+            ], 500);
         }
     }
 }

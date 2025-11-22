@@ -69,51 +69,19 @@
                                     </div>
                                 </div>
                                 <button 
-                                    onclick="toggleDetails('items-{{ $aggregation->id }}')"
+                                    onclick="loadAndToggleDetails('items-{{ $aggregation->id }}', {{ $aggregation->id }}, 'items')"
                                     class="text-purple-600 hover:text-purple-700 dark:text-purple-400"
                                 >
                                     <span id="icon-items-{{ $aggregation->id }}">▼</span>
                                 </button>
                             </div>
                             
-                            {{-- Items List --}}
+                            {{-- Items List - Loaded dynamically --}}
                             <div id="items-{{ $aggregation->id }}" class="hidden space-y-2 border-t border-gray-300 pt-3 dark:border-gray-600">
-                                @php
-                                    $distributionIds = $aggregation->metadata['distribution_ids'] ?? [];
-                                    $distributions = \App\Models\PaymentDistribution::whereIn('id', $distributionIds)
-                                        ->with('egi')
-                                        ->get();
-                                @endphp
-                                
-                                @foreach($distributions as $dist)
-                                    @if($dist->egi)
-                                        <a href="{{ route('mint.show', $dist->egi_id) }}" 
-                                           class="flex items-center justify-between rounded-lg bg-white p-2 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
-                                            <div class="flex items-center space-x-3">
-                                                @if($dist->egi->thumbnail_image_url)
-                                                    <img src="{{ $dist->egi->thumbnail_image_url }}" 
-                                                         alt="{{ $dist->egi->title }}"
-                                                         class="h-10 w-10 rounded object-cover">
-                                                @else
-                                                    <div class="flex h-10 w-10 items-center justify-center rounded bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300">
-                                                        🎨
-                                                    </div>
-                                                @endif
-                                                <div>
-                                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                                        {{ $dist->egi->title }}
-                                                    </div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                        #{{ str_pad($dist->egi_id, 7, '0', STR_PAD_LEFT) }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="text-sm font-semibold text-purple-600 dark:text-purple-400">
-                                                € {{ number_format($dist->amount_eur, 2, ',', '.') }}
-                                            </div>
-                                        </a>
-                                    @endif
-                                @endforeach
+                                {{-- Loading spinner --}}
+                                <div class="flex items-center justify-center py-4">
+                                    <div class="h-8 w-8 animate-spin rounded-full border-4 border-purple-200 border-t-purple-600"></div>
+                                </div>
                             </div>
                         </div>
                         
@@ -129,82 +97,19 @@
                                     </div>
                                 </div>
                                 <button 
-                                    onclick="toggleDetails('buyers-{{ $aggregation->id }}')"
+                                    onclick="loadAndToggleDetails('buyers-{{ $aggregation->id }}', {{ $aggregation->id }}, 'buyers')"
                                     class="text-purple-600 hover:text-purple-700 dark:text-purple-400"
                                 >
                                     <span id="icon-buyers-{{ $aggregation->id }}">▼</span>
                                 </button>
                             </div>
                             
-                            {{-- Buyers List --}}
+                            {{-- Buyers List - Loaded dynamically --}}
                             <div id="buyers-{{ $aggregation->id }}" class="hidden space-y-2 border-t border-gray-300 pt-3 dark:border-gray-600">
-                                @php
-                                    $distributionIds = $aggregation->metadata['distribution_ids'] ?? [];
-                                    $distributions = \App\Models\PaymentDistribution::whereIn('id', $distributionIds)
-                                        ->with('egi.blockchain.buyer')
-                                        ->get();
-                                    
-                                    // Group by buyer
-                                    $buyerData = [];
-                                    foreach($distributions as $dist) {
-                                        if($dist->egi && $dist->egi->blockchain && $dist->egi->blockchain->buyer) {
-                                            $buyer = $dist->egi->blockchain->buyer;
-                                            $buyerId = $buyer->id;
-                                            
-                                            if(!isset($buyerData[$buyerId])) {
-                                                $buyerData[$buyerId] = [
-                                                    'user' => $buyer,
-                                                    'count' => 0,
-                                                    'total' => 0
-                                                ];
-                                            }
-                                            
-                                            $buyerData[$buyerId]['count']++;
-                                            $buyerData[$buyerId]['total'] += $dist->amount_eur;
-                                        }
-                                    }
-                                @endphp
-                                
-                                @forelse($buyerData as $data)
-                                    @php
-                                        // Determine route based on user type
-                                        $buyerRoute = match ($data['user']->usertype ?? 'creator') {
-                                            'creator' => route('creator.home', $data['user']->id),
-                                            'collector' => route('collector.home', $data['user']->id),
-                                            'commissioner' => route('profile.show'),
-                                            default => route('creator.home', $data['user']->id),
-                                        };
-                                    @endphp
-                                    
-                                    <a href="{{ $buyerRoute }}" 
-                                       class="group flex items-center justify-between rounded-lg bg-white p-2 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors">
-                                        <div class="flex items-center space-x-3">
-                                            {{-- Avatar identico a egi-card --}}
-                                            <div class="flex h-10 w-10 items-center justify-center flex-shrink-0 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500">
-                                                <img src="{{ $data['user']->profile_photo_url }}" 
-                                                     alt="{{ $data['user']->name }}"
-                                                     class="h-full w-full object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
-                                                     loading="lazy" 
-                                                     decoding="async">
-                                            </div>
-                                            <div>
-                                                <div class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                                                    {{ $data['user']->name }}
-                                                </div>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                    {{ $data['count'] }} {{ $data['count'] === 1 ? 'acquisto' : 'acquisti' }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="text-sm font-semibold text-purple-600 dark:text-purple-400">
-                                            € {{ number_format($data['total'], 2, ',', '.') }}
-                                        </div>
-                                    </a>
-                                @empty
-                                    <div class="rounded-lg bg-white p-3 text-center text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-                                        {{ __('invoices.aggregations.no_buyers_data') }}
-                                    </div>
-                                @endforelse
+                                {{-- Loading spinner --}}
+                                <div class="flex items-center justify-center py-4">
+                                    <div class="h-8 w-8 animate-spin rounded-full border-4 border-purple-200 border-t-purple-600"></div>
+                                </div>
                             </div>
                         </div>
                         
@@ -266,19 +171,4 @@
     @endif
 
 </div>
-
-<script>
-function toggleDetails(elementId) {
-    const element = document.getElementById(elementId);
-    const icon = document.getElementById('icon-' + elementId);
-    
-    if (element.classList.contains('hidden')) {
-        element.classList.remove('hidden');
-        icon.textContent = '▲';
-    } else {
-        element.classList.add('hidden');
-        icon.textContent = '▼';
-    }
-}
-</script>
 

@@ -90,11 +90,17 @@
                 </div>
 
                 {{-- Aggregations Tab --}}
-                <div id="tab-aggregations" class="tab-pane {{ $activeTab === 'aggregations' ? 'active' : 'hidden' }}">
-                    @include('account.invoices.partials.aggregations-tab', [
-                        'aggregations' => $aggregations,
-                        'filters' => $filters,
-                    ])
+                <div id="tab-aggregations" class="tab-pane {{ $activeTab === 'aggregations' ? 'active' : 'hidden' }}" data-loaded="false">
+                    {{-- Loading spinner - shown by default --}}
+                    <div id="aggregations-loading" class="flex items-center justify-center py-20">
+                        <div class="text-center">
+                            <div class="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-purple-200 border-t-purple-600"></div>
+                            <p class="text-gray-400">{{ __('invoices.loading') }}</p>
+                        </div>
+                    </div>
+                    
+                    {{-- Content container - will be populated via AJAX --}}
+                    <div id="aggregations-content" class="hidden"></div>
                 </div>
 
                 {{-- Settings Tab --}}
@@ -140,8 +146,176 @@
                 if (activePane) {
                     activePane.classList.remove('hidden');
                     activePane.classList.add('active');
+                    
+                    // Load aggregations if not loaded yet
+                    if (tabName === 'aggregations' && activePane.dataset.loaded === 'false') {
+                        loadAggregations();
+                    }
                 }
             }
+        }
+        
+        async function loadAggregations() {
+            const contentDiv = document.getElementById('aggregations-content');
+            const loadingDiv = document.getElementById('aggregations-loading');
+            const tabPane = document.getElementById('tab-aggregations');
+            
+            try {
+                const response = await fetch('{{ route("account.invoices") }}?tab=aggregations&partial=1', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load aggregations');
+                }
+                
+                const html = await response.text();
+                
+                // Hide loading, show content
+                loadingDiv.classList.add('hidden');
+                contentDiv.classList.remove('hidden');
+                contentDiv.innerHTML = html;
+                
+                // Mark as loaded
+                tabPane.dataset.loaded = 'true';
+                
+            } catch (error) {
+                console.error('Error loading aggregations:', error);
+                loadingDiv.innerHTML = `
+                    <div class="text-center py-20">
+                        <div class="rounded-lg bg-red-50 p-4 text-red-600 dark:bg-red-900/20 dark:text-red-400 inline-block">
+                            Errore nel caricamento delle aggregazioni
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load aggregations on page load if tab is active
+        document.addEventListener('DOMContentLoaded', function() {
+            const aggregationsTab = document.getElementById('tab-aggregations');
+            if (aggregationsTab && !aggregationsTab.classList.contains('hidden')) {
+                loadAggregations();
+            }
+        });
+        
+        // =====================================================
+        // AGGREGATION DETAILS LOADING (Items & Buyers)
+        // =====================================================
+        
+        // Cache for loaded details
+        const loadedDetails = {};
+
+        async function loadAndToggleDetails(elementId, aggregationId, type) {
+            const element = document.getElementById(elementId);
+            const icon = document.getElementById('icon-' + elementId);
+            const cacheKey = `${aggregationId}-${type}`;
+            
+            // If already open, just close it
+            if (!element.classList.contains('hidden')) {
+                element.classList.add('hidden');
+                icon.textContent = '▼';
+                return;
+            }
+            
+            // Open the element
+            element.classList.remove('hidden');
+            icon.textContent = '▲';
+            
+            // If already loaded, skip loading
+            if (loadedDetails[cacheKey]) {
+                return;
+            }
+            
+            // Load data via AJAX
+            try {
+                const response = await fetch(`/account/invoices/aggregation/${aggregationId}/details/${type}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load details');
+                }
+                
+                const data = await response.json();
+                
+                // Render the data
+                if (type === 'items') {
+                    element.innerHTML = renderItems(data.items);
+                } else if (type === 'buyers') {
+                    element.innerHTML = renderBuyers(data.buyers);
+                }
+                
+                // Mark as loaded
+                loadedDetails[cacheKey] = true;
+                
+            } catch (error) {
+                console.error('Error loading details:', error);
+                element.innerHTML = `
+                    <div class="rounded-lg bg-red-50 p-3 text-center text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+                        ${error.message || 'Errore nel caricamento dei dati'}
+                    </div>
+                `;
+            }
+        }
+
+        function renderItems(items) {
+            if (!items || items.length === 0) {
+                return '<div class="rounded-lg bg-white p-3 text-center text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">Nessun articolo trovato</div>';
+            }
+            
+            return items.map(item => `
+                <a href="/mint/${item.egi_id}" 
+                   class="flex items-center justify-between rounded-lg bg-white p-2 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <div class="flex items-center space-x-3">
+                        ${item.thumbnail_url ? 
+                            `<img src="${item.thumbnail_url}" alt="${item.title}" class="h-10 w-10 rounded object-cover">` :
+                            `<div class="flex h-10 w-10 items-center justify-center rounded bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300">🎨</div>`
+                        }
+                        <div>
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">${item.title}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">#${item.egi_id_padded}</div>
+                        </div>
+                    </div>
+                    <div class="text-sm font-semibold text-purple-600 dark:text-purple-400">€ ${item.amount_formatted}</div>
+                </a>
+            `).join('');
+        }
+
+        function renderBuyers(buyers) {
+            if (!buyers || buyers.length === 0) {
+                return '<div class="rounded-lg bg-white p-3 text-center text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">{{ __("invoices.aggregations.no_buyers_data") }}</div>';
+            }
+            
+            return buyers.map(buyer => `
+                <a href="${buyer.profile_url}" 
+                   class="group flex items-center justify-between rounded-lg bg-white p-2 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex h-10 w-10 items-center justify-center flex-shrink-0 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500">
+                            <img src="${buyer.avatar_url}" 
+                                 alt="${buyer.name}"
+                                 class="h-full w-full object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
+                                 loading="lazy" 
+                                 decoding="async">
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                                ${buyer.name}
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                ${buyer.count} ${buyer.count === 1 ? 'acquisto' : 'acquisti'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-sm font-semibold text-purple-600 dark:text-purple-400">€ ${buyer.total_formatted}</div>
+                </a>
+            `).join('');
         }
     </script>
     @endpush

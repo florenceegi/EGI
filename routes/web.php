@@ -657,6 +657,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             ->name('account.invoices.aggregation.generate');
         Route::get('/account/invoices/aggregation/{aggregationId}/export', [App\Http\Controllers\InvoiceController::class, 'exportAggregation'])
             ->name('account.invoices.aggregation.export');
+        Route::get('/account/invoices/aggregation/{aggregationId}/details/{type}', [App\Http\Controllers\InvoiceController::class, 'getAggregationDetails'])
+            ->name('account.invoices.aggregation.details');
         Route::post('/account/invoices/settings', [App\Http\Controllers\InvoiceController::class, 'updateSettings'])
             ->name('account.invoices.settings.update');
         Route::get('/account/invoices/{id}/pdf', [App\Http\Controllers\InvoiceController::class, 'downloadPdf'])
