@@ -166,7 +166,18 @@
                                 @endphp
                                 
                                 @forelse($buyerData as $data)
-                                    <div class="flex items-center justify-between rounded-lg bg-white p-2 dark:bg-gray-800">
+                                    @php
+                                        // Determine route based on user type
+                                        $buyerRoute = match ($data['user']->usertype ?? 'creator') {
+                                            'creator' => route('creator.home', $data['user']->id),
+                                            'collector' => route('collector.home', $data['user']->id),
+                                            'commissioner' => route('profile.show'),
+                                            default => route('creator.home', $data['user']->id),
+                                        };
+                                    @endphp
+                                    
+                                    <a href="{{ $buyerRoute }}" 
+                                       class="group flex items-center justify-between rounded-lg bg-white p-2 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors">
                                         <div class="flex items-center space-x-3">
                                             {{-- Avatar identico a egi-card --}}
                                             <div class="flex h-10 w-10 items-center justify-center flex-shrink-0 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500">
@@ -177,7 +188,7 @@
                                                      decoding="async">
                                             </div>
                                             <div>
-                                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                                                     {{ $data['user']->name }}
                                                 </div>
                                                 <div class="text-xs text-gray-500 dark:text-gray-400">
@@ -188,7 +199,7 @@
                                         <div class="text-sm font-semibold text-purple-600 dark:text-purple-400">
                                             € {{ number_format($data['total'], 2, ',', '.') }}
                                         </div>
-                                    </div>
+                                    </a>
                                 @empty
                                     <div class="rounded-lg bg-white p-3 text-center text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                                         {{ __('invoices.aggregations.no_buyers_data') }}
