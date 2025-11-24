@@ -16,11 +16,6 @@
                 overflow: hidden;
             }
 
-            body.splash-active > *:not(#home-splash-root) {
-                opacity: 0 !important;
-                pointer-events: none !important;
-            }
-
             #home-splash-root {
                 position: fixed;
                 inset: 0;
@@ -34,7 +29,7 @@
     <meta name="description" content="{{ $metaDescription ?? __('collection.default_meta_description') }}">
     {!! $headMetaExtra ??
         '
-            <meta name="robots" content="index, follow">' !!}
+                <meta name="robots" content="index, follow">' !!}
 
     {{-- Favicon --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
@@ -113,6 +108,43 @@
 
     {{-- 🎬 SPLASH SCREEN - React 3D Animation (solo per home) --}}
     @if (request()->is('home'))
+        {{-- Overlay iniziale nero con loading - React lo rimuoverà --}}
+        <div id="home-initial-overlay" style="
+            position: fixed;
+            inset: 0;
+            background-color: #0a0a0a;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1.5rem;
+        ">
+            <div style="
+                width: 60px;
+                height: 60px;
+                border: 3px solid rgba(0, 255, 255, 0.3);
+                border-top-color: #00ffff;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            "></div>
+            <p style="
+                color: #00ffff;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 1.2rem;
+                animation: pulse 2s ease-in-out infinite;
+            ">Caricamento in corso...</p>
+        </div>
+        <style>
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+        </style>
+
         <div id="home-splash-root"></div>
         @vite(['resources/react/home/home-splash.tsx'])
     @endif

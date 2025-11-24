@@ -13,6 +13,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// === Splash Screen Animation Routes ===
+Route::get('/random-egi-images', [App\Http\Controllers\Api\RandomImagesController::class, 'getRandomEgiImages'])
+    ->name('api.random-egi-images');
 
 
 /*
@@ -287,7 +290,7 @@ Route::prefix('wallet/welcome')->name('api.wallet.welcome.')->middleware(['web']
 |--------------------------------------------------------------------------
 |
 | Unified orchestrator for all AI features (traits, description, curator, etc.)
-| Authentication: Session-based (web middleware) 
+| Authentication: Session-based (web middleware)
 | Pattern: Strategy + Factory
 |
 | REQUEST BODY:
@@ -308,7 +311,7 @@ Route::prefix('ai/features')->name('api.ai.features.')->middleware(['web', 'auth
     // Get pricing info (for confirmation dialog)
     Route::get('/pricing', [App\Http\Controllers\AI\AiFeatureController::class, 'getPricing'])
         ->name('pricing');
-    
+
     // Unified execution endpoint
     Route::post('/execute', [App\Http\Controllers\AI\AiFeatureController::class, 'execute'])
         ->name('execute');
