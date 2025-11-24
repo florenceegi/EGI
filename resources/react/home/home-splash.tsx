@@ -7,7 +7,7 @@ import HomeSplashAnimation from './HomeSplashAnimation';
 
 /**
  * HOME SPLASH APP - Splash screen 3D overlay
- * 
+ *
  * Sequenza di esecuzione:
  * 1. La home si carica normalmente sotto
  * 2. Il canvas Three.js appare come overlay (z-index 9999)
@@ -65,7 +65,7 @@ function SplashApp() {
       >
         <HomeSplashAnimation />
       </Canvas>
-      
+
       {/* Testo sopra l'animazione 3D */}
       <div
         style={{
@@ -76,34 +76,39 @@ function SplashApp() {
           zIndex: 10000,
           textAlign: 'center',
           pointerEvents: 'none',
+          padding: '0 1rem',
+          width: '100%',
+          maxWidth: '90vw',
         }}
       >
         <h1
           style={{
-            fontSize: '3.5rem',
+            fontSize: 'clamp(1.5rem, 5vw, 3.5rem)',
             fontWeight: 'bold',
             color: '#ffffff',
             textShadow: '0 0 20px rgba(0, 255, 255, 0.8), 0 0 40px rgba(255, 0, 255, 0.6)',
-            letterSpacing: '0.1em',
+            letterSpacing: '0.05em',
             fontFamily: 'JetBrains Mono, monospace',
-            marginBottom: '1rem',
+            marginBottom: 'clamp(0.5rem, 2vw, 1rem)',
             animation: 'pulse 2s ease-in-out infinite',
+            lineHeight: '1.2',
           }}
         >
           Caricamento della magia...
         </h1>
         <p
           style={{
-            fontSize: '1.2rem',
+            fontSize: 'clamp(0.875rem, 3vw, 1.2rem)',
             color: '#00ffff',
             fontFamily: 'JetBrains Mono, monospace',
             opacity: 0.8,
+            lineHeight: '1.4',
           }}
         >
           ✨ FlorenceEGI si sta preparando per te ✨
         </p>
       </div>
-      
+
       {/* Animazione CSS per il pulse */}
       <style>{`
         @keyframes pulse {
