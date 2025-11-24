@@ -9,11 +9,29 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+    {{-- 🎬 SPLASH SCREEN CSS - Overlay sopra la home --}}
+    @if (request()->is('home'))
+        <style>
+            body {
+                visibility: hidden;
+                /* Nascosto all'inizio, lo splash lo mostrerà dopo il fade */
+            }
+
+            #home-splash-root {
+                position: fixed;
+                inset: 0;
+                z-index: 9999;
+                visibility: visible;
+            }
+        </style>
+    @endif
+
     {{-- SEO & Semantica --}}
     <title>{{ $title ?? __('collection.default_page_title') }}</title>
     <meta name="description" content="{{ $metaDescription ?? __('collection.default_meta_description') }}">
-    {!! $headMetaExtra ?? '
-    <meta name="robots" content="index, follow">' !!}
+    {!! $headMetaExtra ??
+        '
+            <meta name="robots" content="index, follow">' !!}
 
     {{-- Favicon --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
@@ -22,7 +40,8 @@
     {{-- Dark Mode Detection Script --}}
     <script>
         // Detecta preferenze tema del sistema e applica immediatamente
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia(
+                '(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark')
         } else {
             document.documentElement.classList.remove('dark')
@@ -45,7 +64,9 @@
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     </noscript>
 
-    <script>console.log('resources/views/layouts/partials/header.blade.php');</script>
+    <script>
+        console.log('resources/views/layouts/partials/header.blade.php');
+    </script>
     {{-- Asset CSS (Vite) --}}
     @vite(['resources/css/app.css', 'resources/css/guest.css', 'resources/css/modal-fix.css'])
 
@@ -86,6 +107,12 @@
 </head>
 
 <body class="flex flex-col min-h-screen antialiased text-gray-300 bg-gray-900 font-body">
+
+    {{-- 🎬 SPLASH SCREEN - React 3D Animation (solo per home) --}}
+    @if (request()->is('home'))
+        <div id="home-splash-root"></div>
+        @vite(['resources/react/home/home-splash.tsx'])
+    @endif
 
     {{-- Cookie Consent Banner - Universal GDPR compliance for all visitors --}}
     @include('components.gdpr.cookie-banner')

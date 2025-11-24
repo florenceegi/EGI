@@ -42,46 +42,23 @@
     <x-slot name="belowHeroContent">
         <div class="hidden lg:block">
             <x-desktop-egi-carousel :egis="$featuredEgis" />
-            <x-creators-carousel :creators="$featuredCreators" title="{{ __('guest_home.featured_creators_title') }}"
-                bgClass="bg-gray-900" marginClass="mb-12" />
+            <x-creators-carousel :creators="$featuredCreators" title="{{ __('guest_home.featured_creators_title') }}" bgClass="bg-gray-900" marginClass="mb-12" />
             <x-collector-carousel :collectors="$topCollectors" />
             <x-collections-carousel :collections="$featuredCollections" bgClass="bg-gray-900" marginClass="mb-12" />
         </div>
     </x-slot>
-
-    {{-- Carousel Top Collectors - Nuovo slot - NASCOSTO su mobile --}}
-    {{-- <x-slot name="belowHeroContent_0_5">
-        <div class="hidden lg:block">
-            <x-collector-carousel :collectors="$topCollectors" />
-        </div>
-    </x-slot> --}}
-
-    {{-- Nuovo slot per il carousel dei Creator - NASCOSTO su mobile --}}
-    {{-- <x-slot name="belowHeroContent_1">
-        <div class="hidden lg:block">
-
-            <x-collections-carousel :collections="$featuredCollections" bgClass="bg-gray-900" marginClass="mb-12" />
-        </div>
-    </x-slot>
- --}}
 
     {{-- Sezione: Protagonisti e Attori dell'Ecosistema --}}
-    {{-- POPOLIAMO IL NUOVO SLOT $actorContent CON IL NOSTRO COMPONENTE actors-section --}}
     <x-slot name="actorContent">
         <x-actors-section />
     </x-slot>
 
     {{-- Sezione: Progetti Ambientali (EPP) NFT Style --}}
-
     <x-epp-cta-banner :title="__('guest_home.epp_banner_title')" :subtitle="__('guest_home.epp_banner_subtitle')"
-        :message="__('guest_home.epp_banner_message_v2')" {{-- Usa un messaggio specifico che enfatizzi
-        protezione/recupero --}} :ctaText="__('guest_home.epp_banner_cta')" ctaLink="{{ route('archetypes.patron') }}"
-        {{-- Scegli un'immagine di sfondo appropriata per gli EPP --}} {{--
-        backgroundImage="{{ asset('images/banners/forest_regeneration.jpg') }}" --}}
+        :message="__('guest_home.epp_banner_message_v2')" 
+        :ctaText="__('guest_home.epp_banner_cta')" ctaLink="{{ route('archetypes.patron') }}"
         heightClass="min-h-[50vh] md:min-h-[65vh]"
-        overlayColor="bg-gradient-to-br from-gray-900/80 via-verde-rinascita/50 to-gray-900/80" {{-- Overlay più
-        brandizzato --}} />
-
+        overlayColor="bg-gradient-to-br from-gray-900/80 via-verde-rinascita/50 to-gray-900/80" />
 
     @vite(['resources/js/home-nft.js'])
 

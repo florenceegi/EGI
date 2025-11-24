@@ -27,6 +27,7 @@ export default defineConfig(({ mode }) => {
                     // �� REACT SPA - FlorenceEGI Info Page
                     "resources/react/florenceegi-info/main.tsx",
                     // 🚀 PERFORMANCE CRITICAL - Load first for fast navbar
+                    "resources/react/home/home-splash.tsx",
                     "resources/css/critical-navbar.css",
                     "resources/css/performance.css",
                     "resources/js/navbar-performance.js",
