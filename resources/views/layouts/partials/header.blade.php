@@ -12,16 +12,19 @@
     {{-- 🎬 SPLASH SCREEN CSS - Overlay sopra la home --}}
     @if (request()->is('home'))
         <style>
-            body {
-                visibility: hidden;
-                /* Nascosto all'inizio, lo splash lo mostrerà dopo il fade */
+            body.splash-active {
+                overflow: hidden;
+            }
+
+            body.splash-active > *:not(#home-splash-root) {
+                opacity: 0 !important;
+                pointer-events: none !important;
             }
 
             #home-splash-root {
                 position: fixed;
                 inset: 0;
                 z-index: 9999;
-                visibility: visible;
             }
         </style>
     @endif

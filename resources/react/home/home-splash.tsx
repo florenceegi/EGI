@@ -20,21 +20,31 @@ function SplashApp() {
   const [mounted, setMounted] = useState(true);
 
   useEffect(() => {
+    // Aggiungi classe al body all'inizio
+    document.body.classList.add('splash-active');
+
     // Inizia il fade out immediatamente (dissolvenza di 10 secondi)
     const fadeTimer = setTimeout(() => {
       setOpacity(0);
-      // Mostra il body quando inizia il fade out
-      document.body.style.visibility = 'visible';
+      // Rimuovi la classe dal body quando inizia il fade out
+      document.body.classList.remove('splash-active');
     }, 0);
 
     // Rimuovi completamente dopo 10 secondi
     const removeTimer = setTimeout(() => {
       setMounted(false);
+      // Rimuovi fisicamente il container dal DOM
+      const container = document.getElementById('home-splash-root');
+      if (container) {
+        container.remove();
+      }
     }, 10000);
 
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(removeTimer);
+      // Cleanup: assicurati che la classe sia rimossa
+      document.body.classList.remove('splash-active');
     };
   }, []);
 
@@ -48,10 +58,10 @@ function SplashApp() {
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 9999,
+        zIndex: opacity > 0.01 ? 9999 : -1, // Abbassa z-index quando quasi trasparente
         opacity: opacity,
         transition: 'opacity 10000ms ease-out',
-        pointerEvents: opacity > 0 ? 'auto' : 'none',
+        pointerEvents: 'none', // Sempre none per permettere click-through
       }}
     >
       <Canvas
