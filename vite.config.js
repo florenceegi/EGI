@@ -24,10 +24,9 @@ export default defineConfig(({ mode }) => {
             react(), // ✨ Plugin React per FlorenceEGI Info Page
             laravel({
                 input: [
-                    // �� REACT SPA - FlorenceEGI Info Page
+                    // 🎨 REACT SPA - FlorenceEGI Info Page
                     "resources/react/florenceegi-info/main.tsx",
                     // 🚀 PERFORMANCE CRITICAL - Load first for fast navbar
-                    "resources/react/home/home-splash.tsx",
                     "resources/css/critical-navbar.css",
                     "resources/css/performance.css",
                     "resources/js/navbar-performance.js",
@@ -38,6 +37,8 @@ export default defineConfig(({ mode }) => {
                     "resources/js/guest.js",
                     "resources/js/polyfills.js",
                     "resources/js/logo3d.js",
+                    // 🌧️ HOME SPLASH - Caricato DOPO gli asset critici (Three.js pesante: 1MB+)
+                    "resources/react/home/home-splash.tsx",
                     "resources/css/app.css",
                     "resources/css/guest.css",
                     "resources/css/gdpr.css",
