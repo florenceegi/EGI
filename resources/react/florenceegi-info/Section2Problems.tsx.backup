@@ -1,0 +1,108 @@
+import React, { useEffect, useRef, useState } from 'react';
+import './Section2Problems.css';
+import ProblemDetailModal from './ProblemDetailModal';
+
+interface Problem {
+  id: number;
+  title: string;
+  before: string;
+  after: string;
+  detailProblem?: string;
+  detailSolution?: string;
+}
+
+export default function Section2Problems() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const t = window.florenceEgiTranslations?.problems;
+  const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const t = window.florenceEgiTranslations?.problems;
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const cards = sectionRef.current?.querySelectorAll('.problem-card');
+    cards?.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, []);
+
+  if (!t) {
+    return <div>Loading...</div>;
+  }
+
+  const problems: Problem[] = [
+    { id: 1, title: t.p1_title, before: t.p1_old, after: t.p1_new },
+    { id: 2, title: t.p2_title, before: t.p2_old, after: t.p2_new },
+    { id: 3, title: t.p3_title, before: t.p3_old, after: t.p3_new },
+    { id: 4, title: t.p4_title, before: t.p4_old, after: t.p4_new },
+    { id: 5, title: t.p5_title, before: t.p5_old, after: t.p5_new },
+    { id: 6, title: t.p6_title, before: t.p6_old, after: t.p6_new },
+    { id: 7, title: t.p7_title, before: t.p7_old, after: t.p7_new },
+    { id: 8, title: t.p8_title, before: t.p8_old, after: t.p8_new },
+    { id: 9, title: t.p9_title, before: t.p9_old, after: t.p9_new },
+    { id: 10, title: t.p10_title, before: t.p10_old, after: t.p10_new },
+    { id: 11, title: t.p11_title, before: t.p11_old, after: t.p11_new },
+    { id: 12, title: t.p12_title, before: t.p12_old, after: t.p12_new },
+  ];
+
+  return (
+    <section ref={sectionRef} className="section-problems">
+      <div className="container">
+        <header className="section-header">
+          <h2 className="section-title">
+            {t.title}
+            <br />
+            <span className="subtitle">{t.subtitle}</span>
+          </h2>
+          <p className="section-description">
+            12 problemi concreti che ogni creator, collezionista e mecenate 
+            affronta ogni giorno. E le nostre soluzioni.
+          </p>
+        </header>
+
+        <div className="problems-grid">
+          {problems.map((problem, index) => (
+            <div 
+              key={problem.id} 
+              <div className="problem-number">
+                {String(problem.id).padStart(2, '0')}
+              </div>
+              
+              <h3 className="problem-title">{problem.title}</h3>
+              
+              <div className="problem-comparison">
+                <div className="comparison-item before">
+                  <div className="comparison-label">
+                    <span className="icon">❌</span>
+                    <span className="text">{window.florenceEgiTranslations?.nav?.before || 'Prima'}</span>
+                  </div>
+                  <p className="comparison-text">{problem.before}</p>
+                </div>
+
+                <div className="comparison-arrow">→</div>
+
+                <div className="comparison-item after">
+                  <div className="comparison-label">
+                    <span className="icon">✅</span>
+                    <span className="text">Con FlorenceEGI</span>
+                  </div>
+                  <p className="comparison-text">{problem.after}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

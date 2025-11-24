@@ -1,0 +1,232 @@
+.problem-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.problem-modal-content {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 24px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4),
+              0 0 0 1px rgba(255, 255, 255, 0.1);
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.problem-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.problem-modal-close:hover {
+  background: rgba(255, 77, 77, 0.2);
+  transform: rotate(90deg);
+}
+
+.problem-modal-header {
+  padding: 40px 40px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.problem-modal-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.problem-modal-body {
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.problem-section,
+.solution-section {
+  position: relative;
+}
+
+.section-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.problem-badge {
+  background: linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%);
+  color: #1a1a2e;
+}
+
+.solution-badge {
+  background: linear-gradient(135deg, #00f5a0 0%, #00d9f5 100%);
+  color: #1a1a2e;
+}
+
+.detail-text {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 20px 0;
+}
+
+.old-way,
+.new-way {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  align-items: flex-start;
+}
+
+.old-way {
+  background: rgba(255, 77, 77, 0.1);
+  border-left: 3px solid #ff4d4d;
+}
+
+.new-way {
+  background: rgba(0, 245, 160, 0.1);
+  border-left: 3px solid #00f5a0;
+}
+
+.way-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.way-text {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.95);
+  flex: 1;
+}
+
+.problem-modal-footer {
+  padding: 24px 40px 40px;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-cta-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+}
+
+.modal-cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.6);
+}
+
+.modal-cta-button:active {
+  transform: translateY(0);
+}
+
+/* Scrollbar Styling */
+.problem-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.problem-modal-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.problem-modal-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.problem-modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .problem-modal-header {
+    padding: 32px 24px 20px;
+  }
+
+  .problem-modal-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .problem-modal-body {
+    padding: 24px 24px;
+    gap: 24px;
+  }
+
+  .detail-text {
+    font-size: 1rem;
+  }
+
+  .problem-modal-footer {
+    padding: 20px 24px 32px;
+  }
+}

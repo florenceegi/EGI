@@ -3,345 +3,414 @@
 /**
  * @package Resources\Lang\It\Info
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Traduzioni pagina info EGI)
- * @date 2025-09-29
- * @purpose Traduzioni italiane per la pagina informativa completa su EGI
+ * @version 2.0.0 (FlorenceEGI - AMMk Edition)
+ * @date 2025-11-23
+ * @purpose Traduzioni italiane per la nuova pagina informativa AMMk
  */
 
 return [
     /*
     |--------------------------------------------------------------------------
-    | Pagina Info EGI - Traduzioni Italiane
+    | Pagina Info EGI - Traduzioni Italiane (AMMk Structure)
     |--------------------------------------------------------------------------
-    |
-    | Tutte le stringhe di testo per la pagina informativa completa su Florence EGI
-    | - Versione italiana
-    |
     */
+
     // Meta Tags
-    'meta_title' => 'FlorenceEGI - Il Rinascimento Digitale che Unisce Arte, Tecnologia e Rigenerazione Planetaria',
-    'meta_description' => 'FlorenceEGI è il primo marketplace che risolve il trilemma NFT: Qualità Artistica + Liquidità Massima + Impatto Ambientale Reale. Architettura EGI Dual Flow su blockchain Algorand.',
-    'meta_keywords' => 'FlorenceEGI, NFT sostenibili, marketplace arte digitale, blockchain Algorand, EGI, impatto ambientale, arte certificata, rinascimento digitale, rigenerazione planetaria',
-    'meta_author' => 'FlorenceEGI',
-    'meta_app_title' => 'FlorenceEGI',
-    'meta_app_name' => 'FlorenceEGI',
+    'meta' => [
+        'title' => 'FlorenceEGI - EGIZZALO: Se Esiste, Vale. Il Primo Asset Market Maker.',
+        'description' => 'Trasforma qualsiasi opera, prodotto o progetto in un asset digitale certificato (EGI). Qualità artistica, liquidità e impatto ambientale in un click.',
+        'keywords' => 'FlorenceEGI, EGIZZALO, Asset Market Maker, NFT sostenibili, Algorand, Blockchain Italia, EGI, EPP, Co-creazione',
+        'author' => 'FlorenceEGI',
+        'og_title' => 'EGIZZALO: Se Esiste, Vale - FlorenceEGI',
+        'og_description' => 'Non siamo un marketplace. Siamo la tua infrastruttura per creare valore certificato su blockchain con impatto reale.',
+    ],
 
-    // Open Graph Protocol
-    'og_title' => 'FlorenceEGI - Il Rinascimento Digitale per Arte e Ambiente',
-    'og_description' => 'Il primo marketplace NFT che unisce qualità artistica, liquidità massima e impatto ambientale reale. Risolviamo il trilemma NFT con architettura EGI Dual Flow su Algorand.',
-    'og_site_name' => 'FlorenceEGI',
-    'og_image_alt' => 'FlorenceEGI - Marketplace NFT Sostenibile con Impatto Ambientale',
-
-    // Twitter Card
-    'twitter_title' => 'FlorenceEGI - Il Rinascimento Digitale dell\'Arte Sostenibile',
-    'twitter_description' => 'Marketplace NFT rivoluzionario: qualità artistica + liquidità + impatto ambientale reale. Architettura EGI su blockchain Algorand.',
-    'twitter_image_alt' => 'FlorenceEGI Platform Preview',
-
-    // Header
-    'header_brand_name' => 'FlorenceEGI',
-    'header_brand_slogan' => 'Il Rinascimento Digitale',
-    'nav_aria_label' => 'Navigazione principale FlorenceEGI',
-    'nav_home' => 'Home',
-    'nav_vision' => 'Visione',
-    'nav_problem' => 'Problema',
-    'nav_egi' => 'EGI',
-    'nav_solution' => 'Soluzione',
-    'nav_technology' => 'Tecnologia',
-    'nav_gdpr' => 'GDPR',
-    'nav_archetypes' => 'Archetipi',
-    'nav_values' => 'Valori',
-    'nav_equilibrium' => 'Equilibrium',
+    // Navigation
+    'nav' => [
+        'home' => 'Home',
+        'concept' => 'Cos\'è',
+        'problems' => 'Soluzioni',
+        'before' => 'Prima',
+        'after' => 'Adesso',
+        'examples' => 'Esempi',
+        'how' => 'Come Funziona',
+        'ammk' => 'AMMk',
+        'tech' => 'Tecnologia',
+        'pricing' => 'Pricing',
+        'faq' => 'FAQ',
+        'login' => 'Accedi',
+        'cta' => 'Inizia Ora',
+    ],
 
     // Hero Section
     'hero' => [
-        'aria_label' => 'La visione di FlorenceEGI per il Rinascimento Digitale',
-        'title_html' => 'Il <span class="text-oro-fiorentino">Rinascimento Digitale</span><br> che Unisce Arte, Tecnologia<br> e Rigenerazione Planetaria',
-        'subtitle_html' => '<strong class="text-oro-fiorentino">FlorenceEGI è il primo marketplace che risolve il trilemma dell\'ecosistema NFT:</strong><br> Qualità Artistica + Liquidità Massima + Impatto Ambientale Reale',
-        'description' => 'Architettura Sostenibile: Ogni transazione genera impatto EPP automatico, guadagni equi per i creator e sostenibilità della piattaforma',
-        'cta_primary' => 'Scopri la Soluzione',
-        'cta_primary_aria' => 'Scopri come FlorenceEGI risolve il problema dei diritti d\'immagine nell\'arte',
-        'cta_secondary' => 'Tecnologia Algorand',
-        'cta_secondary_aria' => 'Esplora la tecnologia blockchain Algorand utilizzata da FlorenceEGI',
+        'headline_html' => 'EGIZZALO:<br>Se Esiste, <span class="text-oro-fiorentino">Vale</span>.',
+        'subheadline' => 'La prima piattaforma che trasforma qualsiasi cosa in asset tokenizzato, tracciabile e scambiabile. Semplice come un e-commerce, potente come una blockchain.',
+        'cta_primary' => 'Inizia a EGIZZARE',
+        'cta_secondary' => 'Scopri Come Funziona',
+        'scroll_text' => 'Esplora il Rinascimento',
     ],
 
-    // Problem Section
-    'problem' => [
-        'aria_label' => 'Il problema dei diritti d\'immagine nell\'arte contemporanea',
-        'title_html' => 'Il Problema che <span class="text-rosso-urgenza">Risolviamo</span>',
-        'subtitle' => 'Il mercato NFT è paralizzato da un trilemma che nessuna piattaforma è riuscita a risolvere',
-        'trilemma_quality' => 'QUALITÀ<br>ARTISTICA',
-        'trilemma_liquidity' => 'LIQUIDITÀ<br>TRADING',
-        'trilemma_impact' => 'IMPATTO<br>AMBIENTALE',
-        'trilemma_impossible' => 'TRILEMMA<br>IMPOSSIBILE',
-        'competitor_opensea' => 'OpenSea',
-        'competitor_opensea_desc' => '✅ Qualità artistica<br> ❌ Zero liquidità<br> ❌ Zero impatto ambientale',
-        'competitor_blur' => 'Blur',
-        'competitor_blur_desc' => '✅ Liquidità massima<br> ❌ Zero qualità<br> ❌ Zero impatto ambientale',
-        'competitor_foundation' => 'Foundation',
-        'competitor_foundation_desc' => '✅ Qualità premium<br> ❌ Liquidità inesistente<br> ❌ Zero impatto ambientale',
+    // Intro Section (Cos'è)
+    'intro' => [
+        'title' => 'Non Siamo un Marketplace NFT.',
+        'subtitle' => 'Siamo un Asset Market Maker.',
+        'description' => 'Permettiamo a chiunque di creare il proprio mercato. Più simile a Shopify che a OpenSea.',
+        'concept_title' => 'Il Concept',
+        'concept_desc' => 'FlorenceEGI è l\'infrastruttura che trasforma QUALSIASI COSA in un asset digitale certificato chiamato EGI (Eco Goods Invent).',
+        'list_art' => 'Arte fisica e digitale',
+        'list_design' => 'Design e artigianato',
+        'list_exp' => 'Esperienze e servizi',
+        'list_content' => 'Contenuti creativi',
+        'list_docs' => 'Documenti certificati',
+        'list_eco' => 'Progetti ambientali',
+        'difference_title' => 'La Differenza Chiave',
+        'difference_old' => 'Altri marketplace: LORO vendono le TUE opere.',
+        'difference_new' => 'FlorenceEGI: TU crei il TUO Asset Market Maker.',
+        'simple_title' => 'Zero Tecnicismi',
+        'simple_desc' => 'Niente wallet complessi, niente gas fee incomprensibili. Carica, Egizza, Vendi.',
     ],
 
-    // EGI Section
-    'egi' => [
-        'aria_label' => 'Cosa sono gli Environmental Generated Image (EGI)',
-        'title_html' => 'Che cosa sono gli <span class="text-oro-fiorentino">EGI</span>?',
-        'subtitle_html' => '<strong>EGI = Ecological, Goods & Inventive</strong><br> Gli asset digitali che uniscono arte, impatto ambientale e utility pratica',
-        'card1_title' => 'Environment Protection Programs',
-        'card1_desc' => 'I progetti ambientali concreti che danno sostanza all\'impatto ecologico di ogni EGI',
-        'card2_title' => 'Goods - Beni o Servizi',
-        'card2_desc' => 'La componente economica e di utilità pratica che rende ogni EGI un asset funzionale',
-        'card3_title' => 'Inventive - Creatività',
-        'card3_desc' => 'L\'elemento artistico e innovativo che rende unico ogni EGI nel panorama digitale',
-        'cocreation_title_html' => 'Il Concetto di <span class="text-oro-fiorentino">Co-creazione</span>',
-        'cocreation_p1' => '<strong>Il Co-Creatore è colui che effettua il mint</strong> - il primo acquisto di un EGI. Diventa co-creatore perché un\'opera d\'arte riposta nel magazzino dell\'artista è come se non fosse mai stata creata.',
-        'cocreation_p2' => 'Solo quando qualcuno la acquista per esporla in qualche modo, essa prende davvero vita.',
-        'cocreation_highlight' => 'Il Co-Creatore rimane impresso nell\'EGI per sempre, insieme al Creator, anche nel mercato secondario',
-        'cocreation_p3' => '<strong>Visibilità e Riconoscimento</strong><br> La Co-Creazione risponde al bisogno di visibilità e riconoscimento degli internauti',
+    // Problems Section
+    'problems' => [
+        'title' => 'Cosa Risolviamo Davvero',
+        'subtitle' => 'E Perché Ti Serve',
+        'p1_title' => 'Commissioni Esorbitanti',
+        'p1_old' => 'Fee 15-30%, zero controllo',
+        'p1_new' => 'Fee 10% dinamica (fino a 5%), royalty 4.5% perpetue',
+        'p2_title' => 'Autenticità Dubbia',
+        'p2_old' => 'Certificati cartacei falsificabili',
+        'p2_new' => 'Certificato blockchain immutabile, QR verificabile',
+        'p3_title' => 'Incubo Wallet',
+        'p3_old' => 'Seed phrase, rischio perdita',
+        'p3_new' => 'Wallet invisibile o export, paghi con carta',
+        'p4_title' => 'Speculazione Vuota',
+        'p4_old' => 'Pump & dump, zero utilità',
+        'p4_new' => 'Asset REALI, 20% impatto ambientale automatico',
+        'p5_title' => 'Furto Opere',
+        'p5_old' => 'Provenance opaca',
+        'p5_new' => 'Storia on-chain, tracciabilità totale',
+        'p6_title' => 'Royalty Fantasma',
+        'p6_old' => 'Accordi verbali non rispettati',
+        'p6_new' => 'Smart contract trustless, pagamenti istantanei',
+        'p7_title' => 'Labirinto GDPR',
+        'p7_old' => 'Dati venduti, privacy zero',
+        'p7_new' => 'GDPR by design, export 1-click, oblio',
+        'p8_title' => 'Blocco Normativo',
+        'p8_old' => 'Rischi legali, MiCA, KYC',
+        'p8_new' => 'MiCA-safe, PSP autorizzati, zero rischi',
+        'p9_title' => 'Pagamenti Lenti',
+        'p9_old' => 'Bonifici T+7, fee alte',
+        'p9_new' => 'Settlement T+2, 4 metodi pagamento',
+        'p10_title' => 'Valore Ignoto',
+        'p10_old' => 'Prezzi a caso',
+        'p10_new' => 'NATAN AI valuation e market analysis',
+        'p11_title' => 'Sei un Numero',
+        'p11_old' => 'Algoritmi opachi',
+        'p11_new' => 'Mecenatismo certificato, community reale',
+        'p12_title' => 'Caos Fiscale',
+        'p12_old' => 'Gestione manuale errori',
+        'p12_new' => 'Fatturazione SDI auto, report commercialista',
     ],
 
-    // Solution Section
-    'solution' => [
-        'aria_label' => 'Come FlorenceEGI risolve il problema tramite blockchain',
-        'title_html' => 'La Soluzione: <span class="text-oro-fiorentino">Architettura Anti-Trilemma</span>',
-        'subtitle' => 'Il primo marketplace che offre TUTTE E TRE le caratteristiche simultaneamente',
-        'card_physical_title' => 'EGI Fisici',
-        'card_physical_l1_b' => 'Arte autentica',
-        'card_physical_l1' => ' con certificazione CoA blockchain',
-        'card_physical_l2_b' => 'Utility reale',
-        'card_physical_l2' => ' con diritti e royalties',
-        'card_physical_l3_b' => '20% automatico EPP',
-        'card_physical_l3' => ' per impatto ambientale',
-        'card_physical_highlight' => '✅ Collezionismo premium con impatto certificato',
-        'card_pt_title' => 'EGI pt',
-        'card_pt_l1_b' => 'Trading velocity',
-        'card_pt_l1' => ' ad alta frequenza',
-        'card_pt_l2_b' => 'Fee competitive',
-        'card_pt_l2' => ' (1.5%) dinamiche',
-        'card_pt_l3_b' => 'Impact garantito',
-        'card_pt_l3' => ' su ogni transazione',
-        'card_pt_highlight' => '✅ Liquidità massima con rigenerazione automatica',
-        'infra_title' => 'Algorand Infrastructure',
-        'infra_f1_b' => 'Carbon Negative',
-        'infra_f1' => 'Blockchain che assorbe CO2',
-        'infra_f2_b' => '6000 TPS',
-        'infra_f2' => 'Performance ultra-veloce',
-        'infra_f3_b' => 'Sicurezza Enterprise',
-        'infra_f3' => 'Finalità 2.5 secondi',
+    // Examples Section
+    'examples' => [
+        'title' => 'Qualsiasi Cosa Esista, Può Diventare un EGI',
+        'tab_art' => 'Arte & Creatività',
+        'tab_music' => 'Musica & Show',
+        'tab_books' => 'Libri & Content',
+        'tab_eco' => 'Ambiente',
+        'tab_sport' => 'Sport & Exp',
+        'tab_fashion' => 'Moda',
+        'tab_culture' => 'Heritage',
+        'desc_art' => 'Quadri fisici, sculture, murales georeferenziati.',
+        'desc_music' => 'Canzoni, album, ticket concerti, backstage pass.',
+        'desc_books' => 'Libri, e-book firmati, articoli esclusivi.',
+        'desc_eco' => 'Alberi piantati, kg plastica rimossa, crediti green.',
+        'desc_sport' => 'Risultati maratone, percorsi GPS, memorabilia.',
+        'desc_fashion' => 'Scarpe artigianali, gioielli tracciati, abiti unici.',
+        'desc_culture' => 'Reperti museali, manoscritti, opere teatrali.',
+
+        // Arte esempi dettagliati
+        'subtitle' => 'Esplora le infinite possibilità',
+        'art_painting' => 'Quadro fisico',
+        'art_painting_desc' => 'EGI + certificato + royalty perpetua',
+        'art_photo' => 'Fotografia',
+        'art_photo_desc' => 'Serie limitata tokenizzata',
+        'art_sculpture' => 'Scultura',
+        'art_sculpture_desc' => 'Gemello digitale 3D + proprietà fisica',
+        'art_mural' => 'Murales',
+        'art_mural_desc' => 'Opera georeferenziata + NFT',
+        'art_installation' => 'Installazione',
+        'art_installation_desc' => 'Documentazione immersiva + accesso esclusivo',
+
+        // Musica esempi
+        'music_song' => 'Canzone',
+        'music_song_desc' => 'Music NFT + split royalty con band',
+        'music_album' => 'Album',
+        'music_album_desc' => 'Tracce vendibili separatamente',
+        'music_concert' => 'Concerto',
+        'music_concert_desc' => 'Ticket + backstage access token',
+        'music_podcast' => 'Podcast',
+        'music_podcast_desc' => 'Episodi premium tokenizzati',
+
+        // Libri esempi
+        'books_book' => 'Libro',
+        'books_book_desc' => 'Capitoli vendibili singolarmente',
+        'books_ebook' => 'E-book',
+        'books_ebook_desc' => 'Edizioni limitate firmate',
+        'books_article' => 'Articolo',
+        'books_article_desc' => 'Accesso esclusivo + archivio storico',
+        'books_recipe' => 'Ricetta segreta',
+        'books_recipe_desc' => 'IP protetto + licenze uso',
+
+        // Ambiente esempi
+        'eco_tree' => 'Albero piantato',
+        'eco_tree_desc' => 'Carbon credit certificato',
+        'eco_ocean' => 'Pulizia oceano',
+        'eco_ocean_desc' => 'Kg plastica rimossa tokenizzati',
+        'eco_monument' => 'Restauro monumento',
+        'eco_monument_desc' => 'Contributo storico certificato',
+        'eco_energy' => 'Energia rinnovabile',
+        'eco_energy_desc' => 'kWh verdi scambiabili',
+
+        // Sport esempi
+        'sport_marathon' => 'Maratona',
+        'sport_marathon_desc' => 'Risultato certificato + sponsor split',
+        'sport_cycling' => 'Gara ciclismo',
+        'sport_cycling_desc' => 'Percorso GPS + memorabilia',
+        'sport_diving' => 'Immersione subacquea',
+        'sport_diving_desc' => 'Esperienza documentata + video 360°',
+
+        // Moda esempi
+        'fashion_shoe' => 'Scarpa artigianale',
+        'fashion_shoe_desc' => 'Prototipo unico + storia produzione',
+        'fashion_jewel' => 'Gioiello',
+        'fashion_jewel_desc' => 'Certificato autenticità + tracciabilità gemme',
+        'fashion_dress' => 'Abito sartoriale',
+        'fashion_dress_desc' => 'Design esclusivo + making-of',
+
+        // Cultura esempi
+        'culture_artifact' => 'Reperto storico',
+        'culture_artifact_desc' => 'Certificato provenienza + 3D scan',
+        'culture_manuscript' => 'Manoscritto',
+        'culture_manuscript_desc' => 'Digitalizzazione HD + accesso ricerca',
+        'culture_theater' => 'Opera teatrale',
+        'culture_theater_desc' => 'Replica streaming + royalty cast',
+    ],
+
+    // How It Works
+    'how' => [
+        'title' => '3 Click, 0 Complicazioni',
+        'step1_title' => 'Carica',
+        'step1_desc' => 'Upload foto/video, descrizione AI, prezzo suggerito.',
+        'step2_title' => 'Egizza',
+        'step2_desc' => 'Certificazione blockchain istantanea (<5s), hash immutabile.',
+        'step3_title' => 'Vendi',
+        'step3_desc' => 'Pagamenti globali, split automatico ricavi, royalty perpetue.',
+    ],
+
+    // AMMk Section
+    'ammk' => [
+        'title' => 'Il Tuo Superpotere: AMMk',
+        'subtitle' => 'Non solo un marketplace. Un generatore di marketplace.',
+        'desc' => 'Crea il tuo spazio personalizzato dove qualsiasi prodotto diventa un asset liquido.',
+        'engine_natan' => 'NATAN Market Engine',
+        'engine_natan_desc' => 'AI Valuation & Activation',
+        'engine_asset' => 'Asset Management',
+        'engine_asset_desc' => 'Mint & Transfer',
+        'engine_dist' => 'Distribution Engine',
+        'engine_dist_desc' => 'Trustless Split',
+        'engine_cocreation' => 'Co-Creation Engine',
+        'engine_cocreation_desc' => 'Multi-user workflow',
+        'engine_compliance' => 'Compliance Engine',
+        'engine_compliance_desc' => 'GDPR & MiCA auto',
     ],
 
     // Tech Section
     'tech' => [
-        'aria_label' => 'La tecnologia blockchain Algorand e l\'ecosistema FlorenceEGI',
-        'title_html' => 'Tecnologia: <span class="text-oro-fiorentino">Progressive Web3</span>',
-        'subtitle' => 'L\'infrastruttura sostenibile per l\'adozione di massa del Web3',
-        'layer1_title' => 'Layer 1 (99% users)',
-        'layer1_p1_b' => 'Email login + carta credito + UX familiare come Amazon',
-        'layer1_p1' => 'Esperienza Web2 tradizionale per adozione di massa',
-        'layer2_title' => 'Layer 2 (Bridge)',
-        'layer2_p1_b' => 'Educazione graduale + wallet custodial + supporto umano',
-        'layer2_p1' => 'Transizione guidata verso la decentralizzazione',
-        'layer3_title' => 'Layer 3 (1% power users)',
-        'layer3_p1_b' => 'Self-custody + DeFi + API access + trading avanzato',
-        'layer3_p1' => 'Controllo completo per utenti esperti',
-        'sc_title' => 'Smart Contracts Rivoluzionari',
-        'sc1_title' => 'Fee Dinamiche On-Chain',
-        'sc1_desc' => 'Primi al mondo con parametri auto-adattivi',
-        'sc2_title' => 'EPP Distribution',
-        'sc2_desc' => '20% split immutabile, trasparente, verificabile',
-        'sc3_title' => 'Royalty Engine',
-        'sc3_desc' => 'Pagamenti automatici crescenti per sempre',
+        'title' => 'Stack Enterprise, Esperienza Consumer',
+        'user_view' => 'Cosa Vedi Tu',
+        'user_list' => 'Drag&drop, Dashboard mobile, Notifiche real-time',
+        'system_view' => 'Cosa Fa il Sistema',
+        'system_list' => 'Algorand Blockchain, Smart Contracts TEAL, AES-256 Encryption, NATAN AI',
+        'perf_title' => 'Performance Garantite',
+        'perf_mint' => 'Minting < 5s',
+        'perf_uptime' => 'Uptime 99.9%',
+        'perf_sec' => 'SOC 2 Type II',
     ],
 
-    // CoA Section
-    'coa' => [
-        'title_html' => '<span class="text-oro-fiorentino">CoA</span>: Certificate of Authenticity',
-        'subtitle' => 'Sistema di certificazione digitale professionale per arte e beni culturali',
-        'card1_title' => 'Certificazione Blockchain',
-        'card1_l1_b' => 'Hash SHA-256',
-        'card1_l1' => ' per verifiche immutabili',
-        'card1_l2_b' => 'Metadati tecnici',
-        'card1_l2' => ' con sistema traits avanzato',
-        'card1_l3_b' => 'Chain of custody',
-        'card1_l3' => ' tracciabile e verificabile',
-        'card1_l4_b' => 'PDF certificati',
-        'card1_l4' => ' con firme digitali',
-        'card1_highlight' => '✅ Standard professionale per autenticazione',
-        'card2_title' => 'Servizi PA & Istituzioni',
-        'card2_l1_b' => 'eIDAS compliance',
-        'card2_l1' => ' per Pubbliche Amministrazioni',
-        'card2_l2_b' => 'Patrimonio culturale',
-        'card2_l2' => ' musei, biblioteche, archivi',
-        'card2_l3_b' => 'Catalogazione digitale',
-        'card2_l3' => ' con standard internazionali',
-        'card2_l4_b' => 'Export certification',
-        'card2_l4' => ' per opere d\'arte',
-        'card2_highlight' => '✅ Soluzione enterprise per istituzioni',
-        'workflow_title' => 'Workflow CoA',
-        'workflow1_title' => 'Caricamento Opera',
-        'workflow1_desc' => 'Upload immagini HD, metadati tecnici, informazioni artistiche',
-        'workflow2_title' => 'Traits Classification',
-        'workflow2_desc' => 'Sistema avanzato per tecnica, materiali, supporto con vocabolario standardizzato',
-        'workflow3_title' => 'Blockchain Certification',
-        'workflow3_desc' => 'Registrazione immutabile su Algorand con hash verification',
-        'workflow4_title' => 'Certificato Digitale',
-        'workflow4_desc' => 'PDF professionale con QR code per verifica pubblica',
+    // Payments
+    'payments' => [
+        'title' => 'Inclusione Finanziaria Totale',
+        'lvl1_title' => 'Zero Crypto',
+        'lvl1_desc' => 'Carta/Bonifico, wallet invisibile.',
+        'lvl2_title' => 'Ho un Wallet',
+        'lvl2_desc' => 'Paga FIAT, ricevi su Pera/Defly.',
+        'lvl3_title' => 'Crypto Native',
+        'lvl3_desc' => 'USDC/ETH via PSP autorizzati.',
+        'lvl4_title' => 'Egili',
+        'lvl4_desc' => 'Token interno fedeltà (no gas fee).',
     ],
 
-    // GDPR Section
-    'gdpr' => [
-        'title_html' => '<span class="text-oro-fiorentino">GDPR by Design</span>: Compliance Esemplare',
-        'subtitle' => 'Per noi il rispetto della privacy non si limita alla mera pubblicazione di policy e termini. Il GDPR è profondamente integrato in ogni riga di codice della piattaforma, rendendo FlorenceEGI un esempio di applicazione scrupolosa delle normative europee.',
-        'card1_title' => 'Architettura GDPR Integrata',
-        'card1_f1_title' => 'Sistema di Ruoli e Permessi a Due Livelli',
-        'card1_f1_desc' => 'Autorizzazioni granulari basate su Spatie Laravel Permission per controllo accessi preciso',
-        'card1_f2_title' => 'Sidebar Dinamica Contestuale',
-        'card1_f2_desc' => 'Navigazione che mostra solo funzionalità autorizzate, privacy by design nell\'UX',
-        'card1_f3_title' => 'Controller Specializzati',
-        'card1_f3_desc' => 'PersonalDataController e GdprController con responsabilità chiaramente separate',
-        'card2_title' => 'Servizi GDPR Specializzati',
-        'card2_f1_title' => 'ConsentService',
-        'card2_f1_desc' => 'Gestione consensi granulare con versioning e audit trail completo',
-        'card2_f2_title' => 'DataExportService',
-        'card2_f2_desc' => 'Esportazione dati conforme al diritto alla portabilità (Art. 20 GDPR)',
-        'card2_f3_title' => 'AuditLogService',
-        'card2_f3_desc' => 'Tracciabilità completa delle operazioni per accountability e trasparenza',
-        'rights_title_html' => 'Diritti degli Interessati <span class="text-oro-fiorentino">Implementati</span>',
-        'right1_title' => 'Diritto di Accesso',
-        'right1_desc' => 'Visualizzazione completa dei propri dati',
-        'right2_title' => 'Portabilità Dati',
-        'right2_desc' => 'Export strutturato in formati standard',
-        'right3_title' => 'Limitazione Trattamento',
-        'right3_desc' => 'Controllo granulare sui propri dati',
-        'right4_title' => 'Diritto all\'Oblio',
-        'right4_desc' => 'Cancellazione sicura e verificabile',
-        'ultra_title_html' => 'Integrazione <span class="text-oro-fiorentino">Ultra Ecosystem</span>',
-        'ultra_desc' => 'L\'architettura GDPR si integra perfettamente con l\'ecosistema Ultra (UltraLogManager, ErrorManagerInterface) per garantire logging standardizzato, gestione errori robusta e monitoraggio continuo della compliance.',
-        'ultra1_title' => 'Audit Trail',
-        'ultra1_desc' => 'Ogni azione tracciata',
-        'ultra2_title' => 'Error Handling',
-        'ultra2_desc' => 'Gestione sicura degli errori',
-        'ultra3_title' => 'Monitoring',
-        'ultra3_desc' => 'Monitoraggio compliance 24/7',
+    // Compliance
+    'compliance' => [
+        'title' => 'Compliance Totale',
+        'subtitle' => 'Pensaci tu a creare, al resto pensiamo noi.',
+        'gdpr_title' => 'GDPR by Design',
+        'gdpr_desc' => 'Consenso granulare, export 1-click, diritto oblio.',
+        'mica_title' => 'MiCA-Safe',
+        'mica_desc' => 'No custodia crypto, no exchange, solo asset unici.',
+        'tax_title' => 'Fiscalità Auto',
+        'tax_desc' => 'Fatturazione SDI, report commercialista, IVA auto.',
+        'ip_title' => 'Diritti d\'Autore',
+        'ip_desc' => 'Tutela morale e patrimoniale, Diritto di Seguito.',
     ],
 
-    // Archetypes Section
-    'archetypes' => [
-        'title_html' => 'Gli <span class="text-oro-fiorentino">Archetipi FlorenceEGI</span>',
-        'subtitle' => 'Ecosistema di attori specializzati che danno vita alla co-creazione artistica e ambientale',
-        'creator_title' => 'Creator',
-        'creator_desc' => 'Artisti che creano EGI con impatto certificato',
-        'collector_title' => 'Collector',
-        'collector_desc' => 'Collezionisti con passion e investimento sostenibile',
-        'patron_title' => 'Mecenati',
-        'patron_desc' => 'Facilitatori prestigiosi arte-sostenibilità',
-        'epp_title' => 'EPP',
-        'epp_desc' => 'Progetti ambientali verificati per impatto reale',
-        'companies_title' => 'Aziende',
-        'companies_desc' => 'Corporate ESG e marketing innovativo',
-        'pa_title' => 'PA',
-        'pa_desc' => 'Pubbliche Amministrazioni e patrimonio culturale',
-        'trader_title' => 'Trader Pro',
-        'trader_desc' => 'Trading ad alta frequenza su EGI pt',
+    // Ecosystem
+    'ecosystem' => [
+        'title' => '3 Ruoli, 1 Circolo Virtuoso',
+        'creator' => 'Creator',
+        'creator_desc' => 'Crea valore, guadagna royalty perpetue.',
+        'cocreator' => 'Co-Creatore',
+        'cocreator_desc' => 'Attiva l\'opera, ottiene visibilità eterna.',
+        'collector' => 'Collector',
+        'collector_desc' => 'Custodisce valore, investe in sostenibilità.',
+        'epp' => 'EPP (20%)',
+        'epp_desc' => 'Riceve fondi automatici per rigenerazione.',
     ],
 
-    // Impact Section
-    'impact' => [
-        'title_html' => 'Impatto Ambientale: <span class="text-oro-fiorentino">20% Automatico per EPP</span>',
-        'subtitle' => 'Ogni transazione destina automaticamente il 20% a progetti ambientali verificati',
-        'card_title' => 'Impatto Concreto e Verificabile',
-        'stat1_title' => '20%',
-        'stat1_desc' => 'Delle transazioni destinate agli EPP',
-        'stat2_title' => 'Crescita',
-        'stat2_desc' => 'Progetti EPP attivi e verificati',
-        'stat3_title' => '100%',
-        'stat3_desc' => 'Trasparenza blockchain',
-        'epp1_title' => 'Appropriate Restoration Forestry',
-        'epp1_l1_b' => 'Riforestazione Attenta e Rispettosa',
-        'epp1_l2' => 'La deforestazione erode il polmone verde del pianeta',
-        'epp1_l3' => 'Riforestazione mirata per ecosistemi locali',
-        'epp1_l4' => 'Riabilitazione equilibrio ecosistemi',
-        'epp1_highlight' => 'Ogni secondo = un campo di calcio perduto',
-        'epp2_title' => 'Aquatic Plastic Removal',
-        'epp2_l1_b' => 'Rimozione Plastica dagli Oceani',
-        'epp2_l2' => 'Isole di plastica = estensione di un continente',
-        'epp2_l3' => 'Azione cruciale per mari, laghi e fiumi',
-        'epp2_l4' => 'Affrontiamo la crisi globale con coraggio',
-        'epp2_highlight' => 'Emergenza plastica acquatica',
-        'epp3_title' => 'Bee Population Enhancement',
-        'epp3_l1_b' => 'Protezione degli Impollinatori',
-        'epp3_l2' => 'Potenziamento popolazioni di api',
-        'epp3_l3' => 'Supporto biodiversità',
-        'epp3_l4' => 'Preservazione impollinazione',
-        'epp3_highlight' => 'Un terzo del cibo dipende dalle api',
-        'growth_title' => 'Crescita Scalabile',
-        'growth1_title' => 'Fase Iniziale: Crescita della Community',
-        'growth1_desc' => 'Sviluppo della rete di artisti, collezionisti e progetti EPP verificati',
-        'growth2_title' => 'Crescita Organica: Espansione Impatti',
-        'growth2_desc' => 'Moltiplicazione degli impatti ambientali attraverso la community attiva',
-        'cta' => 'Scopri i Progetti EPP',
+    // NATAN
+    'natan' => [
+        'title' => 'NATAN AI',
+        'subtitle' => 'L\'Intelligenza che espande il tuo talento.',
+        'feat_pricing' => 'Suggerimento Prezzi',
+        'feat_seo' => 'Descrizioni SEO',
+        'feat_trend' => 'Analisi Trend',
+        'feat_match' => 'Matching Collezionisti',
+        'ethics' => 'Etica & Trasparenza',
+        'ethics_desc' => 'Nessuna black box, ogni suggerimento è spiegato.',
     ],
 
-    // Values Section
-    'values' => [
-        'title_html' => 'I Valori che <span class="text-oro-fiorentino">Guidano le Nostre Azioni</span>',
-        'subtitle' => 'I nostri valori rappresentano i principi guida e gli ideali fondamentali che informano e orientano tutte le nostre attività',
-        'value1_title' => 'Rigenerazione dell\'Ecosistema',
-        'value1_desc' => 'La piattaforma si impegna attivamente nella pulizia delle acque del pianeta, nella riforestazione e nel sostegno alla popolazione delle api, contribuendo a un impatto ambientale positivo.',
-        'value2_title' => 'Sostegno agli Artisti',
-        'value2_desc' => 'FlorenceEGI offre supporto agli artisti tradizionali per entrare e navigare nel mondo digitale, facilitando la transizione e la valorizzazione del loro lavoro nel metaverso digitale.',
-        'value3_title' => 'Innovazione e Utilità Pragmatica',
-        'value3_desc' => 'Gli EGI acquisiscono un valore speculativo e una valenza pratica e funzionale con un impatto sociale e ambientale concreto.',
-        'value4_title' => 'Investimento Concreto e Responsabile',
-        'value4_desc' => 'Gli EGI rappresentano un impegno verso progetti umanitari e di protezione ambientale, riflettendo un approccio etico e sostenibile negli affari.',
-        'value5_title' => 'Rivoluzione del Concetto di Proprietà',
-        'value5_desc' => 'La piattaforma mira a rivoluzionare il concetto di proprietà privata, incoraggiando un cambiamento sociale positivo attraverso l\'innovazione tecnologica.',
-        'value6_title' => 'Equilibrio tra Ambiente, Economia e Società',
-        'value6_desc' => 'Il focus sugli EGI mira a creare un equilibrio tra ambiente, economia e benessere sociale, attraverso un\'economia che si armonizzi con l\'ambiente e la società.',
+    // Governance
+    'governance' => [
+        'title' => 'Governance Duale',
+        'srl_title' => 'SRL Operativa',
+        'srl_desc' => 'Innovazione, scaling, business.',
+        'aps_title' => 'APS Valoriale',
+        'aps_desc' => 'Custode della missione, potere di veto etico.',
     ],
 
-    // Equilibrium Section
-    'equilibrium' => [
-        'title_html' => 'L\'<span class="text-oro-fiorentino">Equilibrium</span>',
-        'subtitle' => 'Il cuore pulsante dell\'ecosistema FlorenceEGI: dove arte, tecnologia e impatto ambientale si fondono in perfetta armonia',
-        'card1_title' => 'Il Carburante del Cambiamento',
-        'card1_p1' => 'L\'Equilibrium rappresenta i fondi raccolti attraverso le attività della piattaforma FlorenceEGI, destinati automaticamente ai progetti EPP (Environment Protection Programs).',
-        'card1_p2' => 'Ogni transazione sulla piattaforma genera un 20% di Equilibrium che fluisce direttamente verso la rigenerazione ambientale, creando un ciclo virtuoso tra arte digitale e sostenibilità.',
-        'card2_title' => 'Meccanismo Automatico',
-        'card2_p1' => 'Quando un Creator crea una collection, sceglie un EPP specifico. Lo smart contract è programmato per inviare automaticamente il 20% di ogni transazione (Mint o Rebind) al wallet dell\'EPP selezionato.',
-        'card2_p2' => 'Questo processo è trasparente, immediato e verificabile sulla blockchain, garantendo che ogni opera d\'arte contribuisca concretamente alla rigenerazione ambientale.',
-        'card3_title' => 'Agapi e Aisthitikè: Amore ed Estetica',
-        'card3_p1' => 'Nell\'universo narrativo di Natan, l\'Equilibrium è la molecola fondamentale composta da due proteine: <strong>agapi</strong> (amore) e <strong>aisthitikè</strong> (estetica). È il carburante che permette di trasformare il negativo in positivo, l\'inquinato in puro, lo scarso in abbondante. L\'Equilibrium non è solo una risorsa, ma il simbolo di un impegno collettivo verso un mondo più equilibrato, sostenibile e artisticamente ricco.',
+    // Pricing
+    'pricing' => [
+        'title' => 'Fee Dinamiche',
+        'subtitle' => 'Più vendi, meno paghi.',
+        'table_vol' => 'Volume Cumulativo',
+        'table_fee' => 'Fee Piattaforma',
+        'dist_title' => 'Distribuzione €1000',
+        'dist_creator' => 'Creator: €680',
+        'dist_epp' => 'EPP: €200',
+        'dist_plat' => 'Platform: €100',
+        'dist_ass' => 'Associazione: €20',
     ],
 
-    // Final CTA
-    'cta' => [
-        'title_html' => 'Unisciti al <span class="text-oro-fiorentino">Rinascimento Digitale</span>',
-        'quote' => 'Non promettiamo di cambiare il mondo. Creiamo le condizioni perché il mondo si cambi da solo, una transazione alla volta, un progetto EPP alla volta, un EGI alla volta.',
-        'cta1' => 'Inizia il Tuo Viaggio',
-        'cta1_aria' => 'Registrati sulla piattaforma FlorenceEGI e inizia il tuo viaggio nel Rinascimento Digitale',
-        'cta2' => 'Scopri i Ruoli',
-        'cta2_aria' => 'Scopri i ruoli disponibili: Artista, Mecenate, Sostenitore, Collezionista',
+    // Cases
+    'cases' => [
+        'title' => 'Storie di Successo',
+        'c1_name' => 'Maria, Pittrice',
+        'c1_res' => '+€4,500 in 3 mesi con royalty.',
+        'c2_name' => 'Museo Civico',
+        'c2_res' => '200 reperti digitalizzati, €12k donazioni.',
+        'c3_name' => 'GreenThreads',
+        'c3_res' => 'Filiera moda certificata, -20% resi.',
     ],
 
-    // Schema.org Structured Data
-    'schema' => [
-        'organization' => [
-            'name' => 'FlorenceEGI',
-            'description' => 'Piattaforma blockchain per il Rinascimento Digitale che unisce arte, tecnologia e rigenerazione planetaria',
-        ],
-        'website' => [
-            'name' => 'FlorenceEGI',
-        ],
-        'article' => [
-            'name' => 'FlorenceEGI - Il Rinascimento Digitale',
-            'headline' => 'Il primo marketplace NFT che risolve il trilemma: Qualità Artistica + Liquidità + Impatto Ambientale',
-            'description' => 'Architettura EGI Dual Flow su blockchain Algorand per unire arte certificata e rigenerazione planetaria',
-        ],
-        'topics' => [
-            'blockchain_art' => 'Arte Blockchain',
-            'nft_marketplace' => 'Marketplace NFT Sostenibile',
-            'environmental_impact' => 'Impatto Ambientale',
-            'algorand_blockchain' => 'Blockchain Algorand',
-        ],
+    // Roadmap
+    'roadmap' => [
+        'title' => 'Il Futuro è in Sviluppo',
+        'q1' => 'Q1 2026: Mobile App & AR',
+        'q2' => 'Q2 2026: Social Features',
+        'q3' => 'Q3 2026: AI Predictive',
+        'q4' => 'Q4 2026: Global Expansion',
+    ],
+
+    // FAQ
+    'faq' => [
+        'title' => 'Domande Frequenti',
+        'q1' => 'Devo capire la blockchain?',
+        'a1' => 'No, l\'esperienza è identica a un e-commerce.',
+        'q2' => 'Quanto costa?',
+        'a2' => 'Minting gratis. Fee solo sul venduto.',
+        'q3' => 'Posso vendere opere fisiche?',
+        'a3' => 'Sì, con certificato digitale e QR code.',
+        'q4' => 'Royalty garantite?',
+        'a4' => 'Sì, smart contract trustless per sempre.',
+    ],
+
+    // CTA Final
+    'cta_final' => [
+        'title' => 'Il Rinascimento Digitale Inizia Qui',
+        'stats' => '1200+ Creator • €450k+ Donati • 100% Trasparenza',
+        'btn_creator' => 'Sono un Creator',
+        'btn_collector' => 'Sono un Collector',
+        'btn_company' => 'Sono un\'Azienda',
+    ],
+
+    // Footer
+    'footer' => [
+        'rights' => '© 2025 FlorenceEGI. All rights reserved.',
+        'privacy' => 'Privacy Policy',
+        'terms' => 'Termini & Condizioni',
+        'whitepaper' => 'Whitepaper Tecnico',
+        'social_proof' => '🏆 Best Blockchain Art Platform 2025',
+    ],
+
+    // Modal
+    'modal' => [
+        'problem_title' => 'Il Problema',
+        'solution_title' => 'La Soluzione',
+        'before' => 'Prima',
+        'after' => 'Adesso',
+        'cta_button' => 'Ho Capito',
+
+    ],
+
+    // Problem Details (for modal)
+    'problems_details' => [
+        'p1_detail_problem' => 'Carichi la tua opera su OpenSea o Rarible. Loro prendono il 15-30% su ogni vendita, decidono dove appari, cambiano le regole quando vogliono. Tu sei solo un numero nel loro algoritmo.',
+        'p1_detail_solution' => 'Paghi il 10% (che scende fino al 5%) e ricevi royalty automatiche del 4.5% per sempre su ogni rivendita. Non serve pregare l\'algoritmo: sei tu a costruire il tuo mercato, noi ti diamo solo gli strumenti.',
+
+        'p2_detail_problem' => 'Hai un quadro. Il gallerista ti dà un foglio timbrato che dice "autentico". Chiunque con una stampante può farne una copia. Le perizie costano centinaia di euro e non garantiscono nulla.',
+        'p2_detail_solution' => 'Ogni EGI ha un Certificato di Autenticità blockchain immutabile. QR code fisico sull\'opera, scansioni, vedi tutta la storia: chi l\'ha creata, chi l\'ha attivata, ogni passaggio di mano. Impossibile da falsificare, verificabile da chiunque in 5 secondi.',
+
+        'p3_detail_problem' => 'Per comprare un NFT devi installare MetaMask, scrivere 12 parole misteriose su un foglio, pregare di non perderlo mai, capire cosa sia il "gas fee". E se sbagli? Addio soldi, per sempre.',
+        'p3_detail_solution' => 'Wallet? Non lo vedi nemmeno. Ti registri come su Amazon, paghi con carta o bonifico, finito. Vuoi esportare il wallet? Un click. Vuoi davvero gestirlo tu? Fai pure. Ma non sei obbligato a diventare un ingegnere informatico.',
+
+        'p4_detail_problem' => 'Il 99% dei progetti NFT sono immagini di scimmie vendute a milioni, poi sparite nel nulla. Pump, dump, rug pull. Zero valore reale, solo speranza di rivendere a qualche idiota più idiota di te.',
+        'p4_detail_solution' => 'Ogni EGI ha valore intrinseco reale: un\'opera fisica, un documento legale, un progetto ambientale verificato. E il 20% del valore va automaticamente a EPP (riforestazione, oceani, biodiversità). Non è speculazione, è economia vera.',
+
+        'p5_detail_problem' => 'La tua foto finisce su 50 siti diversi, qualcuno la vende come NFT, tu scopri tutto per caso dopo mesi. Zero tracciabilità, zero diritti, zero possibilità di difenderti.',
+        'p5_detail_solution' => 'La blockchain registra ogni passaggio. Chi ha creato l\'opera, chi l\'ha EGIZZATA, ogni vendita, ogni rivendita. Storia completa, pubblica, immutabile. Se qualcuno ti ruba l\'opera? La prova è lì, per sempre.',
+
+        'p6_detail_problem' => 'Il gallerista promette: "Ti do il 10% sulle rivendite future". Poi l\'opera viene rivenduta 3 volte, tu non vedi un euro. Accordi verbali, pagamenti fantasma, scuse infinite.',
+        'p6_detail_solution' => 'Smart contract automatici. L\'opera viene rivenduta? Il 4.5% arriva istantaneamente nel tuo wallet. Zero intermediari, zero scuse, zero ritardi. È matematica, non fiducia.',
+
+        'p7_detail_problem' => 'Banner cookie illeggibili, dati venduti a terzi, email spam infinite. Vuoi cancellare i tuoi dati? "Manda una raccomandata certificata al nostro ufficio legale in Lussemburgo."',
+        'p7_detail_solution' => 'GDPR by design fin dal primo giorno. Consenso granulare (scegli esattamente cosa condividere), export dati in 1 click, cancellazione immediata. La privacy non è un favore, è un diritto.',
+
+        'p8_detail_problem' => 'MiCA, AML, KYC: per vendere crypto serve una licenza CASP che costa milioni, avvocati specializzati, compliance continua. Se non ce l\'hai? Sei fuori legge.',
+        'p8_detail_solution' => 'Noi siamo MiCA-safe by design. Non custodiamo crypto, non facciamo exchange, lavoriamo solo con PSP autorizzati. Tu vendi arte, noi gestiamo la burocrazia.',
+
+        'p9_detail_problem' => 'Vendi un\'opera a un collezionista giapponese. Il bonifico impiega 7 giorni, la banca ti chiede il 3-5% di commissione, il cambio valuta è sfavorevole. Quando arriva il pagamento, hai perso il 10% del valore.',
+        'p9_detail_solution' => '4 metodi di pagamento (FIAT, crypto, Egili, misto). Settlement in 2 giorni massimi, commissioni PSP 1-3%, nessuna sorpresa. Vendi in euro, il giapponese paga in yen, noi gestiamo tutto.',
+
+        'p10_detail_problem' => 'Devi prezzare il tuo quadro. Chiedi troppo? Nessuno compra. Chiedi troppo poco? Ti senti derubato. Non hai dati di mercato, confronti, nessuna idea di cosa sia giusto.',
+        'p10_detail_solution' => 'NATAN AI analizza il mercato in tempo reale. Opere simili, artisti comparabili, trend di settore, stagionalità. Ti suggerisce un prezzo equo basato su dati veri, non su sensazioni. E aggiorna la valutazione nel tempo.',
+
+        'p11_detail_problem' => 'Carichi 100 opere, zero visibilità. L\'algoritmo premia solo chi paga per la sponsorizzazione. Chiedi supporto? Risposta automatica dopo 3 settimane. Sei invisibile.',
+        'p11_detail_solution' => 'Il mecenatismo è certificato. Chi sostiene davvero gli artisti sale nel ranking d\'impatto. Community attiva, supporto umano, visibilità basata su merito e partecipazione, non su quanto paghi.',
+
+        'p12_detail_problem' => 'Devi emettere fatture per ogni vendita, seguire normative diverse per EU/US/Asia, dichiarare tutto al commercialista, sperare di non sbagliare. Gli errori costano sanzioni.',
+        'p12_detail_solution' => 'Fatturazione automatica SDI (Sistema di Interscambio italiano), export CSV/XML per commercialisti, report trimestrali pronti, conformità EU/US/Global. Tu vendi, noi gestiamo la burocrazia fiscale.',
     ],
 ];

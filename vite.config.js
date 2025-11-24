@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from "vite";
 import laravel from "laravel-vite-plugin";
+import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig(({ mode }) => {
@@ -20,15 +21,18 @@ export default defineConfig(({ mode }) => {
 
     return {
         plugins: [
+            react(), // ✨ Plugin React per FlorenceEGI Info Page
             laravel({
                 input: [
+                    // �� REACT SPA - FlorenceEGI Info Page
+                    "resources/react/florenceegi-info/main.tsx",
                     // 🚀 PERFORMANCE CRITICAL - Load first for fast navbar
                     "resources/css/critical-navbar.css",
                     "resources/css/performance.css",
                     "resources/js/navbar-performance.js",
                     "resources/js/lazy-loader.js",
                     // Regular assets
-                    "resources/ts/main.ts", // Corretto da main.js a main.ts
+                    "resources/ts/main.ts",
                     "resources/ts/main_app.ts",
                     "resources/js/guest.js",
                     "resources/js/polyfills.js",
@@ -39,43 +43,41 @@ export default defineConfig(({ mode }) => {
                     "resources/css/home-nft.css",
                     "resources/css/create-collection-modal-context.css",
                     "resources/css/creator-home.css",
-                    "resources/css/reservation-history.css", // Stili per cronologia prenotazioni
-                    "resources/css/traits-manager.css", // Stili per gestione traits
-                    "resources/css/trait-detail-modal.css", // Stili per modal dettaglio trait
-                    "resources/css/mega-menu.css", // Revolutionary mega menu styles
+                    "resources/css/reservation-history.css",
+                    "resources/css/traits-manager.css",
+                    "resources/css/trait-detail-modal.css",
+                    "resources/css/mega-menu.css",
                     "resources/js/creator-home.js",
-                    "resources/js/mega-menu-mobile.js", // Mobile mega menu functionality
+                    "resources/js/mega-menu-mobile.js",
                     "resources/css/collections-show.css",
                     "resources/js/app.js",
                     "resources/js/collection.js",
-                    "resources/js/collection-carousel.js", // Carousel helper
+                    "resources/js/collection-carousel.js",
                     "resources/js/biography-edit.js",
-                    "resources/js/reservation-history.js", // Sistema cronologia prenotazioni
+                    "resources/js/reservation-history.js",
                     "resources/js/collections-show.js",
                     "resources/js/home-nft.js",
                     "resources/js/components/create-collection-modal.js",
-                    // 🎯 USER DOMAINS - Personal Data
                     "resources/css/personal-data.css",
                     "resources/ts/domain/personal-data.ts",
-                    // Modal Fix CSS
                     "resources/css/modal-fix.css",
-                    // Ultra Upload Manager
                     "vendor/ultra/ultra-upload-manager/resources/ts/core/file_upload_manager.ts",
                     "vendor/ultra/ultra-upload-manager/resources/css/app.css",
                     "resources/js/components/vanilla-mobile-menu.js",
                     "resources/js/components/vanilla-desktop-menu.js",
-                    "resources/js/collection-edit-modal.js", // Modal per editing collection metadata
-                    "resources/js/coa/vocabulary-modal.js", // Vocabulary traits modal for CoA certificates
-                    "resources/js/traits-viewer-integrated.js", // Integrated traits viewer & image manager
+                    "resources/js/collection-edit-modal.js",
+                    "resources/js/coa/vocabulary-modal.js",
+                    "resources/js/traits-viewer-integrated.js",
                     "public/js/collection-edit-modal.js",
-                    // Notifications system
                     "resources/js/modules/notifications/responses/notification.js",
+                    "resources/js/florence-shader.js",
                 ],
                 refresh: [
                     "resources/views/**",
                     "resources/js/**",
                     "resources/ts/**",
                     "resources/css/**",
+                    "resources/react/**", // ✨ React files refresh
                     "routes/**/*.php",
                     "app/Http/Controllers/**/*.php",
                     "app/Models/**/*.php",
@@ -86,7 +88,6 @@ export default defineConfig(({ mode }) => {
             }),
         ],
         define: {
-            // 🔑 Qui passiamo l'URL pulito a tutto il codice JS
             "process.env.APP_URL": JSON.stringify(appUrl),
         },
         resolve: {
@@ -102,10 +103,10 @@ export default defineConfig(({ mode }) => {
             preserveSymlinks: true,
         },
         server: {
-            host: viteHost, // 🐳 0.0.0.0 for Docker, localhost for local
+            host: viteHost,
             port: vitePort,
             hmr: {
-                host: "localhost", // 🐳 Always localhost for HMR from browser perspective
+                host: "localhost",
                 port: vitePort,
                 overlay: true,
             },
@@ -134,7 +135,7 @@ export default defineConfig(({ mode }) => {
         },
         build: {
             outDir: "public/build",
-            manifest: "manifest.json", // Genera il manifest direttamente in public/build/
+            manifest: "manifest.json",
             sourcemap: true,
             cssCodeSplit: true,
             chunkSizeWarningLimit: 1000,
@@ -152,6 +153,11 @@ export default defineConfig(({ mode }) => {
                 "daisyui",
                 "three",
                 "three/examples/jsm/controls/OrbitControls.js",
+                "react",
+                "react-dom",
+                "@react-three/fiber",
+                "@react-three/drei",
+                "gsap",
             ],
         },
     };
