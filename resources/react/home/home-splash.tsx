@@ -166,6 +166,7 @@ function HomeOverlay({ opacity }: { opacity: number }) {
 function MainApp() {
   const [showRain, setShowRain] = useState(false);
   const [overlayOpacity, setOverlayOpacity] = useState(1); // Overlay nero che copre tutto
+  const [skipAnimation, setSkipAnimation] = useState(false);
 
   useEffect(() => {
     // Rimuovi il loading iniziale appena React si monta
@@ -176,7 +177,28 @@ function MainApp() {
 
     // Aggiungi classe al body per prevenire scroll
     document.body.classList.add('splash-active');
+
+    // Su mobile: tap per saltare animazione
+    const handleTap = () => {
+      if (window.innerWidth < 768) {
+        console.log('🖐️ Tap detected - skipping animation');
+        setSkipAnimation(true);
+      }
+    };
+
+    document.addEventListener('touchstart', handleTap);
+    
+    return () => {
+      document.removeEventListener('touchstart', handleTap);
+    };
   }, []);
+
+  // Se skip animation attivato, salta tutto
+  useEffect(() => {
+    if (skipAnimation) {
+      handleRainComplete();
+    }
+  }, [skipAnimation]);
 
   const handleSplashComplete = () => {
     setShowRain(true);
@@ -213,8 +235,8 @@ function MainApp() {
   return (
     <>
       <HomeOverlay opacity={overlayOpacity} />
-      <SplashApp onComplete={handleSplashComplete} />
-      {showRain && (
+      {!skipAnimation && <SplashApp onComplete={handleSplashComplete} />}
+      {!skipAnimation && showRain && (
         <div id="image-rain-root">
           <ImageRain onComplete={handleRainComplete} duration={13000} />
         </div>

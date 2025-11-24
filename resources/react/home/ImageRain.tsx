@@ -35,7 +35,7 @@ const ImageRain: React.FC<ImageRainProps> = ({ onComplete, duration = 8000 }) =>
   useEffect(() => {
     const fetchUserImages = async () => {
       const isMobile = window.innerWidth < 768;
-      
+
       try {
         // Trova tutte le EGI card visibili nella home
         const egiCards = document.querySelectorAll('.egi-card');
