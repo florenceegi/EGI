@@ -41,8 +41,8 @@ import { loadEnums, getEnum, isPendingStatus } from './utils/enums';
 console.log('Utils per translations e enums importati (init in main.ts).'); // Debugging
 
 // --- 🎮 IMPORT ANIMAZIONE (disponibile per main.ts) ---
-import { initThreeAnimation } from './sfera-geodetica';
-console.log('Modulo sfera-geodetica importato (init in main.ts).'); // Debugging
+// import { initThreeAnimation } from './sfera-geodetica';
+// console.log('Modulo sfera-geodetica importato (init in main.ts).'); // Debugging
 
 // --- 🏦 IMPORT MODULI WALLET (disponibili per main.ts) ---
 import {

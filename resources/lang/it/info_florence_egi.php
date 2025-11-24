@@ -44,8 +44,12 @@ return [
 
     // Hero Section
     'hero' => [
-        'headline_html' => 'EGIZZALO:<br>Se Esiste, <span class="text-oro-fiorentino">Vale</span>.',
+        'platform_name' => 'FlorenceEGI',
+        'platform_tagline' => 'La prima piattaforma che trasforma qualsiasi cosa in asset tokenizzato, tracciabile e scambiabile. Semplice come un e-commerce, potente come una blockchain.',
+        'headline_html' => 'Se Esiste, <span class="text-oro-fiorentino">EGIZZALO</span>.<br>Se lo EGIZZI, <span class="text-oro-fiorentino">Vale</span>.',
         'subheadline' => 'La prima piattaforma che trasforma qualsiasi cosa in asset tokenizzato, tracciabile e scambiabile. Semplice come un e-commerce, potente come una blockchain.',
+        'what_we_do' => 'Siamo i primi al mondo ad aver fuso Blockchain e Intelligenza Artificiale in un sistema così semplice che chiunque può usarlo. Dietro c\'è Algorand (la blockchain a zero emissioni CO₂ usata dalla SIAE per i diritti d\'autore), NATAN AI che ti suggerisce prezzi e descrizioni analizzando il mercato reale, smart contract automatici per le royalty perpetue. Ma tu non vedi nulla di tutto questo: carichi un\'opera come su Instagram, clicchi EGIZZA, e in 5 secondi hai un certificato blockchain riconosciuto dalla legge italiana come prova di paternità. Zero wallet crypto da configurare, zero seed phrase da scrivere, zero gas fee incomprensibili. È la complessità della tecnologia resa invisibile.',
+        'how_simple' => 'Ogni singolo asset che crei genera impatto ambientale reale, misurabile e certificato su blockchain. Non è un claim di marketing, è matematica: il 20% del valore di ogni transazione va automaticamente a progetti EPP (Environmental Protection Projects) verificati. Riforestazione, rimozione plastica dagli oceani, protezione della biodiversità. Ogni donazione è tracciata on-chain, ogni progetto ha un bilancio pubblico verificabile, ogni euro è rendicontato in modo trasparente. Non è greenwashing da bilancio di sostenibilità, è un sistema economico dove il profitto e la rigenerazione ambientale sono la stessa cosa. Più vendi, più il pianeta guarisce.',
         'cta_primary' => 'Inizia a EGIZZARE',
         'cta_secondary' => 'Scopri Come Funziona',
         'scroll_text' => 'Esplora il Rinascimento',
@@ -372,7 +376,34 @@ return [
         'before' => 'Prima',
         'after' => 'Adesso',
         'cta_button' => 'Ho Capito',
+    ],
 
+    // How It Works
+    'how' => [
+        'title' => '3 Click, 0 Complicazioni',
+        'subtitle' => 'Semplice come dovrebbe essere',
+
+        'step1_title' => 'Carica',
+        'step1_upload' => 'Upload foto/video opera (drag & drop)',
+        'step1_description' => 'Compila descrizione (NATAN AI ti aiuta con tag e keywords)',
+        'step1_price' => 'Imposta prezzo (suggerimenti basati su mercato reale)',
+        'step1_epp' => 'Scegli EPP (progetto ambientale da sostenere con il 20%)',
+
+        'step2_title' => 'Egizza',
+        'step2_certificate' => 'Sistema genera certificato blockchain immutabile',
+        'step2_hash' => 'Hash registrato su Algorand (0 emissioni CO₂)',
+        'step2_qr' => 'QR code per verifica pubblica istantanea',
+        'step2_preview' => 'Anteprima marketplace pronta con galleria e dettagli',
+        'step2_timing' => '< 5 secondi',
+
+        'step3_title' => 'Vendi',
+        'step3_payment' => 'Cliente paga (carta/bonifico/crypto/Egili)',
+        'step3_split' => 'Split automatico: Creator 68% • EPP 20% • Piattaforma 10% • Associazione 2%',
+        'step3_transfer' => 'EGI trasferito a wallet cliente (o auto-generato se non ne ha uno)',
+        'step3_royalty' => 'Royalty 4.5% per sempre su ogni rivendita futura (smart contract)',
+
+        'cta_start' => 'Inizia Ora Gratis',
+        'cta_demo' => 'Guarda Demo Live',
     ],
 
     // Problem Details (for modal)

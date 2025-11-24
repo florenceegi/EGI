@@ -307,9 +307,7 @@ Route::get('/archetypes/pa-entity', function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('info')->name('info.')->group(function () {
-    Route::get('/florence-egi', function () {
-        return view('info.florence-egi');
-    })->name('florence-egi');
+    Route::get('/florenceegi', [App\Http\Controllers\Info\FlorenceEgiController::class, 'index'])->name('florence-egi');
 
     Route::get('/disclaimer', function () {
         return view('info.disclaimer');

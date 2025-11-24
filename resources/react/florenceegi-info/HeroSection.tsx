@@ -19,14 +19,35 @@ export default function HeroSection() {
       {/* Overlay: Testo con glassmorphism */}
       <div className="hero-content-overlay">
         <div className="hero-text-container">
-          <h1 
+          <h1 className="hero-platform-name">
+            {t.platform_name}
+          </h1>
+
+          <p className="hero-platform-tagline">
+            {t.platform_tagline}
+          </p>
+
+          <h2
             className="hero-headline"
             dangerouslySetInnerHTML={{ __html: t.headline_html }}
           />
 
-          <p className="hero-subheadline">
-            {t.subheadline}
-          </p>
+          {(t.what_we_do || t.how_simple) && (
+            <div className="hero-explanation">
+              {t.what_we_do && (
+                <div className="explanation-item">
+                  <span className="explanation-icon">🎯</span>
+                  <p className="explanation-text">{t.what_we_do}</p>
+                </div>
+              )}
+              {t.how_simple && (
+                <div className="explanation-item">
+                  <span className="explanation-icon">⚡</span>
+                  <p className="explanation-text">{t.how_simple}</p>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="hero-cta-buttons">
             <button className="btn-primary">

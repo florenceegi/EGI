@@ -17,6 +17,7 @@ class FlorenceEgiController extends Controller
             'problems_details' => __('info_florence_egi.problems_details'),
             'examples' => __('info_florence_egi.examples'),
             'modal' => __('info_florence_egi.modal'),
+            'how' => __('info_florence_egi.how'),
         ];
 
         return view('info.florenceegi', compact('translations'));

@@ -121,8 +121,8 @@ class CollectionSubscriptionService {
                 ];
             }
 
-            $isActive = !$lastSubscription->is_expired && 
-                        $lastSubscription->expires_at > now();
+            $isActive = !$lastSubscription->is_expired &&
+                $lastSubscription->expires_at > now();
 
             $daysRemaining = $isActive ? now()->diffInDays($lastSubscription->expires_at, false) : 0;
 
@@ -252,7 +252,6 @@ class CollectionSubscriptionService {
                 'days_remaining' => self::SUBSCRIPTION_DURATION_DAYS,
                 'new_balance' => $this->egiliService->getBalance($user),
             ];
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -279,8 +278,7 @@ class CollectionSubscriptionService {
         return [
             'cost_egili' => self::SUBSCRIPTION_COST_EGILI,
             'duration_days' => self::SUBSCRIPTION_DURATION_DAYS,
-            'cost_eur_equivalent' => self::SUBSCRIPTION_COST_EGILI * 0.1, // 1 Egili ≈ €0.10
+            'cost_eur_equivalent' => self::SUBSCRIPTION_COST_EGILI * 0.01, // 1 Egili = €0.01
         ];
     }
 }
-

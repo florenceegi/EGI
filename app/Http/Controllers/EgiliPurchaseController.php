@@ -19,11 +19,11 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * 🎯 Purpose: Handle Egili purchase forms and payment processing
  * 🧱 Core Logic: Frontend interface for Egili purchases (FIAT + Crypto)
  * 🛡️ GDPR Compliance: Full audit trail for all purchase operations
- * 
+ *
  * Routes:
  * - POST /egili/purchase/process → Process purchase request
  * - GET /egili/purchase/{orderReference}/confirmation → Show confirmation page
- * 
+ *
  * @package App\Http\Controllers
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - Egili Purchase System)
@@ -59,7 +59,7 @@ class EgiliPurchaseController extends Controller
         $this->auditService = $auditService;
         $this->purchaseWorkflow = $purchaseWorkflow;
         $this->egiliService = $egiliService;
-        
+
         $this->middleware('auth');
     }
 
@@ -98,8 +98,8 @@ class EgiliPurchaseController extends Controller
                 [
                     'egili_amount' => $validated['egili_amount'],
                     'payment_method' => $validated['payment_method'],
-                    'provider' => $validated['payment_method'] === 'fiat' 
-                        ? $validated['fiat_provider'] 
+                    'provider' => $validated['payment_method'] === 'fiat'
+                        ? $validated['fiat_provider']
                         : $validated['crypto_provider'],
                 ],
                 GdprActivityCategory::WALLET_MANAGEMENT
@@ -218,11 +218,14 @@ class EgiliPurchaseController extends Controller
             ));
 
         } catch (\Exception $e) {
-            return $this->errorManager->handle('EGILI_PURCHASE_CONFIRMATION_ERROR', [
+            // UEM: Handle error and redirect to safe page
+            $this->errorManager->handle('EGILI_PURCHASE_CONFIRMATION_ERROR', [
                 'user_id' => Auth::id(),
                 'order_reference' => $orderReference,
                 'error' => $e->getMessage(),
             ], $e);
+
+            abort(500, __('egili.purchase.confirmation_error'));
         }
     }
 
@@ -236,7 +239,7 @@ class EgiliPurchaseController extends Controller
     {
         try {
             $egiliAmount = $request->input('egili_amount', 0);
-            
+
             if ($egiliAmount < 1) {
                 return response()->json([
                     'success' => false,
@@ -247,7 +250,7 @@ class EgiliPurchaseController extends Controller
             $unitPrice = Config::get('egili.purchase.unit_price_eur', 0.01);
             $minPurchase = Config::get('egili.purchase.min_amount', 5000);
             $maxPurchase = Config::get('egili.purchase.max_amount', 1000000);
-            
+
             $totalEur = round($egiliAmount * $unitPrice, 2);
 
             return response()->json([
@@ -268,4 +271,3 @@ class EgiliPurchaseController extends Controller
         }
     }
 }
-
