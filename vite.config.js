@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
     const isDocker =
         process.env.DOCKER_ENV === "true" || env.DOCKER_ENV === "true";
     const viteHost = isDocker ? "0.0.0.0" : "localhost";
-    
+
     // ✅ FIX PERMANENT: EGI usa porta 5174 (NATAN_LOC usa 5173)
     // NEVER use 5173 to avoid conflict and infinite HMR loop
     const vitePort = 5174; // HARDCODED - non usare env.VITE_PORT
@@ -27,6 +27,7 @@ export default defineConfig(({ mode }) => {
                     // 🎨 REACT SPA - FlorenceEGI Info Page
                     "resources/react/florenceegi-info/main.tsx",
                     // 🚀 PERFORMANCE CRITICAL - Load first for fast navbar
+                    "resources/react/home/home-splash.tsx",
                     "resources/css/critical-navbar.css",
                     "resources/css/performance.css",
                     "resources/js/navbar-performance.js",
@@ -37,8 +38,6 @@ export default defineConfig(({ mode }) => {
                     "resources/js/guest.js",
                     "resources/js/polyfills.js",
                     "resources/js/logo3d.js",
-                    // 🌧️ HOME SPLASH - Caricato DOPO gli asset critici (Three.js pesante: 1MB+)
-                    "resources/react/home/home-splash.tsx",
                     "resources/css/app.css",
                     "resources/css/guest.css",
                     "resources/css/gdpr.css",

@@ -144,7 +144,7 @@
                 50% { opacity: 0.5; }
             }
         </style>
-        
+
         <div id="home-splash-root"></div>
         @vite(['resources/react/home/home-splash.tsx'])
     @endif    {{-- Cookie Consent Banner - Universal GDPR compliance for all visitors --}}

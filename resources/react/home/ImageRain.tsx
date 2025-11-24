@@ -34,6 +34,8 @@ const ImageRain: React.FC<ImageRainProps> = ({ onComplete, duration = 8000 }) =>
   // Fetch immagini dagli utenti
   useEffect(() => {
     const fetchUserImages = async () => {
+      const isMobile = window.innerWidth < 768;
+      
       try {
         // Trova tutte le EGI card visibili nella home
         const egiCards = document.querySelectorAll('.egi-card');
@@ -43,7 +45,36 @@ const ImageRain: React.FC<ImageRainProps> = ({ onComplete, duration = 8000 }) =>
           throw new Error('No EGI cards found in home');
         }
 
-        // Estrai le immagini e le posizioni dalle card esistenti
+        // MOBILE: 5 colonne sovrapposte, più piccole, più veloci
+        if (isMobile) {
+          const response = await fetch('/api/random-egi-images?limit=15');
+          const data = await response.json();
+          const imageUrls = data.images || [];
+
+          const columns = 5;
+          const mobileParticles: ImageParticle[] = Array.from({ length: 15 }, (_, i) => {
+            const columnWidth = 100 / columns;
+            const column = i % columns;
+            // Sovrapposizione: aggiungi offset casuale ±5%
+            const baseX = (column * columnWidth) + (columnWidth / 2);
+            const xPos = baseX + (Math.random() * 10 - 5);
+
+            return {
+              id: i,
+              imageUrl: imageUrls[i] || '/images/logo/logo_1.webp',
+              x: xPos,
+              y: -10 - (Math.floor(i / columns) * 40), // Più vicine verticalmente
+              speed: 0.3 + (Math.random() * 0.1), // Più veloci
+              delay: (i % columns) * 300, // Delay più breve
+              size: 100, // Molto più piccole
+            };
+          });
+
+          setParticles(mobileParticles);
+          return;
+        }
+
+        // DESKTOP: come prima, allineate alle card
         const cardData = Array.from(egiCards).slice(0, 15).map((card, index) => {
           const img = card.querySelector('img');
           const rect = card.getBoundingClientRect();
@@ -77,21 +108,22 @@ const ImageRain: React.FC<ImageRainProps> = ({ onComplete, duration = 8000 }) =>
           const data = await response.json();
           const imageUrls = data.images || [];
 
-          // Sistema a colonne come prima
-          const columns = 4;
+          // Sistema a colonne
+          const columns = isMobile ? 5 : 4;
           const fallbackParticles: ImageParticle[] = Array.from({ length: 15 }, (_, i) => {
             const columnWidth = 100 / columns;
             const column = i % columns;
-            const xPos = (column * columnWidth) + (columnWidth / 2) - 10;
+            const baseX = (column * columnWidth) + (columnWidth / 2) - 10;
+            const xPos = isMobile ? baseX + (Math.random() * 10 - 5) : baseX;
 
             return {
               id: i,
               imageUrl: imageUrls[i] || '/images/logo/logo_1.webp',
               x: xPos,
-              y: -10 - (Math.floor(i / columns) * 80),
-              speed: 0.4,
-              delay: (i % columns) * 500,
-              size: 280,
+              y: -10 - (Math.floor(i / columns) * (isMobile ? 40 : 80)),
+              speed: isMobile ? 0.3 + (Math.random() * 0.1) : 0.4,
+              delay: (i % columns) * (isMobile ? 300 : 500),
+              size: isMobile ? 100 : 280,
             };
           });
 

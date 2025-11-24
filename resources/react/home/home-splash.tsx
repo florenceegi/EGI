@@ -173,7 +173,7 @@ function MainApp() {
     if (initialOverlay) {
       initialOverlay.remove();
     }
-    
+
     // Aggiungi classe al body per prevenire scroll
     document.body.classList.add('splash-active');
   }, []);
