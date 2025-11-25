@@ -418,6 +418,70 @@ return [
         // Success messages
         'walletConnectedTitle' => 'Connesso!',
         'walletConnectedText' => 'Ti sei connesso con successo alla piattaforma.',
+
+        // === REAL ALGORAND WALLET TRANSLATIONS ===
+
+        // Modal Title and Descriptions
+        'real_wallet_connect_title' => 'Connetti Wallet Algorand',
+        'real_wallet_connect_subtitle' => 'Inserisci il tuo indirizzo wallet Algorand reale',
+        'close_modal' => 'Chiudi',
+
+        // Input Form
+        'real_wallet_address_label' => 'Indirizzo Wallet Algorand',
+        'real_wallet_address_help' => 'Inserisci il tuo indirizzo Algorand (58 caratteri, solo A-Z e 2-7)',
+        'real_wallet_verify_btn' => 'Verifica Wallet',
+
+        // Loading State
+        'real_wallet_verifying' => 'Verifica in corso...',
+        'real_wallet_verifying_desc' => 'Stiamo verificando il tuo wallet sulla blockchain Algorand',
+
+        // Found User Section
+        'real_wallet_found' => 'Wallet Riconosciuto',
+        'real_wallet_found_desc' => 'Questo wallet è già associato a un account',
+        'real_wallet_account' => 'Account',
+        'real_wallet_connect_now' => 'Connetti Ora',
+        'real_wallet_back' => 'Indietro',
+
+        // Options Section (New Wallet)
+        'real_wallet_new_wallet' => 'Nuovo Wallet',
+        'real_wallet_choose_option' => 'Questo wallet non è ancora registrato. Come vuoi procedere?',
+        'real_wallet_your_address' => 'Il tuo indirizzo',
+        'real_wallet_register_full' => 'Registrati Completamente',
+        'real_wallet_register_desc' => 'Crea un account completo con email e password per tutte le funzionalità',
+        'real_wallet_continue_guest' => 'Continua come Ospite',
+        'real_wallet_guest_desc' => 'Accedi subito con funzionalità limitate, potrai completare la registrazione dopo',
+
+        // Not Funded Warning
+        'real_wallet_not_funded_title' => 'Wallet non trovato on-chain',
+        'real_wallet_not_funded_text' => 'Il tuo wallet potrebbe essere nuovo o non ancora finanziato. Puoi comunque procedere.',
+
+        // Success Section
+        'real_wallet_success' => 'Connesso con Successo!',
+        'real_wallet_continue' => 'Continua',
+        'real_wallet_upgrade_info' => 'Stai usando un account ospite. Registrati per sbloccare tutte le funzionalità.',
+
+        // Link to FEGI
+        'real_wallet_no_wallet' => 'Non hai un wallet Algorand?',
+        'real_wallet_use_fegi' => 'Usa il sistema FEGI',
+
+        // API Response Messages
+        'real_wallet_user_found' => 'Wallet riconosciuto! Puoi connetterti.',
+        'real_wallet_verified_no_user' => 'Wallet verificato. Scegli come procedere.',
+        'real_wallet_not_on_chain' => 'Wallet non trovato on-chain ma puoi comunque procedere.',
+        'real_wallet_invalid_format' => 'Formato indirizzo non valido. Deve essere 58 caratteri A-Z e 2-7.',
+        'real_wallet_user_not_found' => 'Nessun utente trovato con questo wallet.',
+        'real_wallet_connected' => 'Wallet connesso con successo!',
+        'real_wallet_missing_address' => 'Indirizzo wallet mancante.',
+        'real_wallet_already_registered' => 'Questo wallet è già registrato.',
+        'real_wallet_guest_created' => 'Account ospite creato con successo!',
+        'option_register_full' => 'Registrati completamente',
+        'option_continue_guest' => 'Continua come ospite',
+        'real_wallet_not_funded_warning' => 'Questo wallet potrebbe essere nuovo o non finanziato.',
+
+        // Validation
+        'real_wallet_required' => 'L\'indirizzo wallet è obbligatorio.',
+        'real_wallet_invalid_length' => 'L\'indirizzo deve essere di 58 caratteri.',
+        'real_wallet_invalid_chars' => 'L\'indirizzo contiene caratteri non validi. Usa solo A-Z e 2-7.',
     ],
     'invitation' => [
         'proposal_collaboration' => 'Sei stato invitato a collaborare alla collection',

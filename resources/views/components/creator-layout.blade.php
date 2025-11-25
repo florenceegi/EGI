@@ -45,6 +45,7 @@
     </div>
 </div>
 <x-wallet-connect-modal />
+<x-real-wallet-connect-modal />
 <form method="POST" action="{{ route('logout') }}" id="logout-form" style="display: none;">
     @csrf
     <button type="submit" class="sr-only">{{ __('guest_layout.logout_sr_button') }}</button>

@@ -113,6 +113,7 @@
 </div>
 
 <x-wallet-connect-modal />
+<x-real-wallet-connect-modal />
 
 <!-- Logout Form -->
 <form method="POST" action="{{ route('custom.logout') }}" id="logout-form" style="display: none;">

@@ -52,8 +52,9 @@
     </div>
 
     <x-wallet-connect-modal />
+    <x-real-wallet-connect-modal />
 
-    {{-- Egili Purchase Modal (global - accessible for subscriptions) --}}
+    {{-- Egili Purchase Modal (global - accessible for subscriptions) --}
     <x-egili-purchase-modal />
 
     <!-- Create Collection Modal (OS1 Integration) -->

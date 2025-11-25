@@ -25,6 +25,11 @@ import {
     openSecureWalletModal,
     closeSecureWalletModal
 } from './features/auth/walletConnect';
+import {
+    openRealWalletModal,
+    closeRealWalletModal,
+    initRealWalletConnect
+} from './features/auth/realWalletConnect';
 import { getAuthStatus } from './features/auth/authService';
 import {
     copyWalletAddress,

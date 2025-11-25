@@ -12,34 +12,34 @@ export default function HowItWorksLight() {
             number: '01',
             icon: '📤',
             title: getTranslation('how.step1_title', 'Carica'),
-            description: getTranslation('how.step1_desc', 'Upload foto/video, descrizione AI, prezzo suggerito.'),
+            description: getTranslation('how.step1_desc_light', "Carichi foto/video dell'opera e la descrivi."),
             details: [
-                getTranslation('how.step1_upload', 'Upload foto/video opera (drag & drop)'),
-                getTranslation('how.step1_description', 'Compila descrizione (NATAN AI ti aiuta)'),
-                getTranslation('how.step1_epp', 'Scegli progetto ambientale da sostenere'),
+                getTranslation('how.step1_upload_light', 'Upload come su Instagram (drag & drop)'),
+                getTranslation('how.step1_ai_light', 'NATAN ti aiuta con titolo, tag e descrizione'),
+                getTranslation('how.step1_choice_light', 'Scegli quanto vuoi vendere (pezzo unico / serie limitata)'),
             ]
         },
         {
             number: '02',
             icon: '⚡',
             title: getTranslation('how.step2_title', 'Egizza'),
-            description: getTranslation('how.step2_desc', 'Certificazione blockchain istantanea (<5s), hash immutabile.'),
+            description: getTranslation('how.step2_desc_light', "In 5 secondi l'opera diventa un EGI (certificato digitale)."),
             badge: '< 5 secondi',
             details: [
-                getTranslation('how.step2_certificate', 'Certificato blockchain immutabile'),
-                getTranslation('how.step2_qr', 'QR code per verifica pubblica'),
-                'Zero emissioni CO₂ (Algorand)',
+                getTranslation('how.step2_cert_light', 'Creiamo il certificato digitale EGI'),
+                getTranslation('how.step2_algo_light', 'Lo registriamo su Algorand (blockchain a zero CO₂)'),
+                getTranslation('how.step2_qr_light', 'Generiamo un QR code per verificare tutto in pubblico'),
             ]
         },
         {
             number: '03',
             icon: '💰',
             title: getTranslation('how.step3_title', 'Vendi'),
-            description: getTranslation('how.step3_desc', 'Pagamenti globali, split automatico ricavi, royalty perpetue.'),
+            description: getTranslation('how.step3_desc_light', 'Vendi come in un e-commerce, il resto lo fa il sistema.'),
             details: [
-                'Cliente paga con carta/bonifico/crypto',
-                'Split automatico: Creator 68% • EPP 20% • Piattaforma 10%',
-                'Royalty 4.5% per sempre su rivendite',
+                getTranslation('how.step3_pay_light', 'Il cliente paga con carta o bonifico (niente crypto obbligatorie)'),
+                getTranslation('how.step3_split_light', 'Split automatico: 68% a te, 20% al progetto ambientale, 10% piattaforma, 2% associazione'),
+                getTranslation('how.step3_royalty_light', 'Ogni rivendita futura ti paga royalty 4.5% senza che tu faccia nulla'),
             ]
         }
     ];

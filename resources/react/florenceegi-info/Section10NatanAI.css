@@ -3,242 +3,258 @@
    ============================================= */
 
 .section-10-natan {
-  padding: 100px 0;
-  background: linear-gradient(180deg, #0a0a0f 0%, #0d1117 100%);
-  position: relative;
-  overflow: hidden;
+    padding: 100px 0;
+    background: linear-gradient(180deg, #0a0a0f 0%, #0d1117 100%);
+    position: relative;
+    overflow: hidden;
 }
 
 .section-10-natan::before {
-  content: '';
-  position: absolute;
-  top: -200px;
-  right: -200px;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
-  pointer-events: none;
+    content: "";
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(
+        circle,
+        rgba(59, 130, 246, 0.08) 0%,
+        transparent 70%
+    );
+    pointer-events: none;
 }
 
 .section-10-natan .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  position: relative;
-  z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
 }
 
 .section-10-natan .section-header {
-  text-align: center;
-  margin-bottom: 50px;
+    text-align: center;
+    margin-bottom: 50px;
 }
 
 .section-10-natan .section-number {
-  display: inline-block;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #3b82f6;
-  background: rgba(59, 130, 246, 0.1);
-  padding: 6px 16px;
-  border-radius: 20px;
-  margin-bottom: 16px;
-  letter-spacing: 2px;
+    display: inline-block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    letter-spacing: 2px;
 }
 
 .section-10-natan h2 {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 16px;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
 }
 
 .section-10-natan .section-subtitle {
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.7);
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* NATAN Intro */
 .natan-intro {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  max-width: 800px;
-  margin: 0 auto 60px;
-  padding: 24px 32px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    max-width: 800px;
+    margin: 0 auto 60px;
+    padding: 24px 32px;
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.1) 0%,
+        rgba(59, 130, 246, 0.05) 100%
+    );
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 16px;
 }
 
 .natan-logo {
-  width: 70px;
-  height: 70px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  flex-shrink: 0;
-  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    flex-shrink: 0;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
 }
 
 .natan-intro p {
-  font-size: 1.0625rem;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.6;
-  margin: 0;
+    font-size: 1.0625rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
+    margin: 0;
 }
 
 /* Features Grid */
 .natan-features {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 40px;
-  margin-bottom: 60px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    margin-bottom: 60px;
 }
 
 .feature-column {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.4) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 28px;
+    background: linear-gradient(
+        135deg,
+        rgba(30, 41, 59, 0.4) 0%,
+        rgba(15, 23, 42, 0.4) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 28px;
 }
 
 .column-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .column-icon {
-  font-size: 1.75rem;
+    font-size: 1.75rem;
 }
 
 .column-header h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #fff;
-  margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
 }
 
 .feature-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .feature-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
-  transition: all 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    transition: all 0.2s ease;
 }
 
 .feature-card:hover {
-  background: rgba(59, 130, 246, 0.1);
-  transform: translateX(5px);
+    background: rgba(59, 130, 246, 0.1);
+    transform: translateX(5px);
 }
 
 .card-icon {
-  font-size: 1.5rem;
-  flex-shrink: 0;
+    font-size: 1.5rem;
+    flex-shrink: 0;
 }
 
 .card-content h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0 0 4px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 4px 0;
 }
 
 .card-content p {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0;
-  line-height: 1.5;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    line-height: 1.5;
 }
 
 /* Ethics Box */
 .ethics-box {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 28px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 16px;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 28px;
+    background: linear-gradient(
+        135deg,
+        rgba(16, 185, 129, 0.1) 0%,
+        rgba(16, 185, 129, 0.05) 100%
+    );
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 16px;
 }
 
 .ethics-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
 .ethics-icon {
-  font-size: 1.75rem;
+    font-size: 1.75rem;
 }
 
 .ethics-header h3 {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #10b981;
-  margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #10b981;
+    margin: 0;
 }
 
 .ethics-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
 }
 
 .ethics-list li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.9375rem;
-  color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .ethics-list .check {
-  color: #10b981;
-  font-weight: bold;
+    color: #10b981;
+    font-weight: bold;
 }
 
 /* Responsive */
 @media (max-width: 900px) {
-  .natan-features {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
+    .natan-features {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
 }
 
 @media (max-width: 600px) {
-  .section-10-natan {
-    padding: 60px 0;
-  }
-  
-  .natan-intro {
-    flex-direction: column;
-    text-align: center;
-    padding: 20px;
-  }
-  
-  .ethics-list {
-    grid-template-columns: 1fr;
-  }
-  
-  .feature-card:hover {
-    transform: none;
-  }
+    .section-10-natan {
+        padding: 60px 0;
+    }
+
+    .natan-intro {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .ethics-list {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-card:hover {
+        transform: none;
+    }
 }

@@ -30,8 +30,8 @@ export default function HeroSectionLight() {
                 {/* Sottotitolo */}
                 <p className="hero-light__subheadline">
                     {getTranslation(
-                        'hero.subheadline',
-                        'La prima piattaforma che trasforma qualsiasi cosa in asset tokenizzato, tracciabile e scambiabile. Semplice come un e-commerce, potente come una blockchain.'
+                        'hero.subheadline_light',
+                        'Trasforma qualsiasi opera, prodotto o esperienza in un certificato digitale. Vendi come su un e-commerce, ma con la sicurezza della blockchain.'
                     )}
                 </p>
 

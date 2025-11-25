@@ -6,6 +6,8 @@ import AnimationToggle from '../florenceegi-info/AnimationToggle';
 
 // Sezioni sempre visibili
 import HeroSectionLight from './sections/HeroSectionLight';
+import WhatIsFlorenceEGILight from './sections/WhatIsFlorenceEGILight';
+import WhatIsEGILight from './sections/WhatIsEGILight';
 import HowItWorksLight from './sections/HowItWorksLight';
 import ExamplesLight from './sections/ExamplesLight';
 import PaymentMethodsLight from './sections/PaymentMethodsLight';
@@ -27,6 +29,8 @@ import './InformativePageLight.css';
  * 
  * SEMPRE VISIBILI:
  * - Hero + payoff "Se Esiste, Egizzalo…"
+ * - Cos'è FlorenceEGI (in parole semplici) ← NUOVO
+ * - Cos'è un EGI? ← NUOVO
  * - 3 click / 0 complicazioni
  * - "Qualsiasi cosa esista può diventare un EGI"
  * - 4 modi di pagare
@@ -51,45 +55,51 @@ export default function InformativePageLight() {
                     <AudioControls theme="glass" />
 
                     {/* ═══════════════════════════════════════════════════════
-                        SEZIONI SEMPRE VISIBILI
+                        SEZIONI SEMPRE VISIBILI (TOP)
                     ═══════════════════════════════════════════════════════ */}
 
                     {/* 1. Hero con payoff */}
                     <HeroSectionLight />
 
-                    {/* 2. 3 Click, 0 Complicazioni */}
+                    {/* 2. Cos'è FlorenceEGI, in parole semplici */}
+                    <WhatIsFlorenceEGILight />
+
+                    {/* 3. Cos'è un EGI? */}
+                    <WhatIsEGILight />
+
+                    {/* 4. 3 Click, 0 Complicazioni */}
                     <HowItWorksLight />
 
-                    {/* 3. Qualsiasi cosa può diventare un EGI */}
+                    {/* 5. Qualsiasi cosa può diventare un EGI */}
                     <ExamplesLight />
 
                     {/* ═══════════════════════════════════════════════════════
                         SEZIONI COLLAPSIBILI
                     ═══════════════════════════════════════════════════════ */}
 
-                    {/* 4. Cosa risolviamo davvero (primi 4-6 visibili) */}
+                    {/* 6. Cosa risolviamo davvero (primi 4-6 visibili) */}
                     <ProblemsCollapsible />
 
-                    {/* 5. Stack Enterprise / 5 Engine */}
+                    {/* 7. Stack Enterprise / 5 Engine */}
                     <TechStackCollapsible />
 
-                    {/* 6. Compliance + Governance */}
+                    {/* 8. Compliance + Governance */}
                     <ComplianceGovernanceCollapsible />
 
-                    {/* 7. Pricing trasparente */}
+                    {/* 9. Pricing trasparente */}
                     <PricingCollapsible />
 
                     {/* ═══════════════════════════════════════════════════════
                         SEZIONI SEMPRE VISIBILI (BOTTOM)
                     ═══════════════════════════════════════════════════════ */}
 
-                    {/* 8. 4 Modi di Pagare */}
+                    {/* 10. 4 Modi di Pagare */}
                     <PaymentMethodsLight />
 
-                    {/* 9. Ecosistema Virtuoso */}
+                    {/* 11. Ecosistema Virtuoso */}
                     <EcosystemLight />
 
-                    {/* 10. CTA Finale */}
+                    {/* 12. CTA Finale */}
                     <CTAFinalLight />
                 </div>
             </AudioProvider>
