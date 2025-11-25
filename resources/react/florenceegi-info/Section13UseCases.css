@@ -1,0 +1,164 @@
+/* =============================================
+   Section 13: Scenari di Utilizzo
+   ============================================= */
+
+.section-13-usecases {
+  padding: 100px 0;
+  background: linear-gradient(180deg, #0a0a0f 0%, #0d1117 100%);
+  position: relative;
+}
+
+.section-13-usecases .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section-13-usecases .section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-13-usecases .section-number {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ec4899;
+  background: rgba(236, 72, 153, 0.1);
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+}
+
+.section-13-usecases h2 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.section-13-usecases .section-subtitle {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Disclaimer */
+.examples-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  margin-bottom: 40px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.disclaimer-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.examples-disclaimer p {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+/* Use Cases Grid */
+.usecases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.usecase-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.5) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 28px;
+  transition: all 0.3s ease;
+}
+
+.usecase-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(236, 72, 153, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.usecase-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.usecase-icon {
+  font-size: 2.5rem;
+}
+
+.usecase-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.usecase-description {
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+}
+
+/* Benefits List */
+.usecase-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.usecase-benefits li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.usecase-benefits li:first-child {
+  border-top: none;
+}
+
+.benefit-check {
+  color: #10b981;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .section-13-usecases {
+    padding: 60px 0;
+  }
+  
+  .usecases-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .usecase-card:hover {
+    transform: none;
+  }
+  
+  .examples-disclaimer {
+    flex-direction: column;
+    text-align: center;
+  }
+}
