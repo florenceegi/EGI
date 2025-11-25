@@ -22,7 +22,7 @@
 .how-light__title {
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 700;
-    background: linear-gradient(135deg, #D4AF37, #F4E4BC);
+    background: linear-gradient(135deg, #d4af37, #f4e4bc);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -64,7 +64,7 @@
     left: 24px;
     font-size: 0.8rem;
     font-weight: 700;
-    color: #D4AF37;
+    color: #d4af37;
     background: #0a0a0f;
     padding: 4px 12px;
     border-radius: 20px;
@@ -90,7 +90,7 @@
     border: 1px solid rgba(46, 139, 87, 0.4);
     border-radius: 20px;
     font-size: 0.8rem;
-    color: #2E8B57;
+    color: #2e8b57;
     font-weight: 600;
     margin-bottom: 12px;
 }
@@ -123,10 +123,10 @@
 }
 
 .how-light__step-details li::before {
-    content: '→';
+    content: "→";
     position: absolute;
     left: 0;
-    color: #D4AF37;
+    color: #d4af37;
 }
 
 /* Connectors (desktop only) */

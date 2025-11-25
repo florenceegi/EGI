@@ -4,8 +4,12 @@
 
 .pricing-coll {
     padding: 100px 20px;
-    background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
-                linear-gradient(180deg, #0d0d14 0%, #0a0a0f 100%);
+    background: radial-gradient(
+            ellipse at center,
+            rgba(212, 175, 55, 0.05) 0%,
+            transparent 50%
+        ),
+        linear-gradient(180deg, #0d0d14 0%, #0a0a0f 100%);
 }
 
 .pricing-coll__container {
@@ -22,7 +26,7 @@
 .pricing-coll__title {
     font-size: clamp(1.8rem, 4vw, 2.5rem);
     font-weight: 700;
-    background: linear-gradient(135deg, #D4AF37, #F4E4BC);
+    background: linear-gradient(135deg, #d4af37, #f4e4bc);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -64,7 +68,7 @@
     display: block;
     font-size: 3rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #D4AF37, #F4E4BC);
+    background: linear-gradient(135deg, #d4af37, #f4e4bc);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -122,10 +126,18 @@
     font-weight: 700;
 }
 
-.pricing-coll__split-item--creator .pricing-coll__split-percent { color: #D4AF37; }
-.pricing-coll__split-item--epp .pricing-coll__split-percent { color: #2E8B57; }
-.pricing-coll__split-item--platform .pricing-coll__split-percent { color: #3498DB; }
-.pricing-coll__split-item--aps .pricing-coll__split-percent { color: #9B59B6; }
+.pricing-coll__split-item--creator .pricing-coll__split-percent {
+    color: #d4af37;
+}
+.pricing-coll__split-item--epp .pricing-coll__split-percent {
+    color: #2e8b57;
+}
+.pricing-coll__split-item--platform .pricing-coll__split-percent {
+    color: #3498db;
+}
+.pricing-coll__split-item--aps .pricing-coll__split-percent {
+    color: #9b59b6;
+}
 
 .pricing-coll__split-label {
     font-size: 0.8rem;
@@ -207,12 +219,12 @@
 }
 
 .pricing-coll__example-value--creator {
-    color: #D4AF37;
+    color: #d4af37;
     font-size: 1.2rem;
 }
 
 .pricing-coll__example-value--epp {
-    color: #2E8B57;
+    color: #2e8b57;
 }
 
 /* Royalty calc */
@@ -251,7 +263,7 @@
 }
 
 .pricing-coll__royalty-step--result .pricing-coll__royalty-step-value {
-    color: #D4AF37;
+    color: #d4af37;
 }
 
 .pricing-coll__royalty-arrow {

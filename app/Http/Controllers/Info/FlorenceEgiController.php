@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Info;
 use App\Http\Controllers\Controller;
 
 class FlorenceEgiController extends Controller {
-    
+
     /**
      * Versione completa della pagina informativa
      */

@@ -4,8 +4,12 @@
 
 .cta-light {
     padding: 100px 20px 60px;
-    background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
-                linear-gradient(180deg, #0d0d14 0%, #0a0a0f 100%);
+    background: radial-gradient(
+            ellipse at center,
+            rgba(212, 175, 55, 0.08) 0%,
+            transparent 50%
+        ),
+        linear-gradient(180deg, #0d0d14 0%, #0a0a0f 100%);
 }
 
 .cta-light__container {
@@ -22,7 +26,7 @@
 .cta-light__title {
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 700;
-    background: linear-gradient(135deg, #D4AF37, #F4E4BC);
+    background: linear-gradient(135deg, #d4af37, #f4e4bc);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -88,7 +92,7 @@
 }
 
 .cta-light__option-arrow {
-    color: var(--option-color, #D4AF37);
+    color: var(--option-color, #d4af37);
     opacity: 0.6;
     transition: all 0.3s ease;
 }

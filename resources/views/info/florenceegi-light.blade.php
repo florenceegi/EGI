@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="it" prefix="og: https://ogp.me/ns#">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
+
     {{-- Primary Meta Tags (from localization) --}}
     <title>{{ $translations['meta']['title'] }} - Light</title>
     <meta name="title" content="{{ $translations['meta']['title'] }}">
@@ -56,23 +57,24 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
-        html, body {
+
+        html,
+        body {
             width: 100%;
             overflow-x: hidden;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        
+
         #root {
             width: 100%;
             min-height: 100vh;
         }
-        
+
         /* Screen reader only */
         .skip-link {
             position: absolute;
@@ -84,7 +86,7 @@
             text-decoration: none;
             border-radius: 4px;
         }
-        
+
         .skip-link:focus {
             left: 1rem;
             top: 1rem;
@@ -116,4 +118,5 @@
         </div>
     </noscript>
 </body>
+
 </html>
