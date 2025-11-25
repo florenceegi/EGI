@@ -564,6 +564,115 @@ class EgiliService {
     }
 
     /**
+     * Grant Welcome Gift Egili to new users (no admin required)
+     *
+     * Automated operation for user registration flow.
+     * Grants temporary Egili that expire after N days (configurable).
+     * Used for Natan Tutor welcome bonus.
+     *
+     * @param User $user New user receiving welcome gift
+     * @param int $amount Amount of Gift Egili to grant (default from config)
+     * @param int $expirationDays Days until expiration (default from config)
+     * @param string $reason Reason for grant (default: 'welcome_gift')
+     * @return EgiliTransaction Created transaction record
+     * @throws \Exception If wallet not found or transaction fails
+     */
+    public function grantWelcomeGift(
+        User $user,
+        ?int $amount = null,
+        ?int $expirationDays = null,
+        string $reason = 'welcome_gift'
+    ): EgiliTransaction {
+        // Get defaults from config
+        $amount = $amount ?? config('natan-tutor.welcome_gift.amount', 100);
+        $expirationDays = $expirationDays ?? config('natan-tutor.welcome_gift.expires_days', 90);
+
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException("Welcome gift amount must be positive, got: {$amount}");
+        }
+
+        if ($expirationDays <= 0) {
+            throw new \InvalidArgumentException("Expiration days must be positive, got: {$expirationDays}");
+        }
+
+        if (!$user->wallet) {
+            throw new \Exception("User has no wallet. Cannot grant welcome gift Egili.");
+        }
+
+        return DB::transaction(function () use ($user, $amount, $expirationDays, $reason) {
+            $wallet = $user->wallet;
+            $balanceBefore = $wallet->egili_balance;
+            $balanceAfter = $balanceBefore + $amount;
+            $expiresAt = now()->addDays($expirationDays);
+
+            // ULM: Log operation start
+            $this->logger->info('Welcome Gift Egili grant initiated', [
+                'user_id' => $user->id,
+                'amount' => $amount,
+                'expiration_days' => $expirationDays,
+                'expires_at' => $expiresAt->toDateTimeString(),
+                'reason' => $reason,
+                'log_category' => 'EGILI_WELCOME_GIFT_START'
+            ]);
+
+            // Update wallet balance
+            $wallet->update([
+                'egili_balance' => $balanceAfter,
+                'egili_lifetime_earned' => $wallet->egili_lifetime_earned + $amount,
+            ]);
+
+            // Create transaction record with initial_bonus type
+            $transaction = EgiliTransaction::create([
+                'wallet_id' => $wallet->id,
+                'user_id' => $user->id,
+                'transaction_type' => 'initial_bonus',
+                'operation' => 'add',
+                'amount' => $amount,
+                'balance_before' => $balanceBefore,
+                'balance_after' => $balanceAfter,
+                'reason' => $reason,
+                'category' => 'welcome',
+                'status' => 'completed',
+                // Gift-specific fields
+                'egili_type' => 'gift',
+                'expires_at' => $expiresAt,
+                'is_expired' => false,
+                'grant_reason' => 'New user welcome gift - Natan Tutor credits',
+                'priority_order' => $expiresAt->timestamp,
+                // Tracking
+                'ip_address' => request()?->ip(),
+                'user_agent' => request()?->userAgent(),
+            ]);
+
+            // GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'egili_welcome_gift_granted',
+                [
+                    'amount' => $amount,
+                    'expiration_days' => $expirationDays,
+                    'expires_at' => $expiresAt->toDateTimeString(),
+                    'reason' => $reason,
+                    'transaction_id' => $transaction->id,
+                ],
+                GdprActivityCategory::ACCOUNT_LIFECYCLE
+            );
+
+            // ULM: Log success
+            $this->logger->info('Welcome Gift Egili granted successfully', [
+                'user_id' => $user->id,
+                'transaction_id' => $transaction->id,
+                'amount' => $amount,
+                'expires_at' => $expiresAt->toDateTimeString(),
+                'balance_after' => $balanceAfter,
+                'log_category' => 'EGILI_WELCOME_GIFT_SUCCESS'
+            ]);
+
+            return $transaction;
+        });
+    }
+
+    /**
      * Spend Egili with Priority Logic (Gift first, Lifetime after)
      *
      * Priority Order:

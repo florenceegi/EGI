@@ -223,6 +223,11 @@
     <x-egili-purchase-modal />
 @endauth
 
+{{-- 🎩 Natan Assistant - Sempre Visibile --}}
+<div id="natan-global-assistant" class="fixed bottom-6 right-6 z-[9999]" role="region" aria-label="Natan Assistant">
+    @include('components.natan-assistant', ['suffix' => '-global'])
+</div>
+
 @stack('scripts')
 </body>
 

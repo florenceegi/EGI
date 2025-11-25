@@ -316,3 +316,54 @@ Route::prefix('ai/features')->name('api.ai.features.')->middleware(['web', 'auth
     Route::post('/execute', [App\Http\Controllers\AI\AiFeatureController::class, 'execute'])
         ->name('execute');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Natan Tutor API Routes
+|--------------------------------------------------------------------------
+|
+| Operational assistant endpoints for guiding users through platform actions.
+| Consumes Egili credits for each assisted action.
+| Supports two modes: tutoring (step-by-step) and expert (shortcuts).
+|
+| Authentication: Session-based (web middleware)
+|
+*/
+
+Route::prefix('natan-tutor')->name('api.natan-tutor.')->middleware(['web', 'auth'])->group(function () {
+    // User state and recommendations
+    Route::get('/state', [App\Http\Controllers\NatanTutorController::class, 'getUserState'])
+        ->name('state');
+
+    // Action cost check
+    Route::get('/cost', [App\Http\Controllers\NatanTutorController::class, 'getActionCost'])
+        ->name('cost');
+
+    // Can afford check
+    Route::get('/can-afford', [App\Http\Controllers\NatanTutorController::class, 'canAfford'])
+        ->name('can-afford');
+
+    // Navigation assistance
+    Route::post('/navigate', [App\Http\Controllers\NatanTutorController::class, 'navigate'])
+        ->name('navigate');
+
+    // Feature explanation
+    Route::post('/explain', [App\Http\Controllers\NatanTutorController::class, 'explain'])
+        ->name('explain');
+
+    // Mint assistance
+    Route::post('/assist/mint', [App\Http\Controllers\NatanTutorController::class, 'assistMint'])
+        ->name('assist.mint');
+
+    // Reservation assistance
+    Route::post('/assist/reservation', [App\Http\Controllers\NatanTutorController::class, 'assistReservation'])
+        ->name('assist.reservation');
+
+    // Egili purchase assistance
+    Route::post('/assist/purchase', [App\Http\Controllers\NatanTutorController::class, 'assistPurchase'])
+        ->name('assist.purchase');
+
+    // Collection creation assistance
+    Route::post('/assist/collection', [App\Http\Controllers\NatanTutorController::class, 'assistCollectionCreate'])
+        ->name('assist.collection');
+});

@@ -691,13 +691,120 @@ return [
         'validation_error' => 'Invalid consent data. Please check your choices.',
     ],
 
+    // Footer
+    'privacy_policy' => 'Privacy Policy',
+    'privacy_policy_description' => 'Information about how we collect, use and protect your personal data on the FlorenceEGI platform.',
+    'cookie_policy' => 'Cookie Policy',
+    'cookie_policy_description' => 'Information about the use of cookies and tracking technologies on the FlorenceEGI platform.',
+    'terms_of_service' => 'Terms of Service',
+    'all_rights_reserved' => 'All rights reserved.',
+    'navigation_label' => 'GDPR Navigation',
+    'main_content_label' => 'GDPR Main Content',
+
+    // Contact Information
+    'contact_information' => 'Contact Information',
+    'data_controller' => 'Data Controller',
+    'email' => 'Email',
+    'address' => 'Address',
+
+    // Acceptance Status
+    'your_acceptance_status' => 'Your Acceptance Status',
+    'policy_accepted' => 'Policy accepted',
+    'policy_not_accepted' => 'Policy not yet accepted',
+    'accepted_on' => 'Accepted on',
+    'accept_policy' => 'Accept policy',
+    'must_accept_policy' => 'You must accept the policy to continue',
+
+    // Version History
+    'version_history' => 'Version History',
+    'current' => 'Current',
+    'previous_versions' => 'Previous Versions',
+    'view_version' => 'View version',
+    'copy_policy_link' => 'Copy policy link',
+    'link_copied' => 'Link copied to clipboard',
+
     // Version Information
     'current_version' => 'Current Version',
-    'version' => 'Version: 1.0',
-    'effective_date' => 'Effective Date: 30 Sep 2025',
-    'last_updated' => 'Last Updated: 30 Sep 2025, 17:41',
+    'version' => 'Version',
+    'effective_date' => 'Effective Date',
+    'last_updated' => 'Last Updated',
 
     // Actions
     'download_pdf' => 'Download PDF',
     'print' => 'Print',
+
+    // ===================================================================
+    // DPO (Data Protection Officer) - GDPR Art. 37-39
+    // ===================================================================
+    'dpo_contact' => 'Contact DPO',
+    'dpo_contact_description' => 'Contact our Data Protection Officer for any questions or requests regarding your personal data.',
+    'dpo_info_title' => 'Data Protection Officer',
+    'dpo_info_subtitle' => 'The DPO is your point of contact for all privacy and data protection matters.',
+    'dpo_name' => 'Name/Role',
+    'dpo_email_label' => 'Email',
+    'dpo_phone' => 'Phone',
+    'dpo_response_time' => 'Estimated response time',
+    'dpo_office_hours' => 'Office hours',
+    'dpo_languages' => 'Supported languages',
+    'dpo_external_notice' => 'External DPO',
+    'dpo_external_service' => 'Outsourced DPO service',
+
+    // DPO Rights Section
+    'dpo_your_rights' => 'Your GDPR Rights',
+    'dpo_rights_intro' => 'Under GDPR (EU Regulation 2016/679) you have the following rights:',
+    'right_access' => 'Right of Access (Art. 15)',
+    'right_access_desc' => 'Obtain confirmation of processing and a copy of your data',
+    'right_rectification' => 'Right to Rectification (Art. 16)',
+    'right_rectification_desc' => 'Correct inaccurate or incomplete data',
+    'right_erasure' => 'Right to Erasure (Art. 17)',
+    'right_erasure_desc' => 'Request deletion of your data ("right to be forgotten")',
+    'right_portability' => 'Right to Data Portability (Art. 20)',
+    'right_portability_desc' => 'Receive your data in a structured, transferable format',
+    'right_object' => 'Right to Object (Art. 21)',
+    'right_object_desc' => 'Object to the processing of your data for legitimate reasons',
+
+    // DPO Form
+    'dpo_send_message' => 'Send a Message to the DPO',
+    'dpo_form_intro' => 'Use this form to contact our DPO directly. You will receive a response within the indicated timeframe.',
+    'dpo_request_type' => 'Request Type',
+    'dpo_select_request_type' => 'Select request type...',
+    'dpo_subject' => 'Subject',
+    'dpo_subject_placeholder' => 'Enter the subject of your request',
+    'dpo_priority' => 'Priority',
+    'dpo_message' => 'Message',
+    'dpo_message_placeholder' => 'Describe your request or question in detail...',
+    'dpo_message_hint' => 'Minimum 10 characters, maximum 2000 characters.',
+    'dpo_send_button' => 'Send Message',
+    'dpo_gdpr_notice' => 'Your message will be processed in compliance with GDPR. The data provided will be used exclusively to handle your request.',
+    'dpo_message_sent_successfully' => 'Your message has been successfully sent to the DPO. You will receive a response within the indicated timeframe.',
+
+    // Request Types
+    'request_type_information' => 'Information Request',
+    'request_type_complaint' => 'Complaint',
+    'request_type_access_request' => 'Data Access Request',
+    'request_type_rectification' => 'Data Rectification Request',
+    'request_type_erasure' => 'Erasure Request (Right to be Forgotten)',
+    'request_type_restriction' => 'Processing Restriction Request',
+    'request_type_portability' => 'Data Portability Request',
+    'request_type_objection' => 'Objection to Processing',
+    'request_type_other' => 'Other',
+
+    // Priority Levels
+    'priority_low' => 'Low',
+    'priority_normal' => 'Normal',
+    'priority_high' => 'High',
+    'priority_urgent' => 'Urgent',
+    'response_within' => 'response within',
+
+    // Message Status
+    'dpo_your_messages' => 'Your Messages',
+    'dpo_status_sent' => 'Sent',
+    'dpo_status_read' => 'Read',
+    'dpo_status_answered' => 'Answered',
+    'dpo_status_closed' => 'Closed',
+    'dpo_response' => 'DPO Response',
+
+    // Supervisory Authority
+    'dpo_supervisory_authority' => 'Supervisory Authority',
+    'dpo_supervisory_intro' => 'You always have the right to lodge a complaint with the Data Protection Authority if you believe your rights have not been respected.',
 ];

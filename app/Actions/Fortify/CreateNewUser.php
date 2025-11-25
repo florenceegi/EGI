@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\User;
 use App\Models\Collection;
+use App\Services\EgiliService;
 use App\Traits\HasUtilitys;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -66,8 +67,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  *                      - ErrorManagerInterface for centralized error handling
  *                      Removed the HasCreateDefaultCollectionWallets trait dependency.
  */
-class CreateNewUser implements CreatesNewUsers
-{
+class CreateNewUser implements CreatesNewUsers {
     use PasswordValidationRules;
     use HasUtilitys;
 
@@ -100,6 +100,13 @@ class CreateNewUser implements CreatesNewUsers
     protected readonly CollectionService $collectionService;
 
     /**
+     * 🧱 @dependency EgiliService instance.
+     * Used for granting welcome gift Egili to new users.
+     * @var EgiliService
+     */
+    protected readonly EgiliService $egiliService;
+
+    /**
      * 🧱 @property Log channel name.
      * Defines the ULM log channel to use.
      * @var string
@@ -113,17 +120,20 @@ class CreateNewUser implements CreatesNewUsers
      * @param UltraLogManager $logger ULM for standardized logging
      * @param UserRoleServiceInterface $roleService Service for role management
      * @param CollectionService $collectionService Service for collection and wallet management
+     * @param EgiliService $egiliService Service for Egili operations
      */
     public function __construct(
         ErrorManagerInterface $errorManager,
         UltraLogManager $logger,
         UserRoleServiceInterface $roleService,
-        CollectionService $collectionService
+        CollectionService $collectionService,
+        EgiliService $egiliService
     ) {
         $this->errorManager = $errorManager;
         $this->logger = $logger;
         $this->roleService = $roleService;
         $this->collectionService = $collectionService;
+        $this->egiliService = $egiliService;
     }
 
     /**
@@ -145,8 +155,7 @@ class CreateNewUser implements CreatesNewUsers
      * @privacy-purpose User registration processing
      * @privacy-data Processes registration form data including password
      */
-    public function create(array $input): User
-    {
+    public function create(array $input): User {
         $context = ['action' => 'user_registration'];
         $this->logger->info('Starting user registration process', $context);
 
@@ -171,8 +180,7 @@ class CreateNewUser implements CreatesNewUsers
      * @privacy-purpose Input validation for security
      * @privacy-data Processes registration form data
      */
-    private function validateInput(array $input): void
-    {
+    private function validateInput(array $input): void {
         $context = ['action' => 'validate_input'];
 
         $this->logger->info('Validating user input', $input);
@@ -185,7 +193,6 @@ class CreateNewUser implements CreatesNewUsers
             ])->validate();
 
             $this->logger->info('Input validation successful', $context);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->logger->error('Input validation failed', array_merge($context, [
                 'errors' => $e->errors()
@@ -213,8 +220,7 @@ class CreateNewUser implements CreatesNewUsers
      * @privacy-purpose Generate wallet details for user
      * @privacy-data None - generates new data only
      */
-    private function generateWalletDetails(): array
-    {
+    private function generateWalletDetails(): array {
         $wallet_address = $this->generateFakeAlgorandAddress();
         $wallet_balance = (float)config('app.virtual_wallet_balance');
 
@@ -236,8 +242,7 @@ class CreateNewUser implements CreatesNewUsers
      * @privacy-purpose Complete user creation process
      * @privacy-data Processes user creation data
      */
-    private function handleUserCreation(array $input, string $wallet_address, float $wallet_balance): User
-    {
+    private function handleUserCreation(array $input, string $wallet_address, float $wallet_balance): User {
         return DB::transaction(function () use ($input, $wallet_address, $wallet_balance) {
             // Create the user
             $user = User::create([
@@ -258,6 +263,21 @@ class CreateNewUser implements CreatesNewUsers
             // Set current collection for the user
             $user->current_collection_id = $collection->id;
             $user->save();
+
+            // Grant welcome gift Egili for Natan Tutor (if enabled)
+            if (config('natan-tutor.welcome_gift.enabled', true)) {
+                try {
+                    $this->egiliService->grantWelcomeGift($user);
+                    $this->logger->info('Welcome gift Egili granted', array_merge($context, [
+                        'amount' => config('natan-tutor.welcome_gift.amount', 100)
+                    ]));
+                } catch (\Exception $e) {
+                    // Log error but don't fail registration
+                    $this->logger->warning('Failed to grant welcome gift Egili', array_merge($context, [
+                        'error' => $e->getMessage()
+                    ]));
+                }
+            }
 
             $this->logger->info('User registration complete', array_merge($context, [
                 'current_collection_id' => $collection->id

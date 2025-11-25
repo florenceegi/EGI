@@ -26,7 +26,9 @@
                 <a href="{{ route('info.epp') }}" class="hover:text-oro-fiorentino transition-colors">EPP</a>
                 <a href="{{ route('gdpr.privacy-policy') }}"
                     class="hover:text-oro-fiorentino transition-colors">Privacy</a>
-                <a href="{{ route('legal.terms') }}" class="hover:text-oro-fiorentino transition-colors">Termini</a>
+                <a href="{{ route('gdpr.cookie-policy') }}"
+                    class="hover:text-oro-fiorentino transition-colors">Cookie</a>
+                <a href="{{ route('gdpr.terms') }}" class="hover:text-oro-fiorentino transition-colors">Termini</a>
                 <a href="{{ route('info.disclaimer') }}"
                     class="hover:text-oro-fiorentino transition-colors">Disclaimer</a>
                 <a href="mailto:info@florenceegi.com" class="hover:text-oro-fiorentino transition-colors">Contatti</a>

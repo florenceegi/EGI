@@ -470,4 +470,93 @@ return [
         // Encryption cipher to use
         'encryption_cipher' => 'AES-256-CBC',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Data Protection Officer (DPO) Settings - GDPR Art. 37-39
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the Data Protection Officer contact and communication.
+    | Even if not legally required, having a DPO contact improves trust and
+    | demonstrates commitment to data protection.
+    |
+    */
+    'dpo' => [
+        // DPO name (can be a person or role title)
+        'name' => env('GDPR_DPO_NAME', 'Data Protection Officer'),
+
+        // DPO email address (required for GDPR compliance)
+        'email' => env('GDPR_DPO_EMAIL', 'dpo@florenceegi.com'),
+
+        // Optional: DPO phone number
+        'phone' => env('GDPR_DPO_PHONE', null),
+
+        // Optional: DPO physical address
+        'address' => env('GDPR_DPO_ADDRESS', null),
+
+        // Expected response time (GDPR requires response within 30 days max)
+        'response_time' => '72 hours',
+
+        // Maximum response time for complex requests
+        'max_response_time' => '30 days',
+
+        // Languages supported for DPO communication
+        'supported_languages' => ['it', 'en'],
+
+        // Office hours for DPO availability
+        'office_hours' => 'Monday-Friday 9:00-17:00 CET',
+
+        // Whether DPO is internal or external
+        'is_external' => env('GDPR_DPO_IS_EXTERNAL', false),
+
+        // External DPO company name (if applicable)
+        'external_company' => env('GDPR_DPO_EXTERNAL_COMPANY', null),
+
+        // Message priority levels
+        'priority_levels' => [
+            'low' => [
+                'response_time' => '7 days',
+                'label' => 'Low Priority',
+            ],
+            'normal' => [
+                'response_time' => '72 hours',
+                'label' => 'Normal Priority',
+            ],
+            'high' => [
+                'response_time' => '48 hours',
+                'label' => 'High Priority',
+            ],
+            'urgent' => [
+                'response_time' => '24 hours',
+                'label' => 'Urgent',
+            ],
+        ],
+
+        // Request types that users can submit
+        'request_types' => [
+            'information' => 'Information Request',
+            'complaint' => 'Complaint',
+            'access_request' => 'Data Access Request',
+            'rectification' => 'Data Rectification Request',
+            'erasure' => 'Data Erasure Request (Right to be Forgotten)',
+            'restriction' => 'Processing Restriction Request',
+            'portability' => 'Data Portability Request',
+            'objection' => 'Objection to Processing',
+            'other' => 'Other',
+        ],
+
+        // Notification settings for DPO
+        'notifications' => [
+            'new_message' => true,
+            'urgent_escalation' => true,
+            'overdue_response' => true,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Privacy Contact Settings
+    |--------------------------------------------------------------------------
+    */
+    'privacy_email' => env('GDPR_PRIVACY_EMAIL', 'privacy@florenceegi.com'),
 ];

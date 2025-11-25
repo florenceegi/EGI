@@ -1,0 +1,168 @@
+/**
+ * Examples Light Styles
+ */
+
+.examples-light {
+    padding: 100px 20px;
+    background: radial-gradient(
+            ellipse at center,
+            rgba(212, 175, 55, 0.05) 0%,
+            transparent 60%
+        ),
+        linear-gradient(180deg, #0a0a0f 0%, #0d0d14 100%);
+}
+
+.examples-light__container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header */
+.examples-light__header {
+    text-align: center;
+    margin-bottom: 56px;
+}
+
+.examples-light__title {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #d4af37, #f4e4bc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+}
+
+.examples-light__subtitle {
+    font-size: 1.1rem;
+    color: #a0a0b0;
+}
+
+/* Grid */
+.examples-light__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+}
+
+/* Card */
+.examples-light__card {
+    background: #12121a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.examples-light__card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-color, #d4af37);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.examples-light__card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.examples-light__card:hover::before {
+    opacity: 1;
+}
+
+.examples-light__card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+}
+
+.examples-light__card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 16px;
+}
+
+.examples-light__card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.examples-light__card-list li {
+    font-size: 0.85rem;
+    color: #8a8a9a;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    position: relative;
+    padding-left: 16px;
+}
+
+.examples-light__card-list li:last-child {
+    border-bottom: none;
+}
+
+.examples-light__card-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--accent-color, #d4af37);
+}
+
+/* Bottom message */
+.examples-light__message {
+    text-align: center;
+    margin-top: 48px;
+    padding: 20px;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 12px;
+    color: #a0a0b0;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.examples-light__message-icon {
+    font-size: 1.3rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .examples-light {
+        padding: 60px 16px;
+    }
+
+    .examples-light__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .examples-light__card {
+        padding: 20px;
+    }
+
+    .examples-light__card-icon {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .examples-light__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .examples-light__message {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

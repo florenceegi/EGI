@@ -222,6 +222,11 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
         @include('components.wallet-welcome-modal')
     @endauth
 
+    {{-- Real Wallet Connect Modal (for Pera Wallet connection) --}}
+    @auth
+        <x-real-wallet-connect-modal />
+    @endauth
+
     {{-- GDPR Cookie Consent Banner --}}
     <x-gdpr.cookie-banner />
 </body>

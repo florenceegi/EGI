@@ -28,6 +28,10 @@ export default defineConfig(({ mode }) => {
                     "resources/react/florenceegi-info/main.tsx",
                     // 🎨 REACT SPA - FlorenceEGI Info Page LIGHT
                     "resources/react/florenceegi-info-light/main.tsx",
+                    // 🎨 REACT SPA - FlorenceEGI Info Page V4 (Preview)
+                    "resources/react/florenceegi-info-light/mainV4.tsx",
+                    // 🎡 REACT SPA - FlorenceEGI Info Page V4 WHEEL (Menu Circolare)
+                    "resources/react/florenceegi-info-light/mainV4Wheel.tsx",
                     // 🚀 PERFORMANCE CRITICAL - Load first for fast navbar
                     "resources/react/home/home-splash.tsx",
                     "resources/css/critical-navbar.css",

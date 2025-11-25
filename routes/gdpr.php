@@ -22,6 +22,9 @@ Route::get('/terms-of-service', [GdprController::class, 'termsOfService'])
 Route::get('/privacy-policy', [GdprController::class, 'privacyPolicy'])
     ->name('gdpr.privacy-policy');
 
+Route::get('/cookie-policy', [GdprController::class, 'cookiePolicy'])
+    ->name('gdpr.cookie-policy');
+
 Route::group(['prefix' => 'gdpr', 'as' => 'gdpr.'], function () {
 
     // Privacy Policy Download

@@ -1,0 +1,182 @@
+/**
+ * Hero Section V4 Styles
+ */
+
+.hero-v4 {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 20px 40px;
+    position: relative;
+    background: radial-gradient(
+            ellipse at center top,
+            rgba(212, 175, 55, 0.08) 0%,
+            transparent 50%
+        ),
+        linear-gradient(180deg, #0a0a0f 0%, #0d0d14 100%);
+}
+
+.hero-v4__container {
+    max-width: 900px;
+    text-align: center;
+}
+
+/* Logo Grande */
+.hero-v4__logo {
+    font-size: clamp(4rem, 12vw, 8rem);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+}
+
+.hero-v4__logo-florence {
+    color: #ffffff;
+    display: block;
+}
+
+.hero-v4__logo-egi {
+    background: linear-gradient(135deg, #d4af37, #f4e4bc, #d4af37);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    font-size: 1.2em;
+}
+
+/* Motto - Font distintivo corsivo */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600&display=swap');
+
+.hero-v4__motto {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 40px;
+    color: #e8e8f0;
+    letter-spacing: 0.02em;
+}
+
+.hero-v4__motto .text-gold {
+    background: linear-gradient(135deg, #d4af37, #f4e4bc, #d4af37);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+}
+
+/* Definizione/Frase madre */
+.hero-v4__definition {
+    font-size: 1.3rem;
+    color: #c0c0d0;
+    line-height: 1.7;
+    max-width: 800px;
+    margin: 0 auto 40px;
+}
+
+.hero-v4__definition strong {
+    color: #d4af37;
+}
+
+/* CTA Group */
+.hero-v4__cta-group {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+}
+
+.btn-v4 {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 32px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-v4--primary {
+    background: linear-gradient(135deg, #d4af37, #b8962e);
+    color: #0a0a0f;
+}
+
+.btn-v4--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+}
+
+.btn-v4--secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.btn-v4--secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Trust indicators */
+.hero-v4__trust {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-v4__trust-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #808090;
+    font-size: 0.95rem;
+}
+
+/* Scroll indicator */
+.hero-v4__scroll {
+    position: absolute;
+    bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #606070;
+    font-size: 0.9rem;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(8px);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-v4 {
+        padding: 60px 16px 30px;
+    }
+
+    .hero-v4__definition {
+        font-size: 1.1rem;
+    }
+
+    .hero-v4__trust {
+        gap: 20px;
+    }
+
+    .btn-v4 {
+        padding: 14px 24px;
+        font-size: 1rem;
+    }
+}

@@ -47,6 +47,7 @@ import reservationFeature from './features/reservations/reservationFeature';
 import reservationButtons from './features/reservations/reservationButtons';
 import { initPortfolioManager } from './features/portfolio/portfolioManager'; // 🚀 NEW
 import { NatanAssistant } from './components/natan-assistant';
+import { initNatanTutor } from './components/natan-tutor'; // 🎓 Natan Tutor
 import { mountAllCurrentPrices } from './current-price'; // 🔴 Real-time price updates
 import { initializeStatsRealTime } from './stats-realtime'; // 📊 Real-time statistics updates
 import { autoInitUniversalSearch } from './features/search/universalSearch';
@@ -415,37 +416,42 @@ async function initializeFEGISystemOrchestrated(): Promise<void> {
         }
 
         // 12. Inizializza Natan Assistant
-        // try {
-        //     if (typeof NatanAssistant === 'function') {
-        //         const natanAssistant = new NatanAssistant();
-        //         (window as any).natan = natanAssistant;
-        //         (window as any).natanAssistant = natanAssistant;
-        //         (window as any).testButlerModal = () => {
-        //             // console.log('🎩 TEST: Forcing butler modal display from global function');
-        //             natanAssistant.forceShowModal();
-        //         };
-        //         (window as any).testButler = () => {
-        //             // console.log('🎩 TEST: Complete butler test with state reset');
-        //             natanAssistant.testButler();
-        //         };
-        //         (window as any).resetButler = () => {
-        //             // console.log('🎩 TEST: Resetting butler state');
-        //             natanAssistant.resetButler();
-        //         };
-        //         // console.log('Padmin Main: Natan Assistant initialized.');
-        //         // console.log('🎩 Available test functions:');
-        //         // console.log('- window.testButlerModal() - Force show modal');
-        //         // console.log('- window.testButler() - Complete test with reset');
-        //         // console.log('- window.resetButler() - Reset state only');
-        //     } else {
-        //         console.warn('Padmin Main: NatanAssistant is not a constructor or function.');
-        //     }
-        // } catch (error) {
-        //     console.error('Padmin Main: Error initializing Natan Assistant:', error);
-        //     UEM.handleClientError('CLIENT_INIT_FAIL_NATAN_TS', { originalError: error instanceof Error ? error.message : String(error) });
-        // }
+        try {
+            if (typeof NatanAssistant === 'function') {
+                const natanAssistant = new NatanAssistant();
+                (window as any).natan = natanAssistant;
+                (window as any).natanAssistant = natanAssistant;
+                (window as any).testButlerModal = () => {
+                    console.log('🎩 TEST: Forcing butler modal display from global function');
+                    natanAssistant.forceShowModal();
+                };
+                (window as any).testButler = () => {
+                    console.log('🎩 TEST: Complete butler test with state reset');
+                    natanAssistant.testButler();
+                };
+                (window as any).resetButler = () => {
+                    console.log('🎩 TEST: Resetting butler state');
+                    natanAssistant.resetButler();
+                };
+                console.log('🎩 Natan Assistant initialized successfully');
+            } else {
+                console.warn('Padmin Main: NatanAssistant is not a constructor or function.');
+            }
+        } catch (error) {
+            console.error('Padmin Main: Error initializing Natan Assistant:', error);
+            UEM.handleClientError('CLIENT_INIT_FAIL_NATAN_TS', { originalError: error instanceof Error ? error.message : String(error) });
+        }
 
-        // 12. Setup FEGI-specific custom event listeners
+        // 🎓 13. Inizializza Natan Tutor (NEW - Backend-driven assistant)
+        try {
+            const natanTutor = initNatanTutor({ debug: true });
+            (window as any).natanTutor = natanTutor;
+            console.log('🎓 Natan Tutor initialized successfully');
+        } catch (error) {
+            console.error('Padmin Main: Error initializing Natan Tutor:', error);
+        }
+
+        // 14. Setup FEGI-specific custom event listeners
         setupFegiCustomEvents();
 
         // console.log('Padmin Main: FEGI System initialized successfully.');

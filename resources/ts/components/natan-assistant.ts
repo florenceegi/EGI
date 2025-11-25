@@ -40,7 +40,7 @@ import { assistantOptions } from './assistant-options';
 import { appTranslate, getAppConfig } from '../config/appConfig';
 
 export class NatanAssistant {
-    private sections: {id: string, element: HTMLElement, suggestion: string}[] = [];
+    private sections: { id: string, element: HTMLElement, suggestion: string }[] = [];
     private currentSection: string | null = null;
     private suggestionTimeout: number | null = null;
     private isThinking: boolean = false;
@@ -71,12 +71,14 @@ export class NatanAssistant {
 
         // Ottieni riferimenti DOM principali - cerca prima i nuovi ID con suffisso, poi fallback ai vecchi
         this.toggleButton = document.getElementById('natan-assistant-toggle-desktop') ||
-                           document.getElementById('natan-assistant-toggle-mobile') ||
-                           document.getElementById('natan-assistant-toggle'); // fallback per compatibilità
+            document.getElementById('natan-assistant-toggle-mobile') ||
+            document.getElementById('natan-assistant-toggle-global') || // per layout globali
+            document.getElementById('natan-assistant-toggle'); // fallback per compatibilità
 
         this.menuElement = document.getElementById('natan-assistant-menu-desktop') ||
-                          document.getElementById('natan-assistant-menu-mobile') ||
-                          document.getElementById('natan-assistant-menu'); // fallback per compatibilità
+            document.getElementById('natan-assistant-menu-mobile') ||
+            document.getElementById('natan-assistant-menu-global') || // per layout globali
+            document.getElementById('natan-assistant-menu'); // fallback per compatibilità
 
         //// console.log('🎯 [INIT] Elements search results:', {
         //     desktopToggle: !!document.getElementById('natan-assistant-toggle-desktop'),
@@ -123,10 +125,10 @@ export class NatanAssistant {
             // Ignora click su elementi natan
             if (e.target instanceof Element &&
                 (e.target.closest('#natan-assistant-container') ||
-                e.target.closest('#natan-suggestion') ||
-                e.target.closest('#natan-butler-modal') ||
-                e.target.id === 'natan-assistant-toggle' ||
-                e.target.closest('#natan-assistant-toggle'))) {
+                    e.target.closest('#natan-suggestion') ||
+                    e.target.closest('#natan-butler-modal') ||
+                    e.target.id === 'natan-assistant-toggle' ||
+                    e.target.closest('#natan-assistant-toggle'))) {
                 return;
             }
 
@@ -297,13 +299,14 @@ export class NatanAssistant {
         // NUOVO: Aggiungi listener anche agli altri pulsanti se esistono
         const allButtons = [
             document.getElementById('natan-assistant-toggle-desktop'),
-            document.getElementById('natan-assistant-toggle-mobile')
+            document.getElementById('natan-assistant-toggle-mobile'),
+            document.getElementById('natan-assistant-toggle-global')
         ].filter(btn => btn && btn !== this.toggleButton);
 
         allButtons.forEach(button => {
             if (!button) return;
 
-            //console.log('🎯 [SETUP] Adding listener to additional button:', button.id);
+            console.log('🎯 [SETUP] Adding listener to additional button:', button.id);
 
             button.addEventListener('click', (e: Event) => {
                 const mouseEvent = e as MouseEvent;
@@ -314,6 +317,8 @@ export class NatanAssistant {
                     targetMenuId = 'natan-assistant-menu-desktop';
                 } else if (button.id.includes('mobile')) {
                     targetMenuId = 'natan-assistant-menu-mobile';
+                } else if (button.id.includes('global')) {
+                    targetMenuId = 'natan-assistant-menu-global';
                 }
 
                 const targetMenu = document.getElementById(targetMenuId);
@@ -537,8 +542,8 @@ export class NatanAssistant {
         // Ignora click su suggerimenti o toggle
         if (e.target instanceof Element &&
             (e.target.closest('#natan-suggestion') ||
-            e.target.id === 'natan-assistant-toggle' ||
-            e.target.closest('#natan-assistant-toggle'))) {
+                e.target.id === 'natan-assistant-toggle' ||
+                e.target.closest('#natan-assistant-toggle'))) {
             this.debug('Outside click on suggestion or toggle - ignoring');
             return;
         }
@@ -804,7 +809,7 @@ export class NatanAssistant {
                     } else {
                         // Fallback per spotlight basato su ID
                         this.debug('No spotlight selector in data-attribute, using fallback based on ID');
-                        switch(id) {
+                        switch (id) {
                             case 'what-is-egi':
                                 // Spotlight sulla prima collezione EGI
                                 this.spotlight('.collection-card-nft:first-child', 4000);
@@ -992,7 +997,7 @@ export class NatanAssistant {
                     return;
                 }
 
-                switch(action) {
+                switch (action) {
                     case 'spotlight':
                         this.debug('Executing spotlight action for:', target);
                         this.spotlight(target, 4000);
@@ -1236,7 +1241,7 @@ export class NatanAssistant {
                     return null;
                 }
             })
-            .filter(section => section !== null) as {id: string, element: HTMLElement, suggestion: string}[];
+            .filter(section => section !== null) as { id: string, element: HTMLElement, suggestion: string }[];
 
         this.debug('Initialized sections:', this.sections.length);
     }
@@ -1661,7 +1666,7 @@ export class NatanAssistant {
             const cb = document.getElementById('natan-auto-open-checkbox') as HTMLInputElement | null;
             if (cb) {
                 cb.checked = (window as any).natanAssistantAutoOpen !== false;
-                cb.addEventListener('change', function() {
+                cb.addEventListener('change', function () {
                     let csrf = (window as any).Laravel?.csrfToken;
                     if (!csrf) {
                         const meta = document.querySelector('meta[name="csrf-token"]');
@@ -2165,7 +2170,7 @@ export class NatanAssistant {
                 break;
 
             default:
-                //console.log('🎩 [NATAN BUTLER] Unknown action:', action);
+            //console.log('🎩 [NATAN BUTLER] Unknown action:', action);
         }
 
         // Segna che l'utente ha interagito con il maggiordomo

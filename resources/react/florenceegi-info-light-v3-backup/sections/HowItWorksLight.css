@@ -1,0 +1,166 @@
+/**
+ * How It Works Light Styles
+ */
+
+.how-light {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #0d0d14 0%, #0a0a0f 100%);
+}
+
+.how-light__container {
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Header */
+.how-light__header {
+    text-align: center;
+    margin-bottom: 64px;
+}
+
+.how-light__title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #d4af37, #f4e4bc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+}
+
+.how-light__subtitle {
+    font-size: 1.1rem;
+    color: #a0a0b0;
+}
+
+/* Steps Grid */
+.how-light__steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+/* Single Step */
+.how-light__step {
+    background: #12121a;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 20px;
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.how-light__step:hover {
+    border-color: rgba(212, 175, 55, 0.4);
+    transform: translateY(-6px);
+    box-shadow: 0 16px 50px rgba(212, 175, 55, 0.12);
+}
+
+.how-light__step-number {
+    position: absolute;
+    top: -16px;
+    left: 24px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #d4af37;
+    background: #0a0a0f;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.how-light__step-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.how-light__step-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.how-light__step-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(46, 139, 87, 0.2);
+    border: 1px solid rgba(46, 139, 87, 0.4);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #2e8b57;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.how-light__step-description {
+    font-size: 0.95rem;
+    color: #a0a0b0;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.how-light__step-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.how-light__step-details li {
+    font-size: 0.85rem;
+    color: #8a8a9a;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    padding-left: 20px;
+}
+
+.how-light__step-details li:last-child {
+    border-bottom: none;
+}
+
+.how-light__step-details li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #d4af37;
+}
+
+/* Connectors (desktop only) */
+.how-light__connectors {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .how-light__steps {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .how-light__step {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .how-light {
+        padding: 60px 16px;
+    }
+
+    .how-light__step {
+        padding: 24px 20px;
+    }
+
+    .how-light__step-icon {
+        font-size: 2.5rem;
+    }
+
+    .how-light__step-title {
+        font-size: 1.3rem;
+    }
+}

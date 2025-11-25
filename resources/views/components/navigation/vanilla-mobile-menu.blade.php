@@ -289,9 +289,7 @@
 
                 @endauth
 
-                <x-navigation.account-management-carousel
-                    :user="Auth::user()"
-                    variant="compact"
+                <x-navigation.account-management-carousel :user="Auth::user()" variant="compact"
                     container-class="mobile-card rounded-2xl border border-emerald-200/30 bg-gradient-to-br from-emerald-50 to-teal-50 p-4 dark:border-emerald-800/30 dark:from-emerald-900/20 dark:to-teal-900/20" />
 
                 {{-- Egili Wallet Card --}}
@@ -432,15 +430,25 @@
             <!-- Footer Section -->
             <div class="space-y-3 border-t border-gray-200 p-4 dark:border-gray-700">
                 <!-- Support & Legal -->
-                <div class="flex justify-center space-x-4">
+                <div class="flex flex-wrap justify-center gap-3">
                     <a href="{{ route('gdpr.privacy-policy') }}"
                         class="text-xs text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                         {{ __('menu.privacy_policy') }}
+                    </a>
+                    <a href="{{ route('gdpr.cookie-policy') }}"
+                        class="text-xs text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        {{ __('menu.cookie_policy') }}
                     </a>
                     <a href="{{ route('gdpr.terms') }}"
                         class="text-xs text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                         {{ __('menu.terms_of_service') }}
                     </a>
+                    @auth
+                        <a href="{{ route('gdpr.contact-dpo') }}"
+                            class="text-xs text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            {{ __('menu.contact_dpo') }}
+                        </a>
+                    @endauth
                 </div>
 
                 @auth

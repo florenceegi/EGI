@@ -1,0 +1,174 @@
+/**
+ * Ecosystem Light Styles
+ */
+
+.ecosystem-light {
+    padding: 100px 20px;
+    background: radial-gradient(
+            ellipse at center bottom,
+            rgba(46, 139, 87, 0.08) 0%,
+            transparent 50%
+        ),
+        linear-gradient(180deg, #0a0a0f 0%, #0d0d14 100%);
+}
+
+.ecosystem-light__container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Header */
+.ecosystem-light__header {
+    text-align: center;
+    margin-bottom: 56px;
+}
+
+.ecosystem-light__title {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #d4af37, #f4e4bc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+}
+
+.ecosystem-light__subtitle {
+    font-size: 1.1rem;
+    color: #a0a0b0;
+}
+
+/* Roles Grid */
+.ecosystem-light__roles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+/* Single Role */
+.ecosystem-light__role {
+    background: #12121a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.ecosystem-light__role:hover {
+    border-color: var(--role-color, rgba(212, 175, 55, 0.4));
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.ecosystem-light__role-icon {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+}
+
+.ecosystem-light__role-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.ecosystem-light__role-percentage {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #d4af37;
+    margin-bottom: 12px;
+}
+
+.ecosystem-light__role-description {
+    font-size: 0.9rem;
+    color: #8a8a9a;
+    line-height: 1.4;
+}
+
+/* Flow visualization */
+.ecosystem-light__flow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 48px;
+    padding: 20px;
+    background: rgba(212, 175, 55, 0.05);
+    border-radius: 12px;
+}
+
+.ecosystem-light__flow-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ecosystem-light__flow-label {
+    font-size: 0.95rem;
+    color: #a0a0b0;
+    font-weight: 500;
+}
+
+.ecosystem-light__flow-arrow {
+    color: #d4af37;
+    font-size: 1.2rem;
+}
+
+/* Impact message */
+.ecosystem-light__impact {
+    padding: 20px 24px;
+    background: rgba(46, 139, 87, 0.1);
+    border: 1px solid rgba(46, 139, 87, 0.25);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 1rem;
+    color: #a0a0b0;
+}
+
+.ecosystem-light__impact-icon {
+    font-size: 1.3rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .ecosystem-light__roles {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .ecosystem-light {
+        padding: 60px 16px;
+    }
+
+    .ecosystem-light__roles {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .ecosystem-light__flow {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .ecosystem-light__flow-arrow {
+        transform: rotate(90deg);
+    }
+
+    .ecosystem-light__impact {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+}

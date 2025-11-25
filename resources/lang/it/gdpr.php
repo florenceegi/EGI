@@ -910,18 +910,118 @@ return [
 
     // Footer
     'privacy_policy' => 'Informativa sulla Privacy',
+    'privacy_policy_description' => 'Informazioni su come raccogliamo, utilizziamo e proteggiamo i tuoi dati personali sulla piattaforma FlorenceEGI.',
+    'cookie_policy' => 'Policy Cookie',
+    'cookie_policy_description' => 'Informazioni sull\'utilizzo dei cookie e tecnologie di tracciamento sulla piattaforma FlorenceEGI.',
     'terms_of_service' => 'Termini di Servizio',
     'all_rights_reserved' => 'Tutti i diritti riservati.',
     'navigation_label' => 'Navigazione GDPR',
     'main_content_label' => 'Contenuto principale GDPR',
 
+    // Contact Information
+    'contact_information' => 'Informazioni di Contatto',
+    'data_controller' => 'Titolare del Trattamento',
+    'email' => 'Email',
+    'address' => 'Indirizzo',
+
+    // Acceptance Status
+    'your_acceptance_status' => 'Il tuo stato di accettazione',
+    'policy_accepted' => 'Policy accettata',
+    'policy_not_accepted' => 'Policy non ancora accettata',
+    'accepted_on' => 'Accettata il',
+    'accept_policy' => 'Accetta policy',
+    'must_accept_policy' => 'Devi accettare la policy per continuare',
+
+    // Version History
+    'version_history' => 'Cronologia Versioni',
+    'current' => 'Corrente',
+    'previous_versions' => 'Versioni Precedenti',
+    'view_version' => 'Visualizza versione',
+    'copy_policy_link' => 'Copia link policy',
+    'link_copied' => 'Link copiato negli appunti',
+
     // Version Information
     'current_version' => 'Versione Corrente',
-    'version' => 'Versione: 1.0',
-    'effective_date' => 'Data di Entrata in Vigore: 30 Set 2025',
-    'last_updated' => 'Ultimo Aggiornamento: 30 Set 2025, 17:41',
+    'version' => 'Versione',
+    'effective_date' => 'Data di Entrata in Vigore',
+    'last_updated' => 'Ultimo Aggiornamento',
 
     // Actions
     'download_pdf' => 'Scarica PDF',
     'print' => 'Stampa',
+
+    // ===================================================================
+    // DPO (Data Protection Officer) - GDPR Art. 37-39
+    // ===================================================================
+    'dpo_contact' => 'Contatta il DPO',
+    'dpo_contact_description' => 'Contatta il nostro Responsabile della Protezione dei Dati per qualsiasi domanda o richiesta relativa ai tuoi dati personali.',
+    'dpo_info_title' => 'Responsabile della Protezione dei Dati',
+    'dpo_info_subtitle' => 'Il DPO è il tuo punto di riferimento per tutte le questioni relative alla privacy e alla protezione dei dati.',
+    'dpo_name' => 'Nome/Ruolo',
+    'dpo_email_label' => 'Email',
+    'dpo_phone' => 'Telefono',
+    'dpo_response_time' => 'Tempo di risposta stimato',
+    'dpo_office_hours' => 'Orari di disponibilità',
+    'dpo_languages' => 'Lingue supportate',
+    'dpo_external_notice' => 'DPO Esterno',
+    'dpo_external_service' => 'Servizio DPO esternalizzato',
+
+    // DPO Rights Section
+    'dpo_your_rights' => 'I Tuoi Diritti GDPR',
+    'dpo_rights_intro' => 'Ai sensi del GDPR (Regolamento UE 2016/679) hai i seguenti diritti:',
+    'right_access' => 'Diritto di Accesso (Art. 15)',
+    'right_access_desc' => 'Ottenere conferma del trattamento e copia dei tuoi dati',
+    'right_rectification' => 'Diritto di Rettifica (Art. 16)',
+    'right_rectification_desc' => 'Correggere dati inesatti o incompleti',
+    'right_erasure' => 'Diritto alla Cancellazione (Art. 17)',
+    'right_erasure_desc' => 'Richiedere la cancellazione dei tuoi dati ("diritto all\'oblio")',
+    'right_portability' => 'Diritto alla Portabilità (Art. 20)',
+    'right_portability_desc' => 'Ricevere i tuoi dati in formato strutturato e trasferibile',
+    'right_object' => 'Diritto di Opposizione (Art. 21)',
+    'right_object_desc' => 'Opporti al trattamento dei tuoi dati per motivi legittimi',
+
+    // DPO Form
+    'dpo_send_message' => 'Invia un Messaggio al DPO',
+    'dpo_form_intro' => 'Utilizza questo modulo per contattare direttamente il nostro DPO. Riceverai una risposta entro i tempi indicati.',
+    'dpo_request_type' => 'Tipo di Richiesta',
+    'dpo_select_request_type' => 'Seleziona il tipo di richiesta...',
+    'dpo_subject' => 'Oggetto',
+    'dpo_subject_placeholder' => 'Inserisci l\'oggetto della tua richiesta',
+    'dpo_priority' => 'Priorità',
+    'dpo_message' => 'Messaggio',
+    'dpo_message_placeholder' => 'Descrivi dettagliatamente la tua richiesta o domanda...',
+    'dpo_message_hint' => 'Minimo 10 caratteri, massimo 2000 caratteri.',
+    'dpo_send_button' => 'Invia Messaggio',
+    'dpo_gdpr_notice' => 'Il tuo messaggio sarà trattato in conformità con il GDPR. I dati forniti saranno utilizzati esclusivamente per gestire la tua richiesta.',
+    'dpo_message_sent_successfully' => 'Il tuo messaggio è stato inviato con successo al DPO. Riceverai una risposta entro i tempi indicati.',
+
+    // Request Types
+    'request_type_information' => 'Richiesta di Informazioni',
+    'request_type_complaint' => 'Reclamo',
+    'request_type_access_request' => 'Richiesta di Accesso ai Dati',
+    'request_type_rectification' => 'Richiesta di Rettifica Dati',
+    'request_type_erasure' => 'Richiesta di Cancellazione (Diritto all\'Oblio)',
+    'request_type_restriction' => 'Richiesta di Limitazione del Trattamento',
+    'request_type_portability' => 'Richiesta di Portabilità dei Dati',
+    'request_type_objection' => 'Opposizione al Trattamento',
+    'request_type_other' => 'Altro',
+
+    // Priority Levels
+    'priority_low' => 'Bassa',
+    'priority_normal' => 'Normale',
+    'priority_high' => 'Alta',
+    'priority_urgent' => 'Urgente',
+    'response_within' => 'risposta entro',
+
+    // Message Status
+    'dpo_your_messages' => 'I Tuoi Messaggi',
+    'dpo_status_sent' => 'Inviato',
+    'dpo_status_read' => 'Letto',
+    'dpo_status_answered' => 'Risposto',
+    'dpo_status_closed' => 'Chiuso',
+    'dpo_response' => 'Risposta del DPO',
+
+    // Supervisory Authority
+    'dpo_supervisory_authority' => 'Autorità di Controllo',
+    'dpo_supervisory_intro' => 'Hai sempre il diritto di presentare un reclamo all\'Autorità Garante per la Protezione dei Dati Personali se ritieni che i tuoi diritti non siano stati rispettati.',
 ];

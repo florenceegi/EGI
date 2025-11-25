@@ -53,6 +53,12 @@
         ? route('creator.onboarding.summary')
         : null;
 
+    // Check if user has a wallet in the wallets table
+    $walletRecord = $currentUser ? \App\Models\Wallet::where('user_id', $currentUser->id)->first() : null;
+    $walletAddress = $walletRecord?->wallet;
+    $hasValidWallet = $walletAddress && is_string($walletAddress) && strlen($walletAddress) === 58;
+    $shortWallet = $hasValidWallet ? substr($walletAddress, 0, 6) . '...' . substr($walletAddress, -4) : null;
+
     $pspActions = [
         [
             'type' => 'button',
@@ -75,7 +81,7 @@
         'label' => __('menu.account_statements'),
         'href' => route('account.statements'),
     ];
-    
+
     $pspActions[] = [
         'type' => 'link',
         'label' => __('menu.invoices'),
@@ -88,6 +94,37 @@
         'href' => 'mailto:support@florenceegi.it',
         'is_external' => true,
     ];
+
+    // Wallet actions slide (new!)
+    $walletActions = [];
+
+    // Get current network explorer URL
+    $algorandNetwork = config('algorand.network', 'testnet');
+    $explorerUrl = config("algorand.{$algorandNetwork}.explorer_url", 'https://testnet.explorer.perawallet.app');
+
+    if ($hasValidWallet) {
+        // User has valid Algorand wallet
+        $walletActions[] = [
+            'type' => 'link',
+            'label' => '✅ ' . __('menu.wallet_status_connected') . ': ' . $shortWallet,
+            'href' => $explorerUrl . '/address/' . $walletAddress,
+            'is_external' => true,
+        ];
+        // Add wallet redemption button - THE MAIN FEATURE
+        $walletActions[] = [
+            'type' => 'link',
+            'label' => '🔐 ' . __('menu.wallet_redeem'),
+            'href' => route('wallet.redemption'),
+        ];
+    } else {
+        // User has no wallet - show connect button
+        $walletActions[] = [
+            'type' => 'button',
+            'label' => '🔗 ' . __('menu.wallet_connect_pera'),
+            'variant' => 'primary',
+            'action' => 'connect-pera-wallet',
+        ];
+    }
 
     $accountSlides = [
         [
@@ -108,7 +145,7 @@
             'key' => 'psp',
             'title' => __('menu.psp_section_title'),
             'description' => __('menu.psp_section_hint'),
-            'actions' => $pspActions,
+            'actions' => array_merge($pspActions, $walletActions),
         ],
     ];
 
@@ -172,9 +209,17 @@
                         </div>
                         <div class="navigation-account-carousel__actions">
                             @foreach ($slide['actions'] as $action)
-                                @if (($action['type'] ?? 'link') === 'button')
+                                @if (in_array($action['type'] ?? 'link', ['badge', 'info']))
+                                    {{-- Badge/Info display (wallet status) --}}
+                                    <div
+                                        class="navigation-account-carousel__badge navigation-account-carousel__badge--{{ $action['variant'] ?? 'default' }}">
+                                        <span class="navigation-account-carousel__badge-dot"></span>
+                                        <span>{{ $action['label'] }}</span>
+                                    </div>
+                                @elseif (($action['type'] ?? 'link') === 'button')
                                     <button type="button"
                                         @if (($action['action'] ?? null) === 'wallet') onclick="window.openWalletWelcomeModalSafe && window.openWalletWelcomeModalSafe();" @endif
+                                        @if (in_array($action['action'] ?? null, ['connect-wallet', 'connect-pera-wallet'])) onclick="document.dispatchEvent(new CustomEvent('openRealWalletModal'));" @endif
                                         class="navigation-account-carousel__action {{ ($action['variant'] ?? null) === 'primary' ? 'navigation-account-carousel__action--primary' : '' }}">
                                         <span>{{ $action['label'] }}</span>
                                         <span class="navigation-account-carousel__action-icon">
@@ -413,6 +458,68 @@
             color: #ecfdf5;
             border-color: transparent;
             box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Badge styles for wallet status */
+        .navigation-account-carousel__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .navigation-account-carousel__badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .navigation-account-carousel__badge--success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #047857;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .navigation-account-carousel__badge--success .navigation-account-carousel__badge-dot {
+            background: #10b981;
+        }
+
+        .navigation-account-carousel__badge--warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #b45309;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .navigation-account-carousel__badge--warning .navigation-account-carousel__badge-dot {
+            background: #f59e0b;
+        }
+
+        .dark .navigation-account-carousel__badge--success {
+            background: rgba(16, 185, 129, 0.25);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .dark .navigation-account-carousel__badge--warning {
+            background: rgba(245, 158, 11, 0.25);
+            color: #fbbf24;
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
         }
 
         .navigation-account-carousel__action-icon {

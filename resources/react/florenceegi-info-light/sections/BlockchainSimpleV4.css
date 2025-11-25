@@ -1,0 +1,264 @@
+/**
+ * BlockchainSimpleV4 Styles
+ */
+
+.blockchain-v4 {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #0f0f18 0%, #0d0d14 100%);
+}
+
+.blockchain-v4__container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.blockchain-v4__title {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.blockchain-v4__subtitle {
+    font-size: 1.3rem;
+    color: #d4af37;
+    text-align: center;
+    margin-bottom: 40px;
+    font-weight: 500;
+}
+
+/* Features */
+.blockchain-v4__features {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 50px;
+}
+
+.blockchain-v4__feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50px;
+}
+
+.blockchain-v4__feature-icon {
+    font-size: 1.4rem;
+}
+
+.blockchain-v4__feature-text {
+    font-size: 1rem;
+    color: #e0e0e0;
+}
+
+.blockchain-v4__feature-text--strike {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* Expert Section */
+.blockchain-v4__expert-section {
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.blockchain-v4__expert-question {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.blockchain-v4__expert-icon {
+    font-size: 1.5rem;
+}
+
+/* Toggle */
+.blockchain-v4__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.blockchain-v4__toggle:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.blockchain-v4__toggle--active {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+.blockchain-v4__toggle-label {
+    font-size: 1rem;
+    color: #c0c0c0;
+}
+
+.blockchain-v4__toggle-switch {
+    width: 44px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.3s ease;
+}
+
+.blockchain-v4__toggle-switch--on {
+    background: #6366f1;
+}
+
+.blockchain-v4__toggle-dot {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.blockchain-v4__toggle-switch--on .blockchain-v4__toggle-dot {
+    transform: translateX(20px);
+}
+
+/* Expert Features */
+.blockchain-v4__expert-features {
+    margin-top: 24px;
+    text-align: left;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.blockchain-v4__expert-intro {
+    color: #a0a0b0;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.blockchain-v4__expert-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.blockchain-v4__expert-list li {
+    padding: 12px 16px;
+    background: rgba(99, 102, 241, 0.15);
+    border-radius: 10px;
+    color: #818cf8;
+    font-size: 0.95rem;
+}
+
+/* Comparison */
+.blockchain-v4__comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.blockchain-v4__comparison-side {
+    padding: 30px;
+    border-radius: 16px;
+}
+
+.blockchain-v4__comparison-side--them {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.blockchain-v4__comparison-side--us {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.blockchain-v4__comparison-side h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.blockchain-v4__comparison-side--them h4 {
+    color: #f87171;
+}
+
+.blockchain-v4__comparison-side--us h4 {
+    color: #34d399;
+}
+
+.blockchain-v4__comparison-side ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.blockchain-v4__comparison-side li {
+    font-size: 0.95rem;
+    color: #c0c0c0;
+    line-height: 1.5;
+}
+
+.blockchain-v4__comparison-side--us li {
+    color: #d0d0d8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .blockchain-v4 {
+        padding: 60px 16px;
+    }
+
+    .blockchain-v4__features {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .blockchain-v4__feature {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .blockchain-v4__comparison {
+        grid-template-columns: 1fr;
+    }
+
+    .blockchain-v4__expert-list {
+        grid-template-columns: 1fr;
+    }
+}

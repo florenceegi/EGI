@@ -2,20 +2,20 @@
 
 :root {
     /* FlorenceEGI Brand Colors */
-    --oro-fiorentino: #D4A574;
-    --verde-rinascita: #2D5016;
-    --blu-algoritmo: #1B365D;
-    --grigio-pietra: #6B6B6B;
-    --rosso-urgenza: #C13120;
-    --arancio-energia: #E67E22;
-    --viola-innovazione: #8E44AD;
+    --oro-fiorentino: #d4a574;
+    --verde-rinascita: #2d5016;
+    --blu-algoritmo: #1b365d;
+    --grigio-pietra: #6b6b6b;
+    --rosso-urgenza: #c13120;
+    --arancio-energia: #e67e22;
+    --viola-innovazione: #8e44ad;
 }
 
 /* Container and Layout */
 .gdpr-container {
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     min-height: 100vh;
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: "Source Sans Pro", sans-serif;
 }
 
 .gdpr-header {
@@ -28,7 +28,8 @@
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(212, 165, 116, 0.2);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 /* Tab Navigation */
@@ -42,7 +43,7 @@
 
 .gdpr-tab-button:hover {
     color: #374151;
-    border-bottom-color: #D1D5DB;
+    border-bottom-color: #d1d5db;
 }
 
 .gdpr-tab-button.active {
@@ -158,7 +159,7 @@
 
 /* Typography */
 .gdpr-title {
-    font-family: 'Playfair Display', serif;
+    font-family: "Playfair Display", serif;
     color: var(--blu-algoritmo);
     font-weight: 600;
 }
@@ -171,6 +172,48 @@
 .gdpr-text {
     color: #374151;
     line-height: 1.6;
+}
+
+/* Policy Content Tables - Fix for Markdown tables */
+.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background-color: white;
+}
+
+.prose thead {
+    background-color: #f3f4f6;
+}
+
+.prose th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #111827 !important;
+    border-bottom: 2px solid #d1d5db;
+}
+
+.prose td {
+    padding: 0.75rem 1rem;
+    color: #374151 !important;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.prose tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* Ensure table text is always visible */
+.prose table,
+.prose table th,
+.prose table td,
+.prose table tr {
+    color: #374151 !important;
+}
+
+.prose table th {
+    color: #111827 !important;
 }
 
 /* Link colors */
@@ -221,6 +264,16 @@
     .gdpr-header {
         background: rgba(30, 41, 59, 0.95);
         border-bottom-color: rgba(212, 165, 116, 0.3);
+    }
+
+    /* Table dark mode fix - Force light background for tables in policy content */
+    .prose table {
+        background-color: #ffffff !important;
+    }
+
+    .prose table th,
+    .prose table td {
+        color: #374151 !important;
     }
 }
 

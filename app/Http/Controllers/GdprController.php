@@ -1127,7 +1127,7 @@ class GdprController extends Controller {
     private function getOnChainData(\App\Models\User $user): ?array {
         // Use getAttributes to bypass the wallet accessor
         $walletAddress = $user->getAttributes()['wallet'] ?? null;
-        
+
         if (empty($walletAddress)) {
             return null;
         }
@@ -1681,6 +1681,129 @@ class GdprController extends Controller {
             ]);
         } catch (\Exception $e) {
             return $this->errorManager->handle('GDPR_PRIVACY_POLICY_PAGE_FAILED', [
+                'user_id' => Auth::id(),
+                'error_message' => $e->getMessage()
+            ], $e);
+        }
+    }
+
+    /**
+     * Display the Cookie Policy page
+     *
+     * @return View
+     * @privacy-safe Public information display with structured content
+     */
+    public function cookiePolicy(): View {
+        try {
+            $user = FegiAuth::user();
+
+            $this->logger->info('GDPR: Accessing cookie policy page', [
+                'user_id' => $user?->id,
+                'log_category' => 'GDPR_ACCESS'
+            ]);
+
+            // Get current active cookie policy
+            $currentPolicy = PrivacyPolicy::active()
+                ->documentType('cookie_policy')
+                ->language(app()->getLocale())
+                ->first();
+
+            // Fallback to default locale if not found
+            if (!$currentPolicy) {
+                $currentPolicy = PrivacyPolicy::active()
+                    ->documentType('cookie_policy')
+                    ->language(config('app.fallback_locale', 'it'))
+                    ->firstOrFail();
+            }
+
+            // Parse policy content for sectioned display
+            $policyContent = $this->parsePolicyContent($currentPolicy);
+
+            if ($user) {
+                $this->auditService->logUserAction($user, 'cookie_policy_viewed', [], GdprActivityCategory::GDPR_ACTIONS);
+            }
+
+            // Version history for cookie policy
+            $versionHistory = PrivacyPolicy::where('document_type', 'cookie_policy')
+                ->where('language', app()->getLocale())
+                ->orderBy('effective_date', 'desc')
+                ->orderBy('version', 'desc')
+                ->get();
+
+            return view('gdpr.cookie-policy', [
+                'user' => $user,
+                'currentPolicy' => $currentPolicy,
+                'versionHistory' => $versionHistory,
+                'policyData' => $currentPolicy,
+                'policyContent' => $policyContent
+            ]);
+        } catch (\Exception $e) {
+            return $this->errorManager->handle('GDPR_COOKIE_POLICY_PAGE_FAILED', [
+                'user_id' => Auth::id(),
+                'error_message' => $e->getMessage()
+            ], $e);
+        }
+    }
+
+    /**
+     * Display the Terms of Service page
+     *
+     * @return View
+     * @privacy-safe Public information display with structured content
+     */
+    public function termsOfService(): View {
+        try {
+            $user = FegiAuth::user();
+            $userType = $user?->usertype ?? 'collector';
+            $locale = app()->getLocale();
+
+            $this->logger->info('GDPR: Accessing terms of service page', [
+                'user_id' => $user?->id,
+                'user_type' => $userType,
+                'locale' => $locale,
+                'log_category' => 'GDPR_ACCESS'
+            ]);
+
+            // Use LegalContentService to get terms content
+            $legalContentService = app(\App\Services\Gdpr\LegalContentService::class);
+            $termsContent = $legalContentService->getCurrentTermsContent($userType, $locale);
+            $currentVersion = $legalContentService->getCurrentVersionString();
+
+            if (!$termsContent) {
+                // Fallback to default locale
+                $termsContent = $legalContentService->getCurrentTermsContent($userType, config('app.fallback_locale', 'it'));
+            }
+
+            // Convert articles array to Collection for enhanced view manipulation
+            if (isset($termsContent['articles'])) {
+                $termsContent['articles'] = collect($termsContent['articles']);
+            }
+
+            if ($user) {
+                $this->auditService->logUserAction($user, 'terms_of_service_viewed', [
+                    'user_type' => $userType,
+                    'version' => $currentVersion
+                ], GdprActivityCategory::GDPR_ACTIONS);
+            }
+
+            // Check current user's consent status if authenticated
+            $hasAcceptedCurrent = $user
+                ? $this->consentService->hasAcceptedCurrentTerms($user)
+                : false;
+
+            $consentStatus = $legalContentService->getUserConsentStatus($userType, $locale);
+
+            return view('gdpr.legal.terms', [
+                'user' => $user,
+                'userType' => $userType,
+                'locale' => $locale,
+                'termsContent' => $termsContent,
+                'currentVersion' => $currentVersion,
+                'hasAcceptedCurrent' => $hasAcceptedCurrent,
+                'consentStatus' => $consentStatus
+            ]);
+        } catch (\Exception $e) {
+            return $this->errorManager->handle('GDPR_TERMS_PAGE_FAILED', [
                 'user_id' => Auth::id(),
                 'error_message' => $e->getMessage()
             ], $e);

@@ -1,0 +1,83 @@
+/**
+ * V4 Wheel Page Styles
+ * Stili per la pagina con navigazione WheelMenu
+ */
+
+.informative-page-light--v4-wheel {
+    min-height: 100vh;
+    background: #0a0a0f;
+}
+
+/* Content area when section is selected */
+.v4-wheel__content {
+    animation: contentFadeIn 0.5s ease-out;
+}
+
+@keyframes contentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Navigation footer */
+.v4-wheel__nav-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 40px;
+    background: rgba(15, 15, 24, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.v4-wheel__nav-prev,
+.v4-wheel__nav-next {
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #c0c0c8;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.v4-wheel__nav-prev:hover:not(:disabled),
+.v4-wheel__nav-next:hover:not(:disabled) {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: rgba(212, 175, 55, 0.3);
+    color: #ffffff;
+}
+
+.v4-wheel__nav-prev:disabled,
+.v4-wheel__nav-next:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.v4-wheel__nav-indicator {
+    font-size: 0.9rem;
+    color: #707078;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .v4-wheel__nav-footer {
+        padding: 16px 20px;
+    }
+
+    .v4-wheel__nav-prev,
+    .v4-wheel__nav-next {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+}

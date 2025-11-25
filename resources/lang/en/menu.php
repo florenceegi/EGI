@@ -26,18 +26,22 @@ return [
     // Navigation
     'dashboard' => 'Dashboard',
     'manage_account' => 'Manage Account',
-    'psp_section_title' => 'Digital PSP Account',
-    'psp_section_hint' => 'Connect your Stripe or PayPal account to enable card payments. You can reopen the onboarding at any time.',
+    'psp_section_title' => 'PSP Account & Wallet',
+    'psp_section_hint' => 'Manage your payment methods and Algorand wallet for NFT transactions.',
     'psp_open_setup' => 'Open digital account',
-    'psp_onboarding_summary' => 'Open onboarding summary',
+    'psp_onboarding_summary' => 'View onboarding summary',
     'account_statements' => 'Account Statements',
     'invoices' => 'Invoices',
     'psp_request_support' => 'Need help? Contact support',
-    'psp_section_title' => 'Digital payout account',
-    'psp_section_hint' => 'Connect your Stripe or PayPal merchant account to unlock card payments. You can reopen onboarding at any time.',
-    'psp_open_setup' => 'Open digital account',
-    'psp_onboarding_summary' => 'View onboarding summary',
-    'psp_request_support' => 'Need help? Contact support',
+
+    // Algorand Wallet
+    'wallet_connect_pera' => 'Connect Pera Wallet',
+    'wallet_redeem' => 'Redeem Wallet',
+    'wallet_section_title' => 'Algorand Wallet',
+    'wallet_status_connected' => 'Wallet connected',
+    'wallet_status_not_connected' => 'No wallet connected',
+    'wallet_view_on_explorer' => 'View on Explorer',
+
     'profile_overview' => 'Profile Overview',
     'edit_personal_data' => 'Edit Personal Data',
     'creator_onboarding' => 'Creator onboarding summary',
@@ -51,6 +55,14 @@ return [
     'navigation' => 'Navigation',
     'activity' => 'Activity',
     'user_management' => 'User Management',
+    'activity_log' => 'Activity Log',
+    'export_data' => 'Export Data',
+
+    // Legal & GDPR
+    'privacy_policy' => 'Privacy Policy',
+    'cookie_policy' => 'Cookie Policy',
+    'terms_of_service' => 'Terms of Service',
+    'contact_dpo' => 'Contact DPO',
 
     // PA Enterprise
     'pa' => 'PA Enterprise Management',
@@ -81,7 +93,7 @@ return [
     'egis' => 'Cultural Heritage',
     'heritage_list' => 'Cultural Assets List',
     'heritage_create' => 'Upload Asset',
-    
+
     // SuperAdmin
     'superadmin' => 'SuperAdmin Management',
     'superadmin_overview' => 'SuperAdmin Dashboard',
@@ -102,7 +114,7 @@ return [
     'superadmin_feature_pricing' => 'Feature Pricing',
     'admin_promotions' => 'Promotions Management',
     'admin_featured' => 'Featured EGI Calendar',
-    
+
     // Padmin Analyzer Menu
     'superadmin_padmin' => 'Padmin Analyzer',
     'superadmin_padmin_dashboard' => 'Padmin Dashboard',

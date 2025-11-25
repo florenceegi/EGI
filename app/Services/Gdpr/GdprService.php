@@ -25,8 +25,7 @@ use Carbon\Carbon;
  * @version 1.0.0
  * @date 2025-05-22
  */
-class GdprService
-{
+class GdprService {
     /**
      * Logger instance for audit trail
      * @var UltraLogManager
@@ -60,8 +59,7 @@ class GdprService
      * @return array
      * @privacy-safe Returns field configuration only
      */
-    public function getEditableUserFields(): array
-    {
+    public function getEditableUserFields(): array {
         return [
             'name' => [
                 'type' => 'string',
@@ -101,8 +99,7 @@ class GdprService
      * @return array
      * @privacy-safe Returns summary of immutable data
      */
-    public function getOnChainDataSummary(User $user): array
-    {
+    public function getOnChainDataSummary(User $user): array {
         try {
             $this->logger->info('GDPR Service: Getting on-chain data summary', [
                 'user_id' => $user->id,
@@ -117,7 +114,6 @@ class GdprService
                 'immutable_note' => 'Data stored on blockchain cannot be deleted, only made inaccessible from this platform',
                 'last_blockchain_activity' => $this->getLastBlockchainActivity($user)
             ];
-
         } catch (\Exception $e) {
             $this->logger->error('GDPR Service: Failed to get on-chain data summary', [
                 'user_id' => $user->id,
@@ -137,8 +133,7 @@ class GdprService
      * @return array
      * @privacy-safe Updates only provided user's data
      */
-    public function updateUserPersonalData(User $user, array $data): array
-    {
+    public function updateUserPersonalData(User $user, array $data): array {
         try {
             $this->logger->info('GDPR Service: Updating user personal data', [
                 'user_id' => $user->id,
@@ -182,7 +177,6 @@ class GdprService
                 'previous' => $previous,
                 'updated_fields' => array_keys($changes)
             ];
-
         } catch (\Exception $e) {
             $this->logger->error('GDPR Service: Failed to update personal data', [
                 'user_id' => $user->id,
@@ -202,8 +196,7 @@ class GdprService
      * @return GdprRequest
      * @privacy-safe Creates request for authenticated user only
      */
-    public function createRectificationRequest(User $user, array $requestData): GdprRequest
-    {
+    public function createRectificationRequest(User $user, array $requestData): GdprRequest {
         try {
             $this->logger->info('GDPR Service: Creating rectification request', [
                 'user_id' => $user->id,
@@ -224,7 +217,6 @@ class GdprService
                 ],
                 'notes' => 'Rectification request submitted by user'
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('GDPR Service: Failed to create rectification request', [
                 'user_id' => $user->id,
@@ -242,8 +234,7 @@ class GdprService
      * @return array
      * @privacy-safe Returns processing type definitions
      */
-    public function getProcessingTypes(): array
-    {
+    public function getProcessingTypes(): array {
         return [
             'marketing' => [
                 'name' => 'Marketing Communications',
@@ -285,8 +276,7 @@ class GdprService
      * @return array
      * @privacy-safe Returns user's own limitations only
      */
-    public function getUserProcessingLimitations(User $user): array
-    {
+    public function getUserProcessingLimitations(User $user): array {
         try {
             $limitations = $user->processingLimitations ?? [];
 
@@ -298,7 +288,6 @@ class GdprService
                 'effective_date' => $user->limitations_updated_at,
                 'last_updated' => $user->updated_at
             ];
-
         } catch (\Exception $e) {
             $this->logger->error('GDPR Service: Failed to get processing limitations', [
                 'user_id' => $user->id,
@@ -318,8 +307,7 @@ class GdprService
      * @return array
      * @privacy-safe Updates limitations for authenticated user only
      */
-    public function updateProcessingLimitations(User $user, array $limitations): array
-    {
+    public function updateProcessingLimitations(User $user, array $limitations): array {
         try {
             $this->logger->info('GDPR Service: Updating processing limitations', [
                 'user_id' => $user->id,
@@ -352,7 +340,6 @@ class GdprService
                 'current' => $limitations,
                 'effective_date' => now()
             ];
-
         } catch (\Exception $e) {
             $this->logger->error('GDPR Service: Failed to update processing limitations', [
                 'user_id' => $user->id,
@@ -371,8 +358,7 @@ class GdprService
      * @return array
      * @privacy-safe Returns deletion info for authenticated user
      */
-    public function getDeletionInfo(User $user): array
-    {
+    public function getDeletionInfo(User $user): array {
         try {
             $this->logger->info('GDPR Service: Getting deletion info', [
                 'user_id' => $user->id,
@@ -403,7 +389,6 @@ class GdprService
                     'recovery' => 'Account cannot be recovered after deletion'
                 ]
             ];
-
         } catch (\Exception $e) {
             $this->logger->error('GDPR Service: Failed to get deletion info', [
                 'user_id' => $user->id,
@@ -423,8 +408,7 @@ class GdprService
      * @return GdprRequest
      * @privacy-safe Creates deletion request for authenticated user
      */
-    public function createDeletionRequest(User $user, array $requestData): GdprRequest
-    {
+    public function createDeletionRequest(User $user, array $requestData): GdprRequest {
         try {
             $this->logger->warning('GDPR Service: Creating deletion request', [
                 'user_id' => $user->id,
@@ -445,7 +429,6 @@ class GdprService
                 ],
                 'notes' => 'Account deletion request - requires manual review'
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('GDPR Service: Failed to create deletion request', [
                 'user_id' => $user->id,
@@ -464,8 +447,7 @@ class GdprService
      * @return array
      * @privacy-safe Deletes only authenticated user's account
      */
-    public function executeAccountDeletion(User $user): array
-    {
+    public function executeAccountDeletion(User $user): array {
         try {
             $userId = $user->id;
             $userEmail = $user->email;
@@ -525,7 +507,6 @@ class GdprService
             });
 
             return $deletionResults;
-
         } catch (\Exception $e) {
             $this->logger->critical('GDPR Service: Account deletion failed', [
                 'user_id' => $user->id,
@@ -544,8 +525,7 @@ class GdprService
      * @return Collection
      * @privacy-safe Returns user's own reports only
      */
-    public function getUserBreachReports(User $user): Collection
-    {
+    public function getUserBreachReports(User $user): Collection {
         return $user->breachReports()->orderBy('created_at', 'desc')->get();
     }
 
@@ -555,8 +535,7 @@ class GdprService
      * @return array
      * @privacy-safe Returns category definitions
      */
-    public function getBreachReportCategories(): array
-    {
+    public function getBreachReportCategories(): array {
         return [
             'data_leak' => [
                 'name' => 'Data Leak',
@@ -594,8 +573,7 @@ class GdprService
      * @return BreachReport
      * @privacy-safe Creates report for authenticated user
      */
-    public function createBreachReport(User $user, array $reportData): BreachReport
-    {
+    public function createBreachReport(User $user, array $reportData): BreachReport {
         try {
             $this->logger->warning('GDPR Service: Creating breach report', [
                 'user_id' => $user->id,
@@ -618,7 +596,6 @@ class GdprService
                     'submitted_at' => now()->toISOString()
                 ]
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('GDPR Service: Failed to create breach report', [
                 'user_id' => $user->id,
@@ -636,8 +613,7 @@ class GdprService
      * @return PrivacyPolicy
      * @privacy-safe Returns public policy information
      */
-    public function getCurrentPrivacyPolicy(): PrivacyPolicy
-    {
+    public function getCurrentPrivacyPolicy(): PrivacyPolicy {
         return PrivacyPolicy::where('is_active', true)->latest('version')->first()
             ?? new PrivacyPolicy(['version' => '1.0', 'content' => 'Policy pending...']);
     }
@@ -648,8 +624,7 @@ class GdprService
      * @return Collection
      * @privacy-safe Returns public policy version history
      */
-    public function getPrivacyPolicyVersions(): Collection
-    {
+    public function getPrivacyPolicyVersions(): Collection {
         return PrivacyPolicy::orderBy('version', 'desc')->get();
     }
 
@@ -659,8 +634,7 @@ class GdprService
      * @return array
      * @privacy-safe Returns public processing information
      */
-    public function getDataProcessingInformation(): array
-    {
+    public function getDataProcessingInformation(): array {
         return [
             'data_controller' => [
                 'name' => config('app.name'),
@@ -704,8 +678,7 @@ class GdprService
      * @return array
      * @privacy-safe Returns public third-party information
      */
-    public function getThirdPartyServices(): array
-    {
+    public function getThirdPartyServices(): array {
         return [
             'analytics' => [
                 'name' => 'Analytics Provider',
@@ -734,16 +707,20 @@ class GdprService
      * @return array
      * @privacy-safe Returns public DPO contact information
      */
-    public function getDpoContactInformation(): array
-    {
+    public function getDpoContactInformation(): array {
         return [
-            'name' => config('gdpr.dpo_name', 'Data Protection Officer'),
-            'email' => config('gdpr.dpo_email', 'dpo@' . config('app.domain')),
-            'phone' => config('gdpr.dpo_phone'),
-            'address' => config('gdpr.dpo_address'),
-            'response_time' => config('gdpr.response_time', '72 hours'),
-            'languages' => config('gdpr.supported_languages', ['en', 'it']),
-            'office_hours' => config('gdpr.office_hours', 'Monday-Friday 9:00-17:00 CET')
+            'name' => config('gdpr.dpo.name', 'Data Protection Officer'),
+            'email' => config('gdpr.dpo.email', 'dpo@florenceegi.com'),
+            'phone' => config('gdpr.dpo.phone'),
+            'address' => config('gdpr.dpo.address'),
+            'response_time' => config('gdpr.dpo.response_time', '72 hours'),
+            'max_response_time' => config('gdpr.dpo.max_response_time', '30 days'),
+            'languages' => config('gdpr.dpo.supported_languages', ['en', 'it']),
+            'office_hours' => config('gdpr.dpo.office_hours', 'Monday-Friday 9:00-17:00 CET'),
+            'is_external' => config('gdpr.dpo.is_external', false),
+            'external_company' => config('gdpr.dpo.external_company'),
+            'priority_levels' => config('gdpr.dpo.priority_levels', []),
+            'request_types' => config('gdpr.dpo.request_types', []),
         ];
     }
 
@@ -754,8 +731,7 @@ class GdprService
      * @return Collection
      * @privacy-safe Returns user's own messages only
      */
-    public function getUserDpoMessages(User $user): Collection
-    {
+    public function getUserDpoMessages(User $user): Collection {
         return $user->dpoMessages()->orderBy('created_at', 'desc')->get();
     }
 
@@ -767,8 +743,7 @@ class GdprService
      * @return DpoMessage
      * @privacy-safe Creates message for authenticated user
      */
-    public function sendMessageToDpo(User $user, array $messageData): DpoMessage
-    {
+    public function sendMessageToDpo(User $user, array $messageData): DpoMessage {
         try {
             $this->logger->info('GDPR Service: Sending message to DPO', [
                 'user_id' => $user->id,
@@ -790,7 +765,6 @@ class GdprService
                     'submitted_at' => now()->toISOString()
                 ]
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('GDPR Service: Failed to send DPO message', [
                 'user_id' => $user->id,
@@ -813,8 +787,7 @@ class GdprService
      * @return int
      * @privacy-safe Counts user's blockchain interactions
      */
-    private function getBlockchainTransactionCount(User $user): int
-    {
+    private function getBlockchainTransactionCount(User $user): int {
         // Implementation depends on your blockchain integration
         return $user->blockchainTransactions()->count() ?? 0;
     }
@@ -826,8 +799,7 @@ class GdprService
      * @return int
      * @privacy-safe Counts user's smart contract interactions
      */
-    private function getSmartContractInteractions(User $user): int
-    {
+    private function getSmartContractInteractions(User $user): int {
         // Implementation depends on your smart contract integration
         return $user->smartContractInteractions()->count() ?? 0;
     }
@@ -839,8 +811,7 @@ class GdprService
      * @return Carbon|null
      * @privacy-safe Returns user's last blockchain activity
      */
-    private function getLastBlockchainActivity(User $user): ?Carbon
-    {
+    private function getLastBlockchainActivity(User $user): ?Carbon {
         // Implementation depends on your blockchain integration
         return $user->blockchainTransactions()->latest()->first()?->created_at;
     }

@@ -25,6 +25,26 @@ class FlorenceEgiController extends Controller {
     }
 
     /**
+     * Versione V4 della pagina informativa (Preview)
+     * - Nuovi contenuti riscritti per target "casalinga 55 anni"
+     * - Focus su: attività gratuita, blockchain trasparente, AI
+     */
+    public function v4() {
+        $translations = $this->getTranslations();
+        return view('info.florenceegi-v4', compact('translations'));
+    }
+
+    /**
+     * Versione V4 Wheel della pagina informativa
+     * - Menu circolare innovativo
+     * - Navigazione interattiva
+     */
+    public function v4wheel() {
+        $translations = $this->getTranslations();
+        return view('info.florenceegi-v4-wheel', compact('translations'));
+    }
+
+    /**
      * Recupera tutte le traduzioni per la pagina
      */
     private function getTranslations(): array {

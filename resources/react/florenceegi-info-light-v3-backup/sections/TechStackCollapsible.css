@@ -1,0 +1,230 @@
+/**
+ * Tech Stack Collapsible Styles
+ */
+
+.tech-coll {
+    padding: 100px 20px;
+    background: radial-gradient(
+            ellipse at center top,
+            rgba(30, 58, 95, 0.1) 0%,
+            transparent 50%
+        ),
+        linear-gradient(180deg, #0d0d14 0%, #0a0a0f 100%);
+}
+
+.tech-coll__container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Header */
+.tech-coll__header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.tech-coll__title {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #d4af37, #f4e4bc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+}
+
+.tech-coll__subtitle {
+    font-size: 1.1rem;
+    color: #a0a0b0;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Section titles */
+.tech-coll__section-title {
+    font-size: 1.2rem;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+/* Preview */
+.tech-coll__preview {
+    background: #12121a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 32px;
+}
+
+/* Engines row */
+.tech-coll__engines {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.tech-coll__engine {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 30px;
+}
+
+.tech-coll__engine-icon {
+    font-size: 1.2rem;
+}
+
+.tech-coll__engine-name {
+    font-size: 0.85rem;
+    color: #a0a0b0;
+    font-weight: 500;
+}
+
+/* Performance badges */
+.tech-coll__performance {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.tech-coll__perf-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.tech-coll__perf-icon {
+    font-size: 1.5rem;
+}
+
+.tech-coll__perf-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #d4af37;
+}
+
+.tech-coll__perf-label {
+    font-size: 0.8rem;
+    color: #6a6a7a;
+}
+
+/* Details (expanded) */
+.tech-coll__details {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.tech-coll__details-title {
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+/* Engine grid */
+.tech-coll__engine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.tech-coll__engine-card {
+    background: #12121a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.tech-coll__engine-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.tech-coll__engine-card .tech-coll__engine-icon {
+    font-size: 1.5rem;
+}
+
+.tech-coll__engine-card .tech-coll__engine-name {
+    font-size: 1rem;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.tech-coll__engine-desc {
+    font-size: 0.9rem;
+    color: #8a8a9a;
+    line-height: 1.5;
+}
+
+/* Specs grid */
+.tech-coll__specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.tech-coll__spec {
+    background: #12121a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tech-coll__spec-label {
+    font-size: 0.75rem;
+    color: #6a6a7a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tech-coll__spec-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #d4af37;
+}
+
+.tech-coll__spec-detail {
+    font-size: 0.85rem;
+    color: #8a8a9a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tech-coll {
+        padding: 60px 16px;
+    }
+
+    .tech-coll__preview {
+        padding: 24px 16px;
+    }
+
+    .tech-coll__engines {
+        gap: 12px;
+    }
+
+    .tech-coll__engine {
+        padding: 8px 12px;
+    }
+
+    .tech-coll__engine-name {
+        font-size: 0.8rem;
+    }
+
+    .tech-coll__performance {
+        gap: 24px;
+    }
+}

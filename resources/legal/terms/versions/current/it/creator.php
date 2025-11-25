@@ -5,23 +5,23 @@
  * 🎯 Purpose: Professional terms for Creator user type with full legal coverage
  * 🛡️ Security: Comprehensive KYC/KYB, revenue sharing, and compliance framework
  *
- * @version 1.4.0 (Affinamento Clausole Egili e Trasparenza)
- * @effective_date 2025-06-30
+ * @version 2.0.0 (Integrazione AI, Blockchain Algorand, AWS KMS)
+ * @effective_date 2025-02-15
  * @user_type creator
  * @locale it
  *
  * @package FlorenceEGI\Legal
- * @author Padmin D. Curtis (AI Partner OS1.5.1-Compliant) for Fabio Cherici
+ * @author Padmin D. Curtis (AI Partner OS3.0-Compliant) for Fabio Cherici
  */
 
 return [
     'metadata' => [
         'title' => 'Termini e Condizioni per Utenti Creatori',
-        'version' => '1.4.0',
-        'effective_date' => '2025-06-30',
+        'version' => '2.0.0',
+        'effective_date' => '2025-02-15',
         'document_type' => 'Accordo Legale per Utenti Professionali',
         'target_audience' => 'Utenti qualificati come "Creatore" (Creator) della Piattaforma FlorenceEGI',
-        'summary_of_changes' => 'Affinamento Clausole Egili e Trasparenza - Integrazione revenue sharing dinamico e gestione EPP',
+        'summary_of_changes' => 'v2.0.0: Integrazione completa tecnologie AI (N.A.T.A.N., Claude, OpenAI), Blockchain Algorand, custodia AWS KMS, wallet PeraWallet',
         'jurisdiction_specifics_available' => true,
     ],
 
@@ -261,6 +261,95 @@ I pesi esatti per ogni criterio e le soglie per l\'ottenimento degli Egili sono 
 
         [
             'number' => 9,
+            'category' => 'platform',
+            'title' => 'Intelligenza Artificiale e Assistenza Creativa',
+            'subsections' => [
+                [
+                    'number' => '9.1',
+                    'title' => 'N.A.T.A.N. - Assistente AI',
+                    'content' => 'La Piattaforma utilizza N.A.T.A.N. (Neuronal Adaptive Transaction & Assistance Node), un assistente AI basato su Claude di Anthropic, per fornire supporto ai Creator.
+
+Funzionalita disponibili:
+• Suggerimenti per ottimizzazione descrizioni e metadata
+• Assistenza nella strategia di pricing
+• Analisi trend e mercato
+• Supporto tecnico guidato
+
+Lei accetta che le interazioni con N.A.T.A.N. vengano elaborate da servizi AI di terze parti nel rispetto della Privacy Policy.'
+                ],
+                [
+                    'number' => '9.2',
+                    'title' => 'Trattamento AI dei Contenuti',
+                    'content' => 'Concedendo la licenza di cui all Art. 4.2, Lei autorizza FlorenceEGI a:
+• Generare thumbnail e preview tramite elaborazione AI
+• Creare tag e categorizzazioni automatiche
+• Analizzare metriche di engagement
+• Produrre contenuti promozionali derivati
+
+I Suoi contenuti originali restano di Sua proprieta esclusiva e non vengono utilizzati per addestrare modelli AI esterni.'
+                ],
+                [
+                    'number' => '9.3',
+                    'title' => 'Limiti dell AI',
+                    'content' => 'Lei riconosce che:
+• I suggerimenti AI non costituiscono consulenza professionale
+• Le decisioni creative e commerciali restano di Sua responsabilita
+• FlorenceEGI non garantisce risultati specifici dall uso di strumenti AI
+• L AI puo commettere errori - verificare sempre le informazioni critiche'
+                ]
+            ]
+        ],
+
+        [
+            'number' => 10,
+            'category' => 'platform',
+            'title' => 'Tecnologia Blockchain e Custodia',
+            'subsections' => [
+                [
+                    'number' => '10.1',
+                    'title' => 'Blockchain Algorand',
+                    'content' => 'Gli EGI sono tokenizzati come NFT sulla blockchain Algorand. Lei riconosce che:
+• I dati delle transazioni sono pubblici e immutabili
+• Gli smart contract governano royalties e trasferimenti
+• La blockchain e una infrastruttura decentralizzata non controllata da FlorenceEGI
+• Le transazioni sono irreversibili una volta confermate'
+                ],
+                [
+                    'number' => '10.2',
+                    'title' => 'Opzioni di Wallet',
+                    'content' => 'Per ricevere royalties e gestire i Suoi EGI, puo scegliere tra:
+
+**Wallet Custodiale FlorenceEGI**: Le chiavi private sono custodite da AWS Key Management Service con crittografia HSM. Offre esperienza semplificata ma richiede fiducia nella piattaforma.
+
+**PeraWallet (Self-Custody)**: Lei mantiene il controllo completo delle chiavi private. Maggiore responsabilita ma piena autonomia.
+
+La scelta e modificabile in qualsiasi momento dalla dashboard.'
+                ],
+                [
+                    'number' => '10.3',
+                    'title' => 'Custodia AWS KMS',
+                    'content' => 'Se sceglie il wallet custodiale:
+• Le chiavi sono protette da Hardware Security Modules certificati
+• I fondi sono separati dagli asset aziendali di FlorenceEGI
+• Backup crittografati in multiple regioni geografiche
+• Accesso condizionato a verifica identita multifattore
+
+FlorenceEGI mantiene polizze assicurative per la protezione dei fondi in custodia.'
+                ],
+                [
+                    'number' => '10.4',
+                    'title' => 'Royalties On-Chain',
+                    'content' => 'Le royalties sono distribuite automaticamente tramite smart contract:
+• Pagamento istantaneo al momento della vendita secondaria
+• Tracciabilita completa e verificabile su blockchain
+• Nessun intermediario nel flusso di pagamento
+• Report in tempo reale nella Sua dashboard'
+                ]
+            ]
+        ],
+
+        [
+            'number' => 11,
             'category' => 'final',
             'title' => 'Allegati',
             'content' => 'Costituiscono parte integrante e sostanziale del presente Contratto i seguenti allegati, pubblicati e periodicamente aggiornati sulla Piattaforma:
@@ -271,27 +360,27 @@ I pesi esatti per ogni criterio e le soglie per l\'ottenimento degli Egili sono 
         ],
 
         [
-            'number' => 10,
+            'number' => 12,
             'category' => 'final',
             'title' => 'Disposizioni Finali e Legge Applicabile',
             'subsections' => [
                 [
-                    'number' => '10.1',
+                    'number' => '12.1',
                     'title' => 'Intero Accordo',
                     'content' => 'Questo Contratto e i suoi allegati sostituiscono qualsiasi accordo precedente.'
                 ],
                 [
-                    'number' => '10.2',
+                    'number' => '12.2',
                     'title' => 'Modifiche al Contratto',
                     'content' => 'Qualsiasi modifica contrattuale Le sarà notificata con 15 giorni di preavviso tramite email o dashboard. Il proseguimento dell\'utilizzo della Piattaforma dopo tale periodo costituisce accettazione tacita delle nuove condizioni.'
                 ],
                 [
-                    'number' => '10.3',
+                    'number' => '12.3',
                     'title' => 'Legge Applicabile',
                     'content' => 'Il presente Contratto è regolato dalla legge italiana.'
                 ],
                 [
-                    'number' => '10.4',
+                    'number' => '12.4',
                     'title' => 'Foro Competente',
                     'content' => 'Per qualsiasi controversia, il foro competente in via esclusiva è quello di Firenze, Italia.'
                 ]
