@@ -382,6 +382,10 @@ return [
 
         // === REAL ALGORAND WALLET TRANSLATIONS ===
 
+        // Navbar CTA Button
+        'real_connect_cta' => 'Connect Wallet',
+        'real_connect_cta_tooltip' => 'Connect your real Algorand wallet',
+
         // Modal Title and Descriptions
         'real_wallet_connect_title' => 'Connect Algorand Wallet',
         'real_wallet_connect_subtitle' => 'Enter your real Algorand wallet address',

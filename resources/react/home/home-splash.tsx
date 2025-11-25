@@ -178,18 +178,23 @@ function MainApp() {
     // Aggiungi classe al body per prevenire scroll
     document.body.classList.add('splash-active');
 
-    // Su mobile: tap per saltare animazione
-    const handleTap = () => {
-      if (window.innerWidth < 768) {
-        console.log('🖐️ Tap detected - skipping animation');
-        setSkipAnimation(true);
+    // Click/tap per saltare animazione (funziona su mobile e desktop)
+    const handleSkip = (e: Event) => {
+      // Evita doppi trigger su dispositivi touch
+      if (e.type === 'touchstart') {
+        e.preventDefault();
       }
+      console.log('🖐️ User interaction detected - skipping animation');
+      setSkipAnimation(true);
     };
 
-    document.addEventListener('touchstart', handleTap);
+    // Listener per touch (mobile) e click (desktop)
+    document.addEventListener('touchstart', handleSkip, { passive: false });
+    document.addEventListener('click', handleSkip);
 
     return () => {
-      document.removeEventListener('touchstart', handleTap);
+      document.removeEventListener('touchstart', handleSkip);
+      document.removeEventListener('click', handleSkip);
     };
   }, []);
 

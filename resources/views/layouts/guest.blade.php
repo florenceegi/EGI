@@ -54,8 +54,7 @@
         </div>
 
         {{-- Top Collectors Carousel --}}
-        <div class="below-hero-content relative z-10 w-full" role="region"
-            aria-label="Top Collectors Carousel">
+        <div class="below-hero-content relative z-10 w-full" role="region" aria-label="Top Collectors Carousel">
             {{ $belowHeroContent_0_5 ?? '' }}
         </div>
 

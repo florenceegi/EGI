@@ -510,6 +510,10 @@ async function initializeApplicationOrchestrated(): Promise<void> {
         // console.log('Padmin Main: Phase 7 - Initializing FEGI system...');
         await initializeFEGISystemOrchestrated();
 
+        // FASE 7.1: Real Wallet Connect (Algorand real wallets - OS3 compliant)
+        // console.log('Padmin Main: Phase 7.1 - Initializing Real Wallet Connect...');
+        initRealWalletConnect();
+
         // FASE INDIPENDENTE: Animazione Three.js (se necessaria)
         initializeThreeAnimationIndependent();
 
@@ -785,6 +789,35 @@ function setupEventListeners(): void {
         },
         'Mobile Menu Button'
     );
+
+    // --- REAL WALLET CONNECT (Algorand reale - sempre disponibile per guest) ---
+    const realWalletButtonDesktop = document.getElementById('connect-real-wallet-button');
+    const realWalletButtonMobile = document.getElementById('connect-real-wallet-button-mobile');
+
+    safeAddEventListener(
+        realWalletButtonDesktop,
+        'click',
+        () => openRealWalletModal(),
+        'Real Wallet Connect Button Desktop'
+    );
+
+    safeAddEventListener(
+        realWalletButtonMobile,
+        'click',
+        () => openRealWalletModal(),
+        'Real Wallet Connect Button Mobile'
+    );
+
+    // Listener per tutti i bottoni con attributo data-action="open-real-wallet-modal"
+    const allRealWalletButtons = document.querySelectorAll('[data-action="open-real-wallet-modal"]');
+    allRealWalletButtons.forEach((button, index) => {
+        safeAddEventListener(
+            button,
+            'click',
+            () => openRealWalletModal(),
+            `Real Wallet Button via data-action ${index}`
+        );
+    });
 
     // console.log('Padmin Main: FEGI Event listeners setup with safe binding complete.');
 }

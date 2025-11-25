@@ -35,8 +35,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *
  * @signature [RealWalletConnectController::v1.0] florence-egi-real-wallet
  */
-class RealWalletConnectController extends Controller
-{
+class RealWalletConnectController extends Controller {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AlgorandClient $algorandClient;
@@ -67,8 +66,7 @@ class RealWalletConnectController extends Controller
      * - wallet_not_on_chain: Valid format but not found on blockchain
      * - invalid_format: Address format is wrong
      */
-    public function verify(Request $request): JsonResponse
-    {
+    public function verify(Request $request): JsonResponse {
         $this->logger->info('=== REAL WALLET VERIFY START ===', [
             'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
@@ -149,7 +147,6 @@ class RealWalletConnectController extends Controller
                     'continue_guest' => trans('collection.wallet.option_continue_guest')
                 ]
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->logger->warning('Real Wallet: Invalid format', [
                 'errors' => $e->errors(),
@@ -162,7 +159,6 @@ class RealWalletConnectController extends Controller
                 'message' => trans('collection.wallet.real_wallet_invalid_format'),
                 'errors' => $e->errors()
             ], 422);
-
         } catch (\Exception $e) {
             $this->logger->error('Real Wallet: Verification error', [
                 'error' => $e->getMessage(),
@@ -182,8 +178,7 @@ class RealWalletConnectController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function connect(Request $request): JsonResponse
-    {
+    public function connect(Request $request): JsonResponse {
         $this->logger->info('=== REAL WALLET CONNECT START ===', [
             'ip' => $request->ip(),
             'session_id' => $request->session()->getId()
@@ -223,7 +218,6 @@ class RealWalletConnectController extends Controller
                 'user_name' => $user->name,
                 'redirect' => $user->is_weak_auth ? null : route('dashboard')
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Real Wallet: Connection error', [
                 'error' => $e->getMessage()
@@ -244,8 +238,7 @@ class RealWalletConnectController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function createGuest(Request $request): JsonResponse
-    {
+    public function createGuest(Request $request): JsonResponse {
         $this->logger->info('=== REAL WALLET CREATE GUEST START ===', [
             'ip' => $request->ip(),
             'session_id' => $request->session()->getId()
@@ -327,7 +320,6 @@ class RealWalletConnectController extends Controller
                 'user_name' => $newUser->name,
                 'info' => trans('collection.wallet.real_wallet_upgrade_info')
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Real Wallet: Guest creation error', [
                 'error' => $e->getMessage(),
@@ -347,8 +339,7 @@ class RealWalletConnectController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function prepareRegister(Request $request): JsonResponse
-    {
+    public function prepareRegister(Request $request): JsonResponse {
         $walletAddress = $request->input('wallet_address')
             ?? $request->session()->get('pending_wallet_address');
 
@@ -374,14 +365,12 @@ class RealWalletConnectController extends Controller
      * @param string $walletAddress
      * @return bool
      */
-    protected function verifyWalletOnChain(string $walletAddress): bool
-    {
+    protected function verifyWalletOnChain(string $walletAddress): bool {
         try {
             $accountInfo = $this->algorandClient->getAccountInfo($walletAddress);
 
             // Account exists if we get valid response with amount field
             return isset($accountInfo['amount']) || isset($accountInfo['address']);
-
         } catch (\Exception $e) {
             $this->logger->warning('Real Wallet: On-chain verification failed', [
                 'wallet_prefix' => substr($walletAddress, 0, 8) . '...',
@@ -400,8 +389,7 @@ class RealWalletConnectController extends Controller
      * @param User $user
      * @param string $walletAddress
      */
-    protected function establishConnectedSession(Request $request, User $user, string $walletAddress): void
-    {
+    protected function establishConnectedSession(Request $request, User $user, string $walletAddress): void {
         // Ensure session is started
         if (!$request->session()->isStarted()) {
             $request->session()->start();
@@ -432,8 +420,7 @@ class RealWalletConnectController extends Controller
      * @param User $user
      * @return string
      */
-    protected function getUserStatus(User $user): string
-    {
+    protected function getUserStatus(User $user): string {
         if ($user->is_weak_auth) {
             return 'weak_auth';
         }

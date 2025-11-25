@@ -48,6 +48,10 @@ const getElement = <T extends HTMLElement>(id: string): T | null => {
     return document.getElementById(id) as T | null;
 };
 
+const getElementAny = (id: string): Element | null => {
+    return document.getElementById(id);
+};
+
 // --- MODAL MANAGEMENT ---
 
 /**
@@ -167,7 +171,7 @@ function showIcon(icon: 'wallet' | 'loading' | 'success' | 'options'): void {
     const icons = ['wallet', 'loading', 'success', 'options'];
 
     icons.forEach(i => {
-        const el = getElement<SVGElement>(`real-wallet-icon-${i}`);
+        const el = getElementAny(`real-wallet-icon-${i}`);
         if (el) {
             if (i === icon) {
                 el.classList.remove('hidden');
