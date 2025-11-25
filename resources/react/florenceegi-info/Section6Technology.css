@@ -1,0 +1,387 @@
+/* Section 6 - Technology (Stack Enterprise, Esperienza Consumer) */
+
+.section6-technology {
+    position: relative;
+    min-height: 100vh;
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #0f0f1a 0%, #0a1628 50%, #0a0a0f 100%);
+    overflow: hidden;
+}
+
+/* Effetto sfondo animato - tech/circuit pattern */
+.section6-technology::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+            circle at 30% 20%,
+            rgba(0, 150, 255, 0.12) 0%,
+            transparent 50%
+        ),
+        radial-gradient(
+            circle at 70% 80%,
+            rgba(0, 255, 200, 0.1) 0%,
+            transparent 50%
+        ),
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(100, 100, 255, 0.08) 0%,
+            transparent 40%
+        );
+    pointer-events: none;
+    animation: techGlow 10s ease-in-out infinite alternate;
+}
+
+/* Circuit lines background */
+.section6-technology::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(
+            rgba(0, 150, 255, 0.03) 1px,
+            transparent 1px
+        ),
+        linear-gradient(90deg, rgba(0, 150, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+@keyframes techGlow {
+    0% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0.9;
+        transform: scale(1.03);
+    }
+}
+
+/* Container del contenuto */
+.section6-technology .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+}
+
+/* Header */
+.section6-header {
+    position: relative;
+    text-align: center;
+    margin-bottom: 60px;
+    padding: 40px 0;
+}
+
+.section6-header-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px 25px;
+    background: rgba(5, 10, 20, 0.7);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 150, 255, 0.3);
+}
+
+.section6-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.section6-title .gradient-text {
+    background: linear-gradient(135deg, #0096ff 0%, #00ffc8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.section6-subtitle {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Subsection Titles */
+.section6-technology .subsection-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00ffc8;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Due colonne: Tu Vedi / Sistema Fa */
+.tech-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 80px;
+}
+
+.tech-column {
+    background: rgba(10, 15, 25, 0.8);
+    border-radius: 20px;
+    padding: 30px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.user-column {
+    border: 1px solid rgba(0, 200, 150, 0.3);
+}
+
+.system-column {
+    border: 1px solid rgba(0, 150, 255, 0.3);
+}
+
+.column-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.column-icon {
+    font-size: 1.8rem;
+}
+
+.user-column .column-title {
+    color: #00ffc8;
+}
+
+.system-column .column-title {
+    color: #0096ff;
+}
+
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 16px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.user-feature {
+    background: rgba(0, 200, 150, 0.08);
+    border: 1px solid rgba(0, 200, 150, 0.15);
+}
+
+.user-feature:hover {
+    background: rgba(0, 200, 150, 0.15);
+    border-color: rgba(0, 200, 150, 0.4);
+    transform: translateX(5px);
+}
+
+.system-feature {
+    background: rgba(0, 150, 255, 0.08);
+    border: 1px solid rgba(0, 150, 255, 0.15);
+}
+
+.system-feature:hover {
+    background: rgba(0, 150, 255, 0.15);
+    border-color: rgba(0, 150, 255, 0.4);
+    transform: translateX(5px);
+}
+
+.feature-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.feature-content {
+    flex: 1;
+}
+
+.feature-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.feature-description {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.4;
+}
+
+/* Performance Section */
+.performance-section {
+    margin-bottom: 60px;
+}
+
+.performance-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.performance-card {
+    background: linear-gradient(
+        135deg,
+        rgba(0, 150, 255, 0.15) 0%,
+        rgba(0, 255, 200, 0.1) 100%
+    );
+    border: 1px solid rgba(0, 200, 150, 0.3);
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.performance-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(0, 255, 200, 0.6);
+    box-shadow: 0 12px 40px rgba(0, 255, 200, 0.2);
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #00ffc8 0%, #0096ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}
+
+.metric-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+}
+
+.metric-description {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* CTA Box */
+.tech-cta-box {
+    background: linear-gradient(
+        135deg,
+        rgba(0, 150, 255, 0.2) 0%,
+        rgba(0, 255, 200, 0.15) 100%
+    );
+    border: 2px solid rgba(0, 255, 200, 0.4);
+    border-radius: 20px;
+    padding: 50px 40px;
+    text-align: center;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+.tech-cta-box h3 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.tech-cta-box p {
+    font-size: 1.15rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 30px;
+}
+
+.tech-cta-button {
+    display: inline-block;
+    padding: 16px 40px;
+    background: linear-gradient(135deg, #0096ff 0%, #00ffc8 100%);
+    color: #000;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tech-cta-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 30px rgba(0, 255, 200, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .tech-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .performance-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .section6-technology {
+        padding: 60px 15px;
+    }
+
+    .section6-title {
+        font-size: 2rem;
+    }
+
+    .section6-subtitle {
+        font-size: 1rem;
+    }
+
+    .column-title {
+        font-size: 1.25rem;
+    }
+
+    .performance-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .performance-card {
+        padding: 20px 15px;
+    }
+
+    .metric-value {
+        font-size: 1.8rem;
+    }
+
+    .tech-cta-box {
+        padding: 30px 20px;
+    }
+
+    .tech-cta-box h3 {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .performance-grid {
+        grid-template-columns: 1fr;
+    }
+}

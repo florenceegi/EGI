@@ -444,4 +444,115 @@ return [
         'p12_detail_problem' => 'Devi emettere fatture per ogni vendita, seguire normative diverse per EU/US/Asia, dichiarare tutto al commercialista, sperare di non sbagliare. Gli errori costano sanzioni.',
         'p12_detail_solution' => 'Fatturazione automatica SDI (Sistema di Interscambio italiano), export CSV/XML per commercialisti, report trimestrali pronti, conformità EU/US/Global. Tu vendi, noi gestiamo la burocrazia fiscale.',
     ],
+
+    // AMMk Section
+    'ammk' => [
+        // Header
+        'title_line1' => 'Non un Marketplace.',
+        'title_line2' => 'Un Generatore di Asset Marketplace.',
+        'subtitle' => 'FlorenceEGI è un',
+        'subtitle_rest' => 'una piattaforma che ti permette di creare il TUO asset marketplace personalizzato in cui QUALSIASI prodotto/servizio diventa un EGI.',
+
+        // Chi può usare AMMk
+        'users_title' => 'Chi può usare AMMk',
+        'user_artists_title' => 'Artisti',
+        'user_artists_desc' => 'Galleria personale con royalty automatiche',
+        'user_museums_title' => 'Musei',
+        'user_museums_desc' => 'Collezione digitale + merchandising tokenizzato',
+        'user_brands_title' => 'Brand',
+        'user_brands_desc' => 'Prodotti limited edition certificati blockchain',
+        'user_ngo_title' => 'Onlus',
+        'user_ngo_desc' => 'Progetti ambientali con donazioni tracciabili',
+        'user_universities_title' => 'Università',
+        'user_universities_desc' => 'Ricerca scientifica + pubblicazioni tokenizzate',
+        'user_municipalities_title' => 'Comuni',
+        'user_municipalities_desc' => 'Patrimonio culturale digitalizzato',
+        'user_agencies_title' => 'Agenzie',
+        'user_agencies_desc' => 'Servizi creativi + IP licensing',
+        'user_legal_title' => 'Studi legali/Notai',
+        'user_legal_desc' => 'Notarizzazione documenti via NATAN',
+
+        // 5 Engine Integrati
+        'engines_title' => '5 Engine Integrati',
+        'engine1_name' => 'NATAN Market Engine',
+        'engine1_desc' => 'AI valuta mercato, suggerisce prezzi, identifica trend',
+        'engine2_name' => 'Asset Management',
+        'engine2_desc' => 'Mint, transfer, royalty automatici',
+        'engine3_name' => 'Distribution Engine',
+        'engine3_desc' => 'Split trustless multi-wallet (Creator/EPP/Platform)',
+        'engine4_name' => 'Co-Creation Engine',
+        'engine4_desc' => 'Gestione collaborazioni multi-artista',
+        'engine5_name' => 'Compliance Engine',
+        'engine5_desc' => 'GDPR/MiCA/Fiscale automatico',
+
+        // Personalizzazione Totale
+        'customization_title' => 'Personalizzazione Totale',
+        'custom_brand_title' => 'Brand personalizzato',
+        'custom_brand_desc' => 'Logo, colori, dominio custom',
+        'custom_fees_title' => 'Fee configurabili',
+        'custom_fees_desc' => 'Default 10%, dinamiche fino a 5%',
+        'custom_tenant_title' => 'Tenant isolato',
+        'custom_tenant_desc' => 'Dati separati, RBAC dedicato',
+        'custom_workflow_title' => 'Workflow custom',
+        'custom_workflow_desc' => 'Approvazioni, moderazione, drops',
+
+        // CTA
+        'cta_title' => 'Vuoi creare il tuo marketplace EGI?',
+        'cta_subtitle' => 'Inizia oggi e trasforma qualsiasi asset in un\'opportunità di valore.',
+        'cta_button' => 'Richiedi Demo AMMk',
+    ],
+
+    // Technology Section
+    'technology' => [
+        // Header
+        'title_line1' => 'Stack Enterprise,',
+        'title_line2' => 'Esperienza Consumer.',
+        'subtitle' => 'Tecnologia di livello enterprise nascosta dietro un\'interfaccia semplice come un\'app. Tu vedi semplicità, noi gestiamo la complessità.',
+
+        // Colonna User
+        'user_column_title' => 'TU VEDI',
+        'user_dragdrop_title' => 'Interfaccia drag&drop',
+        'user_dragdrop_desc' => 'Carica opere intuitivamente',
+        'user_mobile_title' => 'Dashboard mobile-responsive',
+        'user_mobile_desc' => 'Gestisci da qualsiasi dispositivo',
+        'user_notifications_title' => 'Notifiche real-time',
+        'user_notifications_desc' => 'Mai perdere una vendita',
+        'user_analytics_title' => 'Analytics comprensibili',
+        'user_analytics_desc' => 'Dati senza complessità',
+
+        // Colonna System
+        'system_column_title' => 'SISTEMA FA',
+        'system_blockchain_title' => 'Blockchain Algorand',
+        'system_blockchain_desc' => '1000 TPS, <5s finalità, €0.001/tx',
+        'system_smart_title' => 'Smart contract TEAL',
+        'system_smart_desc' => 'Verificabili e sicuri',
+        'system_ulm_title' => 'ULM Audit Trail',
+        'system_ulm_desc' => 'Log immutabile 10 anni',
+        'system_encryption_title' => 'AES-256 Encryption',
+        'system_encryption_desc' => 'Chiavi wallet protette',
+        'system_multitenant_title' => 'Multi-tenant SaaS',
+        'system_multitenant_desc' => 'Scalabile infinitamente',
+        'system_natan_title' => 'NATAN AI',
+        'system_natan_desc' => 'RAG, Valuation, Activation',
+        'system_eventbus_title' => 'Event Bus pub/sub',
+        'system_eventbus_desc' => 'Comunicazione asincrona',
+        'system_observability_title' => 'Observability completa',
+        'system_observability_desc' => 'UEM/ULM/GDPR monitoring',
+
+        // Performance
+        'performance_title' => 'PERFORMANCE GARANTITE',
+        'perf_minting_label' => 'Minting',
+        'perf_minting_desc' => 'Certificazione istantanea',
+        'perf_uptime_label' => 'Uptime SLA',
+        'perf_uptime_desc' => 'Disponibilità garantita',
+        'perf_security_label' => 'Sicurezza',
+        'perf_security_desc' => 'Type II compliant',
+        'perf_scalability_label' => 'Utenti concurrent',
+        'perf_scalability_desc' => 'Scalabilità enterprise',
+
+        // CTA
+        'cta_title' => 'Tecnologia invisibile, risultati visibili.',
+        'cta_subtitle' => 'Non devi capire la blockchain. Devi solo EGIZZARE.',
+        'cta_button' => 'Scopri la Documentazione Tecnica',
+    ],
 ];

@@ -1,0 +1,136 @@
+/* Container per i bottoni di controllo */
+.animation-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.animation-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 16px;
+    border: none;
+    border-radius: 30px;
+
+    background: rgba(15, 15, 20, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    color: #fff;
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.animation-toggle:hover {
+    background: rgba(25, 25, 35, 0.95);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.animation-toggle:active {
+    transform: translateY(0);
+}
+
+.animation-toggle:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.animation-toggle:disabled:hover {
+    transform: none;
+}
+
+/* Nascosto quando animazioni disabilitate */
+.animation-toggle.hidden {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* Playing state - subtle blue glow */
+.animation-toggle.playing {
+    border: 1px solid rgba(138, 180, 248, 0.3);
+}
+
+.animation-toggle.playing svg {
+    color: #8ab4f8;
+}
+
+/* Paused state - gold accent */
+.animation-toggle.paused {
+    border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+.animation-toggle.paused svg {
+    color: #d4af37;
+}
+
+/* Disable toggle - verde quando attivo */
+.animation-toggle.enabled-anim {
+    border: 1px solid rgba(0, 255, 200, 0.4);
+}
+
+.animation-toggle.enabled-anim svg {
+    color: #00ffc8;
+}
+
+/* Disable toggle - rosso quando disattivato */
+.animation-toggle.disabled-anim {
+    border: 1px solid rgba(255, 100, 100, 0.4);
+    background: rgba(40, 15, 15, 0.85);
+}
+
+.animation-toggle.disabled-anim svg {
+    color: #ff6464;
+}
+
+.animation-toggle svg {
+    transition: color 0.3s ease;
+}
+
+.toggle-text {
+    opacity: 0.9;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .animation-controls {
+        bottom: 15px;
+        right: 15px;
+        gap: 8px;
+    }
+
+    .animation-toggle {
+        padding: 8px 12px;
+        font-size: 11px;
+    }
+
+    .animation-toggle svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+/* Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .animation-toggle {
+        /* Auto-pause when user prefers reduced motion */
+    }
+}

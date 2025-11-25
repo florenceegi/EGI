@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Resources\Lang\En\Info
  * @author Padmin D. Curtis (AI Partner OS3.0)
@@ -342,5 +343,116 @@ return [
             'environmental_impact' => 'Environmental Impact',
             'algorand_blockchain' => 'Algorand Blockchain',
         ],
+    ],
+
+    // AMMk Section
+    'ammk' => [
+        // Header
+        'title_line1' => 'Not a Marketplace.',
+        'title_line2' => 'An Asset Marketplace Generator.',
+        'subtitle' => 'FlorenceEGI is an',
+        'subtitle_rest' => 'a platform that lets you create YOUR personalized asset marketplace where ANY product/service becomes an EGI.',
+
+        // Who can use AMMk
+        'users_title' => 'Who Can Use AMMk',
+        'user_artists_title' => 'Artists',
+        'user_artists_desc' => 'Personal gallery with automatic royalties',
+        'user_museums_title' => 'Museums',
+        'user_museums_desc' => 'Digital collection + tokenized merchandising',
+        'user_brands_title' => 'Brands',
+        'user_brands_desc' => 'Blockchain-certified limited edition products',
+        'user_ngo_title' => 'NGOs',
+        'user_ngo_desc' => 'Environmental projects with traceable donations',
+        'user_universities_title' => 'Universities',
+        'user_universities_desc' => 'Scientific research + tokenized publications',
+        'user_municipalities_title' => 'Municipalities',
+        'user_municipalities_desc' => 'Digitalized cultural heritage',
+        'user_agencies_title' => 'Agencies',
+        'user_agencies_desc' => 'Creative services + IP licensing',
+        'user_legal_title' => 'Law Firms/Notaries',
+        'user_legal_desc' => 'Document notarization via NATAN',
+
+        // 5 Integrated Engines
+        'engines_title' => '5 Integrated Engines',
+        'engine1_name' => 'NATAN Market Engine',
+        'engine1_desc' => 'AI evaluates market, suggests prices, identifies trends',
+        'engine2_name' => 'Asset Management',
+        'engine2_desc' => 'Mint, transfer, automatic royalties',
+        'engine3_name' => 'Distribution Engine',
+        'engine3_desc' => 'Trustless multi-wallet split (Creator/EPP/Platform)',
+        'engine4_name' => 'Co-Creation Engine',
+        'engine4_desc' => 'Multi-artist collaboration management',
+        'engine5_name' => 'Compliance Engine',
+        'engine5_desc' => 'GDPR/MiCA/Tax automatic compliance',
+
+        // Total Customization
+        'customization_title' => 'Total Customization',
+        'custom_brand_title' => 'Custom branding',
+        'custom_brand_desc' => 'Logo, colors, custom domain',
+        'custom_fees_title' => 'Configurable fees',
+        'custom_fees_desc' => 'Default 10%, dynamic down to 5%',
+        'custom_tenant_title' => 'Isolated tenant',
+        'custom_tenant_desc' => 'Separate data, dedicated RBAC',
+        'custom_workflow_title' => 'Custom workflow',
+        'custom_workflow_desc' => 'Approvals, moderation, drops',
+
+        // CTA
+        'cta_title' => 'Want to create your EGI marketplace?',
+        'cta_subtitle' => 'Start today and transform any asset into a value opportunity.',
+        'cta_button' => 'Request AMMk Demo',
+    ],
+
+    // Technology Section
+    'technology' => [
+        // Header
+        'title_line1' => 'Enterprise Stack,',
+        'title_line2' => 'Consumer Experience.',
+        'subtitle' => 'Enterprise-level technology hidden behind an interface as simple as an app. You see simplicity, we handle the complexity.',
+
+        // User Column
+        'user_column_title' => 'YOU SEE',
+        'user_dragdrop_title' => 'Drag&drop interface',
+        'user_dragdrop_desc' => 'Upload works intuitively',
+        'user_mobile_title' => 'Mobile-responsive dashboard',
+        'user_mobile_desc' => 'Manage from any device',
+        'user_notifications_title' => 'Real-time notifications',
+        'user_notifications_desc' => 'Never miss a sale',
+        'user_analytics_title' => 'Understandable analytics',
+        'user_analytics_desc' => 'Data without complexity',
+
+        // System Column
+        'system_column_title' => 'SYSTEM DOES',
+        'system_blockchain_title' => 'Algorand Blockchain',
+        'system_blockchain_desc' => '1000 TPS, <5s finality, €0.001/tx',
+        'system_smart_title' => 'TEAL Smart contracts',
+        'system_smart_desc' => 'Verifiable and secure',
+        'system_ulm_title' => 'ULM Audit Trail',
+        'system_ulm_desc' => 'Immutable log 10 years',
+        'system_encryption_title' => 'AES-256 Encryption',
+        'system_encryption_desc' => 'Protected wallet keys',
+        'system_multitenant_title' => 'Multi-tenant SaaS',
+        'system_multitenant_desc' => 'Infinitely scalable',
+        'system_natan_title' => 'NATAN AI',
+        'system_natan_desc' => 'RAG, Valuation, Activation',
+        'system_eventbus_title' => 'Event Bus pub/sub',
+        'system_eventbus_desc' => 'Asynchronous communication',
+        'system_observability_title' => 'Full Observability',
+        'system_observability_desc' => 'UEM/ULM/GDPR monitoring',
+
+        // Performance
+        'performance_title' => 'GUARANTEED PERFORMANCE',
+        'perf_minting_label' => 'Minting',
+        'perf_minting_desc' => 'Instant certification',
+        'perf_uptime_label' => 'Uptime SLA',
+        'perf_uptime_desc' => 'Guaranteed availability',
+        'perf_security_label' => 'Security',
+        'perf_security_desc' => 'Type II compliant',
+        'perf_scalability_label' => 'Concurrent users',
+        'perf_scalability_desc' => 'Enterprise scalability',
+
+        // CTA
+        'cta_title' => 'Invisible technology, visible results.',
+        'cta_subtitle' => 'You don\'t need to understand blockchain. Just EGIZZALO.',
+        'cta_button' => 'Explore Technical Documentation',
     ],
 ];
