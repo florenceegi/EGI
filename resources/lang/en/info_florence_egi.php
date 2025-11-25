@@ -19,7 +19,7 @@ return [
     |
     */
     // Meta Tags
-    'meta_title' => 'FlorenceEGI - The Digital Renaissance Uniting Art, Technology, and Planetary Regeneration',
+    'meta_title' => 'FlorenceEGI - If It Exists, EGIZZALO. If You EGIZZA It, It Has Value. The First Asset Market Maker.',
     'meta_description' => 'FlorenceEGI is the first marketplace to solve the NFT trilemma: Artistic Quality + Maximum Liquidity + Real Environmental Impact. EGI Dual Flow architecture on Algorand blockchain.',
     'meta_keywords' => 'FlorenceEGI, sustainable NFTs, digital art marketplace, Algorand blockchain, EGI, environmental impact, certified art, digital renaissance, planetary regeneration',
     'meta_author' => 'FlorenceEGI',
@@ -27,7 +27,7 @@ return [
     'meta_app_name' => 'FlorenceEGI',
 
     // Open Graph Protocol
-    'og_title' => 'FlorenceEGI - The Digital Renaissance for Art and Environment',
+    'og_title' => 'If It Exists, EGIZZALO. If You EGIZZA It, It Has Value. - FlorenceEGI',
     'og_description' => 'The first NFT marketplace combining artistic quality, maximum liquidity, and real environmental impact. We solve the NFT trilemma with EGI Dual Flow architecture on Algorand.',
     'og_site_name' => 'FlorenceEGI',
     'og_image_alt' => 'FlorenceEGI - Sustainable NFT Marketplace with Environmental Impact',
