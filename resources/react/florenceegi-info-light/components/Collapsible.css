@@ -1,0 +1,59 @@
+/**
+ * Collapsible Component Styles
+ */
+
+.collapsible-component {
+    margin-top: 24px;
+}
+
+.collapsible-component__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 28px;
+    margin: 0 auto;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 30px;
+    color: #D4AF37;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.collapsible-component__trigger:hover {
+    background: rgba(212, 175, 55, 0.2);
+    border-color: rgba(212, 175, 55, 0.4);
+    transform: translateY(-2px);
+}
+
+.collapsible-component__icon {
+    transition: transform 0.3s ease;
+}
+
+.collapsible-component__trigger--expanded .collapsible-component__icon {
+    transform: rotate(180deg);
+}
+
+.collapsible-component__content {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.collapsible-component__content--expanded {
+    max-height: 3000px;
+    opacity: 1;
+    margin-top: 32px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .collapsible-component__trigger {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+}

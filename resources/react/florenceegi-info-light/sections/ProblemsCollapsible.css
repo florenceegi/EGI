@@ -1,0 +1,141 @@
+/**
+ * Problems Collapsible Styles
+ */
+
+.problems-coll {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #0a0a0f 0%, #0d0d14 100%);
+}
+
+.problems-coll__container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header */
+.problems-coll__header {
+    text-align: center;
+    margin-bottom: 56px;
+}
+
+.problems-coll__title {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #D4AF37, #F4E4BC);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+}
+
+.problems-coll__subtitle {
+    font-size: 1.1rem;
+    color: #a0a0b0;
+}
+
+/* Grid */
+.problems-coll__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.problems-coll__grid--hidden {
+    margin-top: 0;
+}
+
+/* Card */
+.problems-coll__card {
+    background: #12121a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 24px 20px;
+    transition: all 0.3s ease;
+}
+
+.problems-coll__card:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.problems-coll__card-icon {
+    font-size: 2rem;
+    margin-bottom: 12px;
+}
+
+.problems-coll__card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 16px;
+}
+
+/* Comparison */
+.problems-coll__comparison {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.problems-coll__old,
+.problems-coll__new {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.problems-coll__old {
+    background: rgba(139, 0, 0, 0.1);
+    border-left: 3px solid rgba(139, 0, 0, 0.4);
+}
+
+.problems-coll__new {
+    background: rgba(46, 139, 87, 0.1);
+    border-left: 3px solid rgba(46, 139, 87, 0.4);
+}
+
+.problems-coll__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.problems-coll__old .problems-coll__label {
+    color: #8B0000;
+}
+
+.problems-coll__new .problems-coll__label {
+    color: #2E8B57;
+}
+
+.problems-coll__text {
+    font-size: 0.85rem;
+    color: #8a8a9a;
+    line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .problems-coll__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .problems-coll {
+        padding: 60px 16px;
+    }
+
+    .problems-coll__grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .problems-coll__card {
+        padding: 20px 16px;
+    }
+}

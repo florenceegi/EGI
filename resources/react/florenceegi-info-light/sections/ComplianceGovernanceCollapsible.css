@@ -1,0 +1,298 @@
+/**
+ * Compliance & Governance Collapsible Styles
+ */
+
+.compliance-coll {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #0a0a0f 0%, #0d0d14 100%);
+}
+
+.compliance-coll__container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Header */
+.compliance-coll__header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.compliance-coll__title {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #D4AF37, #F4E4BC);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+}
+
+.compliance-coll__subtitle {
+    font-size: 1.1rem;
+    color: #a0a0b0;
+}
+
+/* Badges */
+.compliance-coll__badges {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.compliance-coll__badge {
+    background: #12121a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: all 0.3s ease;
+}
+
+.compliance-coll__badge:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+}
+
+.compliance-coll__badge-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.compliance-coll__badge-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.compliance-coll__badge-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.compliance-coll__badge-desc {
+    font-size: 0.85rem;
+    color: #8a8a9a;
+    line-height: 1.4;
+}
+
+/* Section title */
+.compliance-coll__section-title {
+    font-size: 1.2rem;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+/* Governance preview */
+.compliance-coll__governance-preview {
+    background: #12121a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 32px;
+}
+
+.compliance-coll__dual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+}
+
+.compliance-coll__entity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 32px;
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 16px;
+}
+
+.compliance-coll__entity-icon {
+    font-size: 2rem;
+}
+
+.compliance-coll__entity-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.compliance-coll__entity-role {
+    font-size: 0.85rem;
+    color: #D4AF37;
+}
+
+.compliance-coll__separator {
+    font-size: 2rem;
+}
+
+/* Details (expanded) */
+.compliance-coll__details {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.compliance-coll__details-title {
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+/* Full compliance grid */
+.compliance-coll__compliance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.compliance-coll__compliance-card {
+    background: #12121a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.compliance-coll__compliance-icon {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.compliance-coll__compliance-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.compliance-coll__compliance-desc {
+    font-size: 0.9rem;
+    color: #8a8a9a;
+    line-height: 1.5;
+}
+
+/* Governance grid */
+.compliance-coll__governance-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.compliance-coll__gov-card {
+    background: #12121a;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.compliance-coll__gov-card--aps {
+    border-color: rgba(46, 139, 87, 0.2);
+}
+
+.compliance-coll__gov-header {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.compliance-coll__gov-icon {
+    font-size: 2rem;
+}
+
+.compliance-coll__gov-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.compliance-coll__gov-role {
+    font-size: 0.85rem;
+    color: #D4AF37;
+}
+
+.compliance-coll__gov-card--aps .compliance-coll__gov-role {
+    color: #2E8B57;
+}
+
+.compliance-coll__gov-desc {
+    font-size: 0.95rem;
+    color: #8a8a9a;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.compliance-coll__gov-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.compliance-coll__gov-list li {
+    font-size: 0.85rem;
+    color: #6a6a7a;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    padding-left: 20px;
+}
+
+.compliance-coll__gov-list li:last-child {
+    border-bottom: none;
+}
+
+.compliance-coll__gov-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #D4AF37;
+}
+
+.compliance-coll__gov-card--aps .compliance-coll__gov-list li::before {
+    color: #2E8B57;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .compliance-coll__badges {
+        grid-template-columns: 1fr;
+    }
+
+    .compliance-coll__dual {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .compliance-coll__separator {
+        transform: rotate(90deg);
+    }
+
+    .compliance-coll__governance-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .compliance-coll {
+        padding: 60px 16px;
+    }
+
+    .compliance-coll__governance-preview {
+        padding: 20px 16px;
+    }
+
+    .compliance-coll__entity {
+        padding: 16px 24px;
+    }
+}
