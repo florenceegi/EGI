@@ -159,7 +159,7 @@ const vertexShader = `
     }
     
     // Phase 4: ATTIVAZIONE EPP - Organic flowing growth like tree bark
-    if (uPhase >= 3.0 && uPhase <= 4.0) {
+    if (uPhase >= 3.0 && uPhase < 4.0) {
       float growthPhase = uPhase - 3.0;
       
       // Vertical wood grain pattern
@@ -177,6 +177,30 @@ const vertexShader = `
       // Pulsating life
       float pulse = sin(uTime * 2.0) * 0.5 + 0.5;
       pos += normal * pulse * 0.03 * growthPhase;
+    }
+    
+    // Phase 5: AMMk MARKETPLACE - Fluid organic blob morphing
+    if (uPhase >= 4.0 && uPhase <= 5.0) {
+      float ammkPhase = uPhase - 4.0;
+      
+      // Multi-layered organic noise for fluid blob effect
+      float noise1 = snoise(pos * 1.5 + uTime * 0.3);
+      float noise2 = snoise(pos * 3.0 + uTime * 0.5) * 0.5;
+      float noise3 = snoise(pos * 6.0 + uTime * 0.7) * 0.25;
+      float totalNoise = noise1 + noise2 + noise3;
+      
+      // Smooth morphing from tree to blob
+      float blobDisplacement = totalNoise * 0.4 * ammkPhase;
+      
+      // Pulsating organic breathing
+      float breathe = sin(uTime * 1.5) * 0.1 * ammkPhase;
+      
+      // Swirling motion
+      float swirl = sin(pos.y * 3.0 + uTime) * 0.1 * ammkPhase;
+      pos.x += swirl;
+      pos.z += cos(pos.y * 3.0 + uTime) * 0.1 * ammkPhase;
+      
+      pos += normal * (blobDisplacement + breathe);
     }
     
     vPosition = pos;
@@ -296,7 +320,7 @@ const fragmentShader = `
     }
     
     // Phase 4: ATTIVAZIONE EPP - Organic GREEN with visible growth rings
-    if (uPhase >= 3.0 && uPhase <= 4.0) {
+    if (uPhase >= 3.0 && uPhase < 4.0) {
       float eppPhase = uPhase - 3.0;
       
       // Wood grain / growth rings
@@ -319,6 +343,37 @@ const fragmentShader = `
       // Glowing veins
       float veins = smoothstep(0.95, 1.0, abs(sin(vPosition.x * 20.0)) * abs(sin(vPosition.z * 20.0)));
       color += vec3(0.4, 1.0, 0.5) * veins * eppPhase;
+    }
+    
+    // Phase 5: AMMk MARKETPLACE - Purple/Gold fluid gradient
+    if (uPhase >= 4.0 && uPhase <= 5.0) {
+      float ammkPhase = uPhase - 4.0;
+      
+      // Fresnel for soft glow edges
+      vec3 viewDir = normalize(cameraPosition - vPosition);
+      float fresnel = pow(1.0 - abs(dot(viewDir, vNormal)), 2.5);
+      
+      // Animated gradient purple -> gold
+      float gradientShift = sin(uTime * 0.5 + vPosition.y * 2.0) * 0.5 + 0.5;
+      
+      vec3 purple = vec3(0.5, 0.1, 0.8);
+      vec3 gold = vec3(0.85, 0.65, 0.2);
+      vec3 cyan = vec3(0.1, 0.8, 0.9);
+      
+      // Mix colors based on position and time
+      vec3 baseColor = mix(purple, gold, gradientShift);
+      baseColor = mix(baseColor, cyan, fresnel * 0.4);
+      
+      // Add displacement-based color variation
+      baseColor += vec3(vDisplacement * 0.3);
+      
+      // Soft glow at edges
+      float glow = fresnel * 0.8;
+      vec3 glowColor = mix(gold, vec3(1.0, 0.9, 0.7), fresnel);
+      
+      // Transition from green to purple/gold
+      vec3 prevColor = mix(vec3(0.1, 0.3, 0.15), vec3(0.3, 0.8, 0.4), 0.5);
+      color = mix(prevColor, baseColor + glowColor * glow, ammkPhase);
     }
     
     gl_FragColor = vec4(color, 1.0);
@@ -396,7 +451,7 @@ function ParticleSystem({ count, phase }: ParticleSystemProps) {
       }
       
       // Phase 4: ATTIVAZIONE EPP - Organic spiral upward (like tree growth)
-      if (phase >= 3.0) {
+      if (phase >= 3.0 && phase < 4.0) {
         const eppPhase = phase - 3.0;
         const spiralAngle = (i / count) * Math.PI * 8 + state.clock.elapsedTime * 0.5;
         const spiralRadius = 1.5 + Math.sin(i * 0.1) * 0.5;
@@ -404,6 +459,21 @@ function ParticleSystem({ count, phase }: ParticleSystemProps) {
         particle.position.x = Math.cos(spiralAngle) * spiralRadius * (1 - eppPhase * 0.3);
         particle.position.z = Math.sin(spiralAngle) * spiralRadius * (1 - eppPhase * 0.3);
         particle.position.y = (i / count) * 4 - 2 + Math.sin(state.clock.elapsedTime + i * 0.1) * 0.2;
+      }
+      
+      // Phase 5: AMMk MARKETPLACE - Orbital flow around blob
+      if (phase >= 4.0) {
+        const ammkPhase = phase - 4.0;
+        const orbitAngle = (i / count) * Math.PI * 2 + state.clock.elapsedTime * 0.3;
+        const orbitRadius = 3 + Math.sin(i * 0.05 + state.clock.elapsedTime) * 1;
+        const verticalOffset = Math.sin(orbitAngle * 3 + state.clock.elapsedTime) * 1.5;
+        
+        particle.position.x = Math.cos(orbitAngle) * orbitRadius;
+        particle.position.z = Math.sin(orbitAngle) * orbitRadius;
+        particle.position.y = verticalOffset;
+        
+        // Gentle pulsing scale
+        particle.scale = 0.5 + Math.sin(state.clock.elapsedTime * 2 + i * 0.1) * 0.3;
       }
       
       dummy.position.copy(particle.position);
@@ -420,8 +490,8 @@ function ParticleSystem({ count, phase }: ParticleSystemProps) {
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
       <sphereGeometry args={[1, 16, 16]} />
       <meshStandardMaterial
-        color={phase < 1.0 ? "#ffa500" : phase < 2.0 ? "#00ffcc" : phase < 3.0 ? "#0088ff" : "#22ff44"}
-        emissive={phase < 1.0 ? "#ff6600" : phase < 2.0 ? "#00ccaa" : phase < 3.0 ? "#0066cc" : "#00cc22"}
+        color={phase < 1.0 ? "#ffa500" : phase < 2.0 ? "#00ffcc" : phase < 3.0 ? "#0088ff" : phase < 4.0 ? "#22ff44" : "#8b5cf6"}
+        emissive={phase < 1.0 ? "#ff6600" : phase < 2.0 ? "#00ccaa" : phase < 3.0 ? "#0066cc" : phase < 4.0 ? "#00cc22" : "#d4af37"}
         emissiveIntensity={2.0}
         toneMapped={false}
       />
@@ -612,11 +682,21 @@ function Scene3D({ phase }: Scene3DProps) {
       )}
       
       {/* Phase 4: Natural green (sun through leaves) */}
-      {phase >= 3.0 && (
+      {phase >= 3.0 && phase < 4.0 && (
         <>
           <directionalLight position={[5, 10, 5]} intensity={1.5} color="#a8e6a1" />
           <pointLight position={[0, -2, 0]} intensity={1.0} color="#1a5c2e" />
           <hemisphereLight groundColor="#1a3a1f" color="#90ee90" intensity={0.8} />
+        </>
+      )}
+      
+      {/* Phase 5: AMMk Marketplace - Purple/Gold ambient */}
+      {phase >= 4.0 && (
+        <>
+          <pointLight position={[3, 3, 3]} intensity={2.0} color="#8b5cf6" />
+          <pointLight position={[-3, -2, -3]} intensity={1.5} color="#d4af37" />
+          <pointLight position={[0, -3, 2]} intensity={1.0} color="#06b6d4" />
+          <hemisphereLight groundColor="#1a0a2e" color="#d4af37" intensity={0.6} />
         </>
       )}
       
@@ -653,12 +733,12 @@ function HeroAnimation3D() {
   
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // ScrollTrigger timeline for 4 phases
+      // ScrollTrigger timeline for 5 phases (including AMMk)
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: 'top top',
-          end: '+=400%',
+          end: '+=500%',
           scrub: 1,
           pin: true,
         },
@@ -669,7 +749,7 @@ function HeroAnimation3D() {
         {
           duration: 1,
           onUpdate: function () {
-            setPhase(this.progress() * 4);
+            setPhase(this.progress() * 5);
           },
         }
       );
@@ -684,10 +764,11 @@ function HeroAnimation3D() {
     'SCANSIONE BLOCKCHAIN',
     'CERTIFICAZIONE',
     'ATTIVAZIONE EPP',
+    'AMMk MARKETPLACE',
   ];
   
   const currentPhaseIndex = Math.floor(phase);
-  const currentLabel = phaseLabels[Math.min(currentPhaseIndex, 3)];
+  const currentLabel = phaseLabels[Math.min(currentPhaseIndex, 4)];
   
   return (
     <div ref={containerRef} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: 1 }}>

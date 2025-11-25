@@ -187,7 +187,7 @@ function MainApp() {
     };
 
     document.addEventListener('touchstart', handleTap);
-    
+
     return () => {
       document.removeEventListener('touchstart', handleTap);
     };

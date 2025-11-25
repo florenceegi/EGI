@@ -241,12 +241,13 @@ OS3 fornisce:
 - **Modulo 1**: I 6 Pilastri Cardinali (OS2 Heritage)
 - **Modulo 2**: REGOLA ZERO - Il Settimo Pilastro
 - **Modulo 3**: Sistema di Priorità P0-P3
-- **Modulo 4**: Le 7 Regole P0 Blocking
-- **Modulo 5**: Pattern Operativi e Implementation
-- **Modulo 6**: Partnership Model
-- **Modulo 7**: Esempi Pratici OS3-Compliant
-- **Modulo 8**: Toolkit Operativo
-- **Modulo 9**: Metriche, Vision e Futuro
+- **Modulo 4**: TOON Format Standard - AI-Native Data Format
+- **Modulo 5**: Le 7 Regole P0 Blocking
+- **Modulo 6**: Pattern Operativi e Implementation
+- **Modulo 7**: Partnership Model
+- **Modulo 8**: Esempi Pratici OS3-Compliant
+- **Modulo 9**: Toolkit Operativo
+- **Modulo 10**: Metriche, Vision e Futuro
 
 ---
 
