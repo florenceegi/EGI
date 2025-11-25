@@ -308,6 +308,7 @@ Route::get('/archetypes/pa-entity', function () {
 */
 Route::prefix('info')->name('info.')->group(function () {
     Route::get('/florenceegi', [App\Http\Controllers\Info\FlorenceEgiController::class, 'index'])->name('florence-egi');
+    Route::get('/florenceegi-light', [App\Http\Controllers\Info\FlorenceEgiController::class, 'light'])->name('florence-egi-light');
 
     Route::get('/disclaimer', function () {
         return view('info.disclaimer');
@@ -566,9 +567,16 @@ Route::post('/api/collections/{id}/epp-project', [CollectionsController::class, 
 | Wallet & Authentication Routes
 |--------------------------------------------------------------------------
 */
+// FEGI Key-based wallet (simulated/MVP)
 Route::post('/wallet/connect', [WalletConnectController::class, 'connect'])->name('wallet.connect');
 Route::post('/api/wallet/disconnect', [WalletConnectController::class, 'disconnect'])->name('wallet.disconnect');
 Route::get('/api/wallet/status', [WalletConnectController::class, 'status'])->name('wallet.status');
+
+// Real Algorand Wallet routes
+Route::post('/wallet/real/verify', [\App\Http\Controllers\RealWalletConnectController::class, 'verify'])->name('wallet.real.verify');
+Route::post('/wallet/real/connect', [\App\Http\Controllers\RealWalletConnectController::class, 'connect'])->name('wallet.real.connect');
+Route::post('/wallet/real/create-guest', [\App\Http\Controllers\RealWalletConnectController::class, 'createGuest'])->name('wallet.real.create-guest');
+Route::post('/wallet/real/prepare-register', [\App\Http\Controllers\RealWalletConnectController::class, 'prepareRegister'])->name('wallet.real.prepare-register');
 
 /*
 |--------------------------------------------------------------------------

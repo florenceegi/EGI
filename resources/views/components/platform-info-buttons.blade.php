@@ -13,7 +13,7 @@
             <div class="flex gap-3 px-2 sm:gap-4">
 
                 {{-- Bottone FlorenceEgi ? --}}
-                <a href="{{ route('info.florence-egi') }}"
+                <a href="{{ route('info.florence-egi-light') }}"
                     class="flex flex-shrink-0 snap-start items-center rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-xs font-medium text-white transition-all duration-200 hover:scale-105 hover:border-gray-600 hover:bg-gray-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-gray-900">
                     <svg class="mr-2 h-4 w-4 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
