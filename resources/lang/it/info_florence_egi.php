@@ -17,11 +17,11 @@ return [
 
     // Meta Tags
     'meta' => [
-        'title' => 'FlorenceEGI - EGIZZALO: Se Esiste, Vale. Il Primo Asset Market Maker.',
+        'title' => 'FlorenceEGI - Se Esiste, EGIZZALO. Se lo EGIZZI, Vale. Il Primo Asset Market Maker.',
         'description' => 'Trasforma qualsiasi opera, prodotto o progetto in un asset digitale certificato (EGI). Qualità artistica, liquidità e impatto ambientale in un click.',
         'keywords' => 'FlorenceEGI, EGIZZALO, Asset Market Maker, NFT sostenibili, Algorand, Blockchain Italia, EGI, EPP, Co-creazione',
         'author' => 'FlorenceEGI',
-        'og_title' => 'EGIZZALO: Se Esiste, Vale - FlorenceEGI',
+        'og_title' => 'Se Esiste, EGIZZALO. Se lo EGIZZI, Vale.- FlorenceEGI',
         'og_description' => 'Non siamo un marketplace. Siamo la tua infrastruttura per creare valore certificato su blockchain con impatto reale.',
     ],
 
