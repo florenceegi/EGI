@@ -285,31 +285,31 @@
     </style>
 </head>
 
-<body class="bg-rinascimento-gradient font-corpo min-h-screen text-grigio-pietra">
+<body class="min-h-screen bg-rinascimento-gradient font-corpo text-grigio-pietra">
     <!-- Progress Bar -->
     <div id="form-progress" class="form-progress" style="width: 0%"></div>
 
     <!-- Skip Link -->
     <a href="#main-content"
-        class="bg-oro-fiorentino sr-only rounded px-4 py-2 text-white focus:not-sr-only focus:absolute focus:left-4 focus:top-4">
+        class="px-4 py-2 text-white rounded sr-only bg-oro-fiorentino focus:not-sr-only focus:absolute focus:left-4 focus:top-4">
         {{ __('register.skip_to_main') }}
     </a>
 
-    <div class="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-center min-h-screen px-4 py-12 sm:px-6 lg:px-8">
         <div class="w-full max-w-2xl space-y-8">
 
-            <header class="fade-in text-center" role="banner">
-                <div class="bg-oro-fiorentino mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full">
-                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            <header class="text-center fade-in" role="banner">
+                <div class="flex items-center justify-center w-16 h-16 mx-auto mb-6 rounded-full bg-oro-fiorentino">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                 </div>
-                <h1 class="font-rinascimento mb-4 text-4xl font-bold text-blu-algoritmo sm:text-5xl">
+                <h1 class="mb-4 text-4xl font-bold font-rinascimento text-blu-algoritmo sm:text-5xl">
                     {!! __('register.main_title_html') !!}
                 </h1>
-                <p class="mx-auto max-w-lg text-xl leading-relaxed text-grigio-pietra">
+                <p class="max-w-lg mx-auto text-xl leading-relaxed text-grigio-pietra">
                     {{ __('register.subtitle') }}
                 </p>
                 <p class="mt-4 font-semibold text-verde-rinascita">
@@ -318,10 +318,10 @@
             </header>
 
             <main id="main-content" role="main" aria-labelledby="registration-title">
-                <div class="glass-effect fade-in rounded-2xl p-8 shadow-xl sm:p-10">
+                <div class="p-8 shadow-xl glass-effect fade-in rounded-2xl sm:p-10">
                     <div class="mb-8">
                         <h2 id="registration-title"
-                            class="font-rinascimento text-center text-2xl font-semibold text-blu-algoritmo">
+                            class="text-2xl font-semibold text-center font-rinascimento text-blu-algoritmo">
                             {{ __('register.form_title') }}
                         </h2>
                         <p class="mt-2 text-center text-grigio-pietra">
@@ -331,10 +331,10 @@
 
                     {{-- Error Messages --}}
                     @if ($errors->any() || session('error'))
-                        <div class="fade-in mb-6 rounded-lg border border-rosso-urgenza bg-red-50 p-4" role="alert"
+                        <div class="p-4 mb-6 border rounded-lg fade-in border-rosso-urgenza bg-red-50" role="alert"
                             aria-live="polite">
                             <div class="flex">
-                                <svg class="h-5 w-5 text-rosso-urgenza" fill="currentColor" viewBox="0 0 20 20"
+                                <svg class="w-5 h-5 text-rosso-urgenza" fill="currentColor" viewBox="0 0 20 20"
                                     aria-hidden="true">
                                     <path fill-rule="evenodd"
                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -348,7 +348,7 @@
                                             <p>{{ session('error') }}</p>
                                         @endif
                                         @if ($errors->any())
-                                            <ul class="list-inside list-disc">
+                                            <ul class="list-disc list-inside">
                                                 @foreach ($errors->all() as $error)
                                                     <li>{{ $error }}</li>
                                                 @endforeach
@@ -381,12 +381,6 @@
                                                 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1',
                                             'color' => 'verde-rinascita',
                                         ],
-                                        'commissioner' => [
-                                            // <-- 'collector' rinominato in 'commissioner'
-                                            'icon_svg_path' =>
-                                                'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z', // <-- Icona aggiornata con stile outline
-                                            'color' => 'rosso-committente', // <-- Colore rosso per il Commissioner
-                                        ],
                                         'collector' => [
                                             'icon_svg_path' =>
                                                 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z',
@@ -400,11 +394,6 @@
                                         'trader_pro' => [
                                             'icon_svg_path' => 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
                                             'color' => 'amber-500',
-                                        ],
-                                        'epp' => [
-                                            'icon_svg_path' =>
-                                                'M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c1.483 0 2.795-.298 3.996-.786M12 21c-1.483 0-2.795-.298-3.996-.786M3.786 15.004A9.004 9.004 0 0112 3c4.032 0 7.406 2.226 8.716 5.253M3.786 15.004A9.004 9.004 0 0012 21m-2.284-5.253A2.998 2.998 0 0012 15a2.998 2.998 0 002.284-1.253M12 12a2.998 2.998 0 01-2.284-1.253A2.998 2.998 0 0112 9a2.998 2.998 0 012.284 1.253A2.998 2.998 0 0112 12Z',
-                                            'color' => 'teal-500',
                                         ],
                                         'pa_entity' => [
                                             'icon_svg_path' =>
@@ -425,7 +414,7 @@
                                         <div class="text-center">
                                             <div
                                                 class="bg-{{ $details['color'] }} user-type-icon mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full transition-transform group-hover:scale-110">
-                                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor"
+                                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24" aria-hidden="true">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2" d="{{ $details['icon_svg_path'] }}" />
@@ -441,7 +430,7 @@
                                             {{-- ✅ NUOVO LINK AI TERMINI --}}
                                             <a href="{{ route('legal.terms', ['userType' => $type, 'redirect_url' => url()->full()]) }}"
                                                 target="_blank" rel="noopener noreferrer"
-                                                class="text-oro-fiorentino mt-3 inline-block text-xs transition-colors hover:text-verde-rinascita hover:underline"
+                                                class="inline-block mt-3 text-xs transition-colors text-oro-fiorentino hover:text-verde-rinascita hover:underline"
                                                 onclick="event.stopPropagation();">
                                                 {{ __('register.read_the_terms') }}
                                             </a>
@@ -455,13 +444,13 @@
                         </fieldset>
 
                         {{-- Personal Information --}}
-                        <div class="border-oro-fiorentino/20 grid grid-cols-1 gap-6 border-t pt-6">
+                        <div class="grid grid-cols-1 gap-6 pt-6 border-t border-oro-fiorentino/20">
                             <div>
                                 <label for="name"
-                                    class="mb-2 block text-sm font-medium text-blu-algoritmo">{{ __('register.label_name') }}
+                                    class="block mb-2 text-sm font-medium text-blu-algoritmo">{{ __('register.label_name') }}
                                     *</label>
                                 <input id="name" name="name" type="text" autocomplete="name" required
-                                    class="input-rinascimento font-corpo block w-full px-4 py-3"
+                                    class="block w-full px-4 py-3 input-rinascimento font-corpo"
                                     value="{{ old('name') }}" aria-describedby="name-error name-help">
                                 <p id="name-help" class="mt-1 text-xs text-grigio-pietra">
                                     {{ __('register.name_help') }}</p>
@@ -472,9 +461,9 @@
                             </div>
                             <div>
                                 <label for="nick_name"
-                                    class="mb-2 block text-sm font-medium text-blu-algoritmo">{{ __('register.label_nick_name') }}</label>
+                                    class="block mb-2 text-sm font-medium text-blu-algoritmo">{{ __('register.label_nick_name') }}</label>
                                 <input id="nick_name" name="nick_name" type="text" autocomplete="nickname"
-                                    class="input-rinascimento font-corpo block w-full px-4 py-3"
+                                    class="block w-full px-4 py-3 input-rinascimento font-corpo"
                                     value="{{ old('nick_name') }}" aria-describedby="nick-name-error nick-name-help">
                                 <p id="nick-name-help" class="mt-1 text-xs text-grigio-pietra">
                                     {{ __('register.nick_name_help') }}
@@ -486,10 +475,10 @@
                             </div>
                             <div>
                                 <label for="email"
-                                    class="mb-2 block text-sm font-medium text-blu-algoritmo">{{ __('register.label_email') }}
+                                    class="block mb-2 text-sm font-medium text-blu-algoritmo">{{ __('register.label_email') }}
                                     *</label>
                                 <input id="email" name="email" type="email" autocomplete="email" required
-                                    class="input-rinascimento font-corpo block w-full px-4 py-3"
+                                    class="block w-full px-4 py-3 input-rinascimento font-corpo"
                                     value="{{ old('email') }}" aria-describedby="email-error email-help">
                                 <p id="email-help" class="mt-1 text-xs text-grigio-pietra">
                                     {{ __('register.email_help') }}</p>
@@ -504,10 +493,10 @@
                         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                             <div>
                                 <label for="password"
-                                    class="mb-2 block text-sm font-medium text-blu-algoritmo">{{ __('register.label_password') }}
+                                    class="block mb-2 text-sm font-medium text-blu-algoritmo">{{ __('register.label_password') }}
                                     *</label>
                                 <input id="password" name="password" type="password" autocomplete="new-password"
-                                    required class="input-rinascimento font-corpo block w-full px-4 py-3"
+                                    required class="block w-full px-4 py-3 input-rinascimento font-corpo"
                                     aria-describedby="password-error password-help password-strength-indicator">
                                 <div id="password-strength-bar" class="password-strength"></div>
                                 <p id="password-help" class="mt-2 text-xs text-grigio-pietra">
@@ -519,11 +508,11 @@
                             </div>
                             <div>
                                 <label for="password_confirmation"
-                                    class="mb-2 block text-sm font-medium text-blu-algoritmo">{{ __('register.label_password_confirmation') }}
+                                    class="block mb-2 text-sm font-medium text-blu-algoritmo">{{ __('register.label_password_confirmation') }}
                                     *</label>
                                 <input id="password_confirmation" name="password_confirmation" type="password"
                                     autocomplete="new-password" required
-                                    class="input-rinascimento font-corpo block w-full px-4 py-3"
+                                    class="block w-full px-4 py-3 input-rinascimento font-corpo"
                                     aria-describedby="password-confirmation-error password-confirmation-help">
                                 <p id="password-confirmation-help" class="mt-1 text-xs text-grigio-pietra">
                                     {{ __('register.password_confirmation_help') }}</p>
@@ -535,11 +524,11 @@
                         </div>
 
                         {{-- GDPR Consent Section --}}
-                        <fieldset class="border-oro-fiorentino/20 space-y-4 border-t pt-6">
+                        <fieldset class="pt-6 space-y-4 border-t border-oro-fiorentino/20">
                             <legend class="mb-4 text-lg font-semibold text-blu-algoritmo">
                                 {{ __('register.privacy_legend') }}
                                 <span
-                                    class="mt-1 block text-sm font-normal text-grigio-pietra">{{ __('register.privacy_subtitle') }}</span>
+                                    class="block mt-1 text-sm font-normal text-grigio-pietra">{{ __('register.privacy_subtitle') }}</span>
                             </legend>
 
                             {{-- Required Legal Consents --}}
@@ -561,16 +550,16 @@
                                     <div class="consent-card {{ $errors->has($consentKey) ? 'error' : '' }} bg-green-50/50 p-4"
                                         data-consent-type="required">
                                         <div class="flex items-start">
-                                            <div class="flex h-6 items-center">
+                                            <div class="flex items-center h-6">
                                                 <input id="{{ $consentKey }}" name="{{ $consentKey }}"
                                                     type="checkbox" required value="1"
-                                                    class="text-oro-fiorentino border-oro-fiorentino focus:ring-oro-fiorentino h-4 w-4 rounded"
+                                                    class="w-4 h-4 rounded text-oro-fiorentino border-oro-fiorentino focus:ring-oro-fiorentino"
                                                     {{ old($consentKey) ? 'checked' : '' }}
                                                     aria-describedby="{{ $consentKey }}-description">
                                             </div>
                                             <div class="ml-3">
                                                 <label for="{{ $consentKey }}"
-                                                    class="cursor-pointer text-sm font-medium text-blu-algoritmo">{{ __('register.consent_label_' . $consentKey) }}
+                                                    class="text-sm font-medium cursor-pointer text-blu-algoritmo">{{ __('register.consent_label_' . $consentKey) }}
                                                     *</label>
                                                 <p id="{{ $consentKey }}-description"
                                                     class="mt-1 text-xs text-grigio-pietra">
@@ -599,25 +588,25 @@
                                 <h4 class="text-sm font-medium text-blu-algoritmo">
                                     {{ __('register.optional_consents_title') }}
                                     <span
-                                        class="mt-1 block text-xs font-normal text-grigio-pietra">{{ __('register.optional_consents_subtitle') }}</span>
+                                        class="block mt-1 text-xs font-normal text-grigio-pietra">{{ __('register.optional_consents_subtitle') }}</span>
                                 </h4>
                                 @php
                                     $optionalConsents = ['analytics', 'marketing', 'profiling'];
                                 @endphp
                                 @foreach ($optionalConsents as $consentType)
-                                    <div class="consent-card p-4" data-consent-type="optional">
+                                    <div class="p-4 consent-card" data-consent-type="optional">
                                         <div class="flex items-start">
-                                            <div class="flex h-6 items-center">
+                                            <div class="flex items-center h-6">
                                                 <input id="consents_{{ $consentType }}"
                                                     name="consents[{{ $consentType }}]" type="checkbox"
                                                     value="1"
-                                                    class="h-4 w-4 rounded border-verde-rinascita text-verde-rinascita focus:ring-verde-rinascita"
+                                                    class="w-4 h-4 rounded border-verde-rinascita text-verde-rinascita focus:ring-verde-rinascita"
                                                     {{ old('consents.' . $consentType) ? 'checked' : '' }}
                                                     aria-describedby="{{ $consentType }}-description">
                                             </div>
                                             <div class="ml-3">
                                                 <label for="consents_{{ $consentType }}"
-                                                    class="cursor-pointer text-sm font-medium text-blu-algoritmo">{{ __('register.consent_label_optional_' . $consentType) }}</label>
+                                                    class="text-sm font-medium cursor-pointer text-blu-algoritmo">{{ __('register.consent_label_optional_' . $consentType) }}</label>
                                                 <p id="{{ $consentType }}-description"
                                                     class="mt-1 text-xs text-grigio-pietra">
                                                     {{ __('register.consent_desc_optional_' . $consentType) }}</p>
@@ -630,29 +619,29 @@
 
                         <div class="pt-6">
                             <button type="submit" id="submit-button"
-                                class="btn-rinascimento focus:ring-oro-fiorentino w-full rounded-xl px-6 py-4 text-lg font-semibold focus:outline-none focus:ring-4 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                class="w-full px-6 py-4 text-lg font-semibold btn-rinascimento focus:ring-oro-fiorentino rounded-xl focus:outline-none focus:ring-4 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:opacity-50"
                                 aria-describedby="submit-help">
                                 <span id="submit-text">{{ __('register.submit_button') }}</span>
                             </button>
-                            <p id="submit-help" class="mt-3 text-center text-xs text-grigio-pietra">
+                            <p id="submit-help" class="mt-3 text-xs text-center text-grigio-pietra">
                                 {{ __('register.submit_help') }}</p>
                         </div>
 
-                        <div class="border-oro-fiorentino/20 border-t pt-4 text-center">
+                        <div class="pt-4 text-center border-t border-oro-fiorentino/20">
                             <p class="text-grigio-pietra">
                                 {{ __('register.already_registered_prompt') }}
                                 <a href="{{ route('login') }}"
-                                    class="text-oro-fiorentino font-medium transition-colors hover:text-verde-rinascita">{{ __('register.login_link') }}</a>
+                                    class="font-medium transition-colors text-oro-fiorentino hover:text-verde-rinascita">{{ __('register.login_link') }}</a>
                             </p>
                         </div>
                     </form>
                 </div>
             </main>
 
-            <footer class="fade-in space-y-4 text-center" role="contentinfo">
+            <footer class="space-y-4 text-center fade-in" role="contentinfo">
                 <div class="flex items-center justify-center space-x-6 text-sm text-grigio-pietra">
                     <div class="flex items-center">
-                        <svg class="mr-2 h-4 w-4 text-verde-rinascita" fill="currentColor" viewBox="0 0 20 20"
+                        <svg class="w-4 h-4 mr-2 text-verde-rinascita" fill="currentColor" viewBox="0 0 20 20"
                             aria-hidden="true">
                             <path fill-rule="evenodd"
                                 d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
@@ -661,7 +650,7 @@
                         {{ __('register.footer_gdpr') }}
                     </div>
                     <div class="flex items-center">
-                        <svg class="mr-2 h-4 w-4 text-verde-rinascita" fill="currentColor" viewBox="0 0 20 20"
+                        <svg class="w-4 h-4 mr-2 text-verde-rinascita" fill="currentColor" viewBox="0 0 20 20"
                             aria-hidden="true">
                             <path fill-rule="evenodd"
                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -670,7 +659,7 @@
                         {{ __('register.footer_data_protected') }}
                     </div>
                     <div class="flex items-center">
-                        <svg class="mr-2 h-4 w-4 text-verde-rinascita" fill="currentColor" viewBox="0 0 20 20"
+                        <svg class="w-4 h-4 mr-2 text-verde-rinascita" fill="currentColor" viewBox="0 0 20 20"
                             aria-hidden="true">
                             <path fill-rule="evenodd"
                                 d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
@@ -679,7 +668,7 @@
                         {{ __('register.footer_real_impact') }}
                     </div>
                 </div>
-                <p class="mx-auto max-w-md text-xs text-grigio-pietra">{{ __('register.footer_compliance_note') }}</p>
+                <p class="max-w-md mx-auto text-xs text-grigio-pietra">{{ __('register.footer_compliance_note') }}</p>
             </footer>
         </div>
     </div>

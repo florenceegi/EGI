@@ -18,15 +18,13 @@ use Tests\TestCase;
  *
  * @Oracode v3.0
  */
-class WalletRedemptionTest extends TestCase
-{
+class WalletRedemptionTest extends TestCase {
     use DatabaseTransactions;
 
     protected User $user;
     protected Wallet $wallet;
 
-    protected function setUp(): void
-    {
+    protected function setUp(): void {
         parent::setUp();
 
         // Crea un utente di test
@@ -48,8 +46,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: La pagina di redemption è accessibile solo agli utenti autenticati
      */
-    public function test_redemption_page_requires_authentication(): void
-    {
+    public function test_redemption_page_requires_authentication(): void {
         $response = $this->get(route('wallet.redemption'));
 
         $response->assertRedirect(route('login'));
@@ -58,8 +55,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: La pagina di redemption viene mostrata correttamente
      */
-    public function test_redemption_page_loads_correctly(): void
-    {
+    public function test_redemption_page_loads_correctly(): void {
         $response = $this->actingAs($this->user)
             ->get(route('wallet.redemption'));
 
@@ -72,8 +68,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Utente senza wallet viene reindirizzato
      */
-    public function test_user_without_wallet_is_redirected(): void
-    {
+    public function test_user_without_wallet_is_redirected(): void {
         $userWithoutWallet = User::factory()->create();
 
         $response = $this->actingAs($userWithoutWallet)
@@ -86,8 +81,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Wallet già riscattato mostra stato "già riscattato"
      */
-    public function test_already_redeemed_wallet_shows_correct_state(): void
-    {
+    public function test_already_redeemed_wallet_shows_correct_state(): void {
         // Svuota i campi della seed phrase (simula riscatto avvenuto)
         $this->wallet->update([
             'secret_ciphertext' => null,
@@ -106,8 +100,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Step 1 - Conferma con testo corretto genera token
      */
-    public function test_confirm_redemption_with_correct_text_generates_token(): void
-    {
+    public function test_confirm_redemption_with_correct_text_generates_token(): void {
         $response = $this->actingAs($this->user)
             ->postJson(route('wallet.redemption.confirm'), [
                 'confirmation_text' => 'CONFERMO RISCATTO',
@@ -132,8 +125,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Step 1 - Conferma con testo errato viene rifiutata
      */
-    public function test_confirm_redemption_with_wrong_text_fails(): void
-    {
+    public function test_confirm_redemption_with_wrong_text_fails(): void {
         $response = $this->actingAs($this->user)
             ->postJson(route('wallet.redemption.confirm'), [
                 'confirmation_text' => 'testo sbagliato',
@@ -148,8 +140,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Step 1 - Conferma senza testo viene rifiutata (validation)
      */
-    public function test_confirm_redemption_without_text_fails_validation(): void
-    {
+    public function test_confirm_redemption_without_text_fails_validation(): void {
         $response = $this->actingAs($this->user)
             ->postJson(route('wallet.redemption.confirm'), []);
 
@@ -160,8 +151,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Step 2 - Download senza token valido viene rifiutato
      */
-    public function test_download_without_valid_token_is_forbidden(): void
-    {
+    public function test_download_without_valid_token_is_forbidden(): void {
         $response = $this->actingAs($this->user)
             ->get(route('wallet.redemption.download', ['token' => 'invalid_token']));
 
@@ -171,8 +161,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Step 2 - Download con token scaduto viene rifiutato
      */
-    public function test_download_with_expired_token_is_forbidden(): void
-    {
+    public function test_download_with_expired_token_is_forbidden(): void {
         $token = bin2hex(random_bytes(32));
 
         // Imposta token scaduto (1 ora fa)
@@ -191,8 +180,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Step 2 - Download con token valido restituisce file
      */
-    public function test_download_with_valid_token_returns_seed_phrase_file(): void
-    {
+    public function test_download_with_valid_token_returns_seed_phrase_file(): void {
         $token = bin2hex(random_bytes(32));
 
         // Imposta sessione valida
@@ -227,8 +215,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Step 3 - Finalizzazione senza checkbox viene rifiutata
      */
-    public function test_finalize_without_confirmation_fails_validation(): void
-    {
+    public function test_finalize_without_confirmation_fails_validation(): void {
         $response = $this->actingAs($this->user)
             ->postJson(route('wallet.redemption.finalize'), []);
 
@@ -239,8 +226,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Step 3 - Finalizzazione con checkbox false viene rifiutata
      */
-    public function test_finalize_with_false_confirmation_fails(): void
-    {
+    public function test_finalize_with_false_confirmation_fails(): void {
         $response = $this->actingAs($this->user)
             ->postJson(route('wallet.redemption.finalize'), [
                 'confirm_deletion' => false,
@@ -252,8 +238,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Step 3 - Finalizzazione cancella la seed phrase dal DB
      */
-    public function test_finalize_deletes_seed_phrase_from_database(): void
-    {
+    public function test_finalize_deletes_seed_phrase_from_database(): void {
         // Verifica che la seed phrase esista prima
         $this->assertNotNull($this->wallet->secret_ciphertext);
 
@@ -278,8 +263,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Step 3 - Finalizzazione su wallet già riscattato restituisce errore
      */
-    public function test_finalize_on_already_redeemed_wallet_fails(): void
-    {
+    public function test_finalize_on_already_redeemed_wallet_fails(): void {
         // Simula wallet già riscattato
         $this->wallet->update([
             'secret_ciphertext' => null,
@@ -302,8 +286,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Flusso completo di redemption (integration test)
      */
-    public function test_complete_redemption_flow(): void
-    {
+    public function test_complete_redemption_flow(): void {
         // Mock del WalletProvisioningService
         $mockWalletService = Mockery::mock(WalletProvisioningService::class);
         $mockWalletService->shouldReceive('retrieveMnemonic')
@@ -343,8 +326,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Conferma case-insensitive (lowercase)
      */
-    public function test_confirm_redemption_is_case_insensitive(): void
-    {
+    public function test_confirm_redemption_is_case_insensitive(): void {
         $response = $this->actingAs($this->user)
             ->postJson(route('wallet.redemption.confirm'), [
                 'confirmation_text' => 'confermo riscatto', // lowercase
@@ -357,8 +339,7 @@ class WalletRedemptionTest extends TestCase
     /**
      * Test: Conferma con spazi extra viene accettata
      */
-    public function test_confirm_redemption_trims_whitespace(): void
-    {
+    public function test_confirm_redemption_trims_whitespace(): void {
         $response = $this->actingAs($this->user)
             ->postJson(route('wallet.redemption.confirm'), [
                 'confirmation_text' => '  CONFERMO RISCATTO  ', // con spazi
@@ -368,8 +349,7 @@ class WalletRedemptionTest extends TestCase
         $response->assertJson(['success' => true]);
     }
 
-    protected function tearDown(): void
-    {
+    protected function tearDown(): void {
         Mockery::close();
         parent::tearDown();
     }
