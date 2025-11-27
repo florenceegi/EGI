@@ -78,3 +78,4 @@ __pycache__/
 
 # Testing PDFs (binary, should be external)
 storage/testing/**/*.pdf
+.env.testing
