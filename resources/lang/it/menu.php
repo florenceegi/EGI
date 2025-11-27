@@ -45,8 +45,8 @@ return [
     // Navigation Menu Translations
     'dashboard' => 'Dashboard',
     'manage_account' => 'Gestisci Account',
-    'psp_section_title' => 'Conto PSP & Wallet',
-    'psp_section_hint' => 'Gestisci i tuoi metodi di pagamento e il tuo wallet Algorand per le transazioni NFT.',
+    'psp_section_title' => 'Conto PSP',
+    'psp_section_hint' => 'Gestisci i tuoi metodi di pagamento e le tue transazioni.',
     'psp_open_setup' => 'Apri il conto digitale',
     'psp_onboarding_summary' => 'Riepilogo onboarding',
     'account_statements' => 'Estratti Conto',
@@ -57,6 +57,7 @@ return [
     'wallet_connect_pera' => 'Connetti Pera Wallet',
     'wallet_redeem' => 'Riscatta Wallet',
     'wallet_section_title' => 'Wallet Algorand',
+    'wallet_section_hint' => 'Gestisci il tuo wallet Algorand per le transazioni NFT.',
     'wallet_status_connected' => 'Wallet connesso',
     'wallet_status_not_connected' => 'Nessun wallet connesso',
     'wallet_view_on_explorer' => 'Visualizza su Explorer',

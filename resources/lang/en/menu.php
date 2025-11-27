@@ -26,8 +26,8 @@ return [
     // Navigation
     'dashboard' => 'Dashboard',
     'manage_account' => 'Manage Account',
-    'psp_section_title' => 'PSP Account & Wallet',
-    'psp_section_hint' => 'Manage your payment methods and Algorand wallet for NFT transactions.',
+    'psp_section_title' => 'PSP Account',
+    'psp_section_hint' => 'Manage your payment methods and transactions.',
     'psp_open_setup' => 'Open digital account',
     'psp_onboarding_summary' => 'View onboarding summary',
     'account_statements' => 'Account Statements',
@@ -38,6 +38,7 @@ return [
     'wallet_connect_pera' => 'Connect Pera Wallet',
     'wallet_redeem' => 'Redeem Wallet',
     'wallet_section_title' => 'Algorand Wallet',
+    'wallet_section_hint' => 'Manage your Algorand wallet for NFT transactions.',
     'wallet_status_connected' => 'Wallet connected',
     'wallet_status_not_connected' => 'No wallet connected',
     'wallet_view_on_explorer' => 'View on Explorer',

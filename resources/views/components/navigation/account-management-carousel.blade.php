@@ -145,7 +145,13 @@
             'key' => 'psp',
             'title' => __('menu.psp_section_title'),
             'description' => __('menu.psp_section_hint'),
-            'actions' => array_merge($pspActions, $walletActions),
+            'actions' => $pspActions,
+        ],
+        [
+            'key' => 'wallet',
+            'title' => __('menu.wallet_section_title'),
+            'description' => __('menu.wallet_section_hint'),
+            'actions' => $walletActions,
         ],
     ];
 
