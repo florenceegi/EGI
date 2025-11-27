@@ -310,7 +310,6 @@ Route::prefix('info')->name('info.')->group(function () {
     Route::get('/florenceegi', [App\Http\Controllers\Info\FlorenceEgiController::class, 'index'])->name('florence-egi');
     Route::get('/florenceegi-light', [App\Http\Controllers\Info\FlorenceEgiController::class, 'light'])->name('florence-egi-light');
     Route::get('/florenceegi-v4', [App\Http\Controllers\Info\FlorenceEgiController::class, 'v4'])->name('florence-egi-v4');
-    Route::get('/florenceegi-v4-wheel', [App\Http\Controllers\Info\FlorenceEgiController::class, 'v4wheel'])->name('florence-egi-v4-wheel');
 
     Route::get('/disclaimer', function () {
         return view('info.disclaimer');
@@ -581,7 +580,7 @@ Route::post('/wallet/real/create-guest', [\App\Http\Controllers\RealWalletConnec
 Route::post('/wallet/real/prepare-register', [\App\Http\Controllers\RealWalletConnectController::class, 'prepareRegister'])->name('wallet.real.prepare-register');
 
 // Wallet Redemption routes (Creator claims their wallet seed phrase)
-Route::middleware(['auth', 'verified'])->prefix('wallet')->name('wallet.')->group(function () {
+Route::middleware(['auth'])->prefix('wallet')->name('wallet.')->group(function () {
     Route::get('/redemption', [WalletController::class, 'redemption'])->name('redemption');
     Route::post('/redemption/confirm', [WalletController::class, 'confirmRedemption'])->name('redemption.confirm');
     Route::get('/redemption/download', [WalletController::class, 'downloadSeedPhrase'])->name('redemption.download');
