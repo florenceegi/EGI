@@ -310,6 +310,7 @@ Route::prefix('info')->name('info.')->group(function () {
     Route::get('/florenceegi', [App\Http\Controllers\Info\FlorenceEgiController::class, 'index'])->name('florence-egi');
     Route::get('/florenceegi-light', [App\Http\Controllers\Info\FlorenceEgiController::class, 'light'])->name('florence-egi-light');
     Route::get('/florenceegi-v4', [App\Http\Controllers\Info\FlorenceEgiController::class, 'v4'])->name('florence-egi-v4');
+    Route::get('/florenceegi-v4-wheel', [App\Http\Controllers\Info\FlorenceEgiController::class, 'v4wheel'])->name('florence-egi-v4-wheel');
 
     Route::get('/disclaimer', function () {
         return view('info.disclaimer');
