@@ -9,6 +9,7 @@
         "php": "^8.2",
         "aws/aws-sdk-php": "^3.356",
         "barryvdh/laravel-dompdf": "^3.1",
+        "doctrine/dbal": "^4.3",
         "laravel/framework": "^11.31",
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",

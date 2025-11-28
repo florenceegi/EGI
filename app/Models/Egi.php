@@ -1267,4 +1267,16 @@ class Egi extends Model {
                      ->where('hyper_until', '>', now());
     }
 
+    /**
+     * Get document chunks (embeddings for RAG)
+     * 
+     * Used for NATAN PA documents and any EGI that needs semantic search
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function chunks(): HasMany
+    {
+        return $this->hasMany(ProjectDocumentChunk::class, 'egi_id');
+    }
+
 }

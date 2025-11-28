@@ -10,15 +10,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * ProjectDocumentChunk Model
  *
  * Document chunks with embeddings for semantic search (RAG)
+ * NOW UNIFIED: Works with both FEGI egis and NATAN documents
  *
  * @package App\Models
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Projects System)
- * @date 2025-10-27
- * @purpose Store document chunks with vector embeddings for RAG search
+ * @version 2.0.0 (FlorenceEGI - Unified with NATAN)
+ * @date 2025-11-21
+ * @purpose Store document chunks with vector embeddings for RAG search (unified FEGI/NATAN)
  *
  * @property int $id
- * @property int $project_document_id
+ * @property int $egi_id (FK to egis table)
  * @property int $chunk_index
  * @property string $chunk_text
  * @property array|null $embedding
@@ -29,13 +30,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  *
- * @property-read ProjectDocument $document
+ * @property-read Egi $egi
+ * @property-read NatanDocument $document (alias for NATAN context)
  */
 class ProjectDocumentChunk extends Model {
     use HasFactory;
 
     protected $fillable = [
-        'project_document_id',
+        'egi_id',
         'chunk_index',
         'chunk_text',
         'embedding',
@@ -58,10 +60,20 @@ class ProjectDocumentChunk extends Model {
     ];
 
     /**
-     * Get parent document
+     * Get parent EGI (universal relation)
+     */
+    public function egi(): BelongsTo {
+        return $this->belongsTo(Egi::class, 'egi_id');
+    }
+
+    /**
+     * Get parent document (alias for NATAN context)
+     * 
+     * This provides backward compatibility and semantic clarity
+     * when working with NATAN documents (egis with context='pa_document')
      */
     public function document(): BelongsTo {
-        return $this->belongsTo(ProjectDocument::class, 'project_document_id');
+        return $this->belongsTo(\App\Models\NatanDocument::class, 'egi_id');
     }
 
     /**
