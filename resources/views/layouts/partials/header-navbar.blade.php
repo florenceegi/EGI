@@ -47,9 +47,9 @@
 
                     @include('partials.nav-links', ['isMobile' => false, 'authType' => $authType])
 
-                    @auth
+                    @if ($user)
                         <x-navigation.vanilla-desktop-menu />
-                    @endauth
+                    @endif
 
                     {{-- Cookie Preferences Link --}}
                     <button type="button" onclick="window.cookieBannerManager?.showBanner()"
@@ -66,7 +66,7 @@
                     {{-- Wallet e Auth --}}
                     <span class="mx-2 h-6 border-l border-gray-700" aria-hidden="true"></span>
 
-                    @guest
+                    @if (!$user)
                         <a href="{{ route('login') }}" id="login-link-desktop"
                             class="{{ $navLinkClasses }}">{{ __('collection.login') }}</a>
                         {{-- Real Wallet Connect Button (per utenti esperti con wallet Algorand) --}}
@@ -77,27 +77,26 @@
                             <svg class="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
                             <span class="hidden lg:inline">{{ __('collection.wallet.real_connect_cta') }}</span>
                             <span class="lg:hidden">Wallet</span>
                         </button>
                         <a href="{{ route('register') }}" id="register-link-desktop"
                             class="ml-2 inline-flex items-center rounded-md border border-emerald-600 bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                             {{ __('collection.register') }}</a>
-                    @endguest
+                    @endif
                 </nav>
 
                 {{-- Menu Mobile Button - Sempre visibile --}}
                 <button type="button" data-mobile-menu-trigger
                     class="block rounded-full p-1 transition-colors hover:bg-gray-800/50 md:hidden">
-                    @auth
+                    @if ($user)
                         @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                             <img class="size-8 rounded-full object-cover ring-2 ring-gray-600"
-                                src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
+                                src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" />
                         @else
                             <div
                                 class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-600 text-sm font-bold text-white">
-                                {{ substr(Auth::user()->name, 0, 1) }}
+                                {{ substr($user->name, 0, 1) }}
                             </div>
                         @endif
                     @else
@@ -106,7 +105,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
-                    @endauth
+                    @endif
                 </button>
 
                 {{-- Bottone Accedi (Solo per guest su mobile) --}}

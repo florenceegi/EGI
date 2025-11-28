@@ -253,6 +253,7 @@ async function verifyWallet(walletAddress: string): Promise<void> {
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': getCsrfTokenTS()
             },
+            credentials: 'same-origin', // CRITICAL: Include session cookies
             body: JSON.stringify({ wallet_address: walletAddress })
         });
 
@@ -312,6 +313,7 @@ async function connectExistingUser(): Promise<void> {
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': getCsrfTokenTS()
             },
+            credentials: 'same-origin', // CRITICAL: Include session cookies
             body: JSON.stringify({ wallet_address: currentWalletAddress })
         });
 
@@ -329,6 +331,12 @@ async function connectExistingUser(): Promise<void> {
 
         // Dispatch event for other components
         dispatchWalletConnected(data);
+
+        // CRITICAL: Reload page after successful connection to use new session
+        // Wait a moment to show success message, then reload
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
 
     } catch (error) {
         console.error('RealWalletConnect: Connect error', error);
@@ -357,6 +365,7 @@ async function createGuestUser(): Promise<void> {
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': getCsrfTokenTS()
             },
+            credentials: 'same-origin', // CRITICAL: Include session cookies
             body: JSON.stringify({ wallet_address: currentWalletAddress })
         });
 
@@ -374,6 +383,11 @@ async function createGuestUser(): Promise<void> {
 
         // Dispatch event
         dispatchWalletConnected(data);
+
+        // CRITICAL: Reload page after successful connection to use new session
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
 
     } catch (error) {
         console.error('RealWalletConnect: Create guest error', error);
@@ -400,6 +414,7 @@ async function goToRegistration(): Promise<void> {
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': getCsrfTokenTS()
             },
+            credentials: 'same-origin', // CRITICAL: Include session cookies
             body: JSON.stringify({ wallet_address: currentWalletAddress })
         });
 

@@ -1,126 +1,153 @@
 {
-    "$schema": "https://getcomposer.org/schema.json",
-    "name": "florence-egi/florence-egi",
-    "type": "project",
-    "description": "FlorenceEGI Ecosystem - Empowering Creators with Ecological Goods Invent.",
-    "keywords": ["laravel", "framework", "nft", "egi", "florence", "creator economy", "sustainability"],
-    "license": "Proprietary",
-    "require": {
-        "php": "^8.2",
-        "aws/aws-sdk-php": "^3.356",
-        "barryvdh/laravel-dompdf": "^3.1",
-        "doctrine/dbal": "^4.3",
-        "laravel/framework": "^11.31",
-        "laravel/jetstream": "^5.3",
-        "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^2.9",
-        "laravel/vapor-core": "^2.39",
-        "league/flysystem-aws-s3-v3": "^3.29",
-        "livewire/livewire": "^3.0",
-        "phpoffice/phpword": "^1.4",
-        "smalot/pdfparser": "^2.12",
-        "spatie/laravel-activitylog": "^4.10",
-        "spatie/laravel-medialibrary": "^11.0",
-        "spatie/laravel-permission": "^6.10",
-        "tecnickcom/tcpdf": "^6.9",
-        "tuqqu/gender-detector": "^0.5.2",
-        "ultra/egi-module": "@dev",
-        "ultra/ultra-config-manager": "dev-main",
-        "ultra/ultra-error-manager": "dev-main",
-        "ultra/ultra-log-manager": "dev-main",
-        "ultra/ultra-translation-manager": "dev-main",
-        "ultra/ultra-upload-manager": "dev-main",
-        "paypal/paypal-checkout-sdk": "^1.0",
-        "stripe/stripe-php": "^12.6"
-    },
-    "require-dev": {
-        "barryvdh/laravel-ide-helper": "^3.5",
-        "fakerphp/faker": "^1.23",
-        "laravel/pail": "^1.1",
-        "laravel/pint": "^1.13",
-        "laravel/sail": "^1.26",
-        "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.1",
-        "phpunit/phpunit": "^11.0.1"
-    },
-    "autoload": {
-        "files": [
-            "scripts/php/helpers.php"
-        ],
-        "psr-4": {
-            "App\\": "app/",
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
-
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-
-
-        }
-    },
-    "scripts": {
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi",
-            "@php artisan view:clear",
-            "@php artisan config:clear"
-        ],
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "@php artisan vendor:publish --provider='Ultra\\UltraErrorManager\\Providers\\ErrorManagerServiceProvider' --tag=uem-config --force",
-            "@php artisan vendor:publish --provider='Ultra\\UltraErrorManager\\Providers\\ErrorManagerServiceProvider' --tag=uem-migrations --force"
-        ],
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "@php artisan migrate --graceful --ansi"
-        ],
-        "dev": [
-            "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve --host=127.0.0.1 --port=8004\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
-        ]
-    },
-    "extra": {
-        "laravel": {
-            "dont-discover": []
-        },
-        "providers": [
-            "Ultra\\EgiModule\\Providers\\EgiModuleServiceProvider",
-            "Ultra\\UltraLogManager\\UltraLogManagerServiceProvider::class",
-            "Ultra\\UltraErrorManager\\UltraErrorManagerServiceProvider::class",
-            "Ultra\\UltraTranslationManager\\UltraTranslationManagerServiceProvider::class",
-            "Ultra\\UltraUploadManager\\UltraUploadManagerServiceProvider::class"
-        ]
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "php-http/discovery": true
-        }
-    },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "packages/ultra/egi-module",
-            "options": {
-                "symlink": true
-            }
-        },
-        { "type": "vcs", "url": "https://github.com/AutobookNft/UltraUploadManager.git" },
-        { "type": "vcs", "url": "https://github.com/AutobookNft/UltraErrorManager.git" },
-        { "type": "vcs", "url": "https://github.com/AutobookNft/UltraTranslationManager.git" },
-        { "type": "vcs", "url": "https://github.com/AutobookNft/UltraLogManager.git" },
-        { "type": "vcs", "url": "https://github.com/AutobookNft/UltraConfigManager.git" }
+  "$schema": "https://getcomposer.org/schema.json",
+  "name": "florence-egi/florence-egi",
+  "type": "project",
+  "description": "FlorenceEGI Ecosystem - Empowering Creators with Ecological Goods Invent.",
+  "keywords": [
+    "laravel",
+    "framework",
+    "nft",
+    "egi",
+    "florence",
+    "creator economy",
+    "sustainability"
+  ],
+  "license": "Proprietary",
+  "require": {
+    "php": "^8.2",
+    "aws/aws-sdk-php": "^3.356",
+    "barryvdh/laravel-dompdf": "^3.1",
+    "laravel/framework": "^11.31",
+    "laravel/jetstream": "^5.3",
+    "laravel/sanctum": "^4.0",
+    "laravel/tinker": "^2.9",
+    "laravel/vapor-core": "^2.39",
+    "league/flysystem-aws-s3-v3": "^3.29",
+    "livewire/livewire": "^3.0",
+    "phpoffice/phpword": "^1.4",
+    "smalot/pdfparser": "^2.12",
+    "spatie/laravel-activitylog": "^4.10",
+    "spatie/laravel-medialibrary": "^11.0",
+    "spatie/laravel-permission": "^6.10",
+    "tecnickcom/tcpdf": "^6.9",
+    "tuqqu/gender-detector": "^0.5.2",
+    "ultra/egi-module": "@dev",
+    "ultra/ultra-config-manager": "dev-main",
+    "ultra/ultra-error-manager": "dev-main",
+    "ultra/ultra-log-manager": "dev-main",
+    "ultra/ultra-translation-manager": "dev-main",
+    "ultra/ultra-upload-manager": "dev-main",
+    "paypal/paypal-checkout-sdk": "^1.0",
+    "stripe/stripe-php": "^12.6",
+    "florenceegi/hub": "@dev"
+  },
+  "require-dev": {
+    "barryvdh/laravel-ide-helper": "^3.5",
+    "fakerphp/faker": "^1.23",
+    "laravel/pail": "^1.1",
+    "laravel/pint": "^1.13",
+    "laravel/sail": "^1.26",
+    "mockery/mockery": "^1.6",
+    "nunomaduro/collision": "^8.1",
+    "phpunit/phpunit": "^11.0.1"
+  },
+  "autoload": {
+    "files": [
+      "scripts/php/helpers.php"
     ],
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "psr-4": {
+      "App\\": "app/",
+      "Database\\Factories\\": "database/factories/",
+      "Database\\Seeders\\": "database/seeders/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+      "@php artisan package:discover --ansi",
+      "@php artisan view:clear",
+      "@php artisan config:clear"
+    ],
+    "post-update-cmd": [
+      "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+      "@php artisan vendor:publish --provider='Ultra\\UltraErrorManager\\Providers\\ErrorManagerServiceProvider' --tag=uem-config --force",
+      "@php artisan vendor:publish --provider='Ultra\\UltraErrorManager\\Providers\\ErrorManagerServiceProvider' --tag=uem-migrations --force"
+    ],
+    "post-root-package-install": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ],
+    "post-create-project-cmd": [
+      "@php artisan key:generate --ansi",
+      "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+      "@php artisan migrate --graceful --ansi"
+    ],
+    "dev": [
+      "Composer\\Config::disableProcessTimeout",
+      "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve --host=127.0.0.1 --port=8004\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
+    ]
+  },
+  "extra": {
+    "laravel": {
+      "dont-discover": []
+    },
+    "providers": [
+      "Ultra\\EgiModule\\Providers\\EgiModuleServiceProvider",
+      "Ultra\\UltraLogManager\\UltraLogManagerServiceProvider::class",
+      "Ultra\\UltraErrorManager\\UltraErrorManagerServiceProvider::class",
+      "Ultra\\UltraTranslationManager\\UltraTranslationManagerServiceProvider::class",
+      "Ultra\\UltraUploadManager\\UltraUploadManagerServiceProvider::class"
+    ]
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true,
+      "php-http/discovery": true
+    }
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "packages/ultra/egi-module",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/AutobookNft/UltraUploadManager.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/AutobookNft/UltraErrorManager.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/AutobookNft/UltraTranslationManager.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/AutobookNft/UltraLogManager.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/AutobookNft/UltraConfigManager.git"
+    },
+    {
+      "type": "path",
+      "url": "/home/fabio/EGI-HUB",
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

@@ -280,6 +280,13 @@ return [
         // General Messages
         'no_changes_detected' => 'No changes detected.',
         'unsaved_changes_warning' => 'You have unsaved changes. Are you sure you want to leave?',
+
+        // Blockchain Immutability Messages
+        'blockchain_warning_title' => 'Blockchain Certified EGI',
+        'blockchain_warning_message' => 'This EGI has been minted (ASA #:asa_id). You can only modify the price for market dynamics. Title, description and metadata are immutable.',
+        'blockchain_verify_link' => 'Verify on Blockchain',
+        'field_immutable_hint' => 'Immutable (blockchain certified)',
+        'metadata_locked_creator_hint' => 'Minted EGI: metadata is now immutable on blockchain',
     ],
 
     'validation' => [

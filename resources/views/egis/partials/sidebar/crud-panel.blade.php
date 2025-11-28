@@ -1,8 +1,23 @@
 {{-- resources/views/egis/partials/sidebar/crud-panel.blade.php --}}
 {{--
-    Pannello CRUD per editing (solo per creator)
+    Pannello CRUD per editing EGI
     ORIGINE: righe 129-381 di show.blade.php
-    VARIABILI: $egi, $canUpdateEgi, $canDeleteEgi, $isPriceLocked, $canModifyPrice, $displayPrice, $displayUser, $highestPriorityReservation
+    
+    VARIABILI RUOLI (tre ruoli inscindibili):
+    - $isCreator: vero autore dell'opera (user_id)
+    - $isCoCreator: chi ha mintato l'EGI (co_creator_id, immutabile dopo mint)
+    - $isOwner: proprietario commerciale (owner_id, variabile con vendite)
+    - $isMinted: EGI già certificato su blockchain (token_EGI NOT NULL)
+    
+    VARIABILI PERMESSI GRANULARI:
+    - $canEditMetadata: può modificare titolo, descrizione, traits (Creator + non mintato)
+    - $canManageCoA: può gestire Certificate of Authenticity (sempre Creator, per legge)
+    - $canManagePrice: può gestire prezzo/vendita (Creator se non mintato, Owner se mintato)
+    - $canUpdateEgi: almeno un permesso sopra
+    - $canDeleteEgi: può eliminare EGI
+    
+    ALTRE VARIABILI:
+    - $isPriceLocked, $displayPrice, $displayUser, $highestPriorityReservation
 --}}
 
 {{-- Col 2: CRUD Box Content --}}
@@ -13,6 +28,7 @@
                 class="rounded-lg border border-emerald-700/30 bg-gradient-to-br from-emerald-800/20 to-emerald-900/20 p-2.5 md:p-2 lg:p-2.5 xl:p-3">
 
                 {{-- Header - Ultra-compatto --}}
+                {{-- DEBUG: canEditMetadata={{ $canEditMetadata ?? 'undefined' }}, isCreator={{ $isCreator ?? 'undefined' }}, isMinted={{ $isMinted ?? 'undefined' }} --}}
                 <div class="mb-2 flex items-center justify-between md:mb-1.5 lg:mb-2">
                     <h3 class="text-xs font-semibold text-emerald-400 md:text-[10px] lg:text-xs xl:text-sm">
                         <svg class="mr-1.5 inline h-4 w-4 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -21,16 +37,31 @@
                             </path>
                         </svg>
                         {{ __('egi.crud.edit_egi') }}
+                        @if (!($canEditMetadata ?? true))
+                            <svg class="ml-1 inline h-3.5 w-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20" title="{{ __('egi.crud.metadata_locked_creator_hint') }}">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        @endif
                     </h3>
-                    <button id="egi-edit-toggle"
-                        class="rounded-full p-1.5 text-emerald-400 transition-colors duration-200 hover:bg-emerald-800/30 md:p-1 lg:p-1.5"
-                        title="{{ __('egi.crud.toggle_edit_mode') }}">
-                        <svg class="h-3.5 w-3.5 md:h-3 md:w-3 lg:h-3.5 lg:w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                            </path>
-                        </svg>
-                    </button>
+                    @if ($canEditMetadata ?? true)
+                        <button id="egi-edit-toggle"
+                            class="rounded-full p-1.5 text-emerald-400 transition-colors duration-200 hover:bg-emerald-800/30 md:p-1 lg:p-1.5"
+                            title="{{ __('egi.crud.toggle_edit_mode') }}">
+                            <svg class="h-3.5 w-3.5 md:h-3 md:w-3 lg:h-3.5 lg:w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                                </path>
+                            </svg>
+                        </button>
+                    @else
+                        {{-- Pulsante disabilitato con lucchetto per Creator su EGI mintato --}}
+                        <div class="rounded-full p-1.5 text-amber-400/60 cursor-not-allowed md:p-1 lg:p-1.5"
+                            title="{{ __('egi.crud.metadata_locked_creator_hint') }}">
+                            <svg class="h-3.5 w-3.5 md:h-3 md:w-3 lg:h-3.5 lg:w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- ============================================ --}}
@@ -40,15 +71,16 @@
                 @php
                     // LOGICA CORRETTA: token_EGI NULL = non mintato su blockchain
                     // egi_type indica solo l'architettura (ASA/SmartContract), non lo stato di mint
-                    $isNotMinted = is_null($egi->token_EGI); // ✅ FIX: check token, not type
+                    $isNotMinted = !($isMinted ?? !is_null($egi->token_EGI)); // Usa variabile passata se disponibile
                     $isASA = $egi->egi_type === 'ASA';
                     $isSmartContract = $egi->egi_type === 'SmartContract';
-                    $isCreatorCheck = App\Helpers\FegiAuth::check() && App\Helpers\FegiAuth::id() === $egi->user_id;
+                    // Usa le variabili di permesso passate da show.blade.php
+                    $canEditMetadataLocal = $canEditMetadata ?? ($isCreator ?? false) && $isNotMinted;
                 @endphp
 
 
                 {{-- Pannello Unificato: Prepara e Minta (Solo Creator di EGI non mintati) --}}
-                @if ($isNotMinted && $isCreatorCheck)
+                @if ($isNotMinted && ($isCreator ?? false))
                     <details class="group mb-4" open>
                         <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-blue-800/30 px-3 py-2 text-blue-300 transition-colors hover:bg-blue-800/40">
                             <span class="text-sm font-semibold">🎨 Prepara e Minta il tuo EGI</span>
@@ -57,7 +89,7 @@
                             </svg>
                         </summary>
                         <div class="mt-3">
-                            <x-egi-unified-mint-panel :egi="$egi" :isCreator="$isCreatorCheck" />
+                            <x-egi-unified-mint-panel :egi="$egi" :isCreator="$isCreator ?? false" />
                         </div>
                     </details>
                 @endif
@@ -159,10 +191,11 @@
                     @method('PUT')
 
                     {{-- Title Field --}}
-                    <div class="{{ $egi->token_EGI ? 'opacity-50 pointer-events-none' : '' }}">
+                    @php $metadataLocked = !($canEditMetadata ?? false); @endphp
+                    <div class="{{ $metadataLocked ? 'opacity-50 pointer-events-none' : '' }}">
                         <label for="title" class="mb-2 block text-sm font-medium text-emerald-300">
                             {{ __('egi.crud.title') }}
-                            @if ($egi->token_EGI)
+                            @if ($metadataLocked)
                                 <svg class="ml-1 inline h-4 w-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
@@ -171,12 +204,12 @@
                             @endif
                         </label>
                         <input type="text" id="title" name="title" value="{{ old('title', $egi->title) }}"
-                            {{ $egi->token_EGI ? 'disabled readonly' : '' }}
-                            class="{{ $egi->token_EGI ? 'bg-black/10 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }} w-full rounded-lg border px-3 py-2 text-white placeholder-gray-400"
+                            {{ $metadataLocked ? 'disabled readonly' : '' }}
+                            class="{{ $metadataLocked ? 'bg-black/10 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }} w-full rounded-lg border px-3 py-2 text-white placeholder-gray-400"
                             placeholder="{{ __('egi.crud.title_placeholder') }}" maxlength="60"
-                            {{ $egi->token_EGI ? '' : 'required' }}>
-                        <div class="{{ $egi->token_EGI ? 'text-amber-400' : 'text-gray-400' }} mt-1 text-xs">
-                            @if ($egi->token_EGI)
+                            {{ $metadataLocked ? '' : 'required' }}>
+                        <div class="{{ $metadataLocked ? 'text-amber-400' : 'text-gray-400' }} mt-1 text-xs">
+                            @if ($metadataLocked)
                                 🔒 {{ __('egi.crud.field_immutable_hint') }}
                             @else
                                 {{ __('egi.crud.title_hint') }}
@@ -185,10 +218,10 @@
                     </div>
 
                     {{-- Description Field --}}
-                    <div class="{{ $egi->token_EGI ? 'opacity-50 pointer-events-none' : '' }}">
+                    <div class="{{ $metadataLocked ? 'opacity-50 pointer-events-none' : '' }}">
                         <label for="description" class="mb-2 block text-sm font-medium text-emerald-300">
                             {{ __('egi.crud.description') }}
-                            @if ($egi->token_EGI)
+                            @if ($metadataLocked)
                                 <svg class="ml-1 inline h-4 w-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
@@ -196,12 +229,12 @@
                                 </svg>
                             @endif
                         </label>
-                        <textarea id="description" name="description" rows="4" {{ $egi->token_EGI ? 'disabled readonly' : '' }}
-                            class="{{ $egi->token_EGI ? 'bg-black/10 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }} w-full resize-none rounded-lg border px-3 py-2 text-white placeholder-gray-400"
+                        <textarea id="description" name="description" rows="4" {{ $metadataLocked ? 'disabled readonly' : '' }}
+                            class="{{ $metadataLocked ? 'bg-black/10 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }} w-full resize-none rounded-lg border px-3 py-2 text-white placeholder-gray-400"
                             placeholder="{{ __('egi.crud.description_placeholder') }}">{{ old('description', $egi->description) }}</textarea>
                         
                         {{-- AI Generate Description Button --}}
-                        @if (!$egi->token_EGI)
+                        @if (!$metadataLocked)
                         <button type="button" 
                                 onclick="handleGenerateDescription({{ $egi->id }})"
                                 class="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-blue-600/50 bg-gradient-to-r from-blue-600/20 to-purple-600/20 px-3 py-2 text-sm font-medium text-blue-400 transition-all hover:from-blue-600/30 hover:to-purple-600/30 hover:border-blue-500">
@@ -212,8 +245,8 @@
                         </button>
                         @endif
 
-                        <div class="{{ $egi->token_EGI ? 'text-amber-400' : 'text-gray-400' }} mt-1 text-xs">
-                            @if ($egi->token_EGI)
+                        <div class="{{ $metadataLocked ? 'text-amber-400' : 'text-gray-400' }} mt-1 text-xs">
+                            @if ($metadataLocked)
                                 🔒 {{ __('egi.crud.field_immutable_hint') }}
                             @else
                                 {{ __('egi.crud.description_hint') }}
@@ -222,11 +255,15 @@
                     </div>
 
                     {{-- Price Field --}}
+                    @php 
+                        // Il prezzo è controllato da $canManagePrice O da $isPriceLocked (prenotazione attiva)
+                        $priceLocked = !($canManagePrice ?? false) || ($isPriceLocked ?? false); 
+                    @endphp
                     <div>
                         <label for="price"
-                            class="{{ $isPriceLocked ? 'opacity-60' : '' }} mb-2 block text-sm font-medium text-emerald-300">
+                            class="{{ $priceLocked ? 'opacity-60' : '' }} mb-2 block text-sm font-medium text-emerald-300">
                             {{ __('egi.crud.price') }}
-                            @if ($isPriceLocked)
+                            @if ($priceLocked)
                                 <svg class="ml-1 inline h-4 w-4 text-yellow-500" fill="currentColor"
                                     viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
@@ -237,12 +274,12 @@
                         </label>
                         <div class="relative">
                             <input type="number" id="price" name="price" value="{{ old('price', $egi->price) }}"
-                                step="0.01" min="0" {{ $isPriceLocked ? 'disabled readonly' : '' }}
-                                class="{{ $isPriceLocked ? 'bg-black/10 opacity-60 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }} w-full rounded-lg border px-3 py-2 text-white placeholder-gray-400"
+                                step="0.01" min="0" {{ $priceLocked ? 'disabled readonly' : '' }}
+                                class="{{ $priceLocked ? 'bg-black/10 opacity-60 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }} w-full rounded-lg border px-3 py-2 text-white placeholder-gray-400"
                                 placeholder="{{ __('egi.crud.price_placeholder') }}">
                             <span
-                                class="{{ $isPriceLocked ? 'text-gray-500' : 'text-gray-400' }} absolute right-3 top-2 text-sm">ALGO</span>
-                            @if ($isPriceLocked)
+                                class="{{ $priceLocked ? 'text-gray-500' : 'text-gray-400' }} absolute right-3 top-2 text-sm">ALGO</span>
+                            @if ($priceLocked)
                                 <div class="absolute inset-0 flex items-center justify-center rounded-lg bg-black/20">
                                     <svg class="h-6 w-6 text-yellow-500 opacity-80" fill="currentColor"
                                         viewBox="0 0 20 20">
@@ -253,8 +290,8 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="{{ $isPriceLocked ? 'text-yellow-400' : 'text-gray-400' }} mt-1 text-xs">
-                            @if ($isPriceLocked)
+                        <div class="{{ $priceLocked ? 'text-yellow-400' : 'text-gray-400' }} mt-1 text-xs">
+                            @if ($priceLocked)
                                 🔒 {{ __('egi.crud.price_locked_message') }}
                             @else
                                 {{ __('egi.crud.price_hint') }} (Prezzo base in ALGO)
@@ -262,7 +299,8 @@
                         </div>
                     </div>
 
-                    {{-- Sale Mode Selector --}}
+                    {{-- Sale Mode Selector - Controllato da canManagePrice --}}
+                    @if ($canManagePrice ?? false)
                     <div>
                         @php
                             $merchantPspStatus = $merchantPspStatus ?? ['has_any_psp' => false, 'has_stripe' => false, 'has_paypal' => false, 'can_accept_payments' => false];
@@ -425,12 +463,14 @@
                             })();
                         </script>
                     @endpush
+                    @endif
+                    {{-- END canManagePrice wrapper per sezioni vendita --}}
 
-                    {{-- Creation Date Field --}}
-                    <div class="{{ $egi->token_EGI ? 'opacity-50 pointer-events-none' : '' }}">
+                    {{-- Creation Date Field - Parte dei metadati --}}
+                    <div class="{{ $metadataLocked ? 'opacity-50 pointer-events-none' : '' }}">
                         <label for="creation_date" class="mb-2 block text-sm font-medium text-emerald-300">
                             {{ __('egi.crud.creation_date') }}
-                            @if ($egi->token_EGI)
+                            @if ($metadataLocked)
                                 <svg class="ml-1 inline h-4 w-4 text-amber-400" fill="currentColor"
                                     viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
@@ -441,10 +481,10 @@
                         </label>
                         <input type="date" id="creation_date" name="creation_date"
                             value="{{ old('creation_date', $egi->creation_date?->format('Y-m-d')) }}"
-                            {{ $egi->token_EGI ? 'disabled readonly' : '' }}
-                            class="{{ $egi->token_EGI ? 'bg-black/10 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }} w-full rounded-lg border px-3 py-2 text-white">
-                        <div class="{{ $egi->token_EGI ? 'text-amber-400' : 'text-gray-400' }} mt-1 text-xs">
-                            @if ($egi->token_EGI)
+                            {{ $metadataLocked ? 'disabled readonly' : '' }}
+                            class="{{ $metadataLocked ? 'bg-black/10 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }} w-full rounded-lg border px-3 py-2 text-white">
+                        <div class="{{ $metadataLocked ? 'text-amber-400' : 'text-gray-400' }} mt-1 text-xs">
+                            @if ($metadataLocked)
                                 🔒 {{ __('egi.crud.field_immutable_hint') }}
                             @else
                                 {{ __('egi.crud.creation_date_hint') }}
@@ -452,17 +492,17 @@
                         </div>
                     </div>
 
-                    {{-- Published Toggle --}}
-                    <div class="{{ $egi->token_EGI ? 'opacity-50 pointer-events-none' : '' }}">
+                    {{-- Published Toggle - Parte dei metadati --}}
+                    <div class="{{ $metadataLocked ? 'opacity-50 pointer-events-none' : '' }}">
                         <label class="flex items-center">
                             <input type="hidden" name="is_published" value="0">
                             <input type="checkbox" id="is_published" name="is_published" value="1"
                                 {{ old('is_published', $egi->is_published) ? 'checked' : '' }}
-                                {{ $egi->token_EGI ? 'disabled' : '' }}
-                                class="{{ $egi->token_EGI ? 'bg-black/10 border-gray-600 cursor-not-allowed' : 'bg-black/30 border-emerald-700/50 focus:ring-emerald-500 focus:ring-2' }} h-4 w-4 rounded text-emerald-600">
+                                {{ $metadataLocked ? 'disabled' : '' }}
+                                class="{{ $metadataLocked ? 'bg-black/10 border-gray-600 cursor-not-allowed' : 'bg-black/30 border-emerald-700/50 focus:ring-emerald-500 focus:ring-2' }} h-4 w-4 rounded text-emerald-600">
                             <span class="ml-3 text-sm font-medium text-emerald-300">
                                 {{ __('egi.crud.is_published') }}
-                                @if ($egi->token_EGI)
+                                @if ($metadataLocked)
                                     <svg class="ml-1 inline h-4 w-4 text-amber-400" fill="currentColor"
                                         viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
@@ -472,8 +512,8 @@
                                 @endif
                             </span>
                         </label>
-                        <div class="{{ $egi->token_EGI ? 'text-amber-400' : 'text-gray-400' }} ml-7 mt-1 text-xs">
-                            @if ($egi->token_EGI)
+                        <div class="{{ $metadataLocked ? 'text-amber-400' : 'text-gray-400' }} ml-7 mt-1 text-xs">
+                            @if ($metadataLocked)
                                 🔒 {{ __('egi.crud.field_immutable_hint') }}
                             @else
                                 {{ __('egi.crud.is_published_hint') }}

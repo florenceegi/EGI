@@ -295,6 +295,7 @@ return [
         'blockchain_warning_message' => 'Questo EGI è stato mintato (ASA #:asa_id). Puoi modificare solo il prezzo per dinamiche di mercato. Titolo, descrizione e metadati sono immutabili.',
         'blockchain_verify_link' => 'Verifica su Blockchain',
         'field_immutable_hint' => 'Immutabile (certificato blockchain)',
+        'metadata_locked_creator_hint' => 'EGI mintato: i metadati sono ora immutabili su blockchain',
 
         // Vendita/Asta
         'sale_mode' => 'Modalità di Vendita',

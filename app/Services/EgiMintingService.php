@@ -217,6 +217,7 @@ class EgiMintingService
 
             if ($buyerUserId) {
                 $ownerUpdate['owner_id'] = $buyerUserId;
+                $ownerUpdate['co_creator_id'] = $buyerUserId; // Co-Creator: chi ha mintato (immutabile)
             }
 
             $egi->update($ownerUpdate);

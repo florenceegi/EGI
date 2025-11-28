@@ -1,5 +1,9 @@
 {{-- Vanilla Desktop Mega Menu Component - No Alpine.js --}}
 
+@php
+    $user = App\Helpers\FegiAuth::user();
+@endphp
+
 {{-- Component-specific styles --}}
 @push('styles')
     @vite('resources/css/mega-menu.css')
@@ -17,7 +21,7 @@
             <button type="button" data-dropdown-trigger
                 class="flex transform rounded-full border-2 border-transparent text-sm transition duration-300 hover:scale-110 focus:border-gray-300 focus:outline-none">
                 <img class="size-8 rounded-full object-cover ring-2 ring-blue-500/20 transition-all duration-300 hover:ring-blue-500/60"
-                    src="{{ Auth::user()?->profile_photo_url ?? null }}" alt="{{ Auth::user()?->name ?? '' }}" />
+                    src="{{ $user?->profile_photo_url ?? null }}" alt="{{ $user?->name ?? '' }}" />
             </button>
         @else
             <span class="inline-flex rounded-md">
@@ -26,9 +30,9 @@
                     <div class="flex items-center space-x-2">
                         <div
                             class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-sm font-bold text-white">
-                            {{ substr(Auth::user()?->name ?? 'U', 0, 1) }}
+                            {{ substr($user?->name ?? 'U', 0, 1) }}
                         </div>
-                        <span class="hidden sm:block">{{ Auth::user()?->name ?? '' }}</span>
+                        <span class="hidden sm:block">{{ $user?->name ?? '' }}</span>
                     </div>
                     <svg class="-me-0.5 ms-2 size-4 transition-transform duration-300 group-hover:rotate-180"
                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -53,37 +57,37 @@
                 class="user-header-card mobile-header-gradient mb-6 rounded-xl border border-blue-300/40 bg-gradient-to-r from-blue-500 to-purple-600 p-4 dark:border-blue-700/40">
                 <div class="flex items-center space-x-3">
                     @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                        @if (Auth::check() && Auth::user()->id)
-                            <a href="{{ route('creator.home', Auth::user()->id) }}"
+                        @if ($user && $user->id)
+                            <a href="{{ route('creator.home', $user->id) }}"
                                 class="block transition-transform duration-300 hover:scale-105">
                                 <img class="size-12 rounded-full object-cover ring-2 ring-white/30 transition-all duration-300 hover:ring-white/60"
-                                    src="{{ Auth::user()?->profile_photo_url ?? null }}"
-                                    alt="{{ Auth::user()?->name ?? '' }}" />
+                                    src="{{ $user?->profile_photo_url ?? null }}"
+                                    alt="{{ $user?->name ?? '' }}" />
                             </a>
                         @else
                             <img class="size-12 rounded-full object-cover ring-2 ring-white/30"
-                                src="{{ Auth::user()?->profile_photo_url ?? null }}"
-                                alt="{{ Auth::user()?->name ?? '' }}" />
+                                src="{{ $user?->profile_photo_url ?? null }}"
+                                alt="{{ $user?->name ?? '' }}" />
                         @endif
                     @else
-                        @if (Auth::check() && Auth::user()->id)
-                            <a href="{{ route('creator.home', Auth::user()->id) }}"
+                        @if ($user && $user->id)
+                            <a href="{{ route('creator.home', $user->id) }}"
                                 class="block transition-transform duration-300 hover:scale-105">
                                 <div
                                     class="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-lg font-bold text-white transition-all duration-300 hover:bg-white/30">
-                                    {{ substr(Auth::user()?->name ?? 'U', 0, 1) }}
+                                    {{ substr($user?->name ?? 'U', 0, 1) }}
                                 </div>
                             </a>
                         @else
                             <div
                                 class="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-lg font-bold text-white">
-                                {{ substr(Auth::user()?->name ?? 'U', 0, 1) }}
+                                {{ substr($user?->name ?? 'U', 0, 1) }}
                             </div>
                         @endif
                     @endif
                     <div>
-                        <h3 class="font-semibold text-white">{{ Auth::user()?->name ?? '' }}</h3>
-                        <p class="text-sm text-white/80">{{ Auth::user()?->email ?? '' }}</p>
+                        <h3 class="font-semibold text-white">{{ $user?->name ?? '' }}</h3>
+                        <p class="text-sm text-white/80">{{ $user?->email ?? '' }}</p>
                     </div>
                 </div>
             </div>
@@ -97,12 +101,12 @@
             <div class="grid grid-cols-1 gap-4">
 
                 <!-- Dynamic Collections Carousel Card -->
-                <x-menu-collections-carousel :collections="Auth::check() ? Auth::user()->ownedCollections()->orderBy('position')->get() : collect()" />
+                <x-menu-collections-carousel :collections="$user ? $user->ownedCollections()->orderBy('position')->get() : collect()" />
 
                 <!-- Shared Collections Carousel Card - Collections where user is collaborator -->
-                <x-menu-guest-collections-carousel :collections="Auth::check() ? Auth::user()->collaborations()->orderBy('position')->get() : collect()" />
+                <x-menu-guest-collections-carousel :collections="$user ? $user->collaborations()->orderBy('position')->get() : collect()" />
 
-                <x-navigation.account-management-carousel :user="Auth::user()"
+                <x-navigation.account-management-carousel :user="$user"
                     container-class="p-4 border mega-card rounded-2xl border-emerald-200/30 bg-gradient-to-br from-emerald-50 to-teal-50 dark:border-emerald-800/30 dark:from-emerald-900/20 dark:to-teal-900/20" />
 
                 {{-- Egili Wallet Card --}}
@@ -182,7 +186,7 @@
                         </div>
                         <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
                             {{-- SuperAdmin Dashboard - Only for superadmin role --}}
-                            @if (Auth::check() && Auth::user()->hasRole('superadmin'))
+                            @if ($user && $user->hasRole('superadmin'))
                                 <a href="{{ route('superadmin.dashboard') }}"
                                     class="flex items-center gap-2 rounded-lg bg-gradient-to-r from-yellow-500/20 to-amber-500/20 px-3 py-2 text-sm font-semibold text-yellow-300 ring-1 ring-yellow-500/30 transition-all duration-200 hover:from-yellow-500/30 hover:to-amber-500/30 hover:ring-yellow-400/50">
                                     <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">

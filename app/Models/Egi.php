@@ -107,9 +107,10 @@ class Egi extends Model {
         'token_EGI',
         'jsonMetadata',
         'extracted_text', // PA Acts: Full text extracted from PDF/P7M (for AI processing)
-        'user_id', // User performing the action (e.g., upload)
+        'user_id', // User performing the action (e.g., upload) = CREATOR
         'auction_id',
-        'owner_id', // Current owner
+        'owner_id', // Current owner (variabile con vendite)
+        'co_creator_id', // Co-Creator: chi ha mintato (immutabile dopo mint)
         'drop_id',
         'upload_id',
         'creator', // Original creator identifier/wallet
@@ -283,6 +284,7 @@ class Egi extends Model {
 
     /**
      * 🔗 Defines the relationship: An EGI record was created/uploaded by one User.
+     * Questo è il CREATOR - l'autore originale (IMMUTABILE)
      *
      * @return BelongsTo
      */
@@ -293,12 +295,28 @@ class Egi extends Model {
 
     /**
      * 🔗 Defines the relationship: An EGI is currently owned by one User.
+     * Questo è l'OWNER - proprietario commerciale (VARIABILE con vendite)
      *
      * @return BelongsTo
      */
     public function owner(): BelongsTo {
         // Assuming 'owner_id' is the foreign key linking to the current owner user
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
+     * 🔗 Defines the relationship: An EGI was minted by one User (Co-Creator).
+     * Questo è il CO-CREATOR - chi ha mintato l'EGI (IMMUTABILE dopo mint)
+     * 
+     * I TRE RUOLI INSCINDIBILI:
+     * - user() = Creator (autore originale)
+     * - coCreator() = Co-Creator (chi ha mintato)
+     * - owner() = Owner (proprietario commerciale attuale)
+     *
+     * @return BelongsTo
+     */
+    public function coCreator(): BelongsTo {
+        return $this->belongsTo(User::class, 'co_creator_id');
     }
 
     /**

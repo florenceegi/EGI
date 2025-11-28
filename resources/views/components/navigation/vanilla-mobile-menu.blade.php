@@ -98,23 +98,23 @@
                 style="opacity: 1 !important; background: linear-gradient(to right, #3b82f6, #9333ea) !important; color: white !important;">
                 <div class="flex items-center space-x-3">
 
-                    @auth
-                        @if (Auth::check() && Auth::user()->id)
-                            <a href="{{ route('creator.home', Auth::user()->id) }}"
+                    @if ($user)
+                        @if ($user->id)
+                            <a href="{{ route('creator.home', $user->id) }}"
                                 class="block transition-transform duration-300 hover:scale-105">
                                 <img class="size-12 rounded-full object-cover ring-2 ring-white/30 transition-all duration-300 hover:ring-white/60"
-                                    src="{{ Auth::user()?->profile_photo_url ?? null }}"
-                                    alt="{{ Auth::user()?->name ?? '' }}" />
+                                    src="{{ $user?->profile_photo_url ?? null }}"
+                                    alt="{{ $user?->name ?? '' }}" />
                             </a>
                         @else
                             <img class="size-12 rounded-full object-cover ring-2 ring-white/30"
-                                src="{{ Auth::user()?->profile_photo_url ?? null }}"
-                                alt="{{ Auth::user()?->name ?? '' }}" />
+                                src="{{ $user?->profile_photo_url ?? null }}"
+                                alt="{{ $user?->name ?? '' }}" />
                         @endif
 
                         <div>
-                            <h3 class="font-semibold text-white">{{ Auth::user()?->name ?? '' }}</h3>
-                            <p class="text-sm text-white/80">{{ Auth::user()?->email ?? '' }}</p>
+                            <h3 class="font-semibold text-white">{{ $user?->name ?? '' }}</h3>
+                            <p class="text-sm text-white/80">{{ $user?->email ?? '' }}</p>
                         </div>
                     @else
                         {{-- Guest user display --}}
@@ -281,15 +281,15 @@
                 </div>
 
                 <!-- Dynamic Collections Carousel Card -->
-                @auth
-                    <x-menu-collections-carousel :collections="Auth::check() ? Auth::user()->ownedCollections()->orderBy('position')->get() : collect()" />
+                @if ($user)
+                    <x-menu-collections-carousel :collections="$user->ownedCollections()->orderBy('position')->get()" />
 
                     <!-- Shared Collections Carousel Card - Collections where user is collaborator -->
-                    <x-menu-guest-collections-carousel :collections="Auth::check() ? Auth::user()->collaborations()->orderBy('position')->get() : collect()" />
+                    <x-menu-guest-collections-carousel :collections="$user->collaborations()->orderBy('position')->get()" />
 
-                @endauth
+                @endif
 
-                <x-navigation.account-management-carousel :user="Auth::user()" variant="compact"
+                <x-navigation.account-management-carousel :user="$user" variant="compact"
                     container-class="mobile-card rounded-2xl border border-emerald-200/30 bg-gradient-to-br from-emerald-50 to-teal-50 p-4 dark:border-emerald-800/30 dark:from-emerald-900/20 dark:to-teal-900/20" />
 
                 {{-- Egili Wallet Card --}}
@@ -394,7 +394,7 @@
                         </div>
                         <div class="space-y-2">
                             {{-- SuperAdmin Dashboard - Only for superadmin role --}}
-                            @if (Auth::check() && Auth::user()->hasRole('superadmin'))
+                            @if ($user && $user->hasRole('superadmin'))
                                 <a href="{{ route('superadmin.dashboard') }}"
                                     class="flex items-center gap-2 rounded-lg bg-gradient-to-r from-yellow-500/20 to-amber-500/20 px-3 py-2 text-sm font-semibold text-yellow-300 ring-1 ring-yellow-500/30 transition-all duration-200 hover:from-yellow-500/30 hover:to-amber-500/30 hover:ring-yellow-400/50">
                                     <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">

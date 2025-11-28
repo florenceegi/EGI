@@ -175,12 +175,14 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
     $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_current', true)->first();
     $isCreator = auth()->check() && auth()->id() === $creatorId;
 
-    $coCreatorUser = $egi->blockchain?->buyer;
+    // Co-Creator: usa il nuovo campo co_creator_id (più efficiente, senza JOIN)
+    $coCreatorUser = $egi->coCreator;
     $coCreatorDisplay = $coCreatorUser ? formatActivatorDisplay($coCreatorUser) : null;
 
     $currentOwnerUser = $egi->owner;
     $currentOwnerDisplay = $currentOwnerUser ? formatActivatorDisplay($currentOwnerUser) : null;
 
+    // Mostra secondary owner solo se owner attuale diverso da co-creator (c'è stata una rivendita)
     $showSecondaryOwner =
         $isMinted && $currentOwnerUser && $coCreatorUser && $currentOwnerUser->id !== $coCreatorUser->id;
 @endphp

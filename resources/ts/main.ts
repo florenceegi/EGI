@@ -945,6 +945,57 @@ function setupFegiCustomEvents(): void {
 
 // console.log('Padmin Main: Global functions for collection creation setup complete.');
 
+/**
+ * 📜 Oracode Global Function: disconnectWallet
+ * 🎯 Purpose: Disconnette il wallet dalla sessione corrente
+ * 🧱 Core Logic: Chiama l'API di disconnect e ricarica la pagina
+ */
+(window as any).disconnectWallet = async function(): Promise<void> {
+    try {
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        
+        const response = await fetch('/api/wallet/disconnect', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            credentials: 'same-origin'
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Reload page to reflect disconnected state
+            window.location.reload();
+        } else {
+            console.error('Wallet disconnect failed:', data.message || 'Unknown error');
+            if ((window as any).Swal) {
+                (window as any).Swal.fire({
+                    icon: 'error',
+                    title: 'Errore',
+                    text: data.message || 'Impossibile disconnettere il wallet'
+                });
+            } else {
+                alert(data.message || 'Impossibile disconnettere il wallet');
+            }
+        }
+    } catch (error) {
+        console.error('Wallet disconnect error:', error);
+        if ((window as any).Swal) {
+            (window as any).Swal.fire({
+                icon: 'error',
+                title: 'Errore',
+                text: 'Errore di connessione. Riprova.'
+            });
+        } else {
+            alert('Errore di connessione. Riprova.');
+        }
+    }
+};
+
 // --- 🚀 PUNTO DI INGRESSO ORCHESTRATO DELL'APPLICAZIONE ---
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApplicationOrchestrated);

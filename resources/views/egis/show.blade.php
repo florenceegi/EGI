@@ -37,14 +37,34 @@
             $hasCollectionDeleteRole = in_array($collectionRole, ['admin', 'creator'], true);
 
             $isMinted = !is_null($egi->token_EGI);
-            $ownsMintedEgi = $isAuthenticated && $isMinted && (int) $egi->owner_id === (int) $currentUserId;
+            $isOwner = $isAuthenticated && (int) $egi->owner_id === (int) $currentUserId;
+            $isCoCreator = $isAuthenticated && !is_null($egi->co_creator_id) && (int) $egi->co_creator_id === (int) $currentUserId;
 
-            // Can update if: has canManage OR (authenticated + permission + collection role) OR is EGI creator
+            // Permessi granulari basati sui tre ruoli inscindibili:
+            // - Creator (user_id): autore originale, IMMUTABILE
+            // - Co-Creator (co_creator_id): chi ha mintato, IMMUTABILE dopo mint  
+            // - Owner (owner_id): proprietario commerciale, VARIABILE con vendite
+
+            // Può modificare metadati (titolo, descrizione, traits, immagine):
+            // SOLO il Creator E SOLO se NON è ancora mintato
+            $canEditMetadata = $isCreator && !$isMinted;
+
+            // Può gestire CoA (Certificate of Authenticity):
+            // SEMPRE il Creator, per legge il diritto d'autore resta all'autore
+            $canManageCoA = $isCreator;
+
+            // Può gestire prezzo e vendita:
+            // - Creator se NON mintato (sta preparando la prima vendita)
+            // - Owner se mintato (è il proprietario commerciale)
+            $canManagePrice = ($isCreator && !$isMinted) || ($isOwner && $isMinted);
+
+            // Can update se: ha ALMENO un permesso tra metadata, CoA o price
+            // Oppure ha permessi di collezione / canManage globale
             $canUpdateEgi = ($canManage ?? false) ||
                 ($isAuthenticated &&
                     App\Helpers\FegiAuth::user()->can('update_EGI') &&
                     $hasCollectionUpdateRole) ||
-                ($isAuthenticated && (int) $egi->user_id === (int) $currentUserId);
+                $canEditMetadata || $canManageCoA || $canManagePrice;
 
             $canDeleteEgi = $isAuthenticated &&
                 App\Helpers\FegiAuth::user()->can('delete_EGI') &&
@@ -289,16 +309,23 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
                         </div>
 
-                        {{-- Col 2: CRUD Box - SOLO SE CREATOR --}}
+                        {{-- Col 2: CRUD Box - SOLO SE ha almeno un permesso --}}
                         @if ($canUpdateEgi)
                             {{-- DEBUG: Verifica che il pannello CRUD viene incluso --}}
-                            {{-- User ID: {{ $currentUserId }}, EGI user_id: {{ $egi->user_id }}, canUpdateEgi: {{ $canUpdateEgi ? 'YES' : 'NO' }} --}}
+                            {{-- User ID: {{ $currentUserId }}, Creator: {{ $isCreator ? 'YES' : 'NO' }}, Co-Creator: {{ $isCoCreator ? 'YES' : 'NO' }}, Owner: {{ $isOwner ? 'YES' : 'NO' }}, Minted: {{ $isMinted ? 'YES' : 'NO' }} --}}
                             @include(
                                 'egis.partials.sidebar.crud-panel',
                                 compact(
                                     'egi',
                                     'canUpdateEgi',
                                     'canDeleteEgi',
+                                    'canEditMetadata',
+                                    'canManageCoA',
+                                    'canManagePrice',
+                                    'isCreator',
+                                    'isCoCreator',
+                                    'isOwner',
+                                    'isMinted',
                                     'isPriceLocked',
                                     'displayPrice',
                                     'displayUser',

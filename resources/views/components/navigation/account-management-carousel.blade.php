@@ -57,6 +57,17 @@
     $walletRecord = $currentUser ? \App\Models\Wallet::where('user_id', $currentUser->id)->first() : null;
     $walletAddress = $walletRecord?->wallet;
     $hasValidWallet = $walletAddress && is_string($walletAddress) && strlen($walletAddress) === 58;
+    
+    // Check if connected via real wallet session (FegiAuth weak auth)
+    $sessionConnectedWallet = session('connected_wallet');
+    $isSessionConnected = session('auth_status') === 'connected' && $sessionConnectedWallet;
+    
+    // Use session wallet if connected, otherwise use database wallet
+    if ($isSessionConnected && !$hasValidWallet) {
+        $walletAddress = $sessionConnectedWallet;
+        $hasValidWallet = $walletAddress && is_string($walletAddress) && strlen($walletAddress) === 58;
+    }
+    
     $shortWallet = $hasValidWallet ? substr($walletAddress, 0, 6) . '...' . substr($walletAddress, -4) : null;
 
     $pspActions = [
@@ -116,6 +127,15 @@
             'label' => '🔐 ' . __('menu.wallet_redeem'),
             'href' => route('wallet.redemption'),
         ];
+        // Add disconnect button if connected via session
+        if ($isSessionConnected) {
+            $walletActions[] = [
+                'type' => 'button',
+                'label' => '🔌 ' . __('menu.wallet_disconnect'),
+                'variant' => 'danger',
+                'action' => 'disconnect-wallet',
+            ];
+        }
     } else {
         // User has no wallet - show connect button
         $walletActions[] = [
@@ -226,7 +246,8 @@
                                     <button type="button"
                                         @if (($action['action'] ?? null) === 'wallet') onclick="window.openWalletWelcomeModalSafe && window.openWalletWelcomeModalSafe();" @endif
                                         @if (in_array($action['action'] ?? null, ['connect-wallet', 'connect-pera-wallet'])) onclick="document.dispatchEvent(new CustomEvent('openRealWalletModal'));" @endif
-                                        class="navigation-account-carousel__action {{ ($action['variant'] ?? null) === 'primary' ? 'navigation-account-carousel__action--primary' : '' }}">
+                                        @if (($action['action'] ?? null) === 'disconnect-wallet') onclick="window.disconnectWallet && window.disconnectWallet();" @endif
+                                        class="navigation-account-carousel__action {{ ($action['variant'] ?? null) === 'primary' ? 'navigation-account-carousel__action--primary' : '' }} {{ ($action['variant'] ?? null) === 'danger' ? 'navigation-account-carousel__action--danger' : '' }}">
                                         <span>{{ $action['label'] }}</span>
                                         <span class="navigation-account-carousel__action-icon">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor"

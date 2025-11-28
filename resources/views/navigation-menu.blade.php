@@ -54,22 +54,22 @@
                 @endif
 
                 {{-- Menu Mobile Button --}}
-                @auth
+                @if ($user)
                 <button type="button" data-mobile-menu-trigger class="block p-1 transition-colors rounded-full md:hidden hover:bg-gray-800/50">
                     @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                         <img class="object-cover rounded-full size-8 ring-2 ring-gray-600"
-                            src="{{ Auth::user()->profile_photo_url }}"
-                            alt="{{ Auth::user()->name }}" />
+                            src="{{ $user->profile_photo_url }}"
+                            alt="{{ $user->name }}" />
                     @else
                         <div class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white bg-gray-600 rounded-full">
-                            {{ substr(Auth::user()->name, 0, 1) }}
+                            {{ substr($user->name, 0, 1) }}
                         </div>
                     @endif
                 </button>
-                @endauth
+                @endif
 
                 {{-- Bottone Accedi (Solo per guest su mobile) --}}
-                @guest
+                @if (!$user)
                 <div class="block md:hidden">
                     <a href="{{ route('login') }}"
                         class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
@@ -80,7 +80,7 @@
                         {{ __('collection.register') }}
                     </a>
                 </div>
-                @endguest
+                @endif
             </div>
         </div>
     </div>
