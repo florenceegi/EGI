@@ -39,7 +39,7 @@
     "ultra/ultra-upload-manager": "dev-main",
     "paypal/paypal-checkout-sdk": "^1.0",
     "stripe/stripe-php": "^12.6",
-    "florenceegi/hub": "@dev"
+    "florenceegi/hub": "dev-main"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^3.5",
@@ -141,11 +141,8 @@
       "url": "https://github.com/AutobookNft/UltraConfigManager.git"
     },
     {
-      "type": "path",
-      "url": "/home/fabio/EGI-HUB",
-      "options": {
-        "symlink": true
-      }
+      "type": "vcs",
+      "url": "https://github.com/AutobookNft/EGI-HUB.git"
     }
   ],
   "minimum-stability": "dev",

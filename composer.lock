@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8e7e5482ea3dc93fec52fadc46c92d5",
+    "content-hash": "0060c41870b0d7f9a3e85d5f6e50a29d",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1142,16 +1142,23 @@
         {
             "name": "florenceegi/hub",
             "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/AutobookNft/EGI-HUB.git",
+                "reference": "fbc9b81f333ffb96722f06677cb15e55040a94f4"
+            },
             "dist": {
-                "type": "path",
-                "url": "/home/fabio/EGI-HUB",
-                "reference": "5aa4c9f3d6628a9cfbef9921066b0c3902ebdb16"
+                "type": "zip",
+                "url": "https://api.github.com/repos/AutobookNft/EGI-HUB/zipball/fbc9b81f333ffb96722f06677cb15e55040a94f4",
+                "reference": "fbc9b81f333ffb96722f06677cb15e55040a94f4",
+                "shasum": ""
             },
             "require": {
                 "illuminate/database": "^10.0|^11.0|^12.0",
                 "illuminate/support": "^10.0|^11.0|^12.0",
                 "php": "^8.1"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -1184,10 +1191,11 @@
                 "multi-tenant",
                 "natan"
             ],
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "source": "https://github.com/AutobookNft/EGI-HUB/tree/main",
+                "issues": "https://github.com/AutobookNft/EGI-HUB/issues"
+            },
+            "time": "2025-11-28T12:04:29+00:00"
         },
         {
             "name": "fruitcake/php-cors",
