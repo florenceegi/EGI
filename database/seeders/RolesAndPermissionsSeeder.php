@@ -557,7 +557,7 @@ class RolesAndPermissionsSeeder extends Seeder {
             'allow-blockchain-operations'
         ],
 
-        'enterprise' => [
+        'company' => [
             // ✅ HA create_collection (può creare per business)
             'create_collection',
             'update_collection',
@@ -1176,7 +1176,7 @@ class RolesAndPermissionsSeeder extends Seeder {
             'view_own_invoices',
             'download_own_invoices',
 
-            // Accesso completo enterprise-level
+            // Accesso completo company-level
             'access_full_dashboard',
             'view_own_wallet_address',
             'create_multiple_collections',
@@ -1215,8 +1215,8 @@ class RolesAndPermissionsSeeder extends Seeder {
         $this->createLegalUser();
 
         $this->command->info('Ruoli e permessi creati/aggiornati con successo.');
-        $this->command->info('Nuovi ruoli aggiunti: patron, collector, enterprise, trader_pro, epp_entity, commissioner, pa_entity, pa_entity_admin');
-        $this->command->info('create_collection permission assegnato a: creator, patron, enterprise, pa_entity');
+        $this->command->info('Nuovi ruoli aggiunti: patron, collector, company, trader_pro, epp_entity, commissioner, pa_entity, pa_entity_admin');
+        $this->command->info('create_collection permission assegnato a: creator, patron, company, pa_entity');
         $this->command->info('pa_entity_admin: Admin del tenant PA per NATAN_LOC (gestione utenti e configurazioni tenant)');
     }
 
