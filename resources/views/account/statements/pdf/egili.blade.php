@@ -266,7 +266,7 @@
                 <td class="label">{{ __('statements.pdf.account_id') }}:</td>
                 <td class="value">#{{ str_pad($user->id, 6, '0', STR_PAD_LEFT) }}</td>
                 <td class="label">{{ __('statements.pdf.wallet_id') }}:</td>
-                <td class="value">#{{ str_pad($user->wallet->id ?? 0, 6, '0', STR_PAD_LEFT) }}</td>
+                <td class="value">#{{ str_pad($user->primaryWallet->id ?? 0, 6, '0', STR_PAD_LEFT) }}</td>
             </tr>
         </table>
     </div>

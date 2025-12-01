@@ -62,7 +62,7 @@ class EgiliService {
      * @return int Current Egili balance
      */
     public function getBalance(User $user): int {
-        if (!$user->wallet) {
+        if (!$user->primaryWallet) {
             $this->logger->warning('User has no wallet - Egili balance is zero', [
                 'user_id' => $user->id,
                 'log_category' => 'EGILI_NO_WALLET'
@@ -70,7 +70,7 @@ class EgiliService {
             return 0;
         }
 
-        return $user->wallet->egili_balance ?? 0;
+        return $user->primaryWallet->egili_balance ?? 0;
     }
 
     /**
@@ -267,7 +267,7 @@ class EgiliService {
 
             $this->logger->warning('Egili spend failed - insufficient balance', [
                 'user_id' => $user->id,
-                'wallet_id' => $user->wallet->id,
+                'wallet_id' => $user->primaryWallet->id,
                 'amount_requested' => $amount,
                 'balance_available' => $currentBalance,
                 'deficit' => $amount - $currentBalance,
@@ -281,7 +281,7 @@ class EgiliService {
         }
 
         return DB::transaction(function () use ($user, $amount, $reason, $category, $metadata, $source) {
-            $wallet = $user->wallet;
+            $wallet = $user->primaryWallet;
             $balanceBefore = $wallet->egili_balance;
             $balanceAfter = $balanceBefore - $amount;
 
@@ -358,11 +358,11 @@ class EgiliService {
      * @return \Illuminate\Support\Collection
      */
     public function getTransactionHistory(User $user, ?int $limit = null): \Illuminate\Support\Collection {
-        if (!$user->wallet) {
+        if (!$user->primaryWallet) {
             return collect([]);
         }
 
-        $query = EgiliTransaction::where('wallet_id', $user->wallet->id)
+        $query = EgiliTransaction::where('wallet_id', $user->primaryWallet->id)
             ->orderBy('created_at', 'desc');
 
         if ($limit !== null) {

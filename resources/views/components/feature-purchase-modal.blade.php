@@ -9,7 +9,7 @@
     
     // User Egili balance
     $user = Auth::user();
-    $egiliBalance = $user?->wallet->egili_balance ?? 0;
+    $egiliBalance = $user?->primaryWallet->egili_balance ?? 0;
 @endphp
 
 {{-- Feature Purchase Modal --}}

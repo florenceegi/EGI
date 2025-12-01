@@ -85,7 +85,7 @@ class RealWalletConnectController extends Controller {
                 'wallet_prefix' => substr($walletAddress, 0, 8) . '...',
             ]);
 
-            // 2. Check if wallet already exists in our system
+            // 2. Check if wallet already exists in our system (users.wallet column)
             $existingUser = User::where('wallet', $walletAddress)->first();
 
             if ($existingUser) {
@@ -191,7 +191,7 @@ class RealWalletConnectController extends Controller {
 
             $walletAddress = strtoupper(trim($validated['wallet_address']));
 
-            // Find existing user
+            // Find existing user by wallet address (users.wallet column)
             $user = User::where('wallet', $walletAddress)->first();
 
             if (!$user) {
@@ -265,7 +265,7 @@ class RealWalletConnectController extends Controller {
                 ], 422);
             }
 
-            // Check if wallet already taken
+            // Check if wallet already taken (users.wallet column)
             if (User::where('wallet', $walletAddress)->exists()) {
                 return response()->json([
                     'success' => false,

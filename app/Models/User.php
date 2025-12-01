@@ -584,11 +584,13 @@ class User extends Authenticatable implements HasMedia {
     }
 
     /**
-     * Get user's primary wallet (first wallet)
+     * Get user's primary wallet object (first wallet from wallets table)
+     * NOTE: Use $user->primaryWallet to get the Wallet object
+     *       Use $user->wallet to get the wallet address string (column)
      *
      * @return Wallet|null
      */
-    public function getWalletAttribute(): ?Wallet {
+    public function getPrimaryWalletAttribute(): ?Wallet {
         return $this->wallets()->first();
     }
 

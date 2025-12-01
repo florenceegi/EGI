@@ -17,7 +17,7 @@
         ->first();
     
     // User Egili balance
-    $egiliBalance = Auth::user()->wallet->egili_balance ?? 0;
+    $egiliBalance = Auth::user()->primaryWallet->egili_balance ?? 0;
     $canPayWithEgili = $livingPricing && $egiliBalance >= ($livingPricing->cost_egili ?? 0);
 @endphp
 
