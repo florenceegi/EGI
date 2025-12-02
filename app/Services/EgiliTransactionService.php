@@ -57,7 +57,13 @@ class EgiliTransactionService
 
         try {
             $transaction = DB::transaction(function () use ($user, $amount, $featureCode, $metadata, $availableEgili) {
-                $wallet = $user->wallet;
+                // Use primaryWallet (Wallet model) not wallet (address string)
+                $wallet = $user->primaryWallet;
+                
+                if (!$wallet) {
+                    throw new \Exception('User has no wallet');
+                }
+                
                 $balanceBefore = $availableEgili;
                 $balanceAfter = $balanceBefore - $amount;
 

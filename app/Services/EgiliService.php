@@ -135,8 +135,9 @@ class EgiliService {
             throw new \InvalidArgumentException("Egili earn amount must be positive, got: {$amount}");
         }
 
-        // Check wallet exists
-        if (!$user->wallet) {
+        // Check wallet exists (primaryWallet is Wallet model, wallet is address string)
+        $wallet = $user->primaryWallet;
+        if (!$wallet) {
             $this->logger->error('Egili earn failed - user has no wallet', [
                 'user_id' => $user->id,
                 'amount' => $amount,
@@ -147,8 +148,7 @@ class EgiliService {
             throw new \Exception("User has no wallet. Cannot earn Egili.");
         }
 
-        return DB::transaction(function () use ($user, $amount, $reason, $category, $metadata, $source) {
-            $wallet = $user->wallet;
+        return DB::transaction(function () use ($user, $wallet, $amount, $reason, $category, $metadata, $source) {
             $balanceBefore = $wallet->egili_balance;
             $balanceAfter = $balanceBefore + $amount;
 
@@ -249,8 +249,9 @@ class EgiliService {
             throw new \InvalidArgumentException("Egili spend amount must be positive, got: {$amount}");
         }
 
-        // Check wallet exists
-        if (!$user->wallet) {
+        // Check wallet exists (primaryWallet is Wallet model)
+        $wallet = $user->primaryWallet;
+        if (!$wallet) {
             $this->logger->error('Egili spend failed - user has no wallet', [
                 'user_id' => $user->id,
                 'amount' => $amount,
@@ -389,12 +390,12 @@ class EgiliService {
         User $admin,
         ?string $notes = null
     ): EgiliTransaction {
-        if (!$user->wallet) {
+        $wallet = $user->primaryWallet;
+        if (!$wallet) {
             throw new \Exception("User has no wallet. Cannot grant bonus.");
         }
 
-        return DB::transaction(function () use ($user, $amount, $reason, $admin, $notes) {
-            $wallet = $user->wallet;
+        return DB::transaction(function () use ($user, $wallet, $amount, $reason, $admin, $notes) {
             $balanceBefore = $wallet->egili_balance;
             $balanceAfter = $balanceBefore + $amount;
 
@@ -479,12 +480,12 @@ class EgiliService {
             throw new \InvalidArgumentException("Expiration days must be positive, got: {$expirationDays}");
         }
 
-        if (!$user->wallet) {
+        $wallet = $user->primaryWallet;
+        if (!$wallet) {
             throw new \Exception("User has no wallet. Cannot grant gift Egili.");
         }
 
-        return DB::transaction(function () use ($user, $amount, $expirationDays, $reason, $admin, $notes) {
-            $wallet = $user->wallet;
+        return DB::transaction(function () use ($user, $wallet, $amount, $expirationDays, $reason, $admin, $notes) {
             $balanceBefore = $wallet->egili_balance;
             $balanceAfter = $balanceBefore + $amount;
             $expiresAt = now()->addDays($expirationDays);
@@ -595,12 +596,12 @@ class EgiliService {
             throw new \InvalidArgumentException("Expiration days must be positive, got: {$expirationDays}");
         }
 
-        if (!$user->wallet) {
+        $wallet = $user->primaryWallet;
+        if (!$wallet) {
             throw new \Exception("User has no wallet. Cannot grant welcome gift Egili.");
         }
 
-        return DB::transaction(function () use ($user, $amount, $expirationDays, $reason) {
-            $wallet = $user->wallet;
+        return DB::transaction(function () use ($user, $wallet, $amount, $expirationDays, $reason) {
             $balanceBefore = $wallet->egili_balance;
             $balanceAfter = $balanceBefore + $amount;
             $expiresAt = now()->addDays($expirationDays);
@@ -704,7 +705,8 @@ class EgiliService {
             throw new \InvalidArgumentException("Spend amount must be positive, got: {$amount}");
         }
 
-        if (!$user->wallet) {
+        $wallet = $user->primaryWallet;
+        if (!$wallet) {
             throw new \Exception("User has no wallet. Cannot spend Egili.");
         }
 
@@ -715,8 +717,7 @@ class EgiliService {
             );
         }
 
-        return DB::transaction(function () use ($user, $amount, $reason, $category, $metadata, $source) {
-            $wallet = $user->wallet;
+        return DB::transaction(function () use ($user, $wallet, $amount, $reason, $category, $metadata, $source) {
             $remaining = $amount;
             $transactions = [];
 
@@ -935,7 +936,8 @@ class EgiliService {
      * @return array Balance breakdown
      */
     public function getBalanceBreakdown(User $user, int $expiringSoonDays = 7): array {
-        if (!$user->wallet) {
+        $wallet = $user->primaryWallet;
+        if (!$wallet) {
             return [
                 'total' => 0,
                 'lifetime' => 0,
@@ -943,8 +945,6 @@ class EgiliService {
                 'gift_expiring_soon' => 0,
             ];
         }
-
-        $wallet = $user->wallet;
 
         // Calculate lifetime balance
         $lifetimeBalance = EgiliTransaction::where('wallet_id', $wallet->id)
