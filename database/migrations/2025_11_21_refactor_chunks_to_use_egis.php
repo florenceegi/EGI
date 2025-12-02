@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Refactor project_document_chunks to use egis table
@@ -21,15 +22,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Verifica che le tabelle siano vuote (safety check)
-        $projectsCount = DB::table('projects')->count();
-        $projectDocumentsCount = DB::table('project_documents')->count();
-        $chunksCount = DB::table('project_document_chunks')->count();
+        // Verifica che le tabelle siano vuote (safety check) - solo se esistono
+        $projectsCount = Schema::hasTable('projects') ? DB::table('projects')->count() : 0;
+        $projectDocumentsCount = Schema::hasTable('project_documents') ? DB::table('project_documents')->count() : 0;
+        $chunksCount = Schema::hasTable('project_document_chunks') ? DB::table('project_document_chunks')->count() : 0;
         
         if ($projectsCount > 0 || $projectDocumentsCount > 0 || $chunksCount > 0) {
             throw new \Exception(
                 "ATTENZIONE: Tabelle non vuote! projects: $projectsCount, project_documents: $projectDocumentsCount, chunks: $chunksCount. Migration bloccata."
             );
+        }
+        
+        // Skip if project_document_chunks doesn't exist or already migrated
+        if (!Schema::hasTable('project_document_chunks')) {
+            return;
+        }
+        
+        if (!Schema::hasColumn('project_document_chunks', 'project_document_id')) {
+            // Already migrated
+            return;
         }
         
         Schema::table('project_document_chunks', function (Blueprint $table) {

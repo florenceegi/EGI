@@ -367,3 +367,71 @@ Route::prefix('natan-tutor')->name('api.natan-tutor.')->middleware(['web', 'auth
     Route::post('/assist/collection', [App\Http\Controllers\NatanTutorController::class, 'assistCollectionCreate'])
         ->name('assist.collection');
 });
+
+/*
+|--------------------------------------------------------------------------
+| SuperAdmin API Routes (EGI-HUB React Frontend)
+|--------------------------------------------------------------------------
+|
+| API endpoints for the EGI-HUB SuperAdmin React frontend.
+| These routes serve JSON data to the separate React SPA.
+|
+| Authentication: Sanctum or session-based
+| CORS: Configured to allow requests from localhost:5175 (dev) and hub domain (prod)
+|
+*/
+
+Route::prefix('superadmin')->name('api.superadmin.')->middleware(['web'])->group(function () {
+    
+    // Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\Api\Superadmin\DashboardApiController::class, 'index'])
+        ->name('dashboard');
+
+    // AI Management
+    Route::prefix('ai')->name('ai.')->group(function () {
+        Route::get('/consultations', [App\Http\Controllers\Api\Superadmin\AiApiController::class, 'consultations'])
+            ->name('consultations');
+        Route::get('/credits', [App\Http\Controllers\Api\Superadmin\AiApiController::class, 'credits'])
+            ->name('credits');
+        Route::get('/features', [App\Http\Controllers\Api\Superadmin\AiApiController::class, 'features'])
+            ->name('features');
+        Route::get('/statistics', [App\Http\Controllers\Api\Superadmin\AiApiController::class, 'statistics'])
+            ->name('statistics');
+    });
+
+    // Tokenomics
+    Route::prefix('tokenomics')->name('tokenomics.')->group(function () {
+        Route::get('/egili', [App\Http\Controllers\Api\Superadmin\TokenomicsApiController::class, 'egili'])
+            ->name('egili');
+        Route::get('/equilibrium', [App\Http\Controllers\Api\Superadmin\TokenomicsApiController::class, 'equilibrium'])
+            ->name('equilibrium');
+    });
+
+    // Platform Management
+    Route::prefix('platform')->name('platform.')->group(function () {
+        Route::get('/roles', [App\Http\Controllers\Api\Superadmin\PlatformApiController::class, 'roles'])
+            ->name('roles');
+        Route::get('/pricing', [App\Http\Controllers\Api\Superadmin\PlatformApiController::class, 'pricing'])
+            ->name('pricing');
+        Route::get('/promotions', [App\Http\Controllers\Api\Superadmin\PlatformApiController::class, 'promotions'])
+            ->name('promotions');
+        Route::get('/featured-calendar', [App\Http\Controllers\Api\Superadmin\PlatformApiController::class, 'featuredCalendar'])
+            ->name('featured-calendar');
+        Route::get('/consumption-ledger', [App\Http\Controllers\Api\Superadmin\PlatformApiController::class, 'consumptionLedger'])
+            ->name('consumption-ledger');
+    });
+
+    // Padmin OS3 Analyzer
+    Route::prefix('padmin')->name('padmin.')->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\Api\Superadmin\PadminApiController::class, 'dashboard'])
+            ->name('dashboard');
+        Route::get('/violations', [App\Http\Controllers\Api\Superadmin\PadminApiController::class, 'violations'])
+            ->name('violations');
+        Route::get('/symbols', [App\Http\Controllers\Api\Superadmin\PadminApiController::class, 'symbols'])
+            ->name('symbols');
+        Route::get('/search', [App\Http\Controllers\Api\Superadmin\PadminApiController::class, 'search'])
+            ->name('search');
+        Route::get('/statistics', [App\Http\Controllers\Api\Superadmin\PadminApiController::class, 'statistics'])
+            ->name('statistics');
+    });
+});

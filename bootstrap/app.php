@@ -8,6 +8,7 @@ use App\Http\Middleware\CreatorNicknameRedirect;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\EnsureSuperadmin;
 use App\Http\Middleware\SetLanguage;
+use App\Http\Middleware\HandleCors;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;

@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration {
     /**
@@ -19,18 +20,47 @@ return new class extends Migration {
             Schema::rename('epp_milestones', 'epp_projects');
         }
 
-        // Step 2: Modify epp_projects structure
-        Schema::table('epp_projects', function (Blueprint $table) {
-            // Remove foreign key to deprecated epps table (if exists)
-            if ($this->hasForeignKey('epp_projects', 'epp_projects_epp_id_foreign')) {
-                $table->dropForeign(['epp_id']);
+        // Step 2: Modify epp_projects structure - MariaDB compatible approach
+        // First drop ALL foreign keys on epp_id before renaming column
+        if (Schema::hasColumn('epp_projects', 'epp_id')) {
+            $driver = Schema::getConnection()->getDriverName();
+            if ($driver === 'mysql' || $driver === 'mariadb') {
+                // Get all FK names referencing epp_id column
+                $fks = DB::select("
+                    SELECT CONSTRAINT_NAME
+                    FROM information_schema.KEY_COLUMN_USAGE
+                    WHERE TABLE_SCHEMA = DATABASE()
+                    AND TABLE_NAME = 'epp_projects'
+                    AND COLUMN_NAME = 'epp_id'
+                    AND REFERENCED_TABLE_NAME IS NOT NULL
+                ");
+                
+                foreach ($fks as $fk) {
+                    DB::statement("ALTER TABLE epp_projects DROP FOREIGN KEY {$fk->CONSTRAINT_NAME}");
+                }
+            } else {
+                // For other DB, try standard Laravel drop
+                Schema::table('epp_projects', function (Blueprint $table) {
+                    if ($this->hasForeignKey('epp_projects', 'epp_projects_epp_id_foreign')) {
+                        $table->dropForeign(['epp_id']);
+                    }
+                });
             }
+        }
 
-            // Rename epp_id to epp_user_id if not already renamed
-            if (Schema::hasColumn('epp_projects', 'epp_id')) {
-                $table->renameColumn('epp_id', 'epp_user_id');
+        // Now rename the column using raw SQL for MariaDB compatibility
+        if (Schema::hasColumn('epp_projects', 'epp_id') && !Schema::hasColumn('epp_projects', 'epp_user_id')) {
+            $driver = Schema::getConnection()->getDriverName();
+            if ($driver === 'mysql' || $driver === 'mariadb') {
+                // MariaDB/MySQL: use CHANGE COLUMN
+                DB::statement('ALTER TABLE epp_projects CHANGE COLUMN epp_id epp_user_id BIGINT UNSIGNED NOT NULL');
+            } else {
+                // Other DB: use Laravel's renameColumn
+                Schema::table('epp_projects', function (Blueprint $table) {
+                    $table->renameColumn('epp_id', 'epp_user_id');
+                });
             }
-        });
+        }
 
         // Step 3: Add foreign key to users table for EPP users
         Schema::table('epp_projects', function (Blueprint $table) {
@@ -80,24 +110,51 @@ return new class extends Migration {
         });
 
         // Step 4: Update collections table - rename epp_id to epp_project_id
-        Schema::table('collections', function (Blueprint $table) {
-            // Check if we need to rename
-            if (Schema::hasColumn('collections', 'epp_id')) {
-                // Try to drop foreign key if exists
-                if ($this->hasForeignKey('collections', 'collections_epp_id_foreign')) {
-                    $table->dropForeign(['epp_id']);
+        // First drop ALL FK on epp_id, then rename using raw SQL for MariaDB compatibility
+        if (Schema::hasColumn('collections', 'epp_id')) {
+            $driver = Schema::getConnection()->getDriverName();
+            if ($driver === 'mysql' || $driver === 'mariadb') {
+                // Get all FK names referencing epp_id column
+                $fks = DB::select("
+                    SELECT CONSTRAINT_NAME
+                    FROM information_schema.KEY_COLUMN_USAGE
+                    WHERE TABLE_SCHEMA = DATABASE()
+                    AND TABLE_NAME = 'collections'
+                    AND COLUMN_NAME = 'epp_id'
+                    AND REFERENCED_TABLE_NAME IS NOT NULL
+                ");
+                
+                foreach ($fks as $fk) {
+                    DB::statement("ALTER TABLE collections DROP FOREIGN KEY {$fk->CONSTRAINT_NAME}");
                 }
-                $table->renameColumn('epp_id', 'epp_project_id');
+            } else {
+                Schema::table('collections', function (Blueprint $table) {
+                    if ($this->hasForeignKey('collections', 'collections_epp_id_foreign')) {
+                        $table->dropForeign(['epp_id']);
+                    }
+                });
             }
+        }
 
-            // Check if we need to change type to unsigned (it might already be renamed but wrong type)
+        // Rename column using raw SQL for MariaDB compatibility
+        if (Schema::hasColumn('collections', 'epp_id') && !Schema::hasColumn('collections', 'epp_project_id')) {
+            $driver = Schema::getConnection()->getDriverName();
+            if ($driver === 'mysql' || $driver === 'mariadb') {
+                DB::statement('ALTER TABLE collections CHANGE COLUMN epp_id epp_project_id BIGINT UNSIGNED NULL');
+            } else {
+                Schema::table('collections', function (Blueprint $table) {
+                    $table->renameColumn('epp_id', 'epp_project_id');
+                });
+            }
+        }
+
+        // Change type if needed (column already exists with wrong type)
+        Schema::table('collections', function (Blueprint $table) {
             if (Schema::hasColumn('collections', 'epp_project_id')) {
                 // Drop existing foreign key if exists before changing type
                 if ($this->hasForeignKey('collections', 'collections_epp_project_id_foreign')) {
                     $table->dropForeign(['epp_project_id']);
                 }
-                // Change to unsigned bigint to match epp_projects.id
-                $table->unsignedBigInteger('epp_project_id')->nullable()->change();
             }
         });
 
