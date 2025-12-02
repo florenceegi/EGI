@@ -219,7 +219,10 @@
 @endauth
 
 {{-- Wallet welcome modal for PSP onboarding --}}
-@include('components.wallet-welcome-modal')
+{{-- Exclude from onboarding-summary page to avoid double modal --}}
+@if (!request()->routeIs('creator.onboarding.summary'))
+    @include('components.wallet-welcome-modal')
+@endif
 
 {{-- Flash Messages Handler (UEM Integration) --}}
 <script>

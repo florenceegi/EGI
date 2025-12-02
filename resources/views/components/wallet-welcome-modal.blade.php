@@ -1,6 +1,6 @@
 {{-- Modal overlay --}}
 <div id="walletWelcomeModal" class="fixed inset-0 z-[9999] hidden overflow-y-auto bg-black bg-opacity-75 p-4"
-    style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="flex min-h-screen items-center justify-center">
         {{-- Modal container --}}
         <div class="wallet-modal-container">

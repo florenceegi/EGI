@@ -5,15 +5,15 @@ namespace App\Http\Controllers;
 use App\Services\Payment\StripeConnectService;
 use Illuminate\Support\Facades\Auth;
 use Ultra\UltraLogManager\UltraLogManager;
+use App\Enums\User\MerchantUserTypeEnum;
 
-class CreatorOnboardingSummaryController extends Controller
-{
+class CreatorOnboardingSummaryController extends Controller {
     public function __construct(
         UltraLogManager $logger
     ) {
         $this->middleware('auth');
         $this->logger = $logger;
-        
+
         // StripeConnectService is optional - only inject if Stripe is configured
         try {
             $this->stripeConnectService = app(StripeConnectService::class);
@@ -28,11 +28,11 @@ class CreatorOnboardingSummaryController extends Controller
     private ?StripeConnectService $stripeConnectService;
     private UltraLogManager $logger;
 
-    public function show()
-    {
+    public function show() {
         $user = Auth::user();
 
-        if (($user->usertype ?? null) !== 'creator') {
+        // Merchant user types (sellers) can access Stripe onboarding
+        if (!MerchantUserTypeEnum::isMerchant($user->usertype ?? null)) {
             abort(403);
         }
 
@@ -128,4 +128,3 @@ class CreatorOnboardingSummaryController extends Controller
         ]);
     }
 }
-

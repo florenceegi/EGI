@@ -29,6 +29,7 @@ use Illuminate\Validation\Rules;
 use Ultra\EgiModule\Contracts\UserRoleServiceInterface;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Ultra\UltraLogManager\UltraLogManager;
+use App\Enums\User\MerchantUserTypeEnum;
 
 /**
  * @Oracode Controller: Permission-Based Registration with Domain Separation
@@ -145,7 +146,7 @@ class RegisteredUserController extends Controller {
                         $this->logger->info('[Registration] Creating standard ecosystem (multi-wallet split)', $logContext);
                         $collection = $this->createFullEcosystem($user, $validated, $logContext);
                     }
-                    
+
                     $collectionId = $collection->id;
                     $logContext['collection_id'] = $collectionId;
                     $logContext['ecosystem_created'] = true;
@@ -185,7 +186,8 @@ class RegisteredUserController extends Controller {
             // This allows user to configure IBAN before being redirected to home
             $postRegistrationRoute = $this->authRedirectService->getRedirectRoute($result['user']);
 
-            if (($validated['user_type'] ?? null) === 'creator') {
+            // Merchant user types (sellers) go to Stripe onboarding
+            if (MerchantUserTypeEnum::isMerchant($validated['user_type'] ?? null)) {
                 $postRegistrationRoute = 'creator.onboarding.summary';
             }
 
@@ -550,17 +552,17 @@ class RegisteredUserController extends Controller {
 
     /**
      * Create EPP-specific ecosystem: collection + single EPP wallet (100% royalties)
-     * 
+     *
      * Unlike standard collections that split royalties among Creator, EPP, Natan, and Frangette,
      * EPP collections have ONLY the EPP user wallet at 100% mint and rebind royalties.
-     * 
+     *
      * @param User $user The EPP user
      * @param array $validated Validated registration data
      * @param array $logContext Logging context
      * @return \App\Models\Collection The created EPP collection
-     * 
+     *
      * @throws \Exception If ecosystem creation fails
-     * 
+     *
      * @oracode-pillar: Circolarità Virtuosa - EPP maintains full control of royalties
      * @oracode-pillar: Semplicità Potenziante - Single wallet, 100% control
      * @oracode-pillar: Coerenza Semantica - EPP role maps to EPP collection structure
@@ -671,10 +673,10 @@ class RegisteredUserController extends Controller {
     /**
      * Determine the platform_role based on user_type
      * Maps user_type to PlatformRole enum values for wallet and payment distribution
-     * 
+     *
      * @param string $userType The user type from registration
      * @return string|null The platform_role value or null
-     * 
+     *
      * @oracode-pillar: Coerenza Semantica - User type maps to platform role
      * @oracode-pillar: Intenzionalità Esplicita - Explicit role mapping
      */

@@ -66,8 +66,7 @@ use Throwable;
  *                                   Added structured error handling with UEM error codes.
  *                                   Updated documentation to Oracode v1.5 standard.
  */
-class WalletService implements WalletServiceInterface
-{
+class WalletService implements WalletServiceInterface {
     /**
      * 🧱 @dependency UltraErrorManager instance.
      * Used for standardized error handling.
@@ -130,11 +129,10 @@ class WalletService implements WalletServiceInterface
      *
      * @privacy-purpose Wallet creation for royalty management
      * @privacy-data Uses user IDs and wallet addresses
-     * 
+     *
      * @see WalletRoleEnum For immutable tokenomics definitions
      */
-    public function attachDefaultWalletsToCollection(Collection $collection, User $user): void
-    {
+    public function attachDefaultWalletsToCollection(Collection $collection, User $user): void {
         // Create context for logging and error handling
         $context = [
             'collection_id' => $collection->id,
@@ -228,12 +226,11 @@ class WalletService implements WalletServiceInterface
      *
      * @privacy-purpose Wallet creation for EPP-exclusive royalty management
      * @privacy-data Uses EPP user ID and wallet address
-     * 
+     *
      * @oracode-pillar Semplicità Potenziante - Single wallet, 100% control for EPP
      * @oracode-pillar Coerenza Semantica - EPP role maps to 100% royalties
      */
-    public function attachEppWalletToCollection(Collection $collection, User $user): void
-    {
+    public function attachEppWalletToCollection(Collection $collection, User $user): void {
         // Create context for logging and error handling
         $context = [
             'collection_id' => $collection->id,
@@ -392,31 +389,11 @@ class WalletService implements WalletServiceInterface
                 return $existingWallet;
             }
 
-            // Check if this wallet address already exists in the system (unique constraint)
-            // La ricerca va fatta su wallet e collection_id
-            $duplicateWallet = Wallet::where('wallet', $address)
-                ->where('collection_id', '!=', $collectionId) // Exclude current collection
-                ->where('user_id', '!=', $userId) // Exclude current user
-                ->first();
+            // NOTE: We allow the same wallet address to be used across different collections
+            // and by different users (e.g., NATAN and FRANGETTE share the same platform wallet).
+            // The unique constraint should only be on (collection_id, user_id, platform_role).
 
-            if ($duplicateWallet) {
-                // If the same wallet exists for a different user or collection, we need to handle this
-                $this->logger->warning('Wallet address already exists in this collection', array_merge($context, [
-                    'existing_wallet_id' => $duplicateWallet->id,
-                    'existing_user_id' => $duplicateWallet->user_id,
-                    'existing_collection_id' => $duplicateWallet->collection_id,
-                    'requested_address' => $address
-                ]));
-
-                // Return the existing wallet if it's for the same user, otherwise throw an error
-                if ($duplicateWallet->user_id === $userId) {
-                    return $duplicateWallet;
-                } else {
-                    throw new \Exception("Wallet address {$address} is already associated with another user (ID: {$duplicateWallet->user_id})");
-                }
-            }
-
-            // Create the wallet only if it doesn't exist
+            // Create the wallet
             $wallet = Wallet::create([
                 'collection_id' => $collectionId,
                 'user_id' => $userId,
@@ -557,8 +534,7 @@ class WalletService implements WalletServiceInterface
      *
      * @return void
      */
-    protected function defineWalletErrorCodes(): void
-    {
+    protected function defineWalletErrorCodes(): void {
         // Define error for wallet creation failure
         $this->errorManager->defineError('WALLET_CREATION_FAILED', [
             'type' => 'critical',

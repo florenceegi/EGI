@@ -218,8 +218,11 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
     @livewireScripts
 
     {{-- Wallet Welcome Modal (after registration) --}}
+    {{-- Exclude from onboarding-summary page to avoid double modal --}}
     @auth
-        @include('components.wallet-welcome-modal')
+        @if (!request()->routeIs('creator.onboarding.summary'))
+            @include('components.wallet-welcome-modal')
+        @endif
     @endauth
 
     {{-- Real Wallet Connect Modal (for Pera Wallet connection) --}}
