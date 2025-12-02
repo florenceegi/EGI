@@ -5,10 +5,11 @@
 # ========================================
 # Script atomico per migrations, seeding e pulizia storage su Laravel Forge
 # Ottimizzato per server staging/production con Forge (no .env file)
+# Include sincronizzazione NATAN_LOC multi-tenant
 #
 # @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
-# @version 1.0.0 (Forge-Compatible)
-# @date 2025-09-30
+# @version 1.2.0 (Forge-Compatible + NATAN_LOC Sync + Storage Cleanup Fixes)
+# @date 2025-12-02
 # ========================================
 
 set -euo pipefail
@@ -136,10 +137,36 @@ run_migration_fresh() {
 
     if php artisan migrate:fresh --force; then
         echo -e "${GREEN}✅ Migration fresh completed${NC}"
+        run_natan_sync_migrations
     else
         echo -e "${RED}❌ Migration fresh failed!${NC}" >&2
         exit 1
     fi
+}
+
+run_natan_sync_migrations() {
+    # Path per NATAN su Forge (staging)
+    local natan_path="/home/forge/natan_loc"
+
+    if [ ! -d "$natan_path" ]; then
+        echo -e "${YELLOW}⚠️ NATAN backend non trovato (${natan_path}). Salto sincronizzazione multi-tenant.${NC}"
+        return 0
+    fi
+
+    echo -e "\n${CYAN}🤝 SYNC: NATAN migrations (Forge)${NC}"
+    (
+        cd "$natan_path" || {
+            echo -e "${RED}❌ Impossibile accedere a ${natan_path}.${NC}" >&2
+            exit 1
+        }
+
+        if ! php artisan migrate --force; then
+            echo -e "${RED}❌ NATAN migrate --force failed.${NC}" >&2
+            exit 1
+        fi
+    )
+
+    echo -e "${GREEN}✅ NATAN migrations completed${NC}"
 }
 
 run_migration_refresh() {
@@ -262,7 +289,8 @@ clean_spatie_directories() {
             local dir_name=$(basename "$dir")
             storage_log "Removing Spatie directory: $dir_name"
 
-            if rm -rf "$dir" 2>/dev/null; then
+            # Try to remove with more aggressive approach (sudo fallback for Forge)
+            if rm -rf "$dir" 2>/dev/null || sudo rm -rf "$dir" 2>/dev/null; then
                 ((count++))
                 echo -e "${GREEN}✅ Removed: $dir_name${NC}"
             else
@@ -290,7 +318,7 @@ clean_export_files() {
             local file_name=$(basename "$file")
             storage_log "Removing export file: $file_name"
 
-            if rm -f "$file" 2>/dev/null; then
+            if rm -f "$file" 2>/dev/null || sudo rm -f "$file" 2>/dev/null; then
                 ((count++))
                 echo -e "${GREEN}✅ Removed: $file_name${NC}"
             else
@@ -311,7 +339,7 @@ clean_certificates_directory() {
     if [ -d "$STORAGE_PATH/certificates" ]; then
         echo -e "\n${CYAN}🔐 Cleaning certificates directory...${NC}"
 
-        if rm -rf "$STORAGE_PATH/certificates" 2>/dev/null; then
+        if rm -rf "$STORAGE_PATH/certificates" 2>/dev/null || sudo rm -rf "$STORAGE_PATH/certificates" 2>/dev/null; then
             echo -e "${GREEN}✅ Removed certificates directory${NC}"
             storage_log "SUCCESS: Removed certificates directory"
         else
@@ -328,7 +356,7 @@ clean_users_files_directory() {
     if [ -d "$STORAGE_PATH/users_files" ]; then
         echo -e "\n${CYAN}👥 Cleaning users_files directory...${NC}"
 
-        if rm -rf "$STORAGE_PATH/users_files" 2>/dev/null; then
+        if rm -rf "$STORAGE_PATH/users_files" 2>/dev/null || sudo rm -rf "$STORAGE_PATH/users_files" 2>/dev/null; then
             echo -e "${GREEN}✅ Removed users_files directory${NC}"
             storage_log "SUCCESS: Removed users_files directory"
         else
