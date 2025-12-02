@@ -3,13 +3,14 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
  * @package Database\Seeders
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (Forge Compatible)
- * @date 2025-09-30
+ * @version 1.1.0 (Forge Compatible + Florence EGI Tenant)
+ * @date 2025-12-02
  * @purpose Non-atomic seeding for Laravel Forge environments
  *
  * 🎯 DIFFERENZE vs DatabaseSeeder:
@@ -59,6 +60,19 @@ class DatabaseSeederForge extends Seeder {
         // Start timing
         $startTime = microtime(true);
         $failedSeeders = [];
+
+        // === STEP 0: Create Florence EGI tenant FIRST ===
+        try {
+            $this->createFlorenceEgiTenant();
+        } catch (\Exception $e) {
+            $this->command->error("💥 Step 0: FAILED - {$e->getMessage()}");
+            Log::error('[DatabaseSeederForge] Florence EGI tenant creation failed', [
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString(),
+            ]);
+            $this->command->error('🛑 Cannot proceed without Florence EGI tenant');
+            exit(1);
+        }
 
         $this->command->info('📊 Seeding sequence:');
 
@@ -125,5 +139,73 @@ class DatabaseSeederForge extends Seeder {
             // Exit with error code
             exit(1);
         }
+    }
+
+    /**
+     * Create Florence EGI tenant (required for multi-tenant architecture)
+     * Must be called BEFORE SystemUsersSeeder
+     *
+     * @return void
+     */
+    private function createFlorenceEgiTenant(): void {
+        $this->command->info('🏛️  Step 0: Creating Florence EGI tenant...');
+
+        // Check if tenant already exists
+        $existingTenant = DB::table('tenants')
+            ->where('slug', 'florence-egi')
+            ->first();
+
+        if ($existingTenant) {
+            $this->command->warn('⚠️  Florence EGI tenant already exists (ID: ' . $existingTenant->id . ')');
+
+            // Update tenant_id for users without it
+            $usersUpdated = DB::table('users')
+                ->whereNull('tenant_id')
+                ->update(['tenant_id' => $existingTenant->id]);
+
+            if ($usersUpdated > 0) {
+                $this->command->info("✅ Updated {$usersUpdated} users with tenant_id={$existingTenant->id}");
+            }
+
+            return;
+        }
+
+        // Create Florence EGI tenant
+        $tenantId = DB::table('tenants')->insertGetId([
+            'name' => 'Florence EGI',
+            'slug' => 'florence-egi',
+            'code' => 'FEGI',
+            'entity_type' => 'company',
+            'is_active' => 1,
+            'settings' => json_encode([
+                'primary_color' => '#D4A574',
+                'secondary_color' => '#1B365D',
+                'accent_color' => '#2D5016',
+                'features' => [
+                    'marketplace' => true,
+                    'nft_minting' => true,
+                    'ai_assistant' => true,
+                    'certificates' => true,
+                ]
+            ]),
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        $this->command->info("✅ Florence EGI tenant created (ID: {$tenantId})");
+
+        // Assign all existing users to Florence EGI tenant
+        $usersUpdated = DB::table('users')
+            ->whereNull('tenant_id')
+            ->update(['tenant_id' => $tenantId]);
+
+        if ($usersUpdated > 0) {
+            $this->command->info("✅ Assigned {$usersUpdated} users to Florence EGI tenant");
+        }
+
+        Log::info('[DatabaseSeederForge] Florence EGI tenant created', [
+            'tenant_id' => $tenantId,
+            'users_assigned' => $usersUpdated
+        ]);
     }
 }
