@@ -542,6 +542,14 @@ class EgiUploadHandler {
         $finalPathKey = $basePath . $egi->key_file . '.' . $egi->extension;
         $ipfsCid = null;
 
+        // DEBUG: Log entry into storeEgiFile
+        $this->logger->info('[EGI Upload] storeEgiFile called', [
+            'egi_id' => $egi->id,
+            'mime_type' => $file->getMimeType(),
+            'is_image' => $this->isImageMimeType($file),
+            'ipfs_enabled' => $this->ipfsService->isEnabled()
+        ]);
+
         // Check if this is an image file that supports optimization
         if ($this->isImageMimeType($file) && $this->imageOptimizationManager->isOptimizationSupported($file->getMimeType())) {
 
@@ -646,7 +654,7 @@ class EgiUploadHandler {
                 'egi_id' => (string) $egi->id,
                 'collection_id' => (string) $egi->collection_id,
                 'title' => $egi->title,
-                'creator_id' => (string) $egi->creator_id,
+                'creator_id' => (string) $egi->user_id,
                 'file_hash' => $egi->file_hash ?? hash_file('sha256', $file->getRealPath()),
                 'uploaded_at' => now()->toIso8601String()
             ];
