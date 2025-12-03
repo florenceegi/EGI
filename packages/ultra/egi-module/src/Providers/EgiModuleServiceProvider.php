@@ -14,6 +14,7 @@ use Ultra\EgiModule\Services\WalletService;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Ultra\UltraLogManager\UltraLogManager;
 use App\Services\CollectionService;
+use App\Contracts\IpfsServiceInterface;
 
 /**
  * @Oracode ServiceProvider: EgiModule Enhanced DI Configuration (Corrected)
@@ -77,7 +78,8 @@ class EgiModuleServiceProvider extends ServiceProvider {
                 $app->make(CollectionService::class),           // Service injection
                 $app->make(WalletServiceInterface::class),       // Service injection
                 $app->make(UserRoleServiceInterface::class),     // Service injection
-                $app->make(\App\Contracts\ImageOptimizationManagerInterface::class)  // Image optimization service
+                $app->make(\App\Contracts\ImageOptimizationManagerInterface::class),  // Image optimization service
+                $app->make(IpfsServiceInterface::class)          // IPFS pinning service
             );
         });
 
