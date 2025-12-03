@@ -542,7 +542,6 @@ class EgiUploadHandler {
         $finalPathKey = $basePath . $egi->key_file . '.' . $egi->extension;
         $ipfsCid = null;
 
-        // DEBUG: Log entry into storeEgiFile
         $this->logger->info('[EGI Upload] storeEgiFile called', [
             'egi_id' => $egi->id,
             'mime_type' => $file->getMimeType(),
