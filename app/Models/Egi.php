@@ -175,6 +175,8 @@ class Egi extends Model {
         'egi_living_activated_at',
         'egi_living_subscription_id',
         'smart_contract_app_id',
+        // IPFS Storage for original images
+        'ipfs_cid',
         // Note: 'id', 'created_at', 'updated_at', 'deleted_at' are typically not fillable
     ];
 
@@ -765,6 +767,12 @@ class Egi extends Model {
      * @return string|null
      */
     public function getOriginalImageUrlAttribute(): ?string {
+        // IPFS URL takes priority if available (immutable, distributed storage)
+        $ipfsUrl = $this->ipfs_original_url;
+        if ($ipfsUrl) {
+            return $ipfsUrl;
+        }
+
         if (!$this->collection_id || !$this->user_id || !$this->key_file) {
             return null;
         }
@@ -781,6 +789,46 @@ class Egi extends Model {
             'original', // Optimized original
             'public'
         );
+    }
+
+    /**
+     * Get IPFS URL for original image (via Pinata gateway)
+     * Returns the IPFS gateway URL if the image has been uploaded to IPFS
+     *
+     * @return string|null IPFS gateway URL or null if not uploaded
+     */
+    public function getIpfsOriginalUrlAttribute(): ?string {
+        if (empty($this->ipfs_cid)) {
+            return null;
+        }
+
+        // Use the IpfsService to construct the gateway URL
+        try {
+            $ipfsService = app(\App\Contracts\IpfsServiceInterface::class);
+            return $ipfsService->getGatewayUrl($this->ipfs_cid);
+        } catch (\Exception $e) {
+            // Fallback: construct URL manually using config
+            $gateway = config('ipfs.pinata.gateway');
+            if (!empty($gateway)) {
+                $gateway = rtrim($gateway, '/');
+                if (!str_starts_with($gateway, 'http')) {
+                    $gateway = "https://{$gateway}";
+                }
+                return "{$gateway}/ipfs/{$this->ipfs_cid}";
+            }
+            
+            // Last resort: public IPFS gateway
+            return "https://ipfs.io/ipfs/{$this->ipfs_cid}";
+        }
+    }
+
+    /**
+     * Check if this EGI has its original image stored on IPFS
+     *
+     * @return bool
+     */
+    public function hasIpfsImage(): bool {
+        return !empty($this->ipfs_cid);
     }
 
     //--------------------------------------------------------------------------

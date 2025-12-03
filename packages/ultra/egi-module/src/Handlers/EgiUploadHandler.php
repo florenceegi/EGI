@@ -38,6 +38,7 @@ use App\Services\CollectionService;
 use Ultra\EgiModule\Contracts\WalletServiceInterface;
 use Ultra\EgiModule\Contracts\UserRoleServiceInterface;
 use App\Contracts\ImageOptimizationManagerInterface;
+use App\Contracts\IpfsServiceInterface;
 
 /**
  * @Oracode Handler: EgiUploadHandler (v2.0 - Service-Based Architecture)
@@ -145,6 +146,12 @@ class EgiUploadHandler {
     protected readonly ImageOptimizationManagerInterface $imageOptimizationManager;
 
     /**
+     * IPFS pinning service for original image storage
+     * @var IpfsServiceInterface
+     */
+    protected readonly IpfsServiceInterface $ipfsService;
+
+    /**
      * Constructor: Injects all required services for clean DI pattern
      *
      * @param ErrorManagerInterface $errorManager UEM for error handling
@@ -153,6 +160,7 @@ class EgiUploadHandler {
      * @param WalletServiceInterface $walletService Wallet operations service
      * @param UserRoleServiceInterface $userRoleService User role assignment service
      * @param ImageOptimizationManagerInterface $imageOptimizationManager Image optimization service
+     * @param IpfsServiceInterface $ipfsService IPFS pinning service for original images
      *
      * @oracode-di-pattern Proper dependency injection replacing trait approach
      * @oracode-service-layer All business logic delegated to appropriate services
@@ -163,7 +171,8 @@ class EgiUploadHandler {
         CollectionService $collectionService,
         WalletServiceInterface $walletService,
         UserRoleServiceInterface $userRoleService,
-        ImageOptimizationManagerInterface $imageOptimizationManager
+        ImageOptimizationManagerInterface $imageOptimizationManager,
+        IpfsServiceInterface $ipfsService
     ) {
         $this->errorManager = $errorManager;
         $this->logger = $logger;
@@ -171,6 +180,7 @@ class EgiUploadHandler {
         $this->walletService = $walletService;
         $this->userRoleService = $userRoleService;
         $this->imageOptimizationManager = $imageOptimizationManager;
+        $this->ipfsService = $ipfsService;
     }
 
     /**
@@ -530,6 +540,7 @@ class EgiUploadHandler {
     protected function storeEgiFile(UploadedFile $file, Collection $collection, User $creatorUser, Egi $egi): array {
         $basePath = 'users_files/collections_' . $collection->id . '/creator_' . $creatorUser->id . '/';
         $finalPathKey = $basePath . $egi->key_file . '.' . $egi->extension;
+        $ipfsCid = null;
 
         // Check if this is an image file that supports optimization
         if ($this->isImageMimeType($file) && $this->imageOptimizationManager->isOptimizationSupported($file->getMimeType())) {
@@ -564,10 +575,14 @@ class EgiUploadHandler {
                     ['collection_id' => $collection->id, 'egi_id' => $egi->id]
                 );
 
-                // Add variant paths to the storage result
+                // Upload original image to IPFS for permanent storage
+                $ipfsCid = $this->uploadOriginalToIpfs($file, $egi);
+
+                // Add variant paths and IPFS CID to the storage result
                 return array_merge($mainStorageResult, [
                     'optimized_variants' => $optimizedVariants,
-                    'optimization_enabled' => true
+                    'optimization_enabled' => true,
+                    'ipfs_cid' => $ipfsCid
                 ]);
             } catch (\Exception $e) {
                 // If optimization fails, log and continue with standard storage
@@ -579,11 +594,99 @@ class EgiUploadHandler {
         }
 
         // Standard file storage for non-images or when optimization fails
-        return $this->saveToMultipleDisks(
+        $result = $this->saveToMultipleDisks(
             $finalPathKey,
             $file->getRealPath(),
             ['collection_id' => $collection->id, 'egi_id' => $egi->id]
         );
+
+        // For image files, still attempt IPFS upload even without optimization
+        if ($this->isImageMimeType($file)) {
+            $ipfsCid = $this->uploadOriginalToIpfs($file, $egi);
+            $result['ipfs_cid'] = $ipfsCid;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Upload original image to IPFS for permanent decentralized storage
+     *
+     * Solo le immagini originali vengono caricate su IPFS per:
+     * - Garantire permanenza e immutabilità dell'opera originale
+     * - Permettere zoom ad alta risoluzione via gateway IPFS
+     * - Creare prova di esistenza con CID determinato dal contenuto
+     *
+     * @param UploadedFile $file Original uploaded file
+     * @param Egi $egi EGI model to update with IPFS CID
+     * @return string|null IPFS CID if successful, null otherwise
+     *
+     * @oracode-non-blocking IPFS failure does not block EGI creation
+     * @oracode-resilience Graceful degradation to local storage
+     */
+    protected function uploadOriginalToIpfs(UploadedFile $file, Egi $egi): ?string
+    {
+        // Check if IPFS service is enabled
+        if (!$this->ipfsService->isEnabled()) {
+            $this->logger->info('[EGI Upload] IPFS service disabled, skipping upload', [
+                'egi_id' => $egi->id
+            ]);
+            return null;
+        }
+
+        try {
+            $this->logger->info('[EGI Upload] Starting IPFS upload for original image', [
+                'egi_id' => $egi->id,
+                'file_size' => $file->getSize(),
+                'mime_type' => $file->getMimeType()
+            ]);
+
+            // Generate metadata for IPFS pinning
+            $metadata = [
+                'egi_id' => (string) $egi->id,
+                'collection_id' => (string) $egi->collection_id,
+                'title' => $egi->title,
+                'creator_id' => (string) $egi->creator_id,
+                'file_hash' => $egi->file_hash ?? hash_file('sha256', $file->getRealPath()),
+                'uploaded_at' => now()->toIso8601String()
+            ];
+
+            // Upload to IPFS via Pinata
+            $ipfsResult = $this->ipfsService->upload(
+                $file->getRealPath(),
+                $metadata
+            );
+
+            if (!$ipfsResult['success']) {
+                $this->logger->warning('[EGI Upload] IPFS upload failed', [
+                    'egi_id' => $egi->id,
+                    'error' => $ipfsResult['error'] ?? 'Unknown error'
+                ]);
+                return null;
+            }
+
+            $ipfsCid = $ipfsResult['cid'];
+
+            // Update EGI with IPFS CID
+            $egi->update(['ipfs_cid' => $ipfsCid]);
+
+            $this->logger->info('[EGI Upload] IPFS upload successful', [
+                'egi_id' => $egi->id,
+                'ipfs_cid' => $ipfsCid,
+                'gateway_url' => $ipfsResult['gateway_url'] ?? null
+            ]);
+
+            return $ipfsCid;
+
+        } catch (\Exception $e) {
+            // Non-blocking: IPFS failure should not prevent EGI creation
+            $this->logger->warning('[EGI Upload] IPFS upload exception (non-blocking)', [
+                'egi_id' => $egi->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return null;
+        }
     }
 
     /**

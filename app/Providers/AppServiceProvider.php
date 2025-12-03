@@ -41,6 +41,8 @@ use Illuminate\Support\Facades\Log;
 use Spatie\ImageOptimizer\OptimizerChain;
 use App\Services\ImageOptimizationManager;
 use App\Contracts\ImageOptimizationManagerInterface;
+use App\Contracts\IpfsServiceInterface;
+use App\Services\Ipfs\IpfsService;
 
 class AppServiceProvider extends ServiceProvider {
 
@@ -105,6 +107,13 @@ class AppServiceProvider extends ServiceProvider {
             return new ImageOptimizationManager(
                 $app->make(UltraLogManager::class),
                 $app->make(ErrorManagerInterface::class)
+            );
+        });
+
+        // Register IPFS Service for original image uploads to Pinata
+        $this->app->singleton(IpfsServiceInterface::class, function ($app) {
+            return new IpfsService(
+                $app->make(UltraLogManager::class)
             );
         });
 
