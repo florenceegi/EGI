@@ -6,7 +6,7 @@
  * @version 1.0.0 (FlorenceEGI - Co-Creator Semantic Clarity)
  * @date 2025-11-28
  * @purpose Add co_creator_id field to egis table for clear role semantics
- * 
+ *
  * I TRE RUOLI INSCINDIBILI:
  * - user_id: Creator (l'autore originale - IMMUTABILE)
  * - co_creator_id: Co-Creator (chi ha mintato - IMMUTABILE dopo mint)
@@ -18,20 +18,18 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         // Step 1: Add co_creator_id column
         Schema::table('egis', function (Blueprint $table) {
             $table->unsignedBigInteger('co_creator_id')
                 ->nullable()
                 ->after('owner_id')
                 ->comment('Co-Creator: chi ha mintato l\'EGI (immutabile dopo mint)');
-            
+
             $table->index('co_creator_id', 'idx_egis_co_creator_id');
         });
 
@@ -57,15 +55,14 @@ return new class extends Migration
         $syncedCount = DB::table('egis')
             ->whereNotNull('co_creator_id')
             ->count();
-        
+
         echo "\n✅ Synced co_creator_id for {$syncedCount} minted EGIs\n";
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('egis', function (Blueprint $table) {
             $table->dropForeign(['co_creator_id']);
             $table->dropIndex('idx_egis_co_creator_id');

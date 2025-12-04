@@ -32,8 +32,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  *
  * @signature [AppConfigController::v1.0] florence-egi-spa-config
  */
-class AppConfigController extends Controller
-{
+class AppConfigController extends Controller {
     /** @var UltraLogManager Structured logging instance */
     private UltraLogManager $logger;
 
@@ -83,8 +82,7 @@ class AppConfigController extends Controller
      *
      * @seo-purpose SPA initialization endpoint
      */
-    public function getAppConfig(Request $request): \Illuminate\Http\JsonResponse
-    {
+    public function getAppConfig(Request $request): \Illuminate\Http\JsonResponse {
 
         $this->logger->info('Request for app configuration', [
             'ip' => $request->ip(),
@@ -138,8 +136,7 @@ class AppConfigController extends Controller
      *
      * @seo-purpose UEM client initialization endpoint
      */
-    public function getErrorDefinitions(Request $request): \Illuminate\Http\JsonResponse
-    {
+    public function getErrorDefinitions(Request $request): \Illuminate\Http\JsonResponse {
         try {
             $uemConfig = [
                 'errors' => config('error-manager.errors', []),
@@ -181,8 +178,7 @@ class AppConfigController extends Controller
      *
      * @privacy-safe Only exposes necessary configuration
      */
-    private function buildConfiguration($user, string $lang): array
-    {
+    private function buildConfiguration($user, string $lang): array {
         $isAuthenticated = (bool) $user;
         $isWeakAuth = $user ? (bool) $user->is_weak_auth : false;
         $userData = $this->getUserData($user);
@@ -219,8 +215,7 @@ class AppConfigController extends Controller
      *
      * @internal Returns default structure for guests
      */
-    private function getUserData($user): array
-    {
+    private function getUserData($user): array {
         if (! $user) {
             return [
                 'current_collection_id' => null,
@@ -248,8 +243,7 @@ class AppConfigController extends Controller
      *
      * @internal Uses :id placeholder for parametric routes
      */
-    private function getRoutes(): array
-    {
+    private function getRoutes(): array {
         return [
             'baseUrl' => url('/'),
             'walletConnect' => route('wallet.connect'),
@@ -293,8 +287,7 @@ class AppConfigController extends Controller
      *
      * @return array Guest layout key mappings (simplified => full)
      */
-    private function getGuestLayoutTranslationMappings(): array
-    {
+    private function getGuestLayoutTranslationMappings(): array {
         return [
             // Chiave semplificata => chiave completa Laravel
             'fegi_connect_title' => 'collection.wallet.fegi_connect_title',
@@ -358,8 +351,7 @@ class AppConfigController extends Controller
      *
      * @return array Collection key mappings (simplified => full)
      */
-    private function getCollectionTranslationMappings(): array
-    {
+    private function getCollectionTranslationMappings(): array {
         return [
             // Chiavi principali collection
             'create_new_egi' => 'collection.create_new_egi',
@@ -601,8 +593,7 @@ class AppConfigController extends Controller
      *
      * @return array Collection key mappings (simplified => full)
      */
-    private function getReservationTranslationMappings(): array
-    {
+    private function getReservationTranslationMappings(): array {
         return [
             'reservation.status.active' => 'reservation.status.active',
             'reservation.status.pending' => 'reservation.status.pending',
@@ -673,8 +664,7 @@ class AppConfigController extends Controller
      *
      * @return array Collection key mappings (simplified => full)
      */
-    private function getLikeTranslationMappings(): array
-    {
+    private function getLikeTranslationMappings(): array {
         return [
             'like.auth_required_title' => 'like.auth_required_title',
             'like.auth_required_for_like' => 'like.auth_required_for_like',
@@ -714,8 +704,7 @@ class AppConfigController extends Controller
      *
      * @os1-compliance: Full - Centralizes notification translation management
      */
-    private function getNotificationTranslationMappings(): array
-    {
+    private function getNotificationTranslationMappings(): array {
         return [
             'notificationLabelAdditionalDetails' => 'notification.label.additional_details',
             'notificationAriaActionsLabel' => 'notification.aria.actions_label',
@@ -731,8 +720,7 @@ class AppConfigController extends Controller
      * @version 2.0.0 (FlorenceEGI - Accordion Categories Support)
      * @date 2025-07-07
      */
-    private function getAssistantTranslationMappings(): array
-    {
+    private function getAssistantTranslationMappings(): array {
         return [
             // === HEADER E ACCOGLIENZA ===
             'assistant.header.title' => 'assistant.header.title',
@@ -870,8 +858,7 @@ class AppConfigController extends Controller
      *
      * @performance: Cached at app-config level for 300 seconds
      */
-    private function getFrontendTranslations(string $lang): array
-    {
+    private function getFrontendTranslations(string $lang): array {
         // Merge all mappings - PATTERN CORRETTO
         $mappings = array_merge(
             $this->getGuestLayoutTranslationMappings(),
@@ -910,8 +897,7 @@ class AppConfigController extends Controller
      *
      * @os1-compliance: Full - Centralizes HEIC translation management
      */
-    private function getHeicTranslationMappings(): array
-    {
+    private function getHeicTranslationMappings(): array {
         return [
             'heic_detection_title' => 'heic.heic_detection.title',
             'heic_detection_greeting' => 'heic.heic_detection.greeting',
@@ -935,8 +921,7 @@ class AppConfigController extends Controller
      *
      * @os1-compliance: Full - Centralizes GDPR translation management
      */
-    private function getGdprTranslationMappings(): array
-    {
+    private function getGdprTranslationMappings(): array {
         return [
             // === AZIONI E STATI GLOBALI ===
             'gdprSuccess' => 'gdpr.success',
@@ -994,8 +979,7 @@ class AppConfigController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse Response with effective upload limits
      */
-    public function getUploadLimits()
-    {
+    public function getUploadLimits() {
         // Limite server (php.ini)
         $serverPostMaxSize = $this->parseSize(ini_get('post_max_size'));
         $serverUploadMaxFilesize = $this->parseSize(ini_get('upload_max_filesize'));
@@ -1075,8 +1059,7 @@ class AppConfigController extends Controller
      * @param  string  $size  Size string to parse (e.g., "8M", "2G")
      * @return int Size in bytes
      */
-    private function parseSize($size)
-    {
+    private function parseSize($size) {
         // Extract unit (last character if it's a letter)
         $unit = '';
         $lastChar = substr($size, -1);
@@ -1103,8 +1086,7 @@ class AppConfigController extends Controller
      * @param  int  $bytes  Size in bytes
      * @return string Formatted size (e.g., "8 MB")
      */
-    private function formatSize($bytes)
-    {
+    private function formatSize($bytes) {
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
@@ -1124,8 +1106,7 @@ class AppConfigController extends Controller
      *
      * @internal Includes file upload, EGI, and feature flags
      */
-    private function getAppSettings(): array
-    {
+    private function getAppSettings(): array {
         return [
             'allowedExtensions' => config('AllowedFileType.collection.allowed_extensions', []),
             'allowedMimeTypes' => config('AllowedFileType.collection.allowed_mime_types', []),
@@ -1150,8 +1131,7 @@ class AppConfigController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getCurrencyConfig(): \Illuminate\Http\JsonResponse
-    {
+    public function getCurrencyConfig(): \Illuminate\Http\JsonResponse {
         try {
             $currencyConfig = [
                 'supported_currencies' => config('app.currency.supported_currencies', ['USD', 'EUR', 'GBP']),

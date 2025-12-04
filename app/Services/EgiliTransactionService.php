@@ -18,14 +18,14 @@ use Illuminate\Support\Facades\DB;
  * @date 2025-11-10
  * @purpose Handle Egili debits for AI features and other modular services
  */
-class EgiliTransactionService
-{
+class EgiliTransactionService {
     public function __construct(
         private UltraLogManager $logger,
         private ErrorManagerInterface $errorManager,
         private AuditLogService $auditService,
         private EgiliService $egiliService
-    ) {}
+    ) {
+    }
 
     /**
      * Debit Egili for a specific feature usage.
@@ -36,8 +36,7 @@ class EgiliTransactionService
      * @param array $metadata
      * @return array{success:bool,message?:string,transaction_id?:int}
      */
-    public function debitForFeature(User $user, string $featureCode, int $amount, array $metadata = []): array
-    {
+    public function debitForFeature(User $user, string $featureCode, int $amount, array $metadata = []): array {
         if ($amount <= 0) {
             return [
                 'success' => false,
@@ -59,11 +58,11 @@ class EgiliTransactionService
             $transaction = DB::transaction(function () use ($user, $amount, $featureCode, $metadata, $availableEgili) {
                 // Use primaryWallet (Wallet model) not wallet (address string)
                 $wallet = $user->primaryWallet;
-                
+
                 if (!$wallet) {
                     throw new \Exception('User has no wallet');
                 }
-                
+
                 $balanceBefore = $availableEgili;
                 $balanceAfter = $balanceBefore - $amount;
 
@@ -89,16 +88,16 @@ class EgiliTransactionService
                 return $transaction;
             });
 
-        $this->auditService->logUserAction(
-            user: $user,
-            action: 'egili_debited',
-            context: [
-                'feature_code' => $featureCode,
-                'amount' => $amount,
-                'transaction_id' => $transaction->id,
-            ],
-            category: GdprActivityCategory::AI_CREDITS_USAGE
-        );
+            $this->auditService->logUserAction(
+                user: $user,
+                action: 'egili_debited',
+                context: [
+                    'feature_code' => $featureCode,
+                    'amount' => $amount,
+                    'transaction_id' => $transaction->id,
+                ],
+                category: GdprActivityCategory::AI_CREDITS_USAGE
+            );
 
             $this->logger->info('[EgiliTransactionService] Egili debited', [
                 'user_id' => $user->id,
@@ -125,4 +124,3 @@ class EgiliTransactionService
         }
     }
 }
-

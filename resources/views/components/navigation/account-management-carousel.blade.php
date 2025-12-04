@@ -57,17 +57,17 @@
     $walletRecord = $currentUser ? \App\Models\Wallet::where('user_id', $currentUser->id)->first() : null;
     $walletAddress = $walletRecord?->wallet;
     $hasValidWallet = $walletAddress && is_string($walletAddress) && strlen($walletAddress) === 58;
-    
+
     // Check if connected via real wallet session (FegiAuth weak auth)
     $sessionConnectedWallet = session('connected_wallet');
     $isSessionConnected = session('auth_status') === 'connected' && $sessionConnectedWallet;
-    
+
     // Use session wallet if connected, otherwise use database wallet
     if ($isSessionConnected && !$hasValidWallet) {
         $walletAddress = $sessionConnectedWallet;
         $hasValidWallet = $walletAddress && is_string($walletAddress) && strlen($walletAddress) === 58;
     }
-    
+
     $shortWallet = $hasValidWallet ? substr($walletAddress, 0, 6) . '...' . substr($walletAddress, -4) : null;
 
     $pspActions = [

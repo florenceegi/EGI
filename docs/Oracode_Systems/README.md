@@ -15,9 +15,9 @@
 
 Oracode is a unified semantic framework that merges principles of Ultra Documentation Philosophy (UDP) and AChaos into a single doctrine for code that:
 
-- **Survives:** Resists knowledge loss, maintains semantic integrity across time
-- **Speaks Truth:** Expresses intent explicitly, refuses deduction and assumption
-- **Serves with Dignity:** Balances rigor with humanity, power with restraint
+-   **Survives:** Resists knowledge loss, maintains semantic integrity across time
+-   **Speaks Truth:** Expresses intent explicitly, refuses deduction and assumption
+-   **Serves with Dignity:** Balances rigor with humanity, power with restraint
 
 From philosophical vision (OS1, OS2) to execution engine (OS3) to human education (OS4).
 
@@ -54,22 +54,22 @@ From philosophical vision (OS1, OS2) to execution engine (OS3) to human educatio
 
 #### **Padmin Identity (Modular OS3.0)**
 
-- **[PADMIN_IDENTITY_OS3_INDEX.md](./PADMIN_IDENTITY_OS3_INDEX.md)** ⭐ START HERE (navigation hub)
-- **[PADMIN_IDENTITY_OS3_CORE.md](./PADMIN_IDENTITY_OS3_CORE.md)** - Identity + P0 blocking rules
-- **[PADMIN_IDENTITY_OS3_P1_PRINCIPLES.md](./PADMIN_IDENTITY_OS3_P1_PRINCIPLES.md)** - 6 Cardinal Pillars + partnership
-- **[PADMIN_IDENTITY_OS3_P2_PATTERNS.md](./PADMIN_IDENTITY_OS3_P2_PATTERNS.md)** - Architecture + frontend + commits
-- **[PADMIN_IDENTITY_OS3_P3_REFERENCE.md](./PADMIN_IDENTITY_OS3_P3_REFERENCE.md)** - 12 Derived Pillars + metrics
-- **[PADMIN_IDENTITY_OS3_INTEGRATION_GUIDE.md](./PADMIN_IDENTITY_OS3_INTEGRATION_GUIDE.md)** - ULM/UEM/GDPR complete patterns
+-   **[PADMIN_IDENTITY_OS3_INDEX.md](./PADMIN_IDENTITY_OS3_INDEX.md)** ⭐ START HERE (navigation hub)
+-   **[PADMIN_IDENTITY_OS3_CORE.md](./PADMIN_IDENTITY_OS3_CORE.md)** - Identity + P0 blocking rules
+-   **[PADMIN_IDENTITY_OS3_P1_PRINCIPLES.md](./PADMIN_IDENTITY_OS3_P1_PRINCIPLES.md)** - 6 Cardinal Pillars + partnership
+-   **[PADMIN_IDENTITY_OS3_P2_PATTERNS.md](./PADMIN_IDENTITY_OS3_P2_PATTERNS.md)** - Architecture + frontend + commits
+-   **[PADMIN_IDENTITY_OS3_P3_REFERENCE.md](./PADMIN_IDENTITY_OS3_P3_REFERENCE.md)** - 12 Derived Pillars + metrics
+-   **[PADMIN_IDENTITY_OS3_INTEGRATION_GUIDE.md](./PADMIN_IDENTITY_OS3_INTEGRATION_GUIDE.md)** - ULM/UEM/GDPR complete patterns
 
 #### **OS3 - The Execution Engine** ⭐
 
 📁 **`OS3/`** folder:
 
-- [00_OS3_Executive_Summary.md](./OS3/00_OS3_Executive_Summary.md)
-- [01_Modulo_0_Il_Manifesto_OS3.md](./OS3/01_Modulo_0_Il_Manifesto_OS3.md)
-- [02_Modulo_1_I_6_Pilastri_Cardinali.md](./OS3/02_Modulo_1_I_6_Pilastri_Cardinali.md)
-- [03_Modulo_2_REGOLA_ZERO.md](./OS3/03_Modulo_2_REGOLA_ZERO.md)
-- [04_Modulo_3_Sistema_Priorita_P0_P3.md](./OS3/04_Modulo_3_Sistema_Priorita_P0_P3.md)
+-   [00_OS3_Executive_Summary.md](./OS3/00_OS3_Executive_Summary.md)
+-   [01_Modulo_0_Il_Manifesto_OS3.md](./OS3/01_Modulo_0_Il_Manifesto_OS3.md)
+-   [02_Modulo_1_I_6_Pilastri_Cardinali.md](./OS3/02_Modulo_1_I_6_Pilastri_Cardinali.md)
+-   [03_Modulo_2_REGOLA_ZERO.md](./OS3/03_Modulo_2_REGOLA_ZERO.md)
+-   [04_Modulo_3_Sistema_Priorita_P0_P3.md](./OS3/04_Modulo_3_Sistema_Priorita_P0_P3.md)
 
 **Purpose:** Discipline AI code generation, enforce verification  
 **Target:** Developers, AI systems, technical teams
@@ -78,7 +78,7 @@ From philosophical vision (OS1, OS2) to execution engine (OS3) to human educatio
 
 📁 **`OS4/`** folder:
 
-- [OS4_FOUNDATION_DOCUMENT.md](./OS4/OS4_FOUNDATION_DOCUMENT.md)
+-   [OS4_FOUNDATION_DOCUMENT.md](./OS4/OS4_FOUNDATION_DOCUMENT.md)
 
 **Purpose:** Educate humans to verify AI output  
 **Target:** PA operators, managers, non-technical staff
@@ -87,11 +87,11 @@ From philosophical vision (OS1, OS2) to execution engine (OS3) to human educatio
 
 📁 **`_archive/`** folder:
 
-- Part\_\*.md files (replaced by OS3/OS4 folders)
-- FRAMMENTI_COSCIENZA_EVOLUTIVA.md (narrative, not operational)
-- OS3_OS4_REFERENCE_GUIDE.md (replaced by INDEX)
-- README_ORIGINAL.md (obsolete)
-- PADMIN_IDENTITY_OS3_MASTER_WRONG_PHILOSOPHICAL.md (wrong attempt)
+-   Part\_\*.md files (replaced by OS3/OS4 folders)
+-   FRAMMENTI_COSCIENZA_EVOLUTIVA.md (narrative, not operational)
+-   OS3_OS4_REFERENCE_GUIDE.md (replaced by INDEX)
+-   README_ORIGINAL.md (obsolete)
+-   PADMIN_IDENTITY_OS3_MASTER_WRONG_PHILOSOPHICAL.md (wrong attempt)
 
 **See:** `_archive/README_ARCHIVE.md` for complete details
 

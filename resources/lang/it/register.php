@@ -56,8 +56,8 @@ return [
     'user_type_commissioner_desc' => 'Primi acquirenti che attivano le opere, iscrivendo il proprio nome nella loro storia per ottenere visibilità e riconoscimento.',
 
     // Enterprise (was: azienda)
-    'user_type_enterprise' => 'Azienda',
-    'user_type_enterprise_desc' => 'Organizzazioni e imprese interessate ad investimenti culturali e sostenibili',
+    'user_type_company' => 'Azienda',
+    'user_type_company_desc' => 'Organizzazioni e imprese interessate ad investimenti culturali e sostenibili',
 
     // Trader Pro (new)
     'user_type_trader_pro' => 'Trader Professionista',
