@@ -13,6 +13,9 @@
 ])
 
 @php
+    // Import FegiAuth for unified auth (supports wallet + traditional login)
+    use App\Helpers\FegiAuth;
+    
     // 🔥 HYPER MODE: Leggiamo direttamente dal database il campo hyper dell'EGI
 $isHyper = $egi->hyper ?? false;
 
@@ -50,8 +53,8 @@ $contextConfig = [
 
 $config = $contextConfig[$context] ?? $contextConfig['collector'];
 
-// Controllo se l'utente loggato è il creator dell'EGI
-$isCreator = auth()->check() && auth()->id() === $egi->user_id;
+// Controllo se l'utente loggato è il creator dell'EGI (using FegiAuth for wallet support)
+$isCreator = FegiAuth::check() && FegiAuth::id() === $egi->user_id;
 
 // Badge logic - può essere sovrascritto dal parametro showBadge
 $showBadge = $showBadge ?? $showOwnershipBadge;
@@ -625,8 +628,9 @@ $hasCurrentReservation =
     @if (!$isCreator)
         @php
             // Use EgiAvailabilityService for comprehensive availability check
+            // FegiAuth::user() supports both traditional login AND wallet authentication
             $availabilityService = app(\App\Services\EgiAvailabilityService::class);
-            $availability = $availabilityService->checkAvailability($egi, auth()->user());
+            $availability = $availabilityService->checkAvailability($egi, FegiAuth::user());
 
             $canMint = $availability['can_mint'];
             $canReserve = $availability['can_reserve'];
@@ -634,11 +638,11 @@ $hasCurrentReservation =
             $recommendedAction = $availability['recommended_action'];
             $availableActions = $availability['available_actions'];
 
-            // Get user reservation if exists
+            // Get user reservation if exists (using FegiAuth for wallet support)
             $userReservation = null;
-            if (auth()->check() && $egi->reservations) {
+            if (FegiAuth::check() && $egi->reservations) {
                 $userReservation = $egi->reservations
-                    ->where('user_id', auth()->id())
+                    ->where('user_id', FegiAuth::id())
                     ->where('is_current', true)
                     ->where('status', 'active')
                     ->first();
@@ -780,7 +784,7 @@ $hasCurrentReservation =
                         </svg>
                         @if (!$showButtons && !$isAuctionMode)
                             {{ __('egi.crud.price_not_set') }}
-                        @elseif (!auth()->check())
+                        @elseif (!FegiAuth::check())
                             {{ __('egi.status.login_required') ?? 'Login richiesto' }}
                         @else
                             {{ __('egi.status.not_available') ?? 'Non disponibile' }}

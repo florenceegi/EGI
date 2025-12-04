@@ -20,13 +20,16 @@
 // 🎯 CORE DATA PREPARATION
 // ===========================
 
+// Import FegiAuth for unified auth (supports wallet + traditional login)
+use App\Helpers\FegiAuth;
+
 // 🔥 HYPER MODE
 $isHyper = $egi->hyper ?? false;
 
-// 👤 USER CONTEXT
-$currentUser = auth()->user();
-$isAuthenticated = auth()->check();
-$currentUserId = $isAuthenticated ? auth()->id() : null;
+// 👤 USER CONTEXT (using FegiAuth for wallet support)
+$currentUser = FegiAuth::user();
+$isAuthenticated = FegiAuth::check();
+$currentUserId = $isAuthenticated ? FegiAuth::id() : null;
 
 // 🎨 CREATOR INFO
 $creatorId = $egi->user_id ?? ($collection->creator_id ?? null);
@@ -169,11 +172,11 @@ if ($portfolioContext && $portfolioOwner) {
 
 // 🔒 Creator check: Determina se l'utente corrente è il creatore dell'EGI
 $creatorId = $egi->user_id ?? ($collection->creator_id ?? null);
-$isCreator = auth()->check() && auth()->id() === $creatorId;
+$isCreator = FegiAuth::check() && FegiAuth::id() === $creatorId;
 
 // 🔄 Controlla se c'è una prenotazione corrente per il pulsante Rilancia
     $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_current', true)->first();
-    $isCreator = auth()->check() && auth()->id() === $creatorId;
+    $isCreator = FegiAuth::check() && FegiAuth::id() === $creatorId;
 
     // Co-Creator: usa il nuovo campo co_creator_id (più efficiente, senza JOIN)
     $coCreatorUser = $egi->coCreator;
@@ -1019,8 +1022,9 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
     @if (!$isCreator)
         @php
             // Use EgiAvailabilityService for comprehensive availability check
+            // FegiAuth::user() supports both traditional login AND wallet authentication
             $availabilityService = app(\App\Services\EgiAvailabilityService::class);
-            $availability = $availabilityService->checkAvailability($egi, auth()->user());
+            $availability = $availabilityService->checkAvailability($egi, FegiAuth::user());
 
             $canMint = $availability['can_mint'];
             $canReserve = $availability['can_reserve'];
@@ -1198,7 +1202,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                             </span>
                         @elseif (!$showButtons)
                             {{ __('egi.crud.price_not_set') }}
-                        @elseif (!auth()->check())
+                        @elseif (!FegiAuth::check())
                             {{ __('egi.status.login_required') ?? 'Login richiesto' }}
                         @else
                             {{ __('egi.status.not_available') ?? 'Non disponibile' }}
