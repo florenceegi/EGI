@@ -631,8 +631,7 @@ class EgiUploadHandler {
      * @oracode-non-blocking IPFS failure does not block EGI creation
      * @oracode-resilience Graceful degradation to local storage
      */
-    protected function uploadOriginalToIpfs(UploadedFile $file, Egi $egi): ?string
-    {
+    protected function uploadOriginalToIpfs(UploadedFile $file, Egi $egi): ?string {
         // Check if IPFS service is enabled
         if (!$this->ipfsService->isEnabled()) {
             $this->logger->info('[EGI Upload] IPFS service disabled, skipping upload', [
@@ -684,7 +683,6 @@ class EgiUploadHandler {
             ]);
 
             return $ipfsCid;
-
         } catch (\Exception $e) {
             // Non-blocking: IPFS failure should not prevent EGI creation
             $this->logger->warning('[EGI Upload] IPFS upload exception (non-blocking)', [

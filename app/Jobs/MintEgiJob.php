@@ -288,7 +288,6 @@ class MintEgiJob implements ShouldQueue {
                 'expires_in_days' => 365,
                 'log_category' => 'EGILI_CREATOR_REWARD_SUCCESS'
             ]);
-
         } catch (\Exception $e) {
             // Log error but don't fail the mint (reward can be retried manually)
             $logger->error('Failed to reward creator with Gift Egili', [

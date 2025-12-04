@@ -309,7 +309,7 @@ class Egi extends Model {
     /**
      * 🔗 Defines the relationship: An EGI was minted by one User (Co-Creator).
      * Questo è il CO-CREATOR - chi ha mintato l'EGI (IMMUTABILE dopo mint)
-     * 
+     *
      * I TRE RUOLI INSCINDIBILI:
      * - user() = Creator (autore originale)
      * - coCreator() = Co-Creator (chi ha mintato)
@@ -816,7 +816,7 @@ class Egi extends Model {
                 }
                 return "{$gateway}/ipfs/{$this->ipfs_cid}";
             }
-            
+
             // Last resort: public IPFS gateway
             return "https://ipfs.io/ipfs/{$this->ipfs_cid}";
         }
@@ -1232,117 +1232,107 @@ class Egi extends Model {
     }
 
     // Add other relationships as needed (e.g., with Auction, Drop models later)
-    
+
     //--------------------------------------------------------------------------
     // Featured/Hyper Relationships (Task 3.1)
     //--------------------------------------------------------------------------
-    
+
     /**
      * Get the admin who approved featured status
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function featuredByAdmin(): BelongsTo
-    {
+    public function featuredByAdmin(): BelongsTo {
         return $this->belongsTo(User::class, 'featured_by_admin_id');
     }
-    
+
     /**
      * Get the admin who approved hyper mode
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function hyperByAdmin(): BelongsTo
-    {
+    public function hyperByAdmin(): BelongsTo {
         return $this->belongsTo(User::class, 'hyper_by_admin_id');
     }
-    
+
     //--------------------------------------------------------------------------
     // Featured/Hyper Helper Methods (Task 3.1)
     //--------------------------------------------------------------------------
-    
+
     /**
      * Check if EGI is currently featured
-     * 
+     *
      * @return bool
      */
-    public function isFeatured(): bool
-    {
+    public function isFeatured(): bool {
         return $this->featured_until !== null && $this->featured_until > now();
     }
-    
+
     /**
      * Check if EGI is currently in hyper mode
-     * 
+     *
      * @return bool
      */
-    public function isHyper(): bool
-    {
+    public function isHyper(): bool {
         return $this->hyper_until !== null && $this->hyper_until > now();
     }
-    
+
     /**
      * Get featured days remaining
-     * 
+     *
      * @return int Days remaining (0 if not featured or expired)
      */
-    public function getFeaturedDaysRemaining(): int
-    {
+    public function getFeaturedDaysRemaining(): int {
         if (!$this->isFeatured()) {
             return 0;
         }
-        
+
         return max(0, now()->diffInDays($this->featured_until, false));
     }
-    
+
     /**
      * Get hyper days remaining
-     * 
+     *
      * @return int Days remaining (0 if not hyper or expired)
      */
-    public function getHyperDaysRemaining(): int
-    {
+    public function getHyperDaysRemaining(): int {
         if (!$this->isHyper()) {
             return 0;
         }
-        
+
         return max(0, now()->diffInDays($this->hyper_until, false));
     }
-    
+
     /**
      * Scope: Featured EGIs only
-     * 
+     *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFeatured($query)
-    {
+    public function scopeFeatured($query) {
         return $query->whereNotNull('featured_until')
-                     ->where('featured_until', '>', now());
+            ->where('featured_until', '>', now());
     }
-    
+
     /**
      * Scope: Hyper EGIs only
-     * 
+     *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeHyperMode($query)
-    {
+    public function scopeHyperMode($query) {
         return $query->whereNotNull('hyper_until')
-                     ->where('hyper_until', '>', now());
+            ->where('hyper_until', '>', now());
     }
 
     /**
      * Get document chunks (embeddings for RAG)
-     * 
+     *
      * Used for NATAN PA documents and any EGI that needs semantic search
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function chunks(): HasMany
-    {
+    public function chunks(): HasMany {
         return $this->hasMany(ProjectDocumentChunk::class, 'egi_id');
     }
-
 }

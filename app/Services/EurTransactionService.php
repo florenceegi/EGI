@@ -16,61 +16,58 @@ use Illuminate\Support\Facades\DB;
  * @date 2025-11-21
  * @purpose Manages EUR transaction history for statements (expenses and income)
  */
-class EurTransactionService
-{
+class EurTransactionService {
     /**
      * Get all EUR transactions for a user (expenses + income)
-     * 
+     *
      * @param User $user
      * @param \Carbon\Carbon|null $startDate
      * @param \Carbon\Carbon|null $endDate
      * @return Collection Unified collection of EUR transactions
      */
-    public function getTransactionHistory(User $user, $startDate = null, $endDate = null): Collection
-    {
+    public function getTransactionHistory(User $user, $startDate = null, $endDate = null): Collection {
         $transactions = collect();
-        
+
         // 1. Get Egili purchases (EXPENSES)
         $egiliPurchases = $this->getEgiliPurchases($user, $startDate, $endDate);
         $transactions = $transactions->merge($egiliPurchases);
-        
+
         // 2. Get EGI mints (EXPENSES)
         $egiMints = $this->getEgiMints($user, $startDate, $endDate);
         $transactions = $transactions->merge($egiMints);
-        
+
         // 3. Get payment distributions (INCOME) - what user received from sales
         $distributions = $this->getPaymentDistributions($user, $startDate, $endDate);
         $transactions = $transactions->merge($distributions);
-        
+
         // Sort by date descending
         return $transactions->sortByDesc('transaction_date')->values();
     }
-    
+
     /**
      * Get Egili purchases (user spent EUR to buy Egili)
-     * 
+     *
      * @param User $user
      * @param \Carbon\Carbon|null $startDate
      * @param \Carbon\Carbon|null $endDate
      * @return Collection
      */
-    private function getEgiliPurchases(User $user, $startDate, $endDate): Collection
-    {
+    private function getEgiliPurchases(User $user, $startDate, $endDate): Collection {
         $query = EgiliMerchantPurchase::where('user_id', $user->id)
             ->where('payment_status', 'completed');
-        
+
         if ($startDate) {
             $query->where('created_at', '>=', $startDate);
         }
-        
+
         if ($endDate) {
             $query->where('created_at', '<=', $endDate);
         }
-        
+
         return $query->get()->map(function ($purchase) {
             // Beneficiary: Platform (Natan, user_id 1) receives Egili purchase payments
             $platformUser = \App\Models\User::find(1);
-            
+
             return [
                 'id' => 'egili_' . $purchase->id,
                 'transaction_date' => $purchase->created_at,
@@ -91,41 +88,47 @@ class EurTransactionService
             ];
         });
     }
-    
+
     /**
      * Get EGI mints (user spent EUR to mint EGI)
-     * 
-     * IMPORTANT: For split payments, this returns MULTIPLE rows (one per beneficiary)
+     *
+     * IMPORTANT: Only includes EUR payments (excludes EGILI payments which go to EGILI statement)
+     * For split payments, this returns MULTIPLE rows (one per beneficiary)
      * to show the user WHERE their money went (transparency)
-     * 
+     *
      * @param User $user
      * @param \Carbon\Carbon|null $startDate
      * @param \Carbon\Carbon|null $endDate
      * @return Collection
      */
-    private function getEgiMints(User $user, $startDate, $endDate): Collection
-    {
+    private function getEgiMints(User $user, $startDate, $endDate): Collection {
         $query = EgiBlockchain::where('buyer_user_id', $user->id)
             ->whereNotNull('paid_amount')
-            ->where('paid_amount', '>', 0);
-        
+            ->where('paid_amount', '>', 0)
+            // CRITICAL: Only include EUR payments, exclude EGILI payments (EGL)
+            // EGILI payments go to the EGILI statement, not EUR statement
+            ->where(function ($q) {
+                $q->where('paid_currency', 'EUR')
+                    ->orWhereNull('paid_currency'); // Legacy records without currency field
+            });
+
         if ($startDate) {
             $query->where('created_at', '>=', $startDate);
         }
-        
+
         if ($endDate) {
             $query->where('created_at', '<=', $endDate);
         }
-        
+
         $transactions = collect();
-        
+
         foreach ($query->with(['egi', 'egi.user'])->get() as $mint) {
             // Check if this mint has split payment distributions
             $distributions = PaymentDistribution::where('egi_id', $mint->egi_id)
                 ->where('created_at', '>=', $mint->created_at->subMinutes(5)) // Same transaction window
                 ->where('created_at', '<=', $mint->created_at->addMinutes(5))
                 ->get();
-            
+
             if ($distributions->isNotEmpty()) {
                 // SPLIT PAYMENT: Show ONE row with breakdown in description
                 // Build breakdown string: "Yuri (€2,550) • Oceano Blu (€750) • ..."
@@ -139,7 +142,7 @@ class EurTransactionService
                     );
                 }
                 $breakdown = implode(' • ', $breakdownParts);
-                
+
                 $transactions->push([
                     'id' => 'mint_' . $mint->id,
                     'transaction_date' => $mint->created_at,
@@ -169,7 +172,7 @@ class EurTransactionService
                 // NO SPLIT: Show single row with total (legacy or direct payment)
                 $creator = optional($mint->egi)->user ?? null;
                 $beneficiary = $creator ? $creator->name : 'N/A';
-                
+
                 $transactions->push([
                     'id' => 'mint_' . $mint->id,
                     'transaction_date' => $mint->created_at,
@@ -193,31 +196,30 @@ class EurTransactionService
                 ]);
             }
         }
-        
+
         return $transactions;
     }
-    
+
     /**
      * Get payment distributions (user received EUR from sales)
-     * 
+     *
      * @param User $user
      * @param \Carbon\Carbon|null $startDate
      * @param \Carbon\Carbon|null $endDate
      * @return Collection
      */
-    private function getPaymentDistributions(User $user, $startDate, $endDate): Collection
-    {
+    private function getPaymentDistributions(User $user, $startDate, $endDate): Collection {
         $query = PaymentDistribution::where('user_id', $user->id)
             ->where('amount_eur', '>', 0);
-        
+
         if ($startDate) {
             $query->where('created_at', '>=', $startDate);
         }
-        
+
         if ($endDate) {
             $query->where('created_at', '<=', $endDate);
         }
-        
+
         return $query->with('egi')->get()->map(function ($distribution) use ($user) {
             $description = 'Vendita EGI';
             if ($distribution->egi) {
@@ -226,7 +228,7 @@ class EurTransactionService
             if ($distribution->platform_role) {
                 $description .= ' (' . ucfirst($distribution->platform_role) . ')';
             }
-            
+
             // Beneficiary: Current user received this distribution
             return [
                 'id' => 'dist_' . $distribution->id,
@@ -249,54 +251,52 @@ class EurTransactionService
             ];
         });
     }
-    
+
     /**
      * Format merchant name from payment provider
-     * 
+     *
      * @param string|null $provider
      * @param string|null $method
      * @return string
      */
-    private function formatMerchant(?string $provider, ?string $method): string
-    {
+    private function formatMerchant(?string $provider, ?string $method): string {
         if (!$provider) {
             return 'N/A';
         }
-        
+
         $merchantMap = [
             'stripe' => 'Stripe',
             'paypal' => 'PayPal',
             'coinbase' => 'Coinbase Commerce',
             'manual' => 'Pagamento Manuale',
         ];
-        
+
         $merchant = $merchantMap[strtolower($provider)] ?? ucfirst($provider);
-        
+
         if ($method === 'crypto') {
             $merchant .= ' (Crypto)';
         }
-        
+
         return $merchant;
     }
-    
+
     /**
      * Calculate EUR summary for a period
-     * 
+     *
      * @param Collection $transactions
      * @return array
      */
-    public function calculateSummary(Collection $transactions): array
-    {
+    public function calculateSummary(Collection $transactions): array {
         $totalExpenses = $transactions
             ->where('operation', 'expense')
             ->sum('amount_eur');
-        
+
         $totalIncome = $transactions
             ->where('operation', 'income')
             ->sum('amount_eur');
-        
+
         $netBalance = $totalIncome - $totalExpenses;
-        
+
         return [
             'total_expenses' => round($totalExpenses, 2),
             'total_income' => round($totalIncome, 2),
@@ -307,4 +307,3 @@ class EurTransactionService
         ];
     }
 }
-

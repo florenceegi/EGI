@@ -15,7 +15,7 @@
 @php
     // Import FegiAuth for unified auth (supports wallet + traditional login)
     use App\Helpers\FegiAuth;
-    
+
     // 🔥 HYPER MODE: Leggiamo direttamente dal database il campo hyper dell'EGI
 $isHyper = $egi->hyper ?? false;
 
@@ -66,14 +66,14 @@ $coCreatorDisplay = $coCreatorUser ? formatActivatorDisplay($coCreatorUser) : nu
 $currentOwnerUser = $egi->owner;
 $currentOwnerDisplay = $currentOwnerUser ? formatActivatorDisplay($currentOwnerUser) : null;
 // Mostra secondary owner solo se owner attuale diverso da co-creator (c'è stata una rivendita)
-$showSecondaryOwner =
-    $isMinted && $currentOwnerUser && $coCreatorUser && $currentOwnerUser->id !== $coCreatorUser->id;
+    $showSecondaryOwner =
+        $isMinted && $currentOwnerUser && $coCreatorUser && $currentOwnerUser->id !== $coCreatorUser->id;
 
-$listMintedClasses = $isMinted
-    ? 'minted-list-card text-emerald-50'
-    : 'border-gray-700/50 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-800/70';
+    $listMintedClasses = $isMinted
+        ? 'minted-list-card text-emerald-50'
+        : 'border-gray-700/50 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-800/70';
 
-$listMintedBorder = $isMinted ? 'border-2' : 'border';
+    $listMintedBorder = $isMinted ? 'border-2' : 'border';
 
     // 🌱 EPP PROJECT INFO
     $egiCollection = $egi->collection ?? null;
