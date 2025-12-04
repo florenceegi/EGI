@@ -215,6 +215,102 @@ class MintEgiJob implements ShouldQueue {
     }
 
     /**
+     * Reward Creator with Gift Egili when EGI is purchased with Egili
+     *
+     * Business Logic:
+     * - Buyer's Egili were already burned in handleEgiliPayment() (MintController)
+     * - Creator receives equivalent amount as GIFT Egili (expire in 365 days)
+     * - Gift Egili have priority spending (used before lifetime Egili)
+     *
+     * This creates a circular economy:
+     * - Buyer spends Egili → burned from their wallet
+     * - Creator earns Gift Egili → incentivizes platform usage
+     * - Gift Egili expire → encourages spending within platform
+     *
+     * @param \App\Models\Egi $egi The EGI that was minted
+     * @param EgiBlockchain $egiBlockchain The blockchain record with payment info
+     * @param \Ultra\UltraLogManager\UltraLogManager $logger Logger instance
+     */
+    private function rewardCreatorForEgiliPayment(
+        \App\Models\Egi $egi,
+        EgiBlockchain $egiBlockchain,
+        \Ultra\UltraLogManager\UltraLogManager $logger
+    ): void {
+        try {
+            /** @var \App\Services\EgiliService $egiliService */
+            $egiliService = app(\App\Services\EgiliService::class);
+
+            // Get creator (original owner of EGI)
+            $creator = $egi->user;
+            if (!$creator) {
+                $logger->warning('Cannot reward creator - no user associated with EGI', [
+                    'egi_id' => $egi->id,
+                    'egi_blockchain_id' => $egiBlockchain->id,
+                    'log_category' => 'EGILI_REWARD_NO_CREATOR'
+                ]);
+                return;
+            }
+
+            // Get amount paid in Egili
+            $egiliAmount = (int) $egiBlockchain->paid_amount;
+            if ($egiliAmount <= 0) {
+                $logger->warning('Cannot reward creator - no Egili amount recorded', [
+                    'egi_id' => $egi->id,
+                    'egi_blockchain_id' => $egiBlockchain->id,
+                    'paid_amount' => $egiBlockchain->paid_amount,
+                    'log_category' => 'EGILI_REWARD_NO_AMOUNT'
+                ]);
+                return;
+            }
+
+            // Grant Gift Egili to creator (365 days expiration)
+            // Using grantGiftFromSystem() which doesn't require admin
+            $transaction = $egiliService->grantGiftFromSystem(
+                $creator,
+                $egiliAmount,
+                365, // 1 year expiration
+                'egi_sale_reward',
+                [
+                    'egi_id' => $egi->id,
+                    'egi_blockchain_id' => $egiBlockchain->id,
+                    'buyer_user_id' => $egiBlockchain->buyer_user_id,
+                    'payment_reference' => $egiBlockchain->payment_reference,
+                    'egi_title' => $egi->title,
+                ]
+            );
+
+            $logger->info('Creator rewarded with Gift Egili for sale', [
+                'creator_id' => $creator->id,
+                'egi_id' => $egi->id,
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'egili_amount' => $egiliAmount,
+                'transaction_id' => $transaction->id,
+                'expires_in_days' => 365,
+                'log_category' => 'EGILI_CREATOR_REWARD_SUCCESS'
+            ]);
+
+        } catch (\Exception $e) {
+            // Log error but don't fail the mint (reward can be retried manually)
+            $logger->error('Failed to reward creator with Gift Egili', [
+                'egi_id' => $egi->id,
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'error' => $e->getMessage(),
+                'log_category' => 'EGILI_CREATOR_REWARD_FAILED'
+            ]);
+
+            // Handle via ErrorManager but don't throw
+            $errorManager = app(\Ultra\ErrorManager\Interfaces\ErrorManagerInterface::class);
+            $errorManager->handle('EGILI_CREATOR_REWARD_FAILED', [
+                'egi_id' => $egi->id,
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'creator_id' => $egi->user_id,
+                'egili_amount' => $egiBlockchain->paid_amount,
+                'error' => $e->getMessage()
+            ], $e);
+        }
+    }
+
+    /**
      * Handle job failure after all retries
      * CRITICAL: Rollback EGI state + cleanup orphan records
      */

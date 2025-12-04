@@ -674,6 +674,121 @@ class EgiliService {
     }
 
     /**
+     * Grant Gift Egili from System (no admin required)
+     *
+     * Used for automated system rewards like:
+     * - Creator rewards when EGI is sold with Egili
+     * - Referral bonuses
+     * - Achievement rewards
+     *
+     * @param User $user User receiving gift
+     * @param int $amount Amount of Gift Egili to grant
+     * @param int $expirationDays Days until expiration
+     * @param string $reason Machine-readable reason (e.g., 'egi_sale_reward')
+     * @param array|null $metadata Additional context data
+     * @return EgiliTransaction Created transaction record
+     * @throws \Exception If wallet not found or transaction fails
+     */
+    public function grantGiftFromSystem(
+        User $user,
+        int $amount,
+        int $expirationDays,
+        string $reason,
+        ?array $metadata = null
+    ): EgiliTransaction {
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException("Gift Egili amount must be positive, got: {$amount}");
+        }
+
+        if ($expirationDays <= 0) {
+            throw new \InvalidArgumentException("Expiration days must be positive, got: {$expirationDays}");
+        }
+
+        $wallet = $user->primaryWallet;
+        if (!$wallet) {
+            throw new \Exception("User has no wallet. Cannot grant gift Egili.");
+        }
+
+        return DB::transaction(function () use ($user, $wallet, $amount, $expirationDays, $reason, $metadata) {
+            $balanceBefore = $wallet->egili_balance;
+            $balanceAfter = $balanceBefore + $amount;
+            $expiresAt = now()->addDays($expirationDays);
+
+            // ULM: Log operation start
+            $this->logger->info('System Gift Egili grant initiated', [
+                'user_id' => $user->id,
+                'amount' => $amount,
+                'expiration_days' => $expirationDays,
+                'expires_at' => $expiresAt->toDateTimeString(),
+                'reason' => $reason,
+                'metadata' => $metadata,
+                'log_category' => 'EGILI_SYSTEM_GIFT_START'
+            ]);
+
+            // Update wallet balance
+            $wallet->update([
+                'egili_balance' => $balanceAfter,
+                'egili_lifetime_earned' => $wallet->egili_lifetime_earned + $amount,
+            ]);
+
+            // Create transaction record with system_grant type
+            $transaction = EgiliTransaction::create([
+                'wallet_id' => $wallet->id,
+                'user_id' => $user->id,
+                'transaction_type' => 'system_grant',
+                'operation' => 'add',
+                'amount' => $amount,
+                'balance_before' => $balanceBefore,
+                'balance_after' => $balanceAfter,
+                'reason' => $reason,
+                'category' => 'reward',
+                'metadata' => $metadata,
+                'status' => 'completed',
+                // Gift-specific fields
+                'egili_type' => 'gift',
+                'expires_at' => $expiresAt,
+                'is_expired' => false,
+                'grant_reason' => $reason,
+                'priority_order' => $expiresAt->timestamp,
+                // Source tracking (if egi_id provided in metadata)
+                'source_type' => isset($metadata['egi_id']) ? 'App\\Models\\Egi' : null,
+                'source_id' => $metadata['egi_id'] ?? null,
+                // Tracking
+                'ip_address' => request()?->ip(),
+                'user_agent' => request()?->userAgent(),
+            ]);
+
+            // GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'egili_system_gift_granted',
+                [
+                    'amount' => $amount,
+                    'expiration_days' => $expirationDays,
+                    'expires_at' => $expiresAt->toDateTimeString(),
+                    'reason' => $reason,
+                    'metadata' => $metadata,
+                    'transaction_id' => $transaction->id,
+                ],
+                GdprActivityCategory::PERSONAL_DATA_UPDATE
+            );
+
+            // ULM: Log success
+            $this->logger->info('System Gift Egili granted successfully', [
+                'user_id' => $user->id,
+                'transaction_id' => $transaction->id,
+                'amount' => $amount,
+                'expires_at' => $expiresAt->toDateTimeString(),
+                'balance_after' => $balanceAfter,
+                'reason' => $reason,
+                'log_category' => 'EGILI_SYSTEM_GIFT_SUCCESS'
+            ]);
+
+            return $transaction;
+        });
+    }
+
+    /**
      * Spend Egili with Priority Logic (Gift first, Lifetime after)
      *
      * Priority Order:
