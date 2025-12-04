@@ -731,11 +731,11 @@ class EgiliService {
                 'egili_lifetime_earned' => $wallet->egili_lifetime_earned + $amount,
             ]);
 
-            // Create transaction record with system_grant type
+            // Create transaction record with system_grant type (uses admin_grant enum)
             $transaction = EgiliTransaction::create([
                 'wallet_id' => $wallet->id,
                 'user_id' => $user->id,
-                'transaction_type' => 'system_grant',
+                'transaction_type' => 'admin_grant', // Using admin_grant as system_grant not in enum
                 'operation' => 'add',
                 'amount' => $amount,
                 'balance_before' => $balanceBefore,
