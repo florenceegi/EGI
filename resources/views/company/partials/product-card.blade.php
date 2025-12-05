@@ -8,7 +8,7 @@
     data-view-mode="{{ $viewMode }}">
 
     {{-- Product Image --}}
-    <a href="{{ route('home.egis.show', $product->id) }}" class="block">
+    <a href="{{ route('egis.show', $product->id) }}" class="block">
         <div class="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
             @if ($product->thumbnail_url ?? ($product->main_image_url ?? null))
                 <img src="{{ $product->thumbnail_url ?? $product->main_image_url }}" alt="{{ $product->name }}"
@@ -101,7 +101,7 @@
 
         {{-- Product Name --}}
         <h3 class="mb-2 line-clamp-2 font-semibold text-white transition-colors group-hover:text-[#C9A227]">
-            <a href="{{ route('home.egis.show', $product->id) }}">
+            <a href="{{ route('egis.show', $product->id) }}">
                 {{ $product->name }}
             </a>
         </h3>
