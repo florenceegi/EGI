@@ -23,6 +23,44 @@ use Illuminate\View\View;
  */
 class CompanyHomeController extends Controller {
     /**
+     * @Oracode Method: Display Company Index Page
+     * 🎯 Purpose: List all companies with filtering and search capabilities
+     * 📤 Output: Companies index view with pagination and filters
+     */
+    public function index(Request $request): View {
+        $query = $request->input('query');
+        $sort = $request->input('sort', 'latest'); // 'latest', 'most_products', 'most_sales'
+
+        $companies = User::query()
+            ->where('usertype', MerchantUserTypeEnum::COMPANY->value)
+            ->when($query, function ($q) use ($query) {
+                $q->where('name', 'like', '%' . $query . '%');
+            })
+            ->withCount(['egis as products_count' => function ($productQuery) {
+                $productQuery->where('is_published', true);
+            }])
+            ->with([
+                'egis' => function ($egiQuery) {
+                    $egiQuery->where('is_published', true)
+                        ->take(3);
+                },
+            ])
+            ->when($sort === 'most_products', function ($q) {
+                $q->orderByDesc('products_count');
+            })
+            ->when($sort === 'latest', function ($q) {
+                $q->latest();
+            })
+            ->paginate(20);
+
+        return view('company.index', compact(
+            'companies',
+            'query',
+            'sort'
+        ));
+    }
+
+    /**
      * @Oracode Method: Display Company Home Page
      * 🎯 Purpose: Show company's main storefront with stats and featured products
      * 📤 Output: Company home view with business stats and featured content

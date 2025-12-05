@@ -399,6 +399,9 @@ Route::prefix('collector')->name('collector.')->group(function () {
 | 🎨 Corporate Palette: Blue #1E3A5F, Gold #C9A227, Green #2D7D46
 */
 Route::prefix('company')->name('company.')->group(function () {
+    // Company index page (list all companies)
+    Route::get('/', [\App\Http\Controllers\CompanyHomeController::class, 'index'])->name('index');
+
     // Company public home page / storefront
     Route::get('/{id}', [\App\Http\Controllers\CompanyHomeController::class, 'home'])->name('home')->where('id', '[0-9]+');
 

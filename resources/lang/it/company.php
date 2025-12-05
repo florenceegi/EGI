@@ -9,6 +9,25 @@
 
 return [
     // =========================================================================
+    // INDEX PAGE - Elenco aziende
+    // =========================================================================
+    'index' => [
+        'title' => 'Aziende',
+        'meta_description' => 'Scopri le aziende verificate su FlorenceEGI - Prodotti certificati su blockchain',
+        'badge' => 'Aziende Verificate',
+        'subtitle' => 'Esplora le aziende che offrono prodotti certificati e tracciati su blockchain.',
+        'search_placeholder' => 'Cerca aziende...',
+        'sort_by' => 'Ordina per',
+        'sort_latest' => 'Più Recenti',
+        'sort_most_products' => 'Più Prodotti',
+        'products' => 'prodotti',
+        'member_since' => 'Dal :year',
+        'empty_title' => 'Nessuna Azienda Trovata',
+        'empty_description' => 'Non ci sono ancora aziende registrate sulla piattaforma.',
+        'empty_search' => 'Nessuna azienda corrisponde a ":query".',
+    ],
+
+    // =========================================================================
     // HOME PAGE - Pagina principale azienda
     // =========================================================================
     'home' => [

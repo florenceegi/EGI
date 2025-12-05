@@ -53,6 +53,8 @@ return [
     'home' => 'Home',
     'creators' => 'Creators',
     'collectors' => 'Collectors',
+    'companies' => 'Companies',
+    'companies_link_aria_label' => 'View all companies',
     'home_link_aria_label' => 'Go to Homepage',
     'collections' => 'Collections',
     'collections_link_aria_label' => 'View all public collections',

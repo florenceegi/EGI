@@ -51,6 +51,14 @@
         <span class="font-medium">{{ __('guest_layout.collectors') }}</span>
     </a>
 
+    {{-- Companies - Corporate Blue #1E3A5F, Gold #C9A227 --}}
+    <a href="{{ url('/company') }}" class="flex items-center space-x-3 {{ $pad }} text-gray-700 dark:text-gray-200 hover:bg-[#1E3A5F]/10 dark:hover:bg-[#1E3A5F]/30 {{ $rounded }} transition-colors {{ $extraItemClass }} {{ request()->routeIs('company.*') ? 'bg-[#1E3A5F]/10 dark:bg-[#1E3A5F]/30 text-[#1E3A5F] dark:text-[#C9A227]' : '' }}">
+        <div class="flex items-center justify-center w-8 h-8 text-[#C9A227] rounded-lg bg-[#1E3A5F]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        </div>
+        <span class="font-medium">{{ __('guest_layout.companies') }}</span>
+    </a>
+
     {{-- EPPs --}}
     <a href="{{ route('epps.index') }}" class="flex items-center space-x-3 {{ $pad }} text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-orange-900/20 {{ $rounded }} transition-colors {{ $extraItemClass }} {{ request()->routeIs('epps.*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
         <div class="flex items-center justify-center w-8 h-8 text-white bg-orange-500 {{ $rounded }}">

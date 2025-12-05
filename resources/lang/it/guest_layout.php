@@ -52,6 +52,8 @@ return [
     'home' => 'Home',
     'creators' => 'Artisti',
     'collectors' => 'Collector',
+    'companies' => 'Aziende',
+    'companies_link_aria_label' => 'Visualizza tutte le aziende',
     'home_link_aria_label' => 'Vai alla Homepage',
     'collections' => 'Collezioni',
     'collections_link_aria_label' => 'Visualizza tutte le collezioni pubbliche',
