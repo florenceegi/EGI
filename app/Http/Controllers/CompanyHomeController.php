@@ -65,8 +65,8 @@ class CompanyHomeController extends Controller {
      * 🎯 Purpose: Show company's main storefront with stats and featured products
      * 📤 Output: Company home view with business stats and featured content
      */
-    public function home(int $id, Request $request): View {
-        $company = User::findOrFail($id);
+    public function home(int $company, Request $request): View {
+        $company = User::findOrFail($company);
 
         // Verifica che l'utente sia di tipo company
         if ($company->usertype !== MerchantUserTypeEnum::COMPANY->value) {
@@ -105,8 +105,8 @@ class CompanyHomeController extends Controller {
      * 🎯 Purpose: Show full product catalog with filters, search, and pagination
      * 📤 Output: Catalog view with product grid and filtering options
      */
-    public function catalog(int $id, Request $request): View {
-        $company = User::findOrFail($id);
+    public function catalog(int $company, Request $request): View {
+        $company = User::findOrFail($company);
 
         if ($company->usertype !== MerchantUserTypeEnum::COMPANY->value) {
             abort(404, 'User is not a company');
@@ -178,8 +178,8 @@ class CompanyHomeController extends Controller {
      * 🎯 Purpose: Show all collections owned by the company
      * 📤 Output: Collections grid view
      */
-    public function collections(int $id, Request $request): View {
-        $company = User::findOrFail($id);
+    public function collections(int $company, Request $request): View {
+        $company = User::findOrFail($company);
 
         if ($company->usertype !== MerchantUserTypeEnum::COMPANY->value) {
             abort(404, 'User is not a company');
@@ -206,8 +206,8 @@ class CompanyHomeController extends Controller {
      * 🎯 Purpose: Show company's detailed business information
      * 📤 Output: About page with company bio, contact info, certifications
      */
-    public function about(int $id, Request $request): View {
-        $company = User::findOrFail($id);
+    public function about(int $company, Request $request): View {
+        $company = User::findOrFail($company);
 
         if ($company->usertype !== MerchantUserTypeEnum::COMPANY->value) {
             abort(404, 'User is not a company');

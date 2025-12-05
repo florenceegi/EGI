@@ -403,16 +403,16 @@ Route::prefix('company')->name('company.')->group(function () {
     Route::get('/', [\App\Http\Controllers\CompanyHomeController::class, 'index'])->name('index');
 
     // Company public home page / storefront
-    Route::get('/{id}', [\App\Http\Controllers\CompanyHomeController::class, 'home'])->name('home')->where('id', '[0-9]+');
+    Route::get('/{company}', [\App\Http\Controllers\CompanyHomeController::class, 'home'])->name('home')->where('company', '[0-9]+');
 
     // Company product catalog with filters
-    Route::get('/{id}/catalog', [\App\Http\Controllers\CompanyHomeController::class, 'catalog'])->name('catalog')->where('id', '[0-9]+');
+    Route::get('/{company}/catalog', [\App\Http\Controllers\CompanyHomeController::class, 'catalog'])->name('catalog')->where('company', '[0-9]+');
 
     // Company collections page
-    Route::get('/{id}/collections', [\App\Http\Controllers\CompanyHomeController::class, 'collections'])->name('collections')->where('id', '[0-9]+');
+    Route::get('/{company}/collections', [\App\Http\Controllers\CompanyHomeController::class, 'collections'])->name('collections')->where('company', '[0-9]+');
 
     // Company about page
-    Route::get('/{id}/about', [\App\Http\Controllers\CompanyHomeController::class, 'about'])->name('about')->where('id', '[0-9]+');
+    Route::get('/{company}/about', [\App\Http\Controllers\CompanyHomeController::class, 'about'])->name('about')->where('company', '[0-9]+');
 });
 
 /*
