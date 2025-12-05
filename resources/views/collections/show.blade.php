@@ -1228,6 +1228,16 @@ if (auth()->check()) {
 
             async function updateCollectionEppProject(projectId) {
                 const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const isCompanyCollection = {{ ($collection->is_epp_voluntary || ($collection->creator && $collection->creator->usertype === 'company')) ? 'true' : 'false' }};
+
+                // For company collections, get the donation percentage from slider
+                let donationPercentage = null;
+                if (isCompanyCollection) {
+                    const slider = document.getElementById('companyDonationPercentage');
+                    if (slider) {
+                        donationPercentage = parseInt(slider.value, 10);
+                    }
+                }
 
                 Swal.fire({
                     title: 'Updating...',
@@ -1241,6 +1251,15 @@ if (auth()->check()) {
                 });
 
                 try {
+                    const requestBody = {
+                        epp_project_id: projectId
+                    };
+                    
+                    // Add donation percentage for company collections
+                    if (isCompanyCollection && donationPercentage !== null) {
+                        requestBody.epp_donation_percentage = donationPercentage;
+                    }
+
                     const response = await fetch(`/api/collections/{{ $collection->id }}/epp-project`, {
                         method: 'POST',
                         headers: {
@@ -1248,9 +1267,7 @@ if (auth()->check()) {
                             'X-CSRF-TOKEN': csrf,
                             'Accept': 'application/json',
                         },
-                        body: JSON.stringify({
-                            epp_project_id: projectId
-                        })
+                        body: JSON.stringify(requestBody)
                     });
 
                     const result = await response.json();
@@ -1318,6 +1335,100 @@ if (auth()->check()) {
 
             // ========================
             // END EPP PROJECT SELECTION
+            // ========================
+
+            // ========================
+            // COMPANY DONATION MANAGEMENT
+            // ========================
+
+            // Slider for donation percentage
+            const donationSlider = document.getElementById('companyDonationPercentage');
+            const donationValueDisplay = document.getElementById('donationPercentageValue');
+
+            if (donationSlider && donationValueDisplay) {
+                donationSlider.addEventListener('input', (e) => {
+                    donationValueDisplay.textContent = e.target.value + '%';
+                });
+            }
+
+            // Update company donation percentage
+            async function updateCompanyDonation() {
+                const slider = document.getElementById('companyDonationPercentage');
+                if (!slider) return;
+
+                const percentage = parseInt(slider.value, 10);
+                const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                Swal.fire({
+                    title: '{{ __('collection.update_donation') }}',
+                    text: `{{ __('collection.donation_percentage_label') }}: ${percentage}%`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: '{{ __('collection.update_donation') }}',
+                    cancelButtonText: '{{ __('collection.show.dashboard.close') }}',
+                    confirmButtonColor: '#10B981',
+                    cancelButtonColor: '#6B7280',
+                    background: '#1F2937',
+                    color: '#F3F4F6'
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: '{{ __('common.loading') }}...',
+                            allowOutsideClick: false,
+                            didOpen: () => { Swal.showLoading(); },
+                            background: '#1F2937',
+                            color: '#F3F4F6'
+                        });
+
+                        try {
+                            const response = await fetch(`/api/collections/{{ $collection->id }}/epp-project`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrf,
+                                    'Accept': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    epp_project_id: {{ $collection->epp_project_id ?? 'null' }},
+                                    epp_donation_percentage: percentage
+                                })
+                            });
+
+                            const result = await response.json();
+
+                            if (result.success) {
+                                await Swal.fire({
+                                    title: '{{ __('common.success') }}!',
+                                    text: '{{ __('collection.donation_updated') }}',
+                                    icon: 'success',
+                                    confirmButtonColor: '#10B981',
+                                    background: '#1F2937',
+                                    color: '#F3F4F6'
+                                });
+                                location.reload();
+                            } else {
+                                throw new Error(result.message || 'Update failed');
+                            }
+                        } catch (error) {
+                            console.error('Donation update error:', error);
+                            Swal.fire({
+                                title: 'Error',
+                                text: '{{ __('collection.donation_update_error') }}',
+                                icon: 'error',
+                                confirmButtonColor: '#4F46E5',
+                                background: '#1F2937',
+                                color: '#F3F4F6'
+                            });
+                        }
+                    }
+                });
+            }
+
+            // Make function available globally
+            window.updateCompanyDonation = updateCompanyDonation;
+
+            // ========================
+            // END COMPANY DONATION MANAGEMENT
             // ========================
         </script>
 

@@ -141,13 +141,27 @@ class WalletService implements WalletServiceInterface {
         ];
 
         try {
+            // Check if this is a company collection (EPP is voluntary, 0% by default)
+            $isCompanyCollection = $collection->is_epp_voluntary === true || $user->usertype === 'company';
+            
+            // Calculate percentages based on collection type
+            // For company: Creator gets EPP share since EPP is 0%
+            $creatorMintRoyalty = WalletRoleEnum::CREATOR->getMintRoyalty();
+            $eppMintRoyalty = WalletRoleEnum::EPP->getMintRoyalty();
+            
+            if ($isCompanyCollection) {
+                // Company: Creator gets 88% (68% + 20% EPP), EPP gets 0%
+                $creatorMintRoyalty = $creatorMintRoyalty + $eppMintRoyalty; // 88%
+                $eppMintRoyalty = 0.0; // Company can set this later
+            }
+
             // 1. Create CREATOR wallet (user-specific, dynamic)
             // Use getAttributes to bypass the wallet accessor that returns Wallet object
             $creatorWallet = $this->createWallet(
                 $collection->id,
                 $user->id,
                 $user->getAttributes()['wallet'] ?? null,
-                WalletRoleEnum::CREATOR->getMintRoyalty(),
+                $creatorMintRoyalty,
                 WalletRoleEnum::CREATOR->getRebindRoyalty(),
                 WalletRoleEnum::CREATOR->value
             );
@@ -155,18 +169,24 @@ class WalletService implements WalletServiceInterface {
             // 2. Create PLATFORM wallets (EPP, Natan, Frangette - static system accounts)
             $platformWallets = [];
             foreach (WalletRoleEnum::platformRoles() as $role) {
+                // For EPP wallet on company collections, use 0% mint royalty
+                $mintRoyalty = $role->getMintRoyalty();
+                if ($isCompanyCollection && $role === WalletRoleEnum::EPP) {
+                    $mintRoyalty = $eppMintRoyalty; // 0% for company
+                }
+                
                 $platformWallets[$role->value] = $this->createWallet(
                     $collection->id,
                     $role->getUserId(),
                     $role->getWalletAddress(),
-                    $role->getMintRoyalty(),
+                    $mintRoyalty,
                     $role->getRebindRoyalty(),
                     $role->value
                 );
             }
 
-            // 3. Validate tokenomics totals
-            if (!WalletRoleEnum::validateMintTotal()) {
+            // 3. Validate tokenomics totals (skip for company as we've manually adjusted)
+            if (!$isCompanyCollection && !WalletRoleEnum::validateMintTotal()) {
                 throw new \Exception('Wallet mint percentages do not sum to 100%');
             }
 
@@ -176,6 +196,9 @@ class WalletService implements WalletServiceInterface {
                 'epp_wallet_id' => $platformWallets['EPP']->id ?? 'failed',
                 'natan_wallet_id' => $platformWallets['Natan']->id ?? 'failed',
                 'frangette_wallet_id' => $platformWallets['Frangette']->id ?? 'failed',
+                'is_company_collection' => $isCompanyCollection,
+                'creator_mint_percentage' => $creatorMintRoyalty,
+                'epp_mint_percentage' => $isCompanyCollection ? 0 : WalletRoleEnum::EPP->getMintRoyalty(),
                 'total_mint_percentage' => 100.0,
                 'total_rebind_percentage' => WalletRoleEnum::getTotalRebindPercentage()
             ]));

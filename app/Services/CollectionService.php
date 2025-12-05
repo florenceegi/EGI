@@ -94,6 +94,8 @@ class CollectionService
      *
      * @oracode-enhanced-error-handling Improved error context and UEM integration
      * @oracode-upload-handler-compatible Designed for seamless EgiUploadHandler integration
+     *
+     * @changelog 2025-12-05: Added company usertype handling - EPP voluntary, subscription required
      */
     public function createDefaultCollection(User $user, ?bool $isDefault = true, ?string $collectionName = ''): Collection|JsonResponse
     {
@@ -105,10 +107,14 @@ class CollectionService
             $collectionName = "{$firstName}'s Collection";
         }
 
+        // Check if user is company - EPP is voluntary for company users
+        $isCompanyUser = $user->usertype === 'company';
+
         $logContext = [
             'creator_id' => $user->id,
             'collection_name' => $collectionName,
-            'operation' => 'create_default_collection'
+            'operation' => 'create_default_collection',
+            'is_company_user' => $isCompanyUser
         ];
 
         $this->logger->info('[CollectionService] Starting default collection creation', $logContext);
@@ -117,11 +123,20 @@ class CollectionService
             // Enhanced validation
             $this->validateUserForCollectionCreation($user);
 
+            // Prepare EPP configuration based on usertype
+            // Company: EPP is voluntary (null by default), is_epp_voluntary = true
+            // Others: EPP is mandatory (use default config)
+            $eppProjectId = $isCompanyUser ? null : config('app.epp_id');
+            $isEppVoluntary = $isCompanyUser;
+
             // Create collection with enhanced data
             $collection = Collection::create([
                 'creator_id'      => $user->id,
                 'owner_id'        => $user->id,
-                'epp_id'          => config('app.epp_id'),
+                'epp_id'          => $eppProjectId,
+                'epp_project_id'  => $eppProjectId,
+                'is_epp_voluntary' => $isEppVoluntary,
+                'epp_donation_percentage' => null, // Company can set this later if desired
                 'is_default'      => $isDefault,
                 'collection_name' => $collectionName,
                 'description'     => trans('collection.collection_description_placeholder', [], 'en') ?: 'Default collection automatically created for single EGI uploads.',
@@ -136,7 +151,9 @@ class CollectionService
 
             $enhancedLogContext = array_merge($logContext, [
                 'collection_id' => $collection->id,
-                'collection_position' => $collection->position
+                'collection_position' => $collection->position,
+                'epp_project_id' => $eppProjectId,
+                'is_epp_voluntary' => $isEppVoluntary
             ]);
 
             $this->logger->info('[CollectionService] Collection created successfully', $enhancedLogContext);

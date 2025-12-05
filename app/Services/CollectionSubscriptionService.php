@@ -83,17 +83,74 @@ class CollectionSubscriptionService {
     /**
      * Check if collection has rights (EPP support OR active subscription)
      *
+     * Company users: ONLY subscription required (EPP is voluntary)
+     * Other users: EPP support OR active subscription
+     *
      * @param Collection $collection Collection to check
      * @return bool True if has rights
+     *
+     * @changelog 2025-12-05: Added company usertype handling - subscription only required
      */
     public function collectionHasRights(Collection $collection): bool {
-        // Check EPP support first (highest priority)
+        // Load creator relationship if not loaded
+        if (!$collection->relationLoaded('creator')) {
+            $collection->load('creator');
+        }
+
+        // Company users: ONLY subscription required (EPP is voluntary/optional)
+        if ($collection->is_epp_voluntary || $collection->creator?->usertype === 'company') {
+            $this->logger->debug('[CollectionSubscription] Company user - checking subscription only', [
+                'collection_id' => $collection->id,
+                'creator_usertype' => $collection->creator?->usertype,
+                'is_epp_voluntary' => $collection->is_epp_voluntary,
+                'log_category' => 'COLLECTION_RIGHTS_CHECK_COMPANY'
+            ]);
+            return $this->hasActiveSubscription($collection);
+        }
+
+        // Other users: Check EPP support first (highest priority)
         if ($collection->epp_project_id !== null) {
             return true;
         }
 
-        // Check active subscription
+        // Fallback: Check active subscription
         return $this->hasActiveSubscription($collection);
+    }
+
+    /**
+     * Check if collection requires subscription (company) vs EPP (others)
+     *
+     * @param Collection $collection Collection to check
+     * @return array Rights requirements for this collection type
+     */
+    public function getRightsRequirements(Collection $collection): array {
+        // Load creator relationship if not loaded
+        if (!$collection->relationLoaded('creator')) {
+            $collection->load('creator');
+        }
+
+        $isCompany = $collection->is_epp_voluntary || $collection->creator?->usertype === 'company';
+
+        if ($isCompany) {
+            return [
+                'type' => 'company',
+                'requires_subscription' => true,
+                'requires_epp' => false,
+                'epp_voluntary' => true,
+                'has_epp_donation' => $collection->epp_project_id !== null && $collection->epp_donation_percentage > 0,
+                'epp_donation_percentage' => $collection->epp_donation_percentage,
+                'has_rights' => $this->hasActiveSubscription($collection),
+            ];
+        }
+
+        return [
+            'type' => 'standard',
+            'requires_subscription' => false,
+            'requires_epp' => true,
+            'epp_voluntary' => false,
+            'has_epp' => $collection->epp_project_id !== null,
+            'has_rights' => $this->collectionHasRights($collection),
+        ];
     }
 
     /**

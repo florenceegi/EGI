@@ -586,6 +586,9 @@ return [
             'refund' => 'Refund',
             'egili_credit' => 'Egili credit',
             'select_epp_project' => 'Select EPP Project',
+            'company_mode' => 'Company Mode',
+            'subscription_required' => 'Subscription Required',
+            'subscription_access' => 'Access via subscription',
             'total_egis' => 'Total EGIs',
             'published' => 'published',
             'draft' => 'draft',
@@ -660,5 +663,21 @@ return [
         'banner_upload_error' => 'Banner upload error',
         'official_epp_collection' => 'Official EPP Collection',
     ],
+
+    // === COMPANY EPP DONATION ===
+    'company_donation_title' => 'Voluntary EPP Donation',
+    'company_donation_subtitle' => 'As a company, you can choose to support an environmental project by donating a percentage of your sales. This donation is voluntary and you can change the percentage at any time.',
+    'donation_percentage_label' => 'Donation percentage',
+    'donation_percentage_help' => 'Choose the percentage of each sale you want to donate to the selected environmental project.',
+    'no_donation' => 'No donation',
+    'update_donation' => 'Update donation',
+    'donation_updated' => 'Donation settings updated successfully',
+    'donation_update_error' => 'Error updating donation settings',
+    'select_epp_for_donation' => 'Select an environmental project to donate to',
+    'donation_percentage_range' => 'The percentage must be between 0 and 100',
+    'company_requires_subscription' => 'Company collections require an active subscription to sell NFTs',
+    'company_epp_voluntary' => 'Environmental project donation is optional for companies',
+    'epp_donation_removed' => 'Environmental donation removed',
+    'epp_donation_updated' => 'Donation settings updated',
 
 ];

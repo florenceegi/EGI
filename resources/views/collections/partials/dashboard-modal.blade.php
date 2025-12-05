@@ -53,9 +53,108 @@
                             @php
                                 $monetizationType = $collection->monetization_type ?? 'epp';
                                 $isEpp = $monetizationType === 'epp';
+                                $isCompanyCollection = $collection->is_epp_voluntary || ($collection->creator && $collection->creator->usertype === 'company');
                             @endphp
 
-                            @if ($isEpp)
+                            @if ($isCompanyCollection)
+                                {{-- COMPANY MODE: Subscription Required + Voluntary EPP Donation --}}
+                                <div class="flex items-start gap-4 rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-4">
+                                    <div class="flex-shrink-0 rounded-lg bg-indigo-500/20 p-2">
+                                        <span class="material-symbols-outlined text-2xl text-indigo-400">business</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="mb-2 flex items-center gap-2">
+                                            <h5 class="font-semibold text-indigo-400">
+                                                {{ __('collection.show.dashboard.company_mode') }}</h5>
+                                            @if ($collection->subscription_status === 'active')
+                                                <span class="rounded-full border border-green-500/30 bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400">
+                                                    {{ __('collection.show.dashboard.active') }}
+                                                </span>
+                                            @else
+                                                <span class="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2 py-1 text-xs font-medium text-yellow-400">
+                                                    {{ __('collection.show.dashboard.subscription_required') }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <p class="mb-3 text-sm text-gray-300">
+                                            {{ __('collection.company_requires_subscription') }}
+                                        </p>
+                                        <div class="space-y-1 text-sm text-gray-400">
+                                            <div class="flex items-center gap-2">
+                                                <span class="material-symbols-outlined text-indigo-400" style="font-size: 16px;">check_circle</span>
+                                                {{ __('collection.show.dashboard.subscription_access') }}
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="material-symbols-outlined text-green-400" style="font-size: 16px;">volunteer_activism</span>
+                                                {{ __('collection.company_epp_voluntary') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Company Voluntary EPP Donation Section --}}
+                                <div class="mt-4 rounded-lg border border-green-500/20 bg-green-500/5 p-4">
+                                    <h5 class="mb-3 flex items-center gap-2 font-semibold text-green-400">
+                                        <span class="material-symbols-outlined">eco</span>
+                                        {{ __('collection.company_donation_title') }}
+                                    </h5>
+                                    <p class="mb-4 text-sm text-gray-400">
+                                        {{ __('collection.company_donation_subtitle') }}
+                                    </p>
+
+                                    @if ($collection->eppProject)
+                                        <div class="mb-4 rounded border border-green-500/20 bg-green-500/10 p-3">
+                                            <p class="text-sm text-gray-300">
+                                                {{ __('collection.show.dashboard.supporting') }}: 
+                                                <strong class="text-green-400">{{ $collection->eppProject->name }}</strong>
+                                            </p>
+                                            <p class="mt-1 text-xs text-gray-400">
+                                                {{ __('collection.donation_percentage_label') }}: 
+                                                <strong class="text-green-400">{{ $collection->epp_donation_percentage ?? 0 }}%</strong>
+                                            </p>
+                                        </div>
+                                    @endif
+
+                                    {{-- Donation Percentage Slider --}}
+                                    <div class="mb-4">
+                                        <label for="companyDonationPercentage" class="mb-2 block text-sm font-medium text-gray-300">
+                                            {{ __('collection.donation_percentage_label') }}
+                                        </label>
+                                        <div class="flex items-center gap-4">
+                                            <input type="range" id="companyDonationPercentage" 
+                                                class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-700 accent-green-500"
+                                                min="0" max="100" step="1" 
+                                                value="{{ $collection->epp_donation_percentage ?? 0 }}">
+                                            <span id="donationPercentageValue" class="min-w-[3rem] text-center text-lg font-bold text-green-400">
+                                                {{ $collection->epp_donation_percentage ?? 0 }}%
+                                            </span>
+                                        </div>
+                                        <p class="mt-1 text-xs text-gray-500">
+                                            {{ __('collection.donation_percentage_help') }}
+                                        </p>
+                                    </div>
+
+                                    <div class="flex gap-2">
+                                        @if (!$collection->eppProject)
+                                            <button onclick="openEppProjectSelectionModal()"
+                                                class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-3 font-medium text-white transition-all hover:bg-green-700">
+                                                <span class="material-symbols-outlined text-lg">eco</span>
+                                                {{ __('collection.select_epp_for_donation') }}
+                                            </button>
+                                        @else
+                                            <button onclick="updateCompanyDonation()"
+                                                class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-3 font-medium text-white transition-all hover:bg-green-700">
+                                                <span class="material-symbols-outlined text-lg">save</span>
+                                                {{ __('collection.update_donation') }}
+                                            </button>
+                                            <button onclick="openEppProjectSelectionModal()"
+                                                class="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 font-medium text-green-400 transition-all hover:bg-green-500/20">
+                                                <span class="material-symbols-outlined text-lg">swap_horiz</span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            @elseif ($isEpp)
                                 {{-- EPP Mode --}}
                                 <div
                                     class="flex items-start gap-4 rounded-lg border border-green-500/20 bg-green-500/10 p-4">

@@ -49,6 +49,8 @@ class Collection extends Model implements HasMedia {
         'path_image_to_ipfs',
         'url_image_ipfs',
         'epp_project_id',
+        'epp_donation_percentage', // Company voluntary EPP donation
+        'is_epp_voluntary',        // Flag: EPP voluntary (company) vs mandatory (others)
         'EGI_asset_id',
     ];
 
@@ -64,6 +66,8 @@ class Collection extends Model implements HasMedia {
         'image_EGI'    => EGIImageCast::class,
         'is_published' => 'boolean',
         'featured_in_guest' => 'boolean',
+        'is_epp_voluntary' => 'boolean',
+        'epp_donation_percentage' => 'decimal:2',
         'metadata' => 'array', // PA/Enterprise JSON metadata
     ];
 
@@ -178,6 +182,52 @@ class Collection extends Model implements HasMedia {
      */
     public function eppProject() {
         return $this->belongsTo(EppProject::class, 'epp_project_id');
+    }
+
+    /**
+     * Check if the collection creator is a company user
+     *
+     * @return bool
+     */
+    public function isCreatorCompany(): bool {
+        if (!$this->relationLoaded('creator')) {
+            $this->load('creator');
+        }
+        return $this->creator?->usertype === 'company';
+    }
+
+    /**
+     * Check if EPP is voluntary for this collection (company users)
+     *
+     * @return bool
+     */
+    public function hasVoluntaryEpp(): bool {
+        return $this->is_epp_voluntary === true;
+    }
+
+    /**
+     * Check if collection has EPP donation configured
+     *
+     * @return bool
+     */
+    public function hasEppDonation(): bool {
+        return $this->epp_project_id !== null && $this->epp_donation_percentage > 0;
+    }
+
+    /**
+     * Get effective EPP percentage for payment distribution
+     * For company: returns voluntary percentage (or 0 if none)
+     * For others: returns standard EPP percentage from config
+     *
+     * @return float
+     */
+    public function getEffectiveEppPercentage(): float {
+        if ($this->is_epp_voluntary) {
+            // Company: use voluntary percentage or 0
+            return (float) ($this->epp_donation_percentage ?? 0);
+        }
+        // Others: standard EPP percentage (configured globally)
+        return $this->epp_project_id !== null ? (float) config('epp.default_percentage', 5.0) : 0;
     }
 
     /**

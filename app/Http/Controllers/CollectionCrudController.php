@@ -176,7 +176,9 @@ class CollectionCrudController extends Controller {
             ]);
 
             // Default EPP assignment - business rule
-            if (is_null($collection->epp_id)) {
+            // Skip for company users (EPP is voluntary for them)
+            $isCompanyUser = $collection->is_epp_voluntary || $collection->creator?->usertype === 'company';
+            if (!$isCompanyUser && is_null($collection->epp_id)) {
                 $collection->epp_id = 2;
                 $this->logger->debug('Collection CRUD: Applied default EPP', [
                     'collection_id' => $collection->id,
@@ -195,7 +197,8 @@ class CollectionCrudController extends Controller {
                     'collection_id' => $collection->id,
                     'original_state' => $originalState,
                     'updated_fields' => array_keys($payload),
-                    'epp_id_applied' => $collection->epp_id
+                    'epp_id_applied' => $collection->epp_id,
+                    'is_company_user' => $isCompanyUser
                 ],
                 GdprActivityCategory::PLATFORM_USAGE
             );

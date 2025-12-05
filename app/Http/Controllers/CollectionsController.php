@@ -467,14 +467,19 @@ class CollectionsController extends Controller {
      * Allows the collection creator/authorized user to select an EPP Project
      * that will receive a percentage of the collection's sales.
      *
+     * For company users: EPP is optional (voluntary donation)
+     * For other users: EPP is required
+     *
      * @param Request $request The HTTP request
      * @param int $id The collection ID
      * @return JsonResponse
+     *
+     * @changelog 2025-12-05: Added company usertype handling - EPP optional with donation percentage
      */
     public function updateEppProject(Request $request, $id): \Illuminate\Http\JsonResponse {
         try {
-            // Find the collection
-            $collection = Collection::findOrFail($id);
+            // Find the collection with creator
+            $collection = Collection::with('creator')->findOrFail($id);
 
             // Check permissions
             $currentUserId = FegiAuth::id();
@@ -485,14 +490,51 @@ class CollectionsController extends Controller {
                 ], 403);
             }
 
-            // Validate request
-            $validated = $request->validate([
-                'epp_project_id' => 'required|exists:epp_projects,id'
-            ]);
+            // Check if collection belongs to company user (EPP is voluntary)
+            $isCompanyUser = $collection->is_epp_voluntary || $collection->creator?->usertype === 'company';
 
-            // Update the collection
-            $collection->epp_project_id = $validated['epp_project_id'];
-            $collection->save();
+            // Validate request - different rules for company vs others
+            if ($isCompanyUser) {
+                // Company: EPP is optional, donation percentage is optional (0-100%)
+                $validated = $request->validate([
+                    'epp_project_id' => 'nullable|exists:epp_projects,id',
+                    'epp_donation_percentage' => 'nullable|numeric|min:0|max:100'
+                ]);
+
+                // Update collection with voluntary EPP settings
+                $collection->epp_project_id = $validated['epp_project_id'] ?? null;
+                $collection->epp_donation_percentage = $validated['epp_donation_percentage'] ?? 0;
+                $collection->is_epp_voluntary = true;
+                $collection->save();
+
+                // Update EPP wallet royalty_mint to match donation percentage
+                // This ensures PaymentDistributionService uses the correct percentage
+                $this->updateEppWalletPercentage($collection, (float) ($validated['epp_donation_percentage'] ?? 0));
+
+                // If no EPP selected, return success with no EPP data
+                if (!$collection->epp_project_id) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => __('collection.epp_donation_removed'),
+                        'data' => [
+                            'epp_project' => null,
+                            'is_voluntary' => true,
+                            'donation_percentage' => 0
+                        ]
+                    ]);
+                }
+            } else {
+                // Other users: EPP is required
+                $validated = $request->validate([
+                    'epp_project_id' => 'required|exists:epp_projects,id'
+                ]);
+
+                // Update the collection
+                $collection->epp_project_id = $validated['epp_project_id'];
+                $collection->is_epp_voluntary = false;
+                $collection->epp_donation_percentage = null; // Standard percentage from config
+                $collection->save();
+            }
 
             // Load the EppProject relationship with EPP User
             $collection->load(['eppProject.eppUser.organizationData']);
@@ -501,7 +543,9 @@ class CollectionsController extends Controller {
 
             return response()->json([
                 'success' => true,
-                'message' => 'EPP Project updated successfully',
+                'message' => $isCompanyUser
+                    ? __('collection.epp_donation_updated')
+                    : __('collection.epp_project_updated'),
                 'data' => [
                     'epp_project' => [
                         'id' => $project->id,
@@ -514,7 +558,9 @@ class CollectionsController extends Controller {
                             'name' => $eppUser->name ?? 'Unknown',
                             'organization_name' => $eppUser->organizationData->organization_name ?? null,
                         ]
-                    ]
+                    ],
+                    'is_voluntary' => $isCompanyUser,
+                    'donation_percentage' => $collection->epp_donation_percentage
                 ]
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -539,6 +585,64 @@ class CollectionsController extends Controller {
                 'message' => 'An error occurred while updating EPP Project'
             ], 500);
         }
+    }
+
+    /**
+     * Update EPP wallet percentage for company collections
+     * 
+     * When a company changes their voluntary donation percentage, we need to update
+     * the EPP wallet's royalty_mint to match, so PaymentDistributionService uses
+     * the correct percentage for distribution calculations.
+     * 
+     * Also redistributes the remaining percentage to other wallets (Creator primarily).
+     *
+     * @param Collection $collection
+     * @param float $newEppPercentage The new EPP donation percentage (0-100)
+     * @return void
+     */
+    private function updateEppWalletPercentage(Collection $collection, float $newEppPercentage): void {
+        // Get EPP wallet for this collection
+        $eppWallet = \App\Models\Wallet::where('collection_id', $collection->id)
+            ->where('platform_role', 'EPP')
+            ->first();
+
+        if (!$eppWallet) {
+            // No EPP wallet exists, nothing to update
+            return;
+        }
+
+        // Get the default EPP percentage from config
+        $defaultEppPercentage = (float) config('app.epp_royalty_mint', 20);
+        $currentEppPercentage = (float) $eppWallet->royalty_mint;
+
+        // Calculate the difference
+        $difference = $currentEppPercentage - $newEppPercentage;
+
+        // Update EPP wallet
+        $eppWallet->royalty_mint = $newEppPercentage;
+        $eppWallet->save();
+
+        // Redistribute the difference to Creator wallet
+        if ($difference != 0) {
+            $creatorWallet = \App\Models\Wallet::where('collection_id', $collection->id)
+                ->where('platform_role', 'Creator')
+                ->first();
+
+            if ($creatorWallet) {
+                // Add the difference to creator (if EPP decreases, creator increases)
+                $newCreatorPercentage = max(0, $creatorWallet->royalty_mint + $difference);
+                $creatorWallet->royalty_mint = $newCreatorPercentage;
+                $creatorWallet->save();
+            }
+        }
+
+        // Log the update
+        app(\Ultra\UltraLogManager\UltraLogManager::class)->info('[CollectionsController] EPP wallet percentage updated for company', [
+            'collection_id' => $collection->id,
+            'old_epp_percentage' => $currentEppPercentage,
+            'new_epp_percentage' => $newEppPercentage,
+            'is_company' => true
+        ]);
     }
 
     /**
