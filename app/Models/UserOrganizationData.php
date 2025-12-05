@@ -18,6 +18,7 @@ class UserOrganizationData extends Model {
         'user_id',
         'org_name',
         'org_email',
+        'pec',
         'org_street',
         'org_city',
         'org_region',
@@ -28,12 +29,16 @@ class UserOrganizationData extends Model {
         'org_phone_2',
         'org_phone_3',
         'rea',
+        'ateco_code',
+        'ateco_description',
         'org_fiscal_code',
         'org_vat_number',
         'is_seller_verified',
         'can_issue_invoices',
         'business_type',
-        'iban'
+        'iban',
+        'enrichment_sources',
+        'enriched_at',
     ];
 
     protected $casts = [
@@ -42,8 +47,10 @@ class UserOrganizationData extends Model {
         'vat_registered' => 'boolean',
         'requires_compliance_review' => 'boolean',
         'business_categories' => 'array',
+        'enrichment_sources' => 'array',
         'seller_verified_at' => 'datetime',
         'compliance_checked_at' => 'datetime',
+        'enriched_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];

@@ -382,7 +382,7 @@ Route::prefix('natan-tutor')->name('api.natan-tutor.')->middleware(['web', 'auth
 */
 
 Route::prefix('superadmin')->name('api.superadmin.')->middleware(['web'])->group(function () {
-    
+
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Api\Superadmin\DashboardApiController::class, 'index'])
         ->name('dashboard');
@@ -434,4 +434,35 @@ Route::prefix('superadmin')->name('api.superadmin.')->middleware(['web'])->group
         Route::get('/statistics', [App\Http\Controllers\Api\Superadmin\PadminApiController::class, 'statistics'])
             ->name('statistics');
     });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Business Data Enrichment API Routes
+|--------------------------------------------------------------------------
+|
+| Multi-source business data extraction:
+| - Website scraping (address, email, PEC, phone, VAT)
+| - Registro Imprese (ATECO, legal name, REA)
+| - Agenzia Entrate (VAT validation)
+|
+| Security: Web middleware for session auth, rate limited
+|
+*/
+Route::middleware(['web'])->prefix('business')->name('api.business.')->group(function () {
+    // Full enrichment from multiple sources
+    Route::post('/enrich', [App\Http\Controllers\Api\BusinessEnrichmentController::class, 'enrich'])
+        ->name('enrich');
+
+    // Quick VAT validation only
+    Route::get('/validate-vat/{vatNumber}', [App\Http\Controllers\Api\BusinessEnrichmentController::class, 'validateVat'])
+        ->name('validate-vat');
+
+    // Website-only scraping
+    Route::post('/scrape-website', [App\Http\Controllers\Api\BusinessEnrichmentController::class, 'scrapeWebsite'])
+        ->name('scrape-website');
+
+    // Clear cache
+    Route::delete('/cache', [App\Http\Controllers\Api\BusinessEnrichmentController::class, 'clearCache'])
+        ->name('clear-cache');
 });
