@@ -500,10 +500,13 @@ class RegisteredUserController extends Controller {
 
             // 3. Link User to Collection with correct role (SAFE - usa syncWithoutDetaching)
             // CollectionService potrebbe aver già fatto il link, quindi usiamo sync invece di attach
+            // is_owner = true for creator-type roles (creator, company, enterprise, pa_entity)
+            $isOwnerRole = in_array($collectionRole, ['creator', 'company', 'epp']);
+            
             $collection->users()->syncWithoutDetaching([
                 $user->id => [
                     'role' => $collectionRole,
-                    'is_owner' => $collectionRole === 'creator',
+                    'is_owner' => $isOwnerRole,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]
@@ -514,7 +517,7 @@ class RegisteredUserController extends Controller {
                 'collection_id' => $collection->id,
                 'user_type' => $validated['user_type'],
                 'collection_role' => $collectionRole,
-                'is_owner' => $collectionRole === 'creator'
+                'is_owner' => $isOwnerRole
             ]);
 
             // 4. Setup Wallets for Collection using WalletService
@@ -707,6 +710,7 @@ class RegisteredUserController extends Controller {
         $collectionRoleMapping = [
             'commissioner' => 'commissioner',
             'creator' => 'creator',
+            'company' => 'company', // Company users have their own role with same permissions as creator
             'enterprise' => 'creator', // Enterprise users are creators of their collections
             'patron' => 'patron',
             'collector' => 'collector',
