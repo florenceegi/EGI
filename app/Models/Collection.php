@@ -193,7 +193,7 @@ class Collection extends Model implements HasMedia {
         if (!$this->relationLoaded('creator')) {
             $this->load('creator');
         }
-        return $this->creator?->usertype === 'company';
+        return $this->creator?->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value;
     }
 
     /**

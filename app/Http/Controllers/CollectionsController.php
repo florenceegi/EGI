@@ -491,7 +491,7 @@ class CollectionsController extends Controller {
             }
 
             // Check if collection belongs to company user (EPP is voluntary)
-            $isCompanyUser = $collection->is_epp_voluntary || $collection->creator?->usertype === 'company';
+            $isCompanyUser = $collection->is_epp_voluntary || $collection->creator?->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value;
 
             // Validate request - different rules for company vs others
             if ($isCompanyUser) {

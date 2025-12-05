@@ -52,4 +52,31 @@ enum MerchantUserTypeEnum: string {
             self::PATRON => __('user_types.patron'),
         };
     }
+
+    /**
+     * Get user types that can own collections
+     * 
+     * @return array<string>
+     */
+    public static function collectionOwnerTypes(): array {
+        return [
+            self::CREATOR->value,
+            self::COMPANY->value,
+            self::PATRON->value,  // mecenate
+        ];
+    }
+
+    /**
+     * Check if a user type can own collections
+     *
+     * @param string|null $userType
+     * @return bool
+     */
+    public static function canOwnCollections(?string $userType): bool {
+        if ($userType === null) {
+            return false;
+        }
+
+        return in_array($userType, self::collectionOwnerTypes(), true);
+    }
 }

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Collection;
 use App\Models\Wallet;
 use App\Services\CollectionSubscriptionService;
+use App\Enums\User\MerchantUserTypeEnum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
@@ -28,7 +29,7 @@ class CompanyCollectionEppTest extends TestCase
     {
         // Create a company user
         $companyUser = User::factory()->create([
-            'usertype' => 'company',
+            'usertype' => MerchantUserTypeEnum::COMPANY->value,
         ]);
 
         // Create a collection for the company user
@@ -50,7 +51,7 @@ class CompanyCollectionEppTest extends TestCase
     {
         // Create a company user
         $companyUser = User::factory()->create([
-            'usertype' => 'company',
+            'usertype' => MerchantUserTypeEnum::COMPANY->value,
         ]);
 
         // Create a collection with voluntary EPP
@@ -79,7 +80,7 @@ class CompanyCollectionEppTest extends TestCase
     {
         // Create a company user
         $companyUser = User::factory()->create([
-            'usertype' => 'company',
+            'usertype' => MerchantUserTypeEnum::COMPANY->value,
         ]);
 
         // Create a collection with 15% donation
@@ -100,7 +101,7 @@ class CompanyCollectionEppTest extends TestCase
     {
         // Create a regular creator user
         $creatorUser = User::factory()->create([
-            'usertype' => 'creator',
+            'usertype' => MerchantUserTypeEnum::CREATOR->value,
         ]);
 
         // Create a collection without EPP
@@ -128,12 +129,12 @@ class CompanyCollectionEppTest extends TestCase
     {
         // Create a company user
         $companyUser = User::factory()->create([
-            'usertype' => 'company',
+            'usertype' => MerchantUserTypeEnum::COMPANY->value,
         ]);
 
         // Create a regular user
         $regularUser = User::factory()->create([
-            'usertype' => 'creator',
+            'usertype' => MerchantUserTypeEnum::CREATOR->value,
         ]);
 
         $companyCollection = Collection::factory()->create([
@@ -155,7 +156,7 @@ class CompanyCollectionEppTest extends TestCase
     {
         // Create a regular creator user
         $creatorUser = User::factory()->create([
-            'usertype' => 'creator',
+            'usertype' => MerchantUserTypeEnum::CREATOR->value,
         ]);
 
         // Create a collection with is_epp_voluntary = true (simulating migration scenario)

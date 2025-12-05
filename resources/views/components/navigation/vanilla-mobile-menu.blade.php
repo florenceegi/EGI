@@ -278,11 +278,10 @@
                 </div>
             </div>
 
-            <!-- Dynamic Collections Carousel Card - Solo per creator, mecenate, azienda, epp_entity -->
+            <!-- Dynamic Collections Carousel Card - Solo per merchant (creator, company, patron) -->
             @php
-                // Tipi utente che possono possedere collezioni
-                $canOwnCollections =
-                    $user && in_array($user->usertype, ['creator', 'mecenate', 'azienda', 'epp_entity']);
+                // Tipi utente che possono possedere collezioni - usando l'Enum
+                $canOwnCollections = \App\Enums\User\MerchantUserTypeEnum::canOwnCollections($user?->usertype);
             @endphp
             @if ($canOwnCollections)
                 <x-menu-collections-carousel :collections="$user->ownedCollections()->orderBy('position')->get()" />

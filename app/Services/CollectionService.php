@@ -108,7 +108,7 @@ class CollectionService
         }
 
         // Check if user is company - EPP is voluntary for company users
-        $isCompanyUser = $user->usertype === 'company';
+        $isCompanyUser = $user->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value;
 
         $logContext = [
             'creator_id' => $user->id,

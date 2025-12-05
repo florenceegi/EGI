@@ -142,7 +142,7 @@ class WalletService implements WalletServiceInterface {
 
         try {
             // Check if this is a company collection (EPP is voluntary, 0% by default)
-            $isCompanyCollection = $collection->is_epp_voluntary === true || $user->usertype === 'company';
+            $isCompanyCollection = $collection->is_epp_voluntary === true || $user->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value;
             
             // Calculate percentages based on collection type
             // For company: Creator gets EPP share since EPP is 0%

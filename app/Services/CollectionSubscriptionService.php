@@ -98,7 +98,7 @@ class CollectionSubscriptionService {
         }
 
         // Company users: ONLY subscription required (EPP is voluntary/optional)
-        if ($collection->is_epp_voluntary || $collection->creator?->usertype === 'company') {
+        if ($collection->is_epp_voluntary || $collection->creator?->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value) {
             $this->logger->debug('[CollectionSubscription] Company user - checking subscription only', [
                 'collection_id' => $collection->id,
                 'creator_usertype' => $collection->creator?->usertype,
@@ -129,7 +129,7 @@ class CollectionSubscriptionService {
             $collection->load('creator');
         }
 
-        $isCompany = $collection->is_epp_voluntary || $collection->creator?->usertype === 'company';
+        $isCompany = $collection->is_epp_voluntary || $collection->creator?->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value;
 
         if ($isCompany) {
             return [

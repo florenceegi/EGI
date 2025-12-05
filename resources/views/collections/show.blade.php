@@ -1228,7 +1228,7 @@ if (auth()->check()) {
 
             async function updateCollectionEppProject(projectId) {
                 const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                const isCompanyCollection = {{ ($collection->is_epp_voluntary || ($collection->creator && $collection->creator->usertype === 'company')) ? 'true' : 'false' }};
+                const isCompanyCollection = {{ ($collection->is_epp_voluntary || ($collection->creator && $collection->creator->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value)) ? 'true' : 'false' }};
 
                 // For company collections, get the donation percentage from slider
                 let donationPercentage = null;

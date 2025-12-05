@@ -177,7 +177,7 @@ class CollectionCrudController extends Controller {
 
             // Default EPP assignment - business rule
             // Skip for company users (EPP is voluntary for them)
-            $isCompanyUser = $collection->is_epp_voluntary || $collection->creator?->usertype === 'company';
+            $isCompanyUser = $collection->is_epp_voluntary || $collection->creator?->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value;
             if (!$isCompanyUser && is_null($collection->epp_id)) {
                 $collection->epp_id = 2;
                 $this->logger->debug('Collection CRUD: Applied default EPP', [
