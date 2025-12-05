@@ -42,6 +42,14 @@ $navLinkClasses = $isMobile
 </a>
 @endif
 
+{{-- Companies Link - Su mobile sempre visibile, su desktop solo se non siamo nelle companies --}}
+@if ($isMobile || !request()->routeIs('company.*'))
+<a href="{{ route('company.index') }}" class="{{ $navLinkClasses }}"
+    aria-label="{{ __('guest_layout.' . ($isMobile ? 'mobile_' : '') . 'companies_link_aria_label') }}">
+    {{ __('guest_layout.companies') }}
+</a>
+@endif
+
 {{-- EPPs Link - Su mobile sempre visibile, su desktop solo se non siamo negli EPPs --}}
 @if ($isMobile || !request()->routeIs('epps.*'))
 {{-- Reindirizzato a pagina "work in progress" --}}
