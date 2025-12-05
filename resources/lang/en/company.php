@@ -152,5 +152,6 @@ return [
         'founded' => 'Founded',
         'employees' => 'Employees',
         'industry' => 'Industry',
+        'no_contact' => 'Contact not available',
     ],
 ];

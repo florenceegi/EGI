@@ -152,5 +152,6 @@ return [
         'founded' => 'Fondata nel',
         'employees' => 'Dipendenti',
         'industry' => 'Settore',
+        'no_contact' => 'Contatto non disponibile',
     ],
 ];

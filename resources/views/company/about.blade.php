@@ -249,16 +249,15 @@
                             <p class="mb-6 text-sm text-gray-400">
                                 Vuoi saperne di più sui nostri prodotti? Contattaci per informazioni.
                             </p>
-                            @if (\App\Helpers\FegiAuth::check())
-                                <a href="{{ route('chat.thread', $company->id) }}"
+                            @if ($company->email)
+                                <a href="mailto:{{ $company->email }}"
                                     class="block w-full rounded-lg bg-[#C9A227] px-4 py-3 text-center font-semibold text-gray-900 transition-colors hover:bg-[#D4B445]">
                                     {{ __('company.home.contact_button') }}
                                 </a>
                             @else
-                                <a href="{{ route('login') }}"
-                                    class="block w-full rounded-lg bg-[#C9A227] px-4 py-3 text-center font-semibold text-gray-900 transition-colors hover:bg-[#D4B445]">
-                                    Accedi per Contattare
-                                </a>
+                                <span class="block w-full rounded-lg bg-gray-600 px-4 py-3 text-center font-semibold text-gray-300">
+                                    {{ __('company.about.no_contact') }}
+                                </span>
                             @endif
                         </div>
 
