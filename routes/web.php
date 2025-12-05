@@ -586,6 +586,11 @@ Route::middleware(['auth'])->prefix('wallet')->name('wallet.')->group(function (
     Route::post('/redemption/confirm', [WalletController::class, 'confirmRedemption'])->name('redemption.confirm');
     Route::get('/redemption/download', [WalletController::class, 'downloadSeedPhrase'])->name('redemption.download');
     Route::post('/redemption/finalize', [WalletController::class, 'finalizeRedemption'])->name('redemption.finalize');
+
+    // NEW v2.0: Full redemption with ASA transfer
+    Route::post('/redemption/execute', [WalletController::class, 'executeRedemption'])->name('redemption.execute');
+    Route::get('/redemption/cost', [WalletController::class, 'getRedemptionCost'])->name('redemption.cost');
+    Route::get('/redemption/egis', [WalletController::class, 'getUserEgisForRedemption'])->name('redemption.egis');
 });
 
 /*

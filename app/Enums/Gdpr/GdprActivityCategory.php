@@ -79,6 +79,12 @@ enum GdprActivityCategory: string {
 /** Wallet secret accessed (mnemonic export) */
     case WALLET_SECRET_ACCESSED = 'wallet_secret_accessed';
 
+/** Wallet fully redeemed (custodial to non-custodial transfer) */
+    case WALLET_REDEEMED = 'wallet_redeemed';
+
+/** Wallet mnemonic permanently deleted from platform */
+    case WALLET_MNEMONIC_DELETED = 'wallet_mnemonic_deleted';
+
 /** Notification management and interactions */
     case NOTIFICATION_MANAGEMENT = 'notification_management';
 
@@ -117,6 +123,8 @@ enum GdprActivityCategory: string {
             self::WALLET_MANAGEMENT => 'Wallet and Financial Operations Management',
             self::WALLET_CREATED => 'Wallet Creation During Registration',
             self::WALLET_SECRET_ACCESSED => 'Wallet Secret Accessed (Mnemonic Export)',
+            self::WALLET_REDEEMED => 'Wallet Redeemed (Custodial to Non-Custodial Transfer)',
+            self::WALLET_MNEMONIC_DELETED => 'Wallet Mnemonic Permanently Deleted',
             self::NOTIFICATION_MANAGEMENT => 'Notification Management and User Interactions',
             self::AI_PROCESSING => 'AI Processing and Analysis Activities',
             self::AI_CREDITS_USAGE => 'AI Credits Usage and Financial Operations',
@@ -139,6 +147,8 @@ enum GdprActivityCategory: string {
             self::WALLET_MANAGEMENT,
             self::WALLET_CREATED,
             self::WALLET_SECRET_ACCESSED,
+            self::WALLET_REDEEMED,
+            self::WALLET_MNEMONIC_DELETED,
             self::AI_CREDITS_USAGE => PrivacyLevel::CRITICAL, // Financial data tracking
 
             // HIGH - Security and authentication (3 years retention)

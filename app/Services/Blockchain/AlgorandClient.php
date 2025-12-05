@@ -416,4 +416,340 @@ class AlgorandClient
             throw $e;
         }
     }
+
+    /**
+     * Opt-in to a single ASA (EGI)
+     *
+     * The user wallet must opt-in to an ASA before it can receive it.
+     * Requires the user's mnemonic to sign the transaction.
+     *
+     * @param string $userMnemonic The user's 25-word mnemonic
+     * @param int $asaId The ASA ID to opt-in to
+     * @return array ['txId' => string, 'asa_id' => int, 'block' => int]
+     * @throws \Exception if opt-in fails
+     */
+    public function optInToAsa(string $userMnemonic, int $asaId): array
+    {
+        try {
+            // 0. Ensure microservice is running
+            if (!$this->ensureMicroserviceRunning()) {
+                throw new \Exception("Algorand microservice is not available");
+            }
+
+            // 1. ULM: Log request (no mnemonic in logs!)
+            $this->logger->info('AlgorandClient: Opt-in to ASA', [
+                'asa_id' => $asaId,
+                'log_category' => 'ALGORAND_OPT_IN_ASA'
+            ]);
+
+            // 2. Call microservice
+            $response = Http::timeout($this->timeout + 10)
+                ->post("{$this->microserviceUrl}/opt-in-asa", [
+                    'user_mnemonic' => $userMnemonic,
+                    'asa_id' => $asaId
+                ]);
+
+            // 3. Check response
+            if (!$response->successful()) {
+                throw new \Exception("Microservice returned status {$response->status()}: {$response->body()}");
+            }
+
+            $data = $response->json();
+
+            if (!isset($data['success']) || !$data['success']) {
+                throw new \Exception("Microservice error: " . ($data['error'] ?? 'Unknown error'));
+            }
+
+            // 4. ULM: Log success
+            $this->logger->info('AlgorandClient: Opt-in successful', [
+                'txId' => $data['data']['txId'],
+                'asa_id' => $data['data']['asa_id'],
+                'block' => $data['data']['block'],
+                'log_category' => 'ALGORAND_OPT_IN_ASA_SUCCESS'
+            ]);
+
+            return [
+                'txId' => $data['data']['txId'],
+                'user_address' => $data['data']['user_address'],
+                'asa_id' => $data['data']['asa_id'],
+                'block' => $data['data']['block'],
+            ];
+        } catch (\Exception $e) {
+            // 5. ULM: Log error
+            $this->logger->error('AlgorandClient: Opt-in failed', [
+                'asa_id' => $asaId,
+                'error' => $e->getMessage(),
+                'log_category' => 'ALGORAND_OPT_IN_ASA_ERROR'
+            ]);
+
+            // 6. UEM: Handle error
+            $this->errorManager->handle('ALGORAND_OPT_IN_FAILED', [
+                'asa_id' => $asaId,
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Batch opt-in to multiple ASAs (EGIs)
+     *
+     * More efficient than individual opt-ins - uses Algorand atomic transaction groups.
+     * Maximum 16 ASAs per batch (Algorand protocol limit).
+     *
+     * @param string $userMnemonic The user's 25-word mnemonic
+     * @param array $asaIds Array of ASA IDs to opt-in to
+     * @return array ['groupTxId' => string, 'asa_ids' => array, 'count' => int, 'block' => int]
+     * @throws \Exception if batch opt-in fails
+     */
+    public function batchOptInToAsas(string $userMnemonic, array $asaIds): array
+    {
+        try {
+            // Validate batch size
+            if (count($asaIds) > 16) {
+                throw new \Exception("Maximum 16 ASAs per batch (Algorand protocol limit)");
+            }
+
+            if (empty($asaIds)) {
+                throw new \Exception("No ASA IDs provided");
+            }
+
+            // 0. Ensure microservice is running
+            if (!$this->ensureMicroserviceRunning()) {
+                throw new \Exception("Algorand microservice is not available");
+            }
+
+            // 1. ULM: Log request
+            $this->logger->info('AlgorandClient: Batch opt-in to ASAs', [
+                'asa_count' => count($asaIds),
+                'asa_ids' => $asaIds,
+                'log_category' => 'ALGORAND_BATCH_OPT_IN_ASA'
+            ]);
+
+            // 2. Call microservice
+            $response = Http::timeout($this->timeout + 20) // Extra time for batch
+                ->post("{$this->microserviceUrl}/batch-opt-in-asa", [
+                    'user_mnemonic' => $userMnemonic,
+                    'asa_ids' => $asaIds
+                ]);
+
+            // 3. Check response
+            if (!$response->successful()) {
+                throw new \Exception("Microservice returned status {$response->status()}: {$response->body()}");
+            }
+
+            $data = $response->json();
+
+            if (!isset($data['success']) || !$data['success']) {
+                throw new \Exception("Microservice error: " . ($data['error'] ?? 'Unknown error'));
+            }
+
+            // 4. ULM: Log success
+            $this->logger->info('AlgorandClient: Batch opt-in successful', [
+                'groupTxId' => $data['data']['groupTxId'],
+                'count' => $data['data']['count'],
+                'block' => $data['data']['block'],
+                'log_category' => 'ALGORAND_BATCH_OPT_IN_ASA_SUCCESS'
+            ]);
+
+            return [
+                'groupTxId' => $data['data']['groupTxId'],
+                'user_address' => $data['data']['user_address'],
+                'asa_ids' => $data['data']['asa_ids'],
+                'count' => $data['data']['count'],
+                'block' => $data['data']['block'],
+            ];
+        } catch (\Exception $e) {
+            // 5. ULM: Log error
+            $this->logger->error('AlgorandClient: Batch opt-in failed', [
+                'asa_count' => count($asaIds),
+                'error' => $e->getMessage(),
+                'log_category' => 'ALGORAND_BATCH_OPT_IN_ASA_ERROR'
+            ]);
+
+            // 6. UEM: Handle error
+            $this->errorManager->handle('ALGORAND_BATCH_OPT_IN_FAILED', [
+                'asa_count' => count($asaIds),
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Transfer a single ASA (EGI) from Treasury to user wallet
+     *
+     * REQUIRES: User must have already opted-in to the ASA
+     *
+     * @param string $toAddress The recipient's Algorand address
+     * @param int $asaId The ASA ID to transfer
+     * @param int $amount Amount to transfer (default: 1 for NFTs)
+     * @return array ['txId' => string, 'asa_id' => int, 'block' => int]
+     * @throws \Exception if transfer fails
+     */
+    public function transferAsa(string $toAddress, int $asaId, int $amount = 1): array
+    {
+        try {
+            // 0. Ensure microservice is running
+            if (!$this->ensureMicroserviceRunning()) {
+                throw new \Exception("Algorand microservice is not available");
+            }
+
+            // 1. ULM: Log request
+            $this->logger->info('AlgorandClient: Transfer ASA', [
+                'to_address' => $toAddress,
+                'asa_id' => $asaId,
+                'amount' => $amount,
+                'log_category' => 'ALGORAND_TRANSFER_ASA'
+            ]);
+
+            // 2. Call microservice
+            $response = Http::timeout($this->timeout + 10)
+                ->post("{$this->microserviceUrl}/transfer-asa", [
+                    'to_address' => $toAddress,
+                    'asa_id' => $asaId,
+                    'amount' => $amount
+                ]);
+
+            // 3. Check response
+            if (!$response->successful()) {
+                throw new \Exception("Microservice returned status {$response->status()}: {$response->body()}");
+            }
+
+            $data = $response->json();
+
+            if (!isset($data['success']) || !$data['success']) {
+                throw new \Exception("Microservice error: " . ($data['error'] ?? 'Unknown error'));
+            }
+
+            // 4. ULM: Log success
+            $this->logger->info('AlgorandClient: Transfer successful', [
+                'txId' => $data['data']['txId'],
+                'to' => $data['data']['to'],
+                'asa_id' => $data['data']['asa_id'],
+                'block' => $data['data']['block'],
+                'log_category' => 'ALGORAND_TRANSFER_ASA_SUCCESS'
+            ]);
+
+            return [
+                'txId' => $data['data']['txId'],
+                'from' => $data['data']['from'],
+                'to' => $data['data']['to'],
+                'asa_id' => $data['data']['asa_id'],
+                'amount' => $data['data']['amount'],
+                'block' => $data['data']['block'],
+            ];
+        } catch (\Exception $e) {
+            // 5. ULM: Log error
+            $this->logger->error('AlgorandClient: Transfer failed', [
+                'to_address' => $toAddress,
+                'asa_id' => $asaId,
+                'error' => $e->getMessage(),
+                'log_category' => 'ALGORAND_TRANSFER_ASA_ERROR'
+            ]);
+
+            // 6. UEM: Handle error
+            $this->errorManager->handle('ALGORAND_TRANSFER_ASA_FAILED', [
+                'to_address' => $toAddress,
+                'asa_id' => $asaId,
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Batch transfer multiple ASAs (EGIs) from Treasury to user wallet
+     *
+     * More efficient than individual transfers - uses Algorand atomic transaction groups.
+     * Maximum 16 ASAs per batch (Algorand protocol limit).
+     * REQUIRES: User must have already opted-in to ALL ASAs
+     *
+     * @param string $toAddress The recipient's Algorand address
+     * @param array $asaIds Array of ASA IDs to transfer
+     * @return array ['groupTxId' => string, 'asa_ids' => array, 'count' => int, 'block' => int]
+     * @throws \Exception if batch transfer fails
+     */
+    public function batchTransferAsas(string $toAddress, array $asaIds): array
+    {
+        try {
+            // Validate batch size
+            if (count($asaIds) > 16) {
+                throw new \Exception("Maximum 16 ASAs per batch (Algorand protocol limit)");
+            }
+
+            if (empty($asaIds)) {
+                throw new \Exception("No ASA IDs provided");
+            }
+
+            // 0. Ensure microservice is running
+            if (!$this->ensureMicroserviceRunning()) {
+                throw new \Exception("Algorand microservice is not available");
+            }
+
+            // 1. ULM: Log request
+            $this->logger->info('AlgorandClient: Batch transfer ASAs', [
+                'to_address' => $toAddress,
+                'asa_count' => count($asaIds),
+                'asa_ids' => $asaIds,
+                'log_category' => 'ALGORAND_BATCH_TRANSFER_ASA'
+            ]);
+
+            // 2. Call microservice
+            $response = Http::timeout($this->timeout + 20) // Extra time for batch
+                ->post("{$this->microserviceUrl}/batch-transfer-asa", [
+                    'to_address' => $toAddress,
+                    'asa_ids' => $asaIds
+                ]);
+
+            // 3. Check response
+            if (!$response->successful()) {
+                throw new \Exception("Microservice returned status {$response->status()}: {$response->body()}");
+            }
+
+            $data = $response->json();
+
+            if (!isset($data['success']) || !$data['success']) {
+                throw new \Exception("Microservice error: " . ($data['error'] ?? 'Unknown error'));
+            }
+
+            // 4. ULM: Log success
+            $this->logger->info('AlgorandClient: Batch transfer successful', [
+                'groupTxId' => $data['data']['groupTxId'],
+                'to' => $data['data']['to'],
+                'count' => $data['data']['count'],
+                'block' => $data['data']['block'],
+                'log_category' => 'ALGORAND_BATCH_TRANSFER_ASA_SUCCESS'
+            ]);
+
+            return [
+                'groupTxId' => $data['data']['groupTxId'],
+                'from' => $data['data']['from'],
+                'to' => $data['data']['to'],
+                'asa_ids' => $data['data']['asa_ids'],
+                'count' => $data['data']['count'],
+                'block' => $data['data']['block'],
+            ];
+        } catch (\Exception $e) {
+            // 5. ULM: Log error
+            $this->logger->error('AlgorandClient: Batch transfer failed', [
+                'to_address' => $toAddress,
+                'asa_count' => count($asaIds),
+                'error' => $e->getMessage(),
+                'log_category' => 'ALGORAND_BATCH_TRANSFER_ASA_ERROR'
+            ]);
+
+            // 6. UEM: Handle error
+            $this->errorManager->handle('ALGORAND_BATCH_TRANSFER_ASA_FAILED', [
+                'to_address' => $toAddress,
+                'asa_count' => count($asaIds),
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
+    }
 }

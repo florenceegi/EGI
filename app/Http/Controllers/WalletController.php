@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TeamWallet;
 use App\Models\Wallet;
 use App\Services\Wallet\WalletProvisioningService;
+use App\Services\Wallet\WalletRedemptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -18,32 +19,45 @@ use Illuminate\Support\Facades\Log;
  *
  * @Oracode v3.0
  * @privacy-critical Gestisce seed phrase cifrate - massima sicurezza richiesta
+ *
+ * REDEMPTION FLOW v2.0:
+ * 1. User views redemption page with cost calculation
+ * 2. User confirms with typed text + accepts terms
+ * 3. System: deducts EGILI, funds wallet, opt-in ASAs, transfer ASAs
+ * 4. User downloads seed phrase
+ * 5. User confirms, system deletes mnemonic from DB (irreversible)
  */
 class WalletController extends Controller {
     protected WalletProvisioningService $walletService;
+    protected WalletRedemptionService $redemptionService;
 
-    public function __construct(WalletProvisioningService $walletService) {
+    public function __construct(
+        WalletProvisioningService $walletService,
+        WalletRedemptionService $redemptionService
+    ) {
         $this->walletService = $walletService;
+        $this->redemptionService = $redemptionService;
     }
     /**
      * Mostra la pagina di riscatto wallet
+     *
+     * Displays:
+     * - Wallet address
+     * - Number of EGIs owned (ASAs)
+     * - Redemption cost (in ALGO and EGILI)
+     * - Current EGILI balance
+     * - Whether redemption is possible
      *
      * @return \Illuminate\View\View
      */
     public function redemption() {
         $user = Auth::user();
 
-        // Trova il wallet dell'utente dalla tabella wallets
-        $walletRecord = Wallet::where('user_id', $user->id)->first();
+        // Get redemption status and validation
+        $status = $this->redemptionService->getRedemptionStatus($user);
 
-        // Debug log
-        Log::info('Wallet redemption page accessed', [
-            'user_id' => $user->id,
-            'wallet_record' => $walletRecord ? $walletRecord->toArray() : null,
-        ]);
-
-        // Verifica che l'utente abbia un wallet
-        if (!$walletRecord || empty($walletRecord->wallet)) {
+        // If no wallet, redirect
+        if (!$status['has_wallet']) {
             Log::warning('No wallet found for redemption', [
                 'user_id' => $user->id,
             ]);
@@ -53,29 +67,48 @@ class WalletController extends Controller {
                 ->with('error', __('wallet.redemption.no_wallet'));
         }
 
-        $walletAddress = $walletRecord->wallet;
+        // Get wallet record
+        $walletRecord = Wallet::where('user_id', $user->id)->first();
 
-        // Verifica che sia un indirizzo Algorand valido (58 caratteri)
-        if (!is_string($walletAddress) || strlen($walletAddress) !== 58) {
-            Log::warning('Invalid wallet address for redemption', [
-                'user_id' => $user->id,
-                'wallet_address' => $walletAddress,
+        // Debug log
+        Log::info('Wallet redemption page accessed', [
+            'user_id' => $user->id,
+            'wallet_address' => $status['wallet_address'],
+            'is_redeemed' => $status['redeemed'],
+        ]);
+
+        // If already redeemed, show redeemed state
+        if ($status['redeemed']) {
+            return view('wallet.redemption', [
+                'user' => $user,
+                'walletAddress' => $status['wallet_address'],
+                'shortWallet' => substr($status['wallet_address'], 0, 6) . '...' . substr($status['wallet_address'], -4),
+                'isRedeemed' => true,
+                'redeemedAt' => $status['redeemed_at'],
+                'wallet' => $walletRecord,
+                'cost' => null,
+                'validation' => null,
+                'egis' => collect(),
             ]);
-
-            return redirect()
-                ->route('dashboard')
-                ->with('error', __('wallet.redemption.no_wallet'));
         }
 
-        // Verifica se il wallet è già stato riscattato (seed phrase cancellata)
-        $isRedeemed = empty($walletRecord->secret_ciphertext);
+        // Calculate cost and get validation
+        $validation = $this->redemptionService->validateRedemption($user);
+
+        // Get user's EGIs for display
+        $egis = $this->redemptionService->getUserEgis($user);
 
         return view('wallet.redemption', [
             'user' => $user,
-            'walletAddress' => $walletAddress,
-            'shortWallet' => substr($walletAddress, 0, 6) . '...' . substr($walletAddress, -4),
-            'isRedeemed' => $isRedeemed,
+            'walletAddress' => $status['wallet_address'],
+            'shortWallet' => substr($status['wallet_address'], 0, 6) . '...' . substr($status['wallet_address'], -4),
+            'isRedeemed' => false,
             'wallet' => $walletRecord,
+            'cost' => $validation['cost'],
+            'validation' => $validation,
+            'egis' => $egis,
+            'canRedeem' => $validation['valid'],
+            'egiliBalance' => $validation['egili_balance'] ?? 0,
         ]);
     }
 
@@ -119,6 +152,152 @@ class WalletController extends Controller {
             'success' => true,
             'token' => $redemptionToken,
             'message' => __('wallet.redemption.confirmation_accepted'),
+        ]);
+    }
+
+    /**
+     * Execute full wallet redemption (NEW v2.0 Flow)
+     *
+     * This is the main redemption endpoint that:
+     * 1. Validates user can redeem
+     * 2. Deducts EGILI cost from wallet
+     * 3. Funds wallet with ALGO
+     * 4. Performs batch opt-in for all user's ASAs
+     * 5. Transfers all ASAs from Treasury to user
+     * 6. Returns mnemonic to user
+     * 7. Deletes mnemonic from database (irreversible!)
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function executeRedemption(Request $request)
+    {
+        $request->validate([
+            'confirmation_text' => 'required|string',
+            'accept_terms' => 'required|accepted',
+        ]);
+
+        $user = Auth::user();
+        $expectedText = 'CONFERMO RISCATTO';
+
+        // 1. Verify confirmation text
+        if (strtoupper(trim($request->confirmation_text)) !== $expectedText) {
+            return response()->json([
+                'success' => false,
+                'message' => __('wallet.redemption.invalid_confirmation'),
+            ], 422);
+        }
+
+        // 2. Validate redemption is possible
+        $validation = $this->redemptionService->validateRedemption($user);
+        if (!$validation['valid']) {
+            Log::channel('security')->warning('Wallet redemption validation failed', [
+                'user_id' => $user->id,
+                'errors' => $validation['errors'],
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => implode(' ', $validation['errors']),
+                'errors' => $validation['errors'],
+            ], 400);
+        }
+
+        // 3. Execute redemption (this is irreversible after mnemonic deletion!)
+        Log::channel('security')->warning('Starting wallet redemption execution', [
+            'user_id' => $user->id,
+            'wallet_address' => $validation['wallet_address'],
+            'cost_egili' => $validation['cost']['egili'],
+            'asa_count' => $validation['cost']['breakdown']['asa_count'] ?? 0,
+        ]);
+
+        $result = $this->redemptionService->executeRedemption($user);
+
+        if (!$result['success']) {
+            Log::channel('security')->error('Wallet redemption failed', [
+                'user_id' => $user->id,
+                'error' => $result['error'],
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => $result['error'],
+                'details' => $result['details'] ?? [],
+            ], 500);
+        }
+
+        // 4. Generate downloadable document with mnemonic
+        $wallet = Wallet::where('user_id', $user->id)->first();
+        $document = $this->generateSeedPhraseDocument($user, $wallet, $result['mnemonic']);
+
+        // 5. Log successful redemption
+        Log::channel('security')->critical('Wallet redemption completed successfully', [
+            'user_id' => $user->id,
+            'wallet_address' => $validation['wallet_address'],
+            'cost_egili' => $validation['cost']['egili'],
+            'asa_count' => $result['details']['asa_count'] ?? 0,
+            'ip' => $request->ip(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('wallet.redemption.completed'),
+            'mnemonic' => $result['mnemonic'], // WARNING: Only sent once!
+            'document' => base64_encode($document),
+            'filename' => 'wallet-seed-phrase-' . date('Y-m-d') . '.txt',
+            'details' => [
+                'egili_deducted' => $result['details']['egili_deducted'] ?? 0,
+                'asa_transferred' => $result['details']['asa_count'] ?? 0,
+                'wallet_funded' => $result['details']['funding']['amount_algo'] ?? 0,
+            ],
+        ]);
+    }
+
+    /**
+     * API endpoint to get redemption cost calculation
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRedemptionCost()
+    {
+        $user = Auth::user();
+
+        $validation = $this->redemptionService->validateRedemption($user);
+        $status = $this->redemptionService->getRedemptionStatus($user);
+
+        return response()->json([
+            'success' => true,
+            'can_redeem' => $validation['valid'],
+            'is_redeemed' => $status['redeemed'],
+            'cost' => $validation['cost'],
+            'egili_balance' => $validation['egili_balance'] ?? 0,
+            'errors' => $validation['errors'],
+        ]);
+    }
+
+    /**
+     * API endpoint to get user's EGIs (ASAs) for redemption preview
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUserEgisForRedemption()
+    {
+        $user = Auth::user();
+
+        $egis = $this->redemptionService->getUserEgis($user);
+
+        return response()->json([
+            'success' => true,
+            'count' => $egis->count(),
+            'egis' => $egis->map(function ($egi) {
+                return [
+                    'id' => $egi->id,
+                    'title' => $egi->title,
+                    'collection_name' => $egi->collection->name ?? 'N/A',
+                    'asa_id' => $egi->blockchain->asa_id ?? null,
+                    'minted_at' => $egi->blockchain->minted_at ?? null,
+                ];
+            }),
         ]);
     }
 
