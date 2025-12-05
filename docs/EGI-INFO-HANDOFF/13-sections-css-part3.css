@@ -1,0 +1,390 @@
+/* ============================================
+   SEZIONI CSS - Parte 3
+   WhoCanUseV4 + CTAFinalV4
+============================================ */
+
+/* Import font corsivo per il motto */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600&display=swap');
+
+/* ═══════════════════════════════════════════
+   WhoCanUseV4
+═══════════════════════════════════════════ */
+.who-can-use-v4 {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #0a0a10 0%, #0d0d14 50%, #0a0a10 100%);
+}
+
+.who-can-use-v4__container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.who-can-use-v4__title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.who-can-use-v4__intro {
+    font-size: 1.2rem;
+    color: #a0a0b0;
+    text-align: center;
+    line-height: 1.7;
+    margin-bottom: 60px;
+}
+
+.who-can-use-v4__persona {
+    margin-bottom: 50px;
+    padding: 32px;
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 3px solid rgba(212, 175, 55, 0.3);
+    border-radius: 0 16px 16px 0;
+    transition: all 0.3s ease;
+}
+
+.who-can-use-v4__persona:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-left-color: rgba(212, 175, 55, 0.6);
+}
+
+.who-can-use-v4__persona-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.who-can-use-v4__persona p {
+    font-size: 1.1rem;
+    color: #b0b0b8;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.who-can-use-v4__persona em {
+    color: #d0d0d8;
+    font-style: italic;
+}
+
+.who-can-use-v4__persona-name {
+    margin-top: 24px !important;
+    font-size: 1.15rem !important;
+    color: #c0c0c8 !important;
+}
+
+.who-can-use-v4__persona-name strong {
+    color: #d4af37;
+    font-size: 1.3rem;
+}
+
+.who-can-use-v4__closing {
+    text-align: center;
+    margin: 60px 0 40px;
+}
+
+.who-can-use-v4__closing p {
+    font-size: 1.2rem;
+    color: #909098;
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.who-can-use-v4__closing strong {
+    color: #d4af37;
+}
+
+.who-can-use-v4__motto {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+}
+
+.who-can-use-v4__motto p {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 500;
+    color: #e8e8f0;
+    margin: 8px 0;
+    letter-spacing: 0.02em;
+}
+
+.who-can-use-v4__motto .text-gold {
+    background: linear-gradient(135deg, #d4af37, #f4e4bc, #d4af37);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════
+   CTAFinalV4
+═══════════════════════════════════════════ */
+.cta-final-v4 {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #0d0d14 0%, #0a0a10 50%, #0d0d14 100%);
+}
+
+.cta-final-v4__container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cta-final-v4__title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.cta-final-v4__intro {
+    font-size: 1.2rem;
+    color: #a0a0b0;
+    text-align: center;
+    line-height: 1.7;
+    margin-bottom: 60px;
+}
+
+.cta-final-v4__intro em {
+    color: #d0d0d8;
+    font-style: italic;
+}
+
+.cta-final-v4__example {
+    margin-bottom: 50px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 3px solid rgba(212, 175, 55, 0.3);
+    border-radius: 0 12px 12px 0;
+}
+
+.cta-final-v4__example-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 16px;
+}
+
+.cta-final-v4__example p {
+    font-size: 1.1rem;
+    color: #b0b0b8;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.cta-final-v4__highlight {
+    font-size: 1.3rem !important;
+    font-weight: 600;
+    color: #d4af37 !important;
+    margin: 20px 0 !important;
+}
+
+.cta-final-v4__objection {
+    margin: 24px 0;
+    padding: 20px;
+    background: rgba(239, 68, 68, 0.08);
+    border-radius: 12px;
+}
+
+.cta-final-v4__objection-text {
+    font-style: italic;
+    color: #a0a0a8 !important;
+    margin-bottom: 12px !important;
+}
+
+.cta-final-v4__response {
+    font-size: 1.4rem !important;
+    font-weight: 700;
+    color: #34d399 !important;
+    margin: 0 !important;
+}
+
+.cta-final-v4__legal {
+    margin: 24px 0;
+    padding: 24px;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 12px;
+}
+
+.cta-final-v4__legal p {
+    color: #c0c0c8 !important;
+    margin-bottom: 16px !important;
+}
+
+.cta-final-v4__legal strong {
+    color: #818cf8;
+}
+
+.cta-final-v4__legal-result {
+    margin-top: 16px !important;
+    padding-top: 16px;
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.cta-final-v4__legal-result strong {
+    color: #ffffff;
+}
+
+.cta-final-v4__comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.cta-final-v4__comparison-item {
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.cta-final-v4__comparison-item span {
+    display: block;
+    font-size: 0.9rem;
+    color: #808088;
+    margin-bottom: 8px;
+}
+
+.cta-final-v4__comparison-item strong {
+    display: block;
+    font-size: 1.2rem;
+}
+
+.cta-final-v4__comparison-item--expensive {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.cta-final-v4__comparison-item--expensive strong {
+    color: #f87171;
+}
+
+.cta-final-v4__comparison-item--cheap {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.cta-final-v4__comparison-item--cheap strong {
+    color: #34d399;
+}
+
+.cta-final-v4__siae {
+    padding: 16px;
+    background: rgba(212, 175, 55, 0.08);
+    border-radius: 8px;
+    margin-top: 16px !important;
+}
+
+.cta-final-v4__siae strong {
+    color: #d4af37;
+}
+
+.cta-final-v4__closing {
+    margin: 60px 0;
+    text-align: center;
+}
+
+.cta-final-v4__closing p {
+    font-size: 1.15rem;
+    color: #909098;
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.cta-final-v4__closing-ask {
+    font-size: 1.3rem !important;
+    color: #d0d0d8 !important;
+    margin: 24px 0 !important;
+}
+
+.cta-final-v4__closing-ask strong {
+    color: #d4af37;
+}
+
+.cta-final-v4__closing strong {
+    color: #d4af37;
+}
+
+.cta-final-v4__motto {
+    text-align: center;
+    margin: 50px 0;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+}
+
+.cta-final-v4__motto p {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 500;
+    color: #e8e8f0;
+    margin: 8px 0;
+    letter-spacing: 0.02em;
+}
+
+.cta-final-v4__motto .text-gold {
+    background: linear-gradient(135deg, #d4af37, #f4e4bc, #d4af37);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+}
+
+.cta-final-v4__action {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.cta-final-v4__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 48px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #d4af37, #b8962e);
+    color: #0a0a0f;
+    border-radius: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.cta-final-v4__button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(212, 175, 55, 0.35);
+}
+
+.cta-final-v4__subtext {
+    margin-top: 20px;
+    font-size: 1rem;
+    color: #707078;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .who-can-use-v4,
+    .cta-final-v4 {
+        padding: 60px 16px;
+    }
+
+    .who-can-use-v4__persona {
+        padding: 24px;
+    }
+
+    .cta-final-v4__example {
+        padding: 20px;
+    }
+
+    .cta-final-v4__comparison {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-final-v4__button {
+        padding: 16px 36px;
+        font-size: 1.1rem;
+    }
+}

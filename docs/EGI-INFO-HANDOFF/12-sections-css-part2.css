@@ -1,0 +1,583 @@
+/* ============================================
+   SEZIONI CSS - Parte 2
+   BlockchainSimpleV4 + ProblemsV4 + InvoicesV4
+============================================ */
+
+/* ═══════════════════════════════════════════
+   BlockchainSimpleV4
+═══════════════════════════════════════════ */
+.blockchain-v4 {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #0f0f18 0%, #0d0d14 100%);
+}
+
+.blockchain-v4__container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.blockchain-v4__title {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.blockchain-v4__subtitle {
+    font-size: 1.3rem;
+    color: #d4af37;
+    text-align: center;
+    margin-bottom: 40px;
+    font-weight: 500;
+}
+
+.blockchain-v4__features {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 50px;
+}
+
+.blockchain-v4__feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50px;
+}
+
+.blockchain-v4__feature-icon {
+    font-size: 1.4rem;
+}
+
+.blockchain-v4__feature-text {
+    font-size: 1rem;
+    color: #e0e0e0;
+}
+
+.blockchain-v4__feature-text--strike {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.blockchain-v4__expert-section {
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.blockchain-v4__expert-question {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.blockchain-v4__expert-icon {
+    font-size: 1.5rem;
+}
+
+.blockchain-v4__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.blockchain-v4__toggle:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.blockchain-v4__toggle--active {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+.blockchain-v4__toggle-label {
+    font-size: 1rem;
+    color: #c0c0c0;
+}
+
+.blockchain-v4__toggle-switch {
+    width: 44px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.3s ease;
+}
+
+.blockchain-v4__toggle-switch--on {
+    background: #6366f1;
+}
+
+.blockchain-v4__toggle-dot {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.blockchain-v4__toggle-switch--on .blockchain-v4__toggle-dot {
+    transform: translateX(20px);
+}
+
+.blockchain-v4__expert-features {
+    margin-top: 24px;
+    text-align: left;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.blockchain-v4__expert-intro {
+    color: #a0a0b0;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.blockchain-v4__expert-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.blockchain-v4__expert-list li {
+    padding: 12px 16px;
+    background: rgba(99, 102, 241, 0.15);
+    border-radius: 10px;
+    color: #818cf8;
+    font-size: 0.95rem;
+}
+
+.blockchain-v4__comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.blockchain-v4__comparison-side {
+    padding: 30px;
+    border-radius: 16px;
+}
+
+.blockchain-v4__comparison-side--them {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.blockchain-v4__comparison-side--us {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.blockchain-v4__comparison-side h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.blockchain-v4__comparison-side--them h4 {
+    color: #f87171;
+}
+
+.blockchain-v4__comparison-side--us h4 {
+    color: #34d399;
+}
+
+.blockchain-v4__comparison-side ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.blockchain-v4__comparison-side li {
+    font-size: 0.95rem;
+    color: #c0c0c0;
+    line-height: 1.5;
+}
+
+.blockchain-v4__comparison-side--us li {
+    color: #d0d0d8;
+}
+
+/* ═══════════════════════════════════════════
+   ProblemsV4
+═══════════════════════════════════════════ */
+.problems-v4 {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #0d0d14 0%, #0a0a10 50%, #0d0d14 100%);
+}
+
+.problems-v4__container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.problems-v4__title {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.problems-v4__intro {
+    font-size: 1.1rem;
+    color: #a0a0b0;
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.problems-v4__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 50px;
+}
+
+.problems-v4__card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+
+.problems-v4__card:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(212, 175, 55, 0.2);
+    transform: translateY(-2px);
+}
+
+.problems-v4__card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.problems-v4__emoji {
+    font-size: 2rem;
+}
+
+.problems-v4__number {
+    font-size: 0.85rem;
+    color: #606070;
+    font-weight: 600;
+}
+
+.problems-v4__content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.problems-v4__label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.problems-v4__label--problem {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.problems-v4__label--solution {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+.problems-v4__problem p,
+.problems-v4__solution p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.problems-v4__problem p {
+    color: #a0a0a8;
+}
+
+.problems-v4__solution p {
+    color: #e0e0e8;
+}
+
+.problems-v4__arrow {
+    text-align: center;
+    color: #d4af37;
+    font-size: 1.2rem;
+    opacity: 0.6;
+}
+
+.problems-v4__bottom {
+    text-align: center;
+    padding-top: 20px;
+}
+
+.problems-v4__tagline {
+    font-size: 1.3rem;
+    color: #c0c0c8;
+}
+
+.problems-v4__highlight {
+    color: #d4af37;
+    font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════
+   InvoicesV4
+═══════════════════════════════════════════ */
+.invoices-v4 {
+    padding: 80px 20px;
+    background: linear-gradient(180deg, #0d0d14 0%, #0f0f18 100%);
+}
+
+.invoices-v4__container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 60px;
+    align-items: center;
+}
+
+.invoices-v4__content {
+    max-width: 500px;
+}
+
+.invoices-v4__icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.invoices-v4__title {
+    font-size: clamp(1.6rem, 4vw, 2rem);
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 16px;
+}
+
+.invoices-v4__text {
+    font-size: 1.1rem;
+    color: #a0a0b0;
+    line-height: 1.7;
+    margin-bottom: 24px;
+}
+
+.invoices-v4__features {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.invoices-v4__feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.invoices-v4__feature-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border-radius: 50%;
+    font-size: 0.85rem;
+}
+
+.invoices-v4__feature span:last-child {
+    color: #d0d0d8;
+    font-size: 1rem;
+}
+
+.invoices-v4__note {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 12px;
+}
+
+.invoices-v4__note-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.invoices-v4__note p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #b0b0b8;
+    line-height: 1.5;
+}
+
+.invoices-v4__visual {
+    flex-shrink: 0;
+}
+
+.invoices-v4__document {
+    width: 200px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.invoices-v4__doc-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.invoices-v4__doc-icon {
+    font-size: 1.2rem;
+}
+
+.invoices-v4__doc-title {
+    font-size: 0.85rem;
+    color: #c0c0c8;
+    font-weight: 500;
+}
+
+.invoices-v4__doc-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.invoices-v4__doc-line {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+}
+
+.invoices-v4__doc-line--short {
+    width: 60%;
+}
+
+.invoices-v4__doc-line--medium {
+    width: 80%;
+}
+
+.invoices-v4__doc-button {
+    padding: 10px 16px;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.invoices-v4__doc-button span {
+    font-size: 0.85rem;
+    color: #d4af37;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .problems-v4__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .blockchain-v4,
+    .problems-v4,
+    .invoices-v4 {
+        padding: 60px 16px;
+    }
+
+    .blockchain-v4__features {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .blockchain-v4__feature {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .blockchain-v4__comparison {
+        grid-template-columns: 1fr;
+    }
+
+    .blockchain-v4__expert-list {
+        grid-template-columns: 1fr;
+    }
+
+    .problems-v4__card {
+        padding: 20px;
+    }
+
+    .problems-v4__emoji {
+        font-size: 1.6rem;
+    }
+
+    .invoices-v4__container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .invoices-v4__content {
+        max-width: none;
+        text-align: center;
+    }
+
+    .invoices-v4__features {
+        align-items: center;
+    }
+
+    .invoices-v4__note {
+        text-align: left;
+    }
+
+    .invoices-v4__visual {
+        display: flex;
+        justify-content: center;
+    }
+}

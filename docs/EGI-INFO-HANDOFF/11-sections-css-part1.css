@@ -1,0 +1,453 @@
+/* ============================================
+   SEZIONI CSS - Parte 1
+   EgizzareV4 + WhatIsEGIV4 + TransparencyV4
+============================================ */
+
+/* ═══════════════════════════════════════════
+   EgizzareV4
+═══════════════════════════════════════════ */
+.egizzare-v4 {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #0d0d14 0%, #101018 100%);
+}
+
+.egizzare-v4__container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.egizzare-v4__intro {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.egizzare-v4__title {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 24px;
+}
+
+.egizzare-v4__title .text-gold {
+    background: linear-gradient(135deg, #d4af37, #f4e4bc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.egizzare-v4__definition {
+    font-size: 1.4rem;
+    color: #e0e0e0;
+    margin-bottom: 16px;
+}
+
+.egizzare-v4__definition strong {
+    color: #d4af37;
+}
+
+.egizzare-v4__explanation {
+    font-size: 1.1rem;
+    color: #a0a0b0;
+    line-height: 1.7;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.egizzare-v4__benefits {
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 50px;
+}
+
+.egizzare-v4__benefits-title {
+    font-size: 1.2rem;
+    color: #d4af37;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.egizzare-v4__benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.egizzare-v4__benefit {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+}
+
+.egizzare-v4__check {
+    color: #4ade80;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.egizzare-v4__benefit div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.egizzare-v4__benefit strong {
+    color: #ffffff;
+    font-size: 1.05rem;
+}
+
+.egizzare-v4__benefit span:not(.egizzare-v4__check) {
+    color: #909090;
+    font-size: 0.95rem;
+}
+
+.egizzare-v4__examples {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.egizzare-v4__example {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    color: #c0c0c0;
+    transition: all 0.3s ease;
+}
+
+.egizzare-v4__example:hover {
+    background: rgba(212, 175, 55, 0.08);
+    border-color: rgba(212, 175, 55, 0.2);
+    transform: translateX(8px);
+}
+
+.egizzare-v4__emoji {
+    font-size: 1.8rem;
+}
+
+.egizzare-v4__example strong {
+    color: #d4af37;
+}
+
+/* ═══════════════════════════════════════════
+   WhatIsEGIV4
+═══════════════════════════════════════════ */
+.what-egi-v4 {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #101018 0%, #0d0d14 100%);
+}
+
+.what-egi-v4__container {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.what-egi-v4__title {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 40px;
+}
+
+.what-egi-v4__acronym {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 16px;
+}
+
+.what-egi-v4__letter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.what-egi-v4__letter-big {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #d4af37, #f4e4bc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.what-egi-v4__letter-word {
+    font-size: 1rem;
+    color: #a0a0b0;
+    text-transform: lowercase;
+}
+
+.what-egi-v4__subtitle {
+    color: #808090;
+    font-size: 1rem;
+    font-style: italic;
+    margin-bottom: 40px;
+}
+
+.what-egi-v4__description {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 40px;
+}
+
+.what-egi-v4__description p {
+    font-size: 1.15rem;
+    color: #c0c0d0;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.what-egi-v4__description strong {
+    color: #d4af37;
+}
+
+.what-egi-v4__features {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.what-egi-v4__feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px;
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.12);
+    border-radius: 14px;
+    text-align: left;
+}
+
+.what-egi-v4__feature-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.what-egi-v4__feature div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.what-egi-v4__feature strong {
+    color: #ffffff;
+    font-size: 1.15rem;
+}
+
+.what-egi-v4__feature span {
+    color: #909090;
+    font-size: 1rem;
+}
+
+.what-egi-v4__conclusion {
+    font-size: 1.1rem;
+    color: #a0a0b0;
+    line-height: 1.7;
+}
+
+.what-egi-v4__conclusion strong {
+    color: #d4af37;
+}
+
+/* ═══════════════════════════════════════════
+   TransparencyV4
+═══════════════════════════════════════════ */
+.transparency-v4 {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, #0d0d14 0%, #0f0f18 100%);
+}
+
+.transparency-v4__container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.transparency-v4__title {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.transparency-v4__intro {
+    font-size: 1.2rem;
+    color: #a0a0b0;
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.transparency-v4__distribution {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 40px;
+}
+
+.transparency-v4__distribution-title {
+    font-size: 1.1rem;
+    color: #c0c0c0;
+    text-align: center;
+    margin-bottom: 32px;
+    font-weight: 500;
+}
+
+.transparency-v4__bars {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.transparency-v4__bar {
+    position: relative;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.transparency-v4__bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: 12px;
+    transition: width 1s ease-out;
+}
+
+.transparency-v4__bar--creator .transparency-v4__bar-fill {
+    background: linear-gradient(90deg, #d4af37, #f4d03f);
+}
+
+.transparency-v4__bar--epp .transparency-v4__bar-fill {
+    background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.transparency-v4__bar--natan .transparency-v4__bar-fill {
+    background: linear-gradient(90deg, #6366f1, #818cf8);
+}
+
+.transparency-v4__bar--frangette .transparency-v4__bar-fill {
+    background: linear-gradient(90deg, #ec4899, #f472b6);
+}
+
+.transparency-v4__bar-info {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 1;
+}
+
+.transparency-v4__bar-percent {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.transparency-v4__bar-label {
+    font-size: 1rem;
+    color: #ffffff;
+    opacity: 0.9;
+}
+
+.transparency-v4__promise {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 30px;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 16px;
+    text-align: left;
+}
+
+.transparency-v4__promise-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.transparency-v4__promise p {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #c0c0c0;
+    line-height: 1.6;
+}
+
+.transparency-v4__promise strong {
+    color: #d4af37;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .egizzare-v4,
+    .what-egi-v4,
+    .transparency-v4 {
+        padding: 60px 16px;
+    }
+
+    .egizzare-v4__benefits {
+        padding: 24px;
+    }
+
+    .egizzare-v4__example {
+        padding: 16px;
+        font-size: 1rem;
+    }
+
+    .what-egi-v4__acronym {
+        gap: 24px;
+    }
+
+    .what-egi-v4__letter-big {
+        font-size: 2.5rem;
+    }
+
+    .what-egi-v4__description {
+        padding: 20px;
+    }
+
+    .what-egi-v4__feature {
+        padding: 20px;
+    }
+
+    .transparency-v4__distribution {
+        padding: 24px;
+    }
+
+    .transparency-v4__bar {
+        height: 50px;
+    }
+
+    .transparency-v4__bar-percent {
+        font-size: 1.2rem;
+    }
+
+    .transparency-v4__bar-label {
+        font-size: 0.85rem;
+    }
+
+    .transparency-v4__promise {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+}

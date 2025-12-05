@@ -13,6 +13,7 @@ import { WheelMenu, WheelMenuItem } from './components/WheelMenu';
 
 // V4 Sections
 import HeroV4 from './sections/HeroV4';
+import OriginStoryV4 from './sections/OriginStoryV4';
 import EgizzareV4 from './sections/EgizzareV4';
 import WhatIsEGIV4 from './sections/WhatIsEGIV4';
 import TransparencyV4 from './sections/TransparencyV4';
@@ -28,6 +29,7 @@ import './InformativePageLightV4Wheel.css';
 // Menu items configuration
 const MENU_ITEMS: WheelMenuItem[] = [
     { id: 'hero', label: 'Home', icon: '🏠', description: 'Introduzione a FlorenceEGI' },
+    { id: 'originstory', label: 'La Storia', icon: '📖', description: 'Come nasce FlorenceEGI', emphasized: true },
     { id: 'egizzare', label: 'Egizzare', icon: '✨', description: 'Cosa significa egizzare' },
     { id: 'whatisegi', label: 'Cos\'è un EGI', icon: '💎', description: 'Ecological Goods Invent' },
     { id: 'transparency', label: 'Trasparenza', icon: '📊', description: 'Come si dividono i guadagni' },
@@ -41,6 +43,7 @@ const MENU_ITEMS: WheelMenuItem[] = [
 // Section components map
 const SECTIONS: Record<string, React.FC> = {
     hero: HeroV4,
+    originstory: OriginStoryV4,
     egizzare: EgizzareV4,
     whatisegi: WhatIsEGIV4,
     transparency: TransparencyV4,

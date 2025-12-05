@@ -1,0 +1,165 @@
+/**
+ * V4 Wheel Page Styles + Base Styles
+ */
+
+/* ═══════════════════════════════════════════════════════
+   CSS VARIABLES
+═══════════════════════════════════════════════════════ */
+:root {
+    --oro-fiorentino: #d4af37;
+    --oro-chiaro: #f4e4bc;
+    --oro-scuro: #b8860b;
+    --verde-rinascimento: #2e8b57;
+    --blu-medici: #1e3a5f;
+    --bg-dark: #0a0a0f;
+    --bg-section: #0d0d14;
+    --bg-card: #12121a;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0b0;
+    --text-muted: #6a6a7a;
+    --border-subtle: rgba(212, 175, 55, 0.15);
+    --border-active: rgba(212, 175, 55, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════
+   BASE STYLES
+═══════════════════════════════════════════════════════ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.informative-page--v4-wheel {
+    min-height: 100vh;
+    background: var(--bg-dark);
+}
+
+/* ═══════════════════════════════════════════════════════
+   CONTENT AREA
+═══════════════════════════════════════════════════════ */
+.v4-wheel__content {
+    animation: contentFadeIn 0.5s ease-out;
+}
+
+@keyframes contentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAVIGATION FOOTER
+═══════════════════════════════════════════════════════ */
+.v4-wheel__nav-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 40px;
+    background: rgba(15, 15, 24, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.v4-wheel__nav-prev,
+.v4-wheel__nav-next {
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #c0c0c8;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.v4-wheel__nav-prev:hover:not(:disabled),
+.v4-wheel__nav-next:hover:not(:disabled) {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: rgba(212, 175, 55, 0.3);
+    color: #ffffff;
+}
+
+.v4-wheel__nav-prev:disabled,
+.v4-wheel__nav-next:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.v4-wheel__nav-indicator {
+    font-size: 0.9rem;
+    color: #707078;
+    font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════
+   UTILITY CLASSES
+═══════════════════════════════════════════════════════ */
+.text-gold {
+    color: var(--oro-fiorentino);
+}
+
+.btn-v4 {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 32px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-v4--primary {
+    background: linear-gradient(135deg, var(--oro-fiorentino), #b8962e);
+    color: var(--bg-dark);
+    border: none;
+}
+
+.btn-v4--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+}
+
+.btn-v4--secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.btn-v4--secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .v4-wheel__nav-footer {
+        padding: 16px 20px;
+    }
+
+    .v4-wheel__nav-prev,
+    .v4-wheel__nav-next {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+}
