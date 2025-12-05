@@ -79,7 +79,6 @@ class CompanyHomeController extends Controller {
         // Prodotti in evidenza (ultimi 8 EGI pubblicati dalla company)
         $featuredProducts = Egi::where('user_id', $company->id)
             ->where('is_published', true)
-            ->orderBy('is_featured', 'desc')
             ->orderBy('created_at', 'desc')
             ->take(8)
             ->get();
