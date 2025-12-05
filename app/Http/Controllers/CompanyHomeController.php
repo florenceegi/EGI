@@ -36,11 +36,11 @@ class CompanyHomeController extends Controller {
             ->when($query, function ($q) use ($query) {
                 $q->where('name', 'like', '%' . $query . '%');
             })
-            ->withCount(['egis as products_count' => function ($productQuery) {
+            ->withCount(['createdEgis as products_count' => function ($productQuery) {
                 $productQuery->where('is_published', true);
             }])
             ->with([
-                'egis' => function ($egiQuery) {
+                'createdEgis' => function ($egiQuery) {
                     $egiQuery->where('is_published', true)
                         ->take(3);
                 },

@@ -131,9 +131,9 @@
                                     </div>
 
                                     {{-- Preview Products --}}
-                                    @if ($company->egis->count() > 0)
+                                    @if ($company->createdEgis->count() > 0)
                                         <div class="mt-4 flex -space-x-2">
-                                            @foreach ($company->egis->take(3) as $egi)
+                                            @foreach ($company->createdEgis->take(3) as $egi)
                                                 <div class="h-10 w-10 overflow-hidden rounded-lg border-2 border-gray-800 bg-gray-700">
                                                     @if ($egi->thumbnail_url ?? $egi->main_image_url ?? null)
                                                         <img src="{{ $egi->thumbnail_url ?? $egi->main_image_url }}" alt="{{ $egi->title }}"
