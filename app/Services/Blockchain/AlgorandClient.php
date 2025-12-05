@@ -334,4 +334,86 @@ class AlgorandClient
             return false;
         }
     }
+
+    /**
+     * Fund a wallet with ALGO from Treasury
+     *
+     * Enables user wallets to perform opt-in operations for ASAs.
+     * Default: 0.3 ALGO (0.1 min balance + 0.1 per opt-in + 0.1 margin)
+     *
+     * @param string $address The Algorand address to fund
+     * @param int|null $amountMicroAlgos Amount in microAlgos (default: 300000 = 0.3 ALGO)
+     * @return array ['txId' => string, 'amount' => int, 'block' => int]
+     * @throws \Exception if funding fails
+     */
+    public function fundWallet(string $address, ?int $amountMicroAlgos = null): array
+    {
+        try {
+            // 0. Ensure microservice is running
+            if (!$this->ensureMicroserviceRunning()) {
+                throw new \Exception("Algorand microservice is not available");
+            }
+
+            // Use config or default
+            $amount = $amountMicroAlgos ?? config('algorand.wallet_fund_amount', 300000);
+
+            // 1. ULM: Log request
+            $this->logger->info('AlgorandClient: Funding wallet', [
+                'address' => $address,
+                'amount_micro_algos' => $amount,
+                'amount_algo' => $amount / 1000000,
+                'log_category' => 'ALGORAND_FUND_WALLET'
+            ]);
+
+            // 2. Call microservice
+            $response = Http::timeout($this->timeout + 10) // Extra time for blockchain confirmation
+                ->post("{$this->microserviceUrl}/fund-wallet", [
+                    'address' => $address,
+                    'amount' => $amount
+                ]);
+
+            // 3. Check response
+            if (!$response->successful()) {
+                throw new \Exception("Microservice returned status {$response->status()}: {$response->body()}");
+            }
+
+            $data = $response->json();
+
+            if (!isset($data['success']) || !$data['success']) {
+                throw new \Exception("Microservice error: " . ($data['error'] ?? 'Unknown error'));
+            }
+
+            // 4. ULM: Log success
+            $this->logger->info('AlgorandClient: Wallet funded successfully', [
+                'address' => $address,
+                'txId' => $data['data']['txId'],
+                'amount' => $data['data']['amount'],
+                'block' => $data['data']['block'],
+                'log_category' => 'ALGORAND_FUND_WALLET_SUCCESS'
+            ]);
+
+            return [
+                'txId' => $data['data']['txId'],
+                'amount' => $data['data']['amount'],
+                'amount_algo' => $data['data']['amount_algo'],
+                'block' => $data['data']['block'],
+                'from' => $data['data']['from'],
+            ];
+        } catch (\Exception $e) {
+            // 5. ULM: Log error
+            $this->logger->error('AlgorandClient: Wallet funding failed', [
+                'address' => $address,
+                'error' => $e->getMessage(),
+                'log_category' => 'ALGORAND_FUND_WALLET_ERROR'
+            ]);
+
+            // 6. UEM: Handle error
+            $this->errorManager->handle('ALGORAND_FUND_WALLET_FAILED', [
+                'address' => $address,
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
+    }
 }

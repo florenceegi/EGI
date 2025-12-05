@@ -575,4 +575,129 @@ class WalletProvisioningService {
             throw $e;
         }
     }
+
+    /**
+     * Fund a wallet with ALGO from Treasury
+     *
+     * Enables the wallet to perform opt-in operations for ASAs.
+     * Default: 0.3 ALGO (0.1 min balance + 0.1 per opt-in + 0.1 margin)
+     *
+     * @param Wallet $wallet The wallet to fund
+     * @param int|null $amountMicroAlgos Amount in microAlgos (null = use config default)
+     * @return array ['txId' => string, 'amount' => int, 'block' => int]
+     * @throws \Exception if funding fails
+     */
+    public function fundWallet(Wallet $wallet, ?int $amountMicroAlgos = null): array
+    {
+        try {
+            // 1. Validate wallet has an address
+            if (empty($wallet->wallet)) {
+                throw new \Exception("Wallet has no Algorand address");
+            }
+
+            // 2. ULM: Log start
+            $this->logger->info('WalletProvisioning: Funding wallet', [
+                'wallet_id' => $wallet->id,
+                'address' => $wallet->wallet,
+                'amount_micro_algos' => $amountMicroAlgos ?? config('algorand.algorand.wallet_fund_amount', 300000),
+                'log_category' => 'WALLET_FUND_START'
+            ]);
+
+            // 3. Call AlgorandClient to fund wallet
+            $result = $this->algorandClient->fundWallet($wallet->wallet, $amountMicroAlgos);
+
+            // 4. Update wallet metadata with funding info
+            $metadata = $wallet->metadata ?? [];
+            $metadata['funding'] = [
+                'funded_at' => now()->toISOString(),
+                'tx_id' => $result['txId'],
+                'amount_micro_algos' => $result['amount'],
+                'amount_algo' => $result['amount_algo'],
+                'block' => $result['block'],
+            ];
+            $wallet->update(['metadata' => $metadata]);
+
+            // 5. GDPR: Log funding action (if user is present)
+            if ($wallet->user_id) {
+                $user = User::find($wallet->user_id);
+                if ($user) {
+                    $this->auditService->logUserAction(
+                        $user,
+                        'wallet_funded',
+                        [
+                            'wallet_id' => $wallet->id,
+                            'address' => $wallet->wallet,
+                            'amount_algo' => $result['amount_algo'],
+                            'tx_id' => $result['txId'],
+                        ],
+                        GdprActivityCategory::WALLET_UPDATED
+                    );
+                }
+            }
+
+            // 6. ULM: Log success
+            $this->logger->info('WalletProvisioning: Wallet funded successfully', [
+                'wallet_id' => $wallet->id,
+                'address' => $wallet->wallet,
+                'tx_id' => $result['txId'],
+                'amount_algo' => $result['amount_algo'],
+                'log_category' => 'WALLET_FUND_SUCCESS'
+            ]);
+
+            return $result;
+        } catch (\Exception $e) {
+            // 7. ULM: Log error
+            $this->logger->error('WalletProvisioning: Wallet funding failed', [
+                'wallet_id' => $wallet->id,
+                'address' => $wallet->wallet ?? 'unknown',
+                'error' => $e->getMessage(),
+                'log_category' => 'WALLET_FUND_ERROR'
+            ]);
+
+            // 8. UEM: Handle error
+            $this->errorManager->handle('WALLET_FUND_FAILED', [
+                'wallet_id' => $wallet->id,
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Provision and fund a new wallet in one operation
+     *
+     * Convenience method that creates a wallet and optionally funds it with ALGO.
+     * Use autoFund parameter or config 'algorand.algorand.auto_fund_wallets' to enable.
+     *
+     * @param User $user The user to provision wallet for
+     * @param array $data ['iban' => string|null, 'collection_id' => int|null]
+     * @param bool|null $autoFund Whether to auto-fund the wallet (null = use config)
+     * @param int|null $fundAmount Amount in microAlgos to fund (null = use config default)
+     * @return Wallet The created and optionally funded wallet
+     * @throws \Exception
+     */
+    public function provisionAndFundWallet(User $user, array $data = [], ?bool $autoFund = null, ?int $fundAmount = null): Wallet
+    {
+        // 1. Create wallet
+        $wallet = $this->provisionUserWallet($user, $data);
+
+        // 2. Determine if we should fund
+        $shouldFund = $autoFund ?? config('algorand.algorand.auto_fund_wallets', false);
+
+        if ($shouldFund) {
+            try {
+                $this->fundWallet($wallet, $fundAmount);
+            } catch (\Exception $e) {
+                // Log but don't fail wallet creation
+                $this->logger->warning('Auto-fund failed for new wallet, wallet still created', [
+                    'wallet_id' => $wallet->id,
+                    'error' => $e->getMessage(),
+                    'log_category' => 'WALLET_AUTO_FUND_WARNING'
+                ]);
+            }
+        }
+
+        return $wallet;
+    }
 }

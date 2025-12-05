@@ -61,13 +61,11 @@
                             <a href="{{ route('creator.home', $user->id) }}"
                                 class="block transition-transform duration-300 hover:scale-105">
                                 <img class="size-12 rounded-full object-cover ring-2 ring-white/30 transition-all duration-300 hover:ring-white/60"
-                                    src="{{ $user?->profile_photo_url ?? null }}"
-                                    alt="{{ $user?->name ?? '' }}" />
+                                    src="{{ $user?->profile_photo_url ?? null }}" alt="{{ $user?->name ?? '' }}" />
                             </a>
                         @else
                             <img class="size-12 rounded-full object-cover ring-2 ring-white/30"
-                                src="{{ $user?->profile_photo_url ?? null }}"
-                                alt="{{ $user?->name ?? '' }}" />
+                                src="{{ $user?->profile_photo_url ?? null }}" alt="{{ $user?->name ?? '' }}" />
                         @endif
                     @else
                         @if ($user && $user->id)
@@ -100,11 +98,19 @@
             <!-- Menu Grid -->
             <div class="grid grid-cols-1 gap-4">
 
-                <!-- Dynamic Collections Carousel Card -->
-                <x-menu-collections-carousel :collections="$user ? $user->ownedCollections()->orderBy('position')->get() : collect()" />
+                @php
+                    // Tipi utente che possono possedere collezioni
+                    $canOwnCollections =
+                        $user && in_array($user->usertype, ['creator', 'mecenate', 'azienda', 'epp_entity']);
+                @endphp
 
-                <!-- Shared Collections Carousel Card - Collections where user is collaborator -->
-                <x-menu-guest-collections-carousel :collections="$user ? $user->collaborations()->orderBy('position')->get() : collect()" />
+                <!-- Dynamic Collections Carousel Card - Solo per creator, mecenate, azienda, epp_entity -->
+                @if ($canOwnCollections)
+                    <x-menu-collections-carousel :collections="$user->ownedCollections()->orderBy('position')->get()" />
+
+                    <!-- Shared Collections Carousel Card - Collections where user is collaborator -->
+                    <x-menu-guest-collections-carousel :collections="$user->collaborations()->orderBy('position')->get()" />
+                @endif
 
                 <x-navigation.account-management-carousel :user="$user"
                     container-class="p-4 border mega-card rounded-2xl border-emerald-200/30 bg-gradient-to-br from-emerald-50 to-teal-50 dark:border-emerald-800/30 dark:from-emerald-900/20 dark:to-teal-900/20" />

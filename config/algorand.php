@@ -77,6 +77,12 @@ return [
         'treasury_address' => env('ALGORAND_TREASURY_ADDRESS', ''),
         'treasury_mnemonic' => env('ALGORAND_TREASURY_MNEMONIC', ''),
 
+        // Wallet funding configuration
+        // Amount in microAlgos to fund new wallets (default: 0.3 ALGO = 300000 microAlgos)
+        // Required for: 0.1 min balance + 0.1 per ASA opt-in + 0.1 margin
+        'wallet_fund_amount' => env('ALGORAND_WALLET_FUND_AMOUNT', 300000),
+        'auto_fund_wallets' => env('ALGORAND_AUTO_FUND_WALLETS', false),
+
         // API settings
         'api_timeout' => env('ALGORAND_API_TIMEOUT', 30),
         'api_retries' => env('ALGORAND_API_RETRIES', 3),

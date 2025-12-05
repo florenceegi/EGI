@@ -106,7 +106,13 @@
                                         </div>
                                         <div class="text-right">
                                             <p class="text-sm font-bold text-gray-900">
-                                                €{{ number_format($certificate->offer_amount_fiat, 2) }}
+                                                @if ($certificate->egiBlockchain && $certificate->egiBlockchain->paid_currency === 'EGL')
+                                                    {{-- Pagamento in EGILI --}}
+                                                    {{ number_format($certificate->egiBlockchain->paid_amount, 0, ',', '.') }} Egili
+                                                @else
+                                                    {{-- Pagamento in EUR --}}
+                                                    €{{ number_format($certificate->offer_amount_fiat, 2, ',', '.') }}
+                                                @endif
                                             </p>
                                             @if ($certificate->egiBlockchain)
                                                 <p class="text-xs text-gray-500">

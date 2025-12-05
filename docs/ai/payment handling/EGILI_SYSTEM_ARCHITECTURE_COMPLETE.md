@@ -51,8 +51,8 @@ Alcune feature sono **lifetime** (es: EGI Living), altre **consumabili** (es: De
 
 | Tipo | Caratteristiche | Acquisizione | Scadenza | Priorità Consumo |
 |------|-----------------|--------------|----------|------------------|
-| **Lifetime** | Comprati dall'user | EUR/Crypto purchase | ♾️ MAI | 🔴 Prima (FIFO) |
-| **Gift** | Donati da piattaforma | Admin grant, rewards | ⏰ N giorni | 🟢 Dopo (LIFO) |
+| **Gift** | Donati da piattaforma | Admin grant, rewards | ⏰ N giorni | 🔴 Prima (scadenza più vicina) |
+| **Lifetime** | Comprati dall'user | EUR/Crypto purchase | ♾️ MAI | 🟢 Dopo |
 
 **ESEMPIO:**
 ```
@@ -61,8 +61,8 @@ User balance: 5000 Egili
 └─ 2000 Gift (donati 01/11/2025, scadono 31/12/2025)
 
 User spende 1500 Egili:
-→ Prima consuma Lifetime: 3000 - 1500 = 1500 Lifetime
-→ Gift rimangono: 2000 Gift
+→ Prima consuma Gift: 2000 - 1500 = 500 Gift rimanenti
+→ Lifetime intatti: 3000 Lifetime
 ```
 
 **TABELLE:**

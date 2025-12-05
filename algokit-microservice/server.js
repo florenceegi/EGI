@@ -286,6 +286,86 @@ app.post("/create-account", async (req, res) => {
     }
 });
 
+// FUND WALLET ENDPOINT - Transfer ALGO from Treasury to new user wallet
+// Enables opt-in capability for ASAs
+app.post("/fund-wallet", async (req, res) => {
+    try {
+        const { address, amount } = req.body;
+
+        // Validate address
+        if (!address || address.length !== 58) {
+            return res.status(400).json({
+                success: false,
+                error: "Invalid Algorand address (must be 58 characters)",
+            });
+        }
+
+        // Default amount: 0.3 ALGO (300000 microAlgos)
+        // - 0.1 ALGO minimum balance
+        // - 0.1 ALGO per ASA opt-in
+        // - 0.1 ALGO margin for transaction fees
+        const amountMicroAlgos = amount || 300000;
+
+        console.log(`💰 FUND WALLET REQUEST: ${address}`);
+        console.log(`   Amount: ${amountMicroAlgos / 1000000} ALGO`);
+
+        // Get network parameters
+        const params = await algodClient.getTransactionParams().do();
+
+        // Create payment transaction from Treasury to new wallet
+        const txn = algosdk.makePaymentTxnWithSuggestedParams(
+            treasuryAccount.addr, // from (Treasury)
+            address, // to (new user wallet)
+            amountMicroAlgos, // amount in microAlgos
+            undefined, // close remainder to
+            new Uint8Array(Buffer.from(`EGI-WALLET-FUND-${Date.now()}`)), // note
+            params // suggested params
+        );
+
+        // Sign transaction
+        const signedTxn = txn.signTxn(treasuryAccount.sk);
+
+        // Submit to blockchain
+        console.log("📡 Submitting fund transaction to blockchain...");
+        const txResponse = await algodClient.sendRawTransaction(signedTxn).do();
+
+        // Wait for confirmation
+        console.log("⏳ Waiting for confirmation...");
+        const confirmation = await algosdk.waitForConfirmation(
+            algodClient,
+            txResponse.txId,
+            4
+        );
+
+        console.log("✅ WALLET FUNDED SUCCESSFULLY!");
+        console.log("   TX ID:", txResponse.txId);
+        console.log("   Round:", confirmation["confirmed-round"]);
+        console.log("   Amount:", amountMicroAlgos / 1000000, "ALGO");
+
+        res.json({
+            success: true,
+            data: {
+                txId: txResponse.txId,
+                address: address,
+                amount: amountMicroAlgos,
+                amount_algo: amountMicroAlgos / 1000000,
+                from: treasuryAccount.addr,
+                block: confirmation["confirmed-round"],
+                network: NETWORK_MODE,
+                mode: "REAL_BLOCKCHAIN",
+            },
+        });
+    } catch (error) {
+        console.error(`❌ FUND WALLET FAILED: ${req.body.address}`, error);
+
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            mode: "REAL_BLOCKCHAIN",
+        });
+    }
+});
+
 // Get account information endpoint
 app.get("/account/:address", async (req, res) => {
     try {
