@@ -390,7 +390,29 @@ Route::prefix('collector')->name('collector.')->group(function () {
 
     // Placeholder for future features
     Route::get('/under-construction', [\App\Http\Controllers\CollectorHomeController::class, 'underConstruction'])->name('under-construction');
-});/*
+});
+
+/*
+|--------------------------------------------------------------------------
+| Company Routes - Business Storefronts & Catalogs
+|--------------------------------------------------------------------------
+| 🎨 Corporate Palette: Blue #1E3A5F, Gold #C9A227, Green #2D7D46
+*/
+Route::prefix('company')->name('company.')->group(function () {
+    // Company public home page / storefront
+    Route::get('/{id}', [\App\Http\Controllers\CompanyHomeController::class, 'home'])->name('home')->where('id', '[0-9]+');
+
+    // Company product catalog with filters
+    Route::get('/{id}/catalog', [\App\Http\Controllers\CompanyHomeController::class, 'catalog'])->name('catalog')->where('id', '[0-9]+');
+
+    // Company collections page
+    Route::get('/{id}/collections', [\App\Http\Controllers\CompanyHomeController::class, 'collections'])->name('collections')->where('id', '[0-9]+');
+
+    // Company about page
+    Route::get('/{id}/about', [\App\Http\Controllers\CompanyHomeController::class, 'about'])->name('about')->where('id', '[0-9]+');
+});
+
+/*
 |--------------------------------------------------------------------------
 | Public Routes - Collections & EGIs
 |--------------------------------------------------------------------------
