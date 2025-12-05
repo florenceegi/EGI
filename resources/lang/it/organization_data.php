@@ -68,4 +68,39 @@ return [
     'iban_management' => 'Gestione IBAN Aziendale',
     'iban_description' => 'Configura l\'IBAN aziendale per ricevere pagamenti',
     'manage_iban' => 'Gestisci IBAN',
+
+    // Business Data Enrichment
+    'enrich_from_website' => 'Estrai Dati Automaticamente',
+    'enrich_from_website_desc' => 'Estrai automaticamente i dati aziendali dal sito web o dalla Partita IVA',
+    'auto_fill_title' => 'Estrai Dati Automaticamente',
+    'auto_fill_description' => 'Compila automaticamente i dati aziendali estraendoli dal sito web o dalla Partita IVA',
+    'website_url_label' => 'URL del Sito Web',
+    'website_url_placeholder' => 'https://www.esempio.it',
+    'or_vat_number' => 'Oppure P.IVA',
+    'vat_or_website' => 'Oppure P.IVA',
+    'vat_number_placeholder' => 'IT01234567890',
+    'extract_data_btn' => 'Estrai Dati',
+    'extracting' => 'Estrazione in corso',
+    'fields_extracted' => 'Campi estratti',
+    'extraction_failed' => 'Estrazione fallita',
+    'network_error' => 'Errore di rete, riprova',
+    'enter_url_or_vat' => 'Inserisci URL del sito o P.IVA',
+    'data_completeness' => 'Completezza dati',
+    'completeness' => 'Completezza dati',
+
+    // PEC and ATECO
+    'pec' => 'PEC (Posta Certificata)',
+    'pec_placeholder' => 'azienda@pec.it',
+    'ateco_code' => 'Codice ATECO',
+    'ateco_code_placeholder' => '62.01.00',
+    'ateco_description' => 'Descrizione ATECO',
+    'ateco_description_placeholder' => 'Produzione di software non connesso all\'edizione',
+
+    // VAT Validation
+    'validate_vat' => 'Valida',
+    'enter_vat_first' => 'Inserisci prima la P.IVA',
+    'vat_valid' => 'P.IVA valida e attiva',
+    'vat_invalid' => 'P.IVA non valida',
+    'vat_unknown' => 'Impossibile validare la P.IVA',
+    'vat_error' => 'Errore durante la validazione',
 ];

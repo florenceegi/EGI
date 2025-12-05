@@ -68,4 +68,39 @@ return [
     'iban_management' => 'Business IBAN Management',
     'iban_description' => 'Configure business IBAN to receive payments',
     'manage_iban' => 'Manage IBAN',
+
+    // Business Data Enrichment
+    'enrich_from_website' => 'Auto-Extract Data',
+    'enrich_from_website_desc' => 'Automatically extract business data from website or VAT number',
+    'auto_fill_title' => 'Auto-Extract Data',
+    'auto_fill_description' => 'Automatically fill business data by extracting from website or VAT number',
+    'website_url_label' => 'Website URL',
+    'website_url_placeholder' => 'https://www.example.com',
+    'or_vat_number' => 'Or VAT Number',
+    'vat_or_website' => 'Or VAT Number',
+    'vat_number_placeholder' => 'IT01234567890',
+    'extract_data_btn' => 'Extract Data',
+    'extracting' => 'Extracting',
+    'fields_extracted' => 'Fields extracted',
+    'extraction_failed' => 'Extraction failed',
+    'network_error' => 'Network error, please retry',
+    'enter_url_or_vat' => 'Enter website URL or VAT number',
+    'data_completeness' => 'Data completeness',
+    'completeness' => 'Data completeness',
+
+    // PEC and ATECO
+    'pec' => 'PEC (Certified Email)',
+    'pec_placeholder' => 'company@pec.it',
+    'ateco_code' => 'ATECO Code',
+    'ateco_code_placeholder' => '62.01.00',
+    'ateco_description' => 'ATECO Description',
+    'ateco_description_placeholder' => 'Software production not connected to publishing',
+
+    // VAT Validation
+    'validate_vat' => 'Validate',
+    'enter_vat_first' => 'Enter VAT number first',
+    'vat_valid' => 'VAT number is valid and active',
+    'vat_invalid' => 'VAT number is invalid',
+    'vat_unknown' => 'Unable to validate VAT number',
+    'vat_error' => 'Error during validation',
 ];
