@@ -37,6 +37,23 @@ class DatabaseHelper {
     }
 
     /**
+     * Get the SQL representation of a boolean value for raw queries.
+     * 
+     * MySQL/MariaDB uses 1/0 for boolean values.
+     * PostgreSQL uses TRUE/FALSE literals.
+     *
+     * @param bool $value The boolean value
+     * @return string SQL fragment ('TRUE'/'FALSE' for PostgreSQL, '1'/'0' for MySQL)
+     */
+    public static function booleanValue(bool $value): string {
+        if (self::isPostgres()) {
+            return $value ? 'TRUE' : 'FALSE';
+        }
+
+        return $value ? '1' : '0';
+    }
+
+    /**
      * Convert DATE_FORMAT (MySQL) to TO_CHAR (PostgreSQL).
      *
      * @param string $column The column name
@@ -53,13 +70,14 @@ class DatabaseHelper {
      * - %s → SS (seconds 00-59)
      * - %M → Month (full month name)
      * - %W → Day (full weekday name)
+     * - %u → IW (ISO week number)
      */
     public static function dateFormat(string $column, string $format): string {
         if (self::isPostgres()) {
             // Convert MySQL format to PostgreSQL format
             $pgFormat = str_replace(
-                ['%Y', '%y', '%m', '%d', '%H', '%i', '%s', '%M', '%W', '%a', '%b'],
-                ['YYYY', 'YY', 'MM', 'DD', 'HH24', 'MI', 'SS', 'Month', 'Day', 'Dy', 'Mon'],
+                ['%Y', '%y', '%m', '%d', '%H', '%i', '%s', '%M', '%W', '%a', '%b', '%u'],
+                ['YYYY', 'YY', 'MM', 'DD', 'HH24', 'MI', 'SS', 'Month', 'Day', 'Dy', 'Mon', 'IW'],
                 $format
             );
             return "TO_CHAR({$column}, '{$pgFormat}')";
@@ -343,6 +361,20 @@ class DatabaseHelper {
         }
 
         return "DAY({$column})";
+    }
+
+    /**
+     * Get date part only from a timestamp column (removes time).
+     *
+     * @param string $column The timestamp/datetime column
+     * @return string SQL fragment
+     */
+    public static function dateOnly(string $column): string {
+        if (self::isPostgres()) {
+            return "{$column}::DATE";
+        }
+
+        return "DATE({$column})";
     }
 
     /**

@@ -1,6 +1,7 @@
 # 🐘 Piano di Migrazione da MySQL/MariaDB a PostgreSQL
 
 ## Indice
+
 1. [Analisi dello Stato Attuale](#1-analisi-dello-stato-attuale)
 2. [Prerequisiti](#2-prerequisiti)
 3. [Differenze Critiche MySQL vs PostgreSQL](#3-differenze-critiche-mysql-vs-postgresql)
@@ -20,17 +21,17 @@
 
 ### 📊 Statistiche del Progetto
 
-| Elemento | Quantità | Note |
-|----------|----------|------|
-| **Migration** | 184 file | Molte con sintassi MySQL-specifica |
-| **Colonne ENUM** | 131 occorrenze | Da convertire in STRING + CHECK constraint |
-| **Colonne JSON** | 178 occorrenze | PostgreSQL supporta JSONB (più potente) |
-| **Query Raw** | 123 occorrenze | Da verificare sintassi |
-| **UNSIGNED columns** | 155 occorrenze | PostgreSQL non supporta UNSIGNED |
-| **FULLTEXT indexes** | 3 occorrenze | Da convertire in GIN/GIST |
-| **DB::statement** | 53 occorrenze | Molte con sintassi MySQL pura |
-| **Model** | 98 file | Da verificare cast e relazioni |
-| **ULID/UUID** | 9 occorrenze | PostgreSQL supporta nativamente UUID |
+| Elemento             | Quantità       | Note                                       |
+| -------------------- | -------------- | ------------------------------------------ |
+| **Migration**        | 184 file       | Molte con sintassi MySQL-specifica         |
+| **Colonne ENUM**     | 131 occorrenze | Da convertire in STRING + CHECK constraint |
+| **Colonne JSON**     | 178 occorrenze | PostgreSQL supporta JSONB (più potente)    |
+| **Query Raw**        | 123 occorrenze | Da verificare sintassi                     |
+| **UNSIGNED columns** | 155 occorrenze | PostgreSQL non supporta UNSIGNED           |
+| **FULLTEXT indexes** | 3 occorrenze   | Da convertire in GIN/GIST                  |
+| **DB::statement**    | 53 occorrenze  | Molte con sintassi MySQL pura              |
+| **Model**            | 98 file        | Da verificare cast e relazioni             |
+| **ULID/UUID**        | 9 occorrenze   | PostgreSQL supporta nativamente UUID       |
 
 ### 🔴 Funzioni MySQL-Specifiche Trovate
 
@@ -53,38 +54,41 @@ FIND_IN_SET()     → PostgreSQL: ANY(string_to_array())
 
 ### 2.1 Ambiente di Sviluppo
 
-- [ ] **PHP Extension pgsql**
-  ```bash
-  # Ubuntu/Debian
-  sudo apt-get install php8.2-pgsql
-  
-  # Verifica
-  php -m | grep pgsql
-  ```
+-   [ ] **PHP Extension pgsql**
 
-- [ ] **PostgreSQL Server** (locale per test)
-  ```bash
-  # Ubuntu/Debian
-  sudo apt-get install postgresql postgresql-contrib
-  
-  # Verifica versione (consigliata 15+)
-  psql --version
-  ```
+    ```bash
+    # Ubuntu/Debian
+    sudo apt-get install php8.2-pgsql
 
-- [ ] **Doctrine DBAL** (per modifiche colonne)
-  ```bash
-  composer require doctrine/dbal
-  ```
+    # Verifica
+    php -m | grep pgsql
+    ```
+
+-   [ ] **PostgreSQL Server** (locale per test)
+
+    ```bash
+    # Ubuntu/Debian
+    sudo apt-get install postgresql postgresql-contrib
+
+    # Verifica versione (consigliata 15+)
+    psql --version
+    ```
+
+-   [ ] **Doctrine DBAL** (per modifiche colonne)
+    ```bash
+    composer require doctrine/dbal
+    ```
 
 ### 2.2 Ambiente di Produzione (Forge)
 
-- [ ] Creare database PostgreSQL su Forge
-- [ ] Configurare credenziali nel `.env`
-- [ ] Verificare connettività
+-   [ ] Creare database PostgreSQL su Forge
+-   [ ] Configurare credenziali nel `.env`
+-   [ ] Verificare connettività
 
 ### 2.3 Configurazione Laravel
 
 File `.env` per PostgreSQL:
+
 ```env
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
@@ -103,39 +107,39 @@ File `config/database.php` - già configurato ✅
 
 ### 3.1 Tipi di Dato
 
-| MySQL | PostgreSQL | Note |
-|-------|------------|------|
-| `TINYINT(1)` | `BOOLEAN` | Laravel gestisce automaticamente |
-| `INT UNSIGNED` | `INTEGER` + CHECK | PostgreSQL non ha UNSIGNED |
-| `BIGINT UNSIGNED` | `BIGINT` + CHECK | Usare CHECK (value >= 0) |
-| `ENUM('a','b')` | `VARCHAR` + CHECK | O creare tipo ENUM custom |
-| `TEXT` | `TEXT` | ✅ Compatibile |
-| `LONGTEXT` | `TEXT` | PostgreSQL non differenzia |
-| `JSON` | `JSONB` | JSONB è più performante |
-| `DATETIME` | `TIMESTAMP` | Laravel gestisce |
-| `DOUBLE` | `DOUBLE PRECISION` | Laravel gestisce |
+| MySQL             | PostgreSQL         | Note                             |
+| ----------------- | ------------------ | -------------------------------- |
+| `TINYINT(1)`      | `BOOLEAN`          | Laravel gestisce automaticamente |
+| `INT UNSIGNED`    | `INTEGER` + CHECK  | PostgreSQL non ha UNSIGNED       |
+| `BIGINT UNSIGNED` | `BIGINT` + CHECK   | Usare CHECK (value >= 0)         |
+| `ENUM('a','b')`   | `VARCHAR` + CHECK  | O creare tipo ENUM custom        |
+| `TEXT`            | `TEXT`             | ✅ Compatibile                   |
+| `LONGTEXT`        | `TEXT`             | PostgreSQL non differenzia       |
+| `JSON`            | `JSONB`            | JSONB è più performante          |
+| `DATETIME`        | `TIMESTAMP`        | Laravel gestisce                 |
+| `DOUBLE`          | `DOUBLE PRECISION` | Laravel gestisce                 |
 
 ### 3.2 Indici
 
-| MySQL | PostgreSQL | Note |
-|-------|------------|------|
+| MySQL      | PostgreSQL              | Note                      |
+| ---------- | ----------------------- | ------------------------- |
 | `FULLTEXT` | `GIN` con `to_tsvector` | Richiede colonna tsvector |
-| `INDEX` | `INDEX` | ✅ Compatibile |
-| `UNIQUE` | `UNIQUE` | ✅ Compatibile |
-| `SPATIAL` | `GIST` | Per dati geografici |
+| `INDEX`    | `INDEX`                 | ✅ Compatibile            |
+| `UNIQUE`   | `UNIQUE`                | ✅ Compatibile            |
+| `SPATIAL`  | `GIST`                  | Per dati geografici       |
 
 ### 3.3 Autoincrement
 
-| MySQL | PostgreSQL |
-|-------|------------|
+| MySQL            | PostgreSQL             |
+| ---------------- | ---------------------- |
 | `AUTO_INCREMENT` | `SERIAL` / `BIGSERIAL` |
 
 Laravel gestisce automaticamente con `$table->id()`.
 
 ### 3.4 Case Sensitivity
 
-- **MySQL**: Case-insensitive per default
-- **PostgreSQL**: Case-sensitive per default
+-   **MySQL**: Case-insensitive per default
+-   **PostgreSQL**: Case-sensitive per default
 
 Query come `WHERE name = 'John'` potrebbero non trovare 'john'.
 
@@ -148,11 +152,13 @@ Query come `WHERE name = 'John'` potrebbero non trovare 'john'.
 ### 4.1 Pattern per ENUM → STRING
 
 **Prima (MySQL):**
+
 ```php
 $table->enum('status', ['pending', 'active', 'completed']);
 ```
 
 **Dopo (Multi-database):**
+
 ```php
 // Opzione 1: String con valori in applicazione
 $table->string('status', 20)->default('pending');
@@ -161,7 +167,7 @@ $table->string('status', 20)->default('pending');
 $table->string('status', 20)->default('pending');
 // Nel metodo up(), dopo la creazione della tabella:
 if (DB::getDriverName() === 'pgsql') {
-    DB::statement("ALTER TABLE table_name ADD CONSTRAINT check_status 
+    DB::statement("ALTER TABLE table_name ADD CONSTRAINT check_status
                    CHECK (status IN ('pending', 'active', 'completed'))");
 }
 ```
@@ -169,11 +175,13 @@ if (DB::getDriverName() === 'pgsql') {
 ### 4.2 Pattern per Query Raw MySQL-Specifiche
 
 **Prima:**
+
 ```php
 DB::statement("ALTER TABLE users MODIFY COLUMN status ENUM('a','b','c')");
 ```
 
 **Dopo:**
+
 ```php
 $driver = DB::getDriverName();
 if ($driver === 'mysql' || $driver === 'mariadb') {
@@ -181,7 +189,7 @@ if ($driver === 'mysql' || $driver === 'mariadb') {
 } elseif ($driver === 'pgsql') {
     // PostgreSQL approach
     DB::statement("ALTER TABLE users ALTER COLUMN status TYPE VARCHAR(20)");
-    DB::statement("ALTER TABLE users ADD CONSTRAINT check_status 
+    DB::statement("ALTER TABLE users ADD CONSTRAINT check_status
                    CHECK (status IN ('a','b','c'))");
 }
 ```
@@ -189,11 +197,13 @@ if ($driver === 'mysql' || $driver === 'mariadb') {
 ### 4.3 Migration con UNSIGNED
 
 **Prima:**
+
 ```php
 $table->unsignedBigInteger('amount');
 ```
 
 **Dopo (già gestito da Laravel):**
+
 ```php
 $table->unsignedBigInteger('amount'); // Laravel crea CHECK constraint per PostgreSQL
 ```
@@ -201,11 +211,13 @@ $table->unsignedBigInteger('amount'); // Laravel crea CHECK constraint per Postg
 ### 4.4 FULLTEXT Index
 
 **Prima:**
+
 ```php
 DB::statement('ALTER TABLE egi_acts ADD FULLTEXT fulltext_oggetto (oggetto)');
 ```
 
 **Dopo:**
+
 ```php
 $driver = DB::getDriverName();
 if ($driver === 'mysql' || $driver === 'mariadb') {
@@ -265,12 +277,12 @@ protected $casts = [
 
 Basato sull'analisi, questi file contengono query MySQL-specifiche:
 
-| File | Funzione MySQL | Azione |
-|------|----------------|--------|
-| `app/Services/DualTrackingAnalyticsService.php` | `DATE_FORMAT` | Convertire in `TO_CHAR` |
-| `app/Models/PaymentDistribution.php` | `DATE_FORMAT`, `GROUP_CONCAT`, `NULLIF` | Convertire |
-| `app/Models/EgiAct.php` | `MATCH...AGAINST` | Usare `to_tsvector` |
-| `app/Console/Commands/*` | `NOW()` | ✅ Compatibile |
+| File                                            | Funzione MySQL                          | Azione                  |
+| ----------------------------------------------- | --------------------------------------- | ----------------------- |
+| `app/Services/DualTrackingAnalyticsService.php` | `DATE_FORMAT`                           | Convertire in `TO_CHAR` |
+| `app/Models/PaymentDistribution.php`            | `DATE_FORMAT`, `GROUP_CONCAT`, `NULLIF` | Convertire              |
+| `app/Models/EgiAct.php`                         | `MATCH...AGAINST`                       | Usare `to_tsvector`     |
+| `app/Console/Commands/*`                        | `NOW()`                                 | ✅ Compatibile          |
 
 ### 6.2 Helper per Query Cross-Database
 
@@ -287,7 +299,7 @@ class DatabaseHelper
     public static function dateFormat(string $column, string $format): string
     {
         $driver = DB::getDriverName();
-        
+
         if ($driver === 'pgsql') {
             // Converti formato MySQL in PostgreSQL
             $pgFormat = str_replace(
@@ -297,21 +309,21 @@ class DatabaseHelper
             );
             return "TO_CHAR({$column}, '{$pgFormat}')";
         }
-        
+
         return "DATE_FORMAT({$column}, '{$format}')";
     }
-    
+
     public static function groupConcat(string $column, string $separator = ','): string
     {
         $driver = DB::getDriverName();
-        
+
         if ($driver === 'pgsql') {
             return "STRING_AGG({$column}::TEXT, '{$separator}')";
         }
-        
+
         return "GROUP_CONCAT({$column} SEPARATOR '{$separator}')";
     }
-    
+
     public static function ifNull(string $column, string $default): string
     {
         return "COALESCE({$column}, {$default})";
@@ -328,9 +340,10 @@ class DatabaseHelper
 **Opzione A: Convertire tutti gli ENUM in STRING** ⭐ Raccomandata
 
 Vantaggi:
-- Più flessibile
-- Meno migration problematiche
-- Validazione in applicazione (con PHP Enum)
+
+-   Più flessibile
+-   Meno migration problematiche
+-   Validazione in applicazione (con PHP Enum)
 
 **Opzione B: Creare tipi ENUM PostgreSQL**
 
@@ -339,8 +352,9 @@ CREATE TYPE status_enum AS ENUM ('pending', 'active', 'completed');
 ```
 
 Svantaggi:
-- Aggiungere valori richiede `ALTER TYPE`
-- Più complesso da gestire
+
+-   Aggiungere valori richiede `ALTER TYPE`
+-   Più complesso da gestire
 
 ### 7.2 Elenco ENUM da Convertire
 
@@ -364,15 +378,16 @@ Gli indici standard (`index`, `unique`, `primary`) sono compatibili.
 
 ### 8.2 Indici FULLTEXT → GIN
 
-| Tabella | Colonna | Azione |
-|---------|---------|--------|
-| `security_events` | `description` | Convertire in GIN |
+| Tabella             | Colonna                            | Azione            |
+| ------------------- | ---------------------------------- | ----------------- |
+| `security_events`   | `description`                      | Convertire in GIN |
 | `consent_histories` | `reason_for_action`, `admin_notes` | Convertire in GIN |
-| `egi_acts` | `oggetto` | Convertire in GIN |
+| `egi_acts`          | `oggetto`                          | Convertire in GIN |
 
 ### 8.3 Indici con Espressioni
 
 PostgreSQL supporta indici su espressioni:
+
 ```sql
 CREATE INDEX idx_lower_name ON users (LOWER(name));
 ```
@@ -384,27 +399,30 @@ CREATE INDEX idx_lower_name ON users (LOWER(name));
 ### 9.1 Tool Consigliati
 
 1. **pgloader** - Tool automatico MySQL → PostgreSQL
-   ```bash
-   pgloader mysql://user:pass@localhost/florenceegi postgresql://user:pass@localhost/florenceegi_pg
-   ```
+
+    ```bash
+    pgloader mysql://user:pass@localhost/florenceegi postgresql://user:pass@localhost/florenceegi_pg
+    ```
 
 2. **Laravel Migration Manuale**
-   - Esportare con `mysqldump`
-   - Importare con script custom
+    - Esportare con `mysqldump`
+    - Importare con script custom
 
 ### 9.2 Procedura Consigliata
 
 1. **Fase 1: Dual-Write**
-   - Scrivi su entrambi i database
-   - Leggi da MySQL
-   - Verifica consistenza
+
+    - Scrivi su entrambi i database
+    - Leggi da MySQL
+    - Verifica consistenza
 
 2. **Fase 2: Switch**
-   - Leggi da PostgreSQL
-   - Scrivi su entrambi
+
+    - Leggi da PostgreSQL
+    - Scrivi su entrambi
 
 3. **Fase 3: Deprecation**
-   - Rimuovi MySQL
+    - Rimuovi MySQL
 
 ### 9.3 Script di Migrazione Dati
 
@@ -416,23 +434,23 @@ class PostgresMigrationSeeder extends Seeder
     {
         // Disabilita foreign key
         DB::statement('SET CONSTRAINTS ALL DEFERRED');
-        
+
         // Migra tabella per tabella
         $tables = ['users', 'collections', 'egis', ...];
-        
+
         foreach ($tables as $table) {
             $this->migrateTable($table);
         }
-        
+
         // Riabilita foreign key
         DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
     }
-    
+
     private function migrateTable(string $table): void
     {
         // Leggi da MySQL
         $mysqlData = DB::connection('mysql')->table($table)->get();
-        
+
         // Scrivi su PostgreSQL
         DB::connection('pgsql')->table($table)->insert($mysqlData->toArray());
     }
@@ -445,21 +463,21 @@ class PostgresMigrationSeeder extends Seeder
 
 ### 10.1 Test Automatici
 
-- [ ] Tutti i test esistenti passano con PostgreSQL
-- [ ] Creare test specifici per funzioni convertite
+-   [ ] Tutti i test esistenti passano con PostgreSQL
+-   [ ] Creare test specifici per funzioni convertite
 
 ### 10.2 Test Manuali
 
-- [ ] Login/Registrazione
-- [ ] CRUD su tutte le entità principali
-- [ ] Upload file (Spatie Media)
-- [ ] Ricerca fulltext
-- [ ] Report e analytics
+-   [ ] Login/Registrazione
+-   [ ] CRUD su tutte le entità principali
+-   [ ] Upload file (Spatie Media)
+-   [ ] Ricerca fulltext
+-   [ ] Report e analytics
 
 ### 10.3 Performance
 
-- [ ] Verificare query lente con `EXPLAIN ANALYZE`
-- [ ] Ottimizzare indici se necessario
+-   [ ] Verificare query lente con `EXPLAIN ANALYZE`
+-   [ ] Ottimizzare indici se necessario
 
 ---
 
@@ -467,9 +485,9 @@ class PostgresMigrationSeeder extends Seeder
 
 ### 11.1 Pre-Deploy
 
-- [ ] Backup completo MySQL
-- [ ] Verificare spazio disco per PostgreSQL
-- [ ] Preparare rollback plan
+-   [ ] Backup completo MySQL
+-   [ ] Verificare spazio disco per PostgreSQL
+-   [ ] Preparare rollback plan
 
 ### 11.2 Deploy
 
@@ -483,9 +501,9 @@ class PostgresMigrationSeeder extends Seeder
 
 ### 11.3 Post-Deploy
 
-- [ ] Monitorare errori
-- [ ] Verificare performance
-- [ ] Mantenere MySQL in standby per 1 settimana
+-   [ ] Monitorare errori
+-   [ ] Verificare performance
+-   [ ] Mantenere MySQL in standby per 1 settimana
 
 ---
 
@@ -493,45 +511,45 @@ class PostgresMigrationSeeder extends Seeder
 
 ### 🔧 Preparazione Ambiente
 
-- [ ] Installare estensione PHP pgsql (sviluppo)
-- [ ] Installare PostgreSQL locale (sviluppo)
-- [ ] Installare `doctrine/dbal` via Composer
-- [ ] Creare database PostgreSQL su Forge
-- [ ] Configurare `.env` per PostgreSQL
+-   [ ] Installare estensione PHP pgsql (sviluppo)
+-   [ ] Installare PostgreSQL locale (sviluppo)
+-   [ ] Installare `doctrine/dbal` via Composer
+-   [ ] Creare database PostgreSQL su Forge
+-   [ ] Configurare `.env` per PostgreSQL
 
 ### 📝 Modifiche Codice - Migration
 
-- [ ] Creare nuova migration per convertire tutti ENUM in STRING
-- [ ] Aggiungere gestione multi-driver a migration con `DB::statement`
-- [ ] Convertire indici FULLTEXT in GIN
-- [ ] Verificare foreign key con ULID
+-   [ ] Creare nuova migration per convertire tutti ENUM in STRING
+-   [ ] Aggiungere gestione multi-driver a migration con `DB::statement`
+-   [ ] Convertire indici FULLTEXT in GIN
+-   [ ] Verificare foreign key con ULID
 
 ### 📝 Modifiche Codice - Application
 
-- [ ] Creare `DatabaseHelper` per funzioni cross-database
-- [ ] Modificare `DualTrackingAnalyticsService.php` - `DATE_FORMAT`
-- [ ] Modificare `PaymentDistribution.php` - `DATE_FORMAT`, `GROUP_CONCAT`
-- [ ] Modificare `EgiAct.php` - `MATCH...AGAINST`
-- [ ] Verificare tutti i file con query raw (123 occorrenze)
+-   [ ] Creare `DatabaseHelper` per funzioni cross-database
+-   [ ] Modificare `DualTrackingAnalyticsService.php` - `DATE_FORMAT`
+-   [ ] Modificare `PaymentDistribution.php` - `DATE_FORMAT`, `GROUP_CONCAT`
+-   [ ] Modificare `EgiAct.php` - `MATCH...AGAINST`
+-   [ ] Verificare tutti i file con query raw (123 occorrenze)
 
 ### ✅ Test
 
-- [ ] Eseguire test suite con SQLite
-- [ ] Eseguire test suite con PostgreSQL locale
-- [ ] Test manuali funzionalità critiche
+-   [ ] Eseguire test suite con SQLite
+-   [ ] Eseguire test suite con PostgreSQL locale
+-   [ ] Test manuali funzionalità critiche
 
 ### 🚀 Migrazione Dati
 
-- [ ] Esportare dati da MySQL produzione
-- [ ] Testare import su PostgreSQL staging
-- [ ] Verificare integrità dati
+-   [ ] Esportare dati da MySQL produzione
+-   [ ] Testare import su PostgreSQL staging
+-   [ ] Verificare integrità dati
 
 ### 🌐 Deploy
 
-- [ ] Pianificare finestra di manutenzione
-- [ ] Eseguire migrazione
-- [ ] Verificare applicazione
-- [ ] Monitorare per 48h
+-   [ ] Pianificare finestra di manutenzione
+-   [ ] Eseguire migrazione
+-   [ ] Verificare applicazione
+-   [ ] Monitorare per 48h
 
 ---
 
@@ -562,30 +580,30 @@ psql -U username -d database_name < backup.sql
 
 ## Appendice B: Mapping Funzioni MySQL → PostgreSQL
 
-| MySQL | PostgreSQL | Note |
-|-------|------------|------|
-| `DATE_FORMAT(col, '%Y-%m')` | `TO_CHAR(col, 'YYYY-MM')` | Formato diverso |
-| `NOW()` | `NOW()` | ✅ Identico |
-| `CURDATE()` | `CURRENT_DATE` | |
-| `CURRENT_TIMESTAMP()` | `CURRENT_TIMESTAMP` | |
-| `UNIX_TIMESTAMP()` | `EXTRACT(EPOCH FROM NOW())` | |
-| `FROM_UNIXTIME(ts)` | `TO_TIMESTAMP(ts)` | |
-| `IFNULL(a, b)` | `COALESCE(a, b)` | |
-| `NULLIF(a, b)` | `NULLIF(a, b)` | ✅ Identico |
-| `IF(cond, a, b)` | `CASE WHEN cond THEN a ELSE b END` | |
-| `CONCAT(a, b)` | `CONCAT(a, b)` | ✅ Identico |
-| `CONCAT_WS(',', a, b)` | `CONCAT_WS(',', a, b)` | ✅ Identico |
-| `GROUP_CONCAT(col)` | `STRING_AGG(col::TEXT, ',')` | |
-| `GROUP_CONCAT(DISTINCT col)` | `STRING_AGG(DISTINCT col::TEXT, ',')` | |
-| `FIND_IN_SET(val, col)` | `val = ANY(STRING_TO_ARRAY(col, ','))` | |
-| `MATCH(col) AGAINST(term)` | `col @@ to_tsquery(term)` | Richiede tsvector |
-| `LIMIT n OFFSET m` | `LIMIT n OFFSET m` | ✅ Identico |
-| `AUTO_INCREMENT` | `SERIAL` / `BIGSERIAL` | Laravel gestisce |
-| `TINYINT(1)` | `BOOLEAN` | Laravel gestisce |
-| `MEDIUMTEXT` | `TEXT` | |
-| `LONGTEXT` | `TEXT` | |
-| `DOUBLE` | `DOUBLE PRECISION` | |
-| `UNSIGNED` | CHECK constraint | `CHECK (col >= 0)` |
+| MySQL                        | PostgreSQL                             | Note               |
+| ---------------------------- | -------------------------------------- | ------------------ |
+| `DATE_FORMAT(col, '%Y-%m')`  | `TO_CHAR(col, 'YYYY-MM')`              | Formato diverso    |
+| `NOW()`                      | `NOW()`                                | ✅ Identico        |
+| `CURDATE()`                  | `CURRENT_DATE`                         |                    |
+| `CURRENT_TIMESTAMP()`        | `CURRENT_TIMESTAMP`                    |                    |
+| `UNIX_TIMESTAMP()`           | `EXTRACT(EPOCH FROM NOW())`            |                    |
+| `FROM_UNIXTIME(ts)`          | `TO_TIMESTAMP(ts)`                     |                    |
+| `IFNULL(a, b)`               | `COALESCE(a, b)`                       |                    |
+| `NULLIF(a, b)`               | `NULLIF(a, b)`                         | ✅ Identico        |
+| `IF(cond, a, b)`             | `CASE WHEN cond THEN a ELSE b END`     |                    |
+| `CONCAT(a, b)`               | `CONCAT(a, b)`                         | ✅ Identico        |
+| `CONCAT_WS(',', a, b)`       | `CONCAT_WS(',', a, b)`                 | ✅ Identico        |
+| `GROUP_CONCAT(col)`          | `STRING_AGG(col::TEXT, ',')`           |                    |
+| `GROUP_CONCAT(DISTINCT col)` | `STRING_AGG(DISTINCT col::TEXT, ',')`  |                    |
+| `FIND_IN_SET(val, col)`      | `val = ANY(STRING_TO_ARRAY(col, ','))` |                    |
+| `MATCH(col) AGAINST(term)`   | `col @@ to_tsquery(term)`              | Richiede tsvector  |
+| `LIMIT n OFFSET m`           | `LIMIT n OFFSET m`                     | ✅ Identico        |
+| `AUTO_INCREMENT`             | `SERIAL` / `BIGSERIAL`                 | Laravel gestisce   |
+| `TINYINT(1)`                 | `BOOLEAN`                              | Laravel gestisce   |
+| `MEDIUMTEXT`                 | `TEXT`                                 |                    |
+| `LONGTEXT`                   | `TEXT`                                 |                    |
+| `DOUBLE`                     | `DOUBLE PRECISION`                     |                    |
+| `UNSIGNED`                   | CHECK constraint                       | `CHECK (col >= 0)` |
 
 ---
 

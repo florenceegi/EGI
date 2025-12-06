@@ -197,8 +197,8 @@ class TreasuryWalletService
         $custodyStats = EgiBlockchain::where('ownership_type', 'treasury')
             ->selectRaw('
                 COUNT(*) as total_egis,
-                COUNT(CASE WHEN mint_status = "minted" THEN 1 END) as minted_egis,
-                COUNT(CASE WHEN mint_status = "pending" THEN 1 END) as pending_egis,
+                COUNT(CASE WHEN mint_status = \'minted\' THEN 1 END) as minted_egis,
+                COUNT(CASE WHEN mint_status = \'pending\' THEN 1 END) as pending_egis,
                 COUNT(CASE WHEN buyer_wallet IS NOT NULL THEN 1 END) as ready_for_transfer
             ')
             ->first();

@@ -308,6 +308,7 @@ class StatisticsService {
     private function getReservationsStatistics(): array {
         // La query con ROW_NUMBER() è definita qui.
         // Assicurati che la tua versione di MariaDB/MySQL la supporti.
+        $trueValue = \App\Helpers\DatabaseHelper::booleanValue(true);
         $sql = "
             WITH RankedReservations AS (
                 SELECT
@@ -325,7 +326,7 @@ class StatisticsService {
                 INNER JOIN egis e ON e.id = r.egi_id
                 INNER JOIN collections c ON c.id = e.collection_id
                 WHERE r.status = 'active'
-                  AND r.is_current = 1";
+                  AND r.is_current = {$trueValue}";
 
         $bindings = [];
 

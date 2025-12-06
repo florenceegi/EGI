@@ -117,8 +117,20 @@ validate_prerequisites() {
         exit 1
     fi
 
-    # Test database connection
-    if ! php artisan db:show --quiet >/dev/null 2>&1; then
+    # Test database connection - use a simple query instead of db:show (which requires intl extension)
+    local db_test=$(php -d xdebug.mode=off -r "
+        require_once '${PROJECT_ROOT}/vendor/autoload.php';
+        \$app = require_once '${PROJECT_ROOT}/bootstrap/app.php';
+        \$app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+        try {
+            \DB::connection()->getPdo();
+            echo 'OK';
+        } catch (\Exception \$e) {
+            echo 'FAIL';
+        }
+    " 2>/dev/null | tr -d ' \t\n')
+    
+    if [ "$db_test" != "OK" ]; then
         echo -e "${YELLOW}⚠️ Database connection issues detected${NC}" >&2
         echo -e "${CYAN}💡 Check your database configuration in .env${NC}" >&2
         read -p "Continue anyway? (y/N): " continue_choice
@@ -137,13 +149,36 @@ show_database_info() {
     echo -e "\n${PURPLE}📊 DATABASE INFORMATION${NC}"
     echo -e "${PURPLE}═══════════════════════════${NC}"
 
-    local db_connection=$(php artisan tinker --execute="echo config('database.default');" 2>/dev/null | tail -n 1)
-    local db_name=$(php artisan tinker --execute="echo config('database.connections.${db_connection}.database');" 2>/dev/null | tail -n 1)
-    local db_host=$(php artisan tinker --execute="echo config('database.connections.${db_connection}.host');" 2>/dev/null | tail -n 1)
+    # Use a single PHP call to get all database info - more reliable than tinker
+    local db_info=$(php -d xdebug.mode=off -r "
+        require_once '${PROJECT_ROOT}/vendor/autoload.php';
+        \$app = require_once '${PROJECT_ROOT}/bootstrap/app.php';
+        \$app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+        \$conn = config('database.default');
+        \$db = config('database.connections.'.\$conn.'.database');
+        \$host = config('database.connections.'.\$conn.'.host');
+        \$port = config('database.connections.'.\$conn.'.port', '-');
+        echo \"\$conn|\$db|\$host|\$port\";
+    " 2>/dev/null)
 
-    echo -e "${CYAN}Connection:${NC} $db_connection"
-    echo -e "${CYAN}Database:${NC} $db_name"
-    echo -e "${CYAN}Host:${NC} $db_host"
+    if [ -n "$db_info" ]; then
+        IFS='|' read -r db_connection db_name db_host db_port <<< "$db_info"
+        echo -e "${CYAN}Connection:${NC} $db_connection"
+        echo -e "${CYAN}Database:${NC} $db_name"
+        echo -e "${CYAN}Host:${NC} $db_host"
+        echo -e "${CYAN}Port:${NC} $db_port"
+    else
+        # Fallback: read directly from .env
+        local db_connection=$(grep -E "^DB_CONNECTION=" "$ORIGINAL_ENV" | cut -d'=' -f2 | tr -d "'\"")
+        local db_name=$(grep -E "^DB_DATABASE=" "$ORIGINAL_ENV" | cut -d'=' -f2 | tr -d "'\"")
+        local db_host=$(grep -E "^DB_HOST=" "$ORIGINAL_ENV" | cut -d'=' -f2 | tr -d "'\"")
+        local db_port=$(grep -E "^DB_PORT=" "$ORIGINAL_ENV" | cut -d'=' -f2 | tr -d "'\"")
+        echo -e "${CYAN}Connection:${NC} ${db_connection:-mysql}"
+        echo -e "${CYAN}Database:${NC} ${db_name:-unknown}"
+        echo -e "${CYAN}Host:${NC} ${db_host:-127.0.0.1}"
+        echo -e "${CYAN}Port:${NC} ${db_port:-3306}"
+        echo -e "${YELLOW}⚠️  (Read from .env - config may differ)${NC}"
+    fi
     echo -e "${PURPLE}═══════════════════════════${NC}"
 }
 

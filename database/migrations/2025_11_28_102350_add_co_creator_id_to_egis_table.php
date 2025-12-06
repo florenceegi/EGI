@@ -17,6 +17,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\DatabaseHelper;
 
 return new class extends Migration {
     /**
@@ -43,13 +44,35 @@ return new class extends Migration {
 
         // Step 3: Sync existing data from egi_blockchain.buyer_user_id
         // Per gli EGI già mintati, il co_creator è il buyer_user_id
-        DB::statement("
-            UPDATE egis e
-            INNER JOIN egi_blockchain eb ON e.id = eb.egi_id
-            SET e.co_creator_id = eb.buyer_user_id
-            WHERE eb.buyer_user_id IS NOT NULL
-              AND eb.mint_status = 'minted'
-        ");
+        if (DatabaseHelper::isMysql()) {
+            // MySQL syntax with JOIN
+            DB::statement("
+                UPDATE egis e
+                INNER JOIN egi_blockchain eb ON e.id = eb.egi_id
+                SET e.co_creator_id = eb.buyer_user_id
+                WHERE eb.buyer_user_id IS NOT NULL
+                  AND eb.mint_status = 'minted'
+            ");
+        } else {
+            // PostgreSQL/SQLite: use subquery
+            DB::statement("
+                UPDATE egis
+                SET co_creator_id = (
+                    SELECT eb.buyer_user_id
+                    FROM egi_blockchain eb
+                    WHERE eb.egi_id = egis.id
+                      AND eb.buyer_user_id IS NOT NULL
+                      AND eb.mint_status = 'minted'
+                    LIMIT 1
+                )
+                WHERE EXISTS (
+                    SELECT 1 FROM egi_blockchain eb
+                    WHERE eb.egi_id = egis.id
+                      AND eb.buyer_user_id IS NOT NULL
+                      AND eb.mint_status = 'minted'
+                )
+            ");
+        }
 
         // Log sync results
         $syncedCount = DB::table('egis')

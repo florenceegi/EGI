@@ -434,22 +434,25 @@ class SystemUsersSeeder extends Seeder {
     /**
      * Initialize all user domain tables using actual fillable fields and ENUM values
      * Based on actual model fillable fields from knowledge base
+     * Uses firstOrCreate to avoid duplicate key violations on PostgreSQL
      */
     protected function initializeUserDomains(User $user, array $userData, array $logContext): void {
         try {
             // User Profile (always) - using actual fillable fields
-            UserProfile::create([
-                'user_id' => $user->id,
-                // All other UserProfile fields are optional based on fillable
-            ]);
+            UserProfile::firstOrCreate(
+                ['user_id' => $user->id],
+                [] // All other UserProfile fields are optional based on fillable
+            );
 
             // Personal Data (always, GDPR-sensitive) - using actual fillable fields
-            UserPersonalData::create([
-                'user_id' => $user->id,
-                'allow_personal_data_processing' => true,
-                'processing_purposes' => ['platform_operation', 'system_administration'],
-                'consent_updated_at' => now(),
-            ]);
+            UserPersonalData::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'allow_personal_data_processing' => true,
+                    'processing_purposes' => ['platform_operation', 'system_administration'],
+                    'consent_updated_at' => now(),
+                ]
+            );
 
             // Organization Data (for all system users) - using correct ENUM values
             $businessTypeMapping = [
@@ -458,26 +461,32 @@ class SystemUsersSeeder extends Seeder {
                 'epp' => 'corporation',
             ];
 
-            UserOrganizationData::create([
-                'user_id' => $user->id,
-                'business_type' => $businessTypeMapping[strtolower($userData['name'])],
-                'is_seller_verified' => true, // System users are pre-verified
-                'can_issue_invoices' => true,
-            ]);
+            UserOrganizationData::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'business_type' => $businessTypeMapping[strtolower($userData['name'])] ?? 'individual',
+                    'is_seller_verified' => true, // System users are pre-verified
+                    'can_issue_invoices' => true,
+                ]
+            );
 
             // Documents (always) - using actual fillable fields
-            UserDocument::create([
-                'user_id' => $user->id,
-                'verification_status' => 'verified', // System users are pre-verified
-                'verified_at' => now(),
-            ]);
+            UserDocument::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'verification_status' => 'verified', // System users are pre-verified
+                    'verified_at' => now(),
+                ]
+            );
 
             // Invoice Preferences (always) - using actual fillable fields
-            UserInvoicePreference::create([
-                'user_id' => $user->id,
-                'can_issue_invoices' => true,
-                'auto_request_invoice' => false,
-            ]);
+            UserInvoicePreference::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'can_issue_invoices' => true,
+                    'auto_request_invoice' => false,
+                ]
+            );
 
             $this->safeLog('info', '[Seeder] User domains initialized successfully', [
                 'user_id' => $user->id,
@@ -493,6 +502,7 @@ class SystemUsersSeeder extends Seeder {
     /**
      * Process GDPR consents - Simplified version for seeder
      * Creates basic consent records directly using UserConsent model
+     * Uses firstOrCreate to avoid duplicate key violations on PostgreSQL
      */
     protected function processGdprConsents(User $user, array $userData, array $logContext): void {
         try {
@@ -505,20 +515,24 @@ class SystemUsersSeeder extends Seeder {
             ];
 
             foreach ($basicConsents as $consentType => $description) {
-                UserConsent::create([
-                    'user_id' => $user->id,
-                    'consent_type' => $consentType,
-                    'granted' => true,
-                    'legal_basis' => 'consent',
-                    'ip_address' => '127.0.0.1',
-                    'user_agent' => 'SystemSeeder/1.0',
-                    'metadata' => [
-                        'source' => 'system_seeder',
-                        'system_user' => true,
-                        'description' => $description,
+                UserConsent::firstOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'consent_type' => $consentType,
                     ],
-                    'status' => 'active',
-                ]);
+                    [
+                        'granted' => true,
+                        'legal_basis' => 'consent',
+                        'ip_address' => '127.0.0.1',
+                        'user_agent' => 'SystemSeeder/1.0',
+                        'metadata' => [
+                            'source' => 'system_seeder',
+                            'system_user' => true,
+                            'description' => $description,
+                        ],
+                        'status' => 'active',
+                    ]
+                );
             }
 
             $this->safeLog('info', '[Seeder] GDPR consents processed successfully', [
@@ -538,8 +552,17 @@ class SystemUsersSeeder extends Seeder {
     /**
      * Create registration audit record - Simplified version for seeder
      * Non-blocking to avoid seeder failure due to audit service issues
+     * NOTE: Disabled on PostgreSQL to avoid transaction invalidation issues
      */
     protected function createRegistrationAuditRecord(User $user, ?\App\Models\Collection $collection, array $userData, array $logContext): void {
+        // Skip audit on PostgreSQL - it can cause transaction issues
+        if (config('database.default') === 'pgsql') {
+            $this->safeLog('info', '[Seeder] Audit record creation skipped on PostgreSQL', [
+                'user_id' => $user->id,
+            ]);
+            return;
+        }
+        
         try {
             // Try to create audit record via service
             $auditService = app(\App\Services\Gdpr\AuditLogService::class);

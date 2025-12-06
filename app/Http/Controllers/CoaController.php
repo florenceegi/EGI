@@ -873,8 +873,8 @@ class CoaController extends Controller
                 'monthly_issuance' => Coa::whereHas('egi', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 })->where('created_at', '>=', now()->subMonths(12))
-                    ->groupBy(\DB::raw('YEAR(created_at), MONTH(created_at)'))
-                    ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, count(*) as count')
+                    ->groupBy(\DB::raw(\App\Helpers\DatabaseHelper::year('created_at') . ', ' . \App\Helpers\DatabaseHelper::month('created_at')))
+                    ->selectRaw(\App\Helpers\DatabaseHelper::year('created_at') . ' as year, ' . \App\Helpers\DatabaseHelper::month('created_at') . ' as month, count(*) as count')
                     ->orderBy('year', 'desc')
                     ->orderBy('month', 'desc')
                     ->get()
@@ -1040,8 +1040,8 @@ class CoaController extends Controller
 
             // Issuance trends (last 12 months)
             $issuanceTrends = Coa::where('created_at', '>=', now()->subYear())
-                ->groupBy(\DB::raw('YEAR(created_at), MONTH(created_at)'))
-                ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, count(*) as count')
+                ->groupBy(\DB::raw(\App\Helpers\DatabaseHelper::year('created_at') . ', ' . \App\Helpers\DatabaseHelper::month('created_at')))
+                ->selectRaw(\App\Helpers\DatabaseHelper::year('created_at') . ' as year, ' . \App\Helpers\DatabaseHelper::month('created_at') . ' as month, count(*) as count')
                 ->orderBy('year', 'desc')
                 ->orderBy('month', 'desc')
                 ->get();
@@ -1206,8 +1206,8 @@ class CoaController extends Controller
                             ->selectRaw('status, count(*) as count')
                             ->pluck('count', 'status'),
                         'daily_issuance' => Coa::whereBetween('created_at', [$dateFrom, $dateTo])
-                            ->groupBy(\DB::raw('DATE(created_at)'))
-                            ->selectRaw('DATE(created_at) as date, count(*) as count')
+                            ->groupBy(\DB::raw(\App\Helpers\DatabaseHelper::dateOnly('created_at')))
+                            ->selectRaw(\App\Helpers\DatabaseHelper::dateOnly('created_at') . ' as date, count(*) as count')
                             ->orderBy('date')
                             ->get()
                     ];
@@ -1253,14 +1253,14 @@ class CoaController extends Controller
                 case 'trends':
                     $reportData = [
                         'monthly_trends' => Coa::whereBetween('created_at', [$dateFrom, $dateTo])
-                            ->groupBy(\DB::raw('YEAR(created_at), MONTH(created_at)'))
-                            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, count(*) as count')
+                            ->groupBy(\DB::raw(\App\Helpers\DatabaseHelper::year('created_at') . ', ' . \App\Helpers\DatabaseHelper::month('created_at')))
+                            ->selectRaw(\App\Helpers\DatabaseHelper::year('created_at') . ' as year, ' . \App\Helpers\DatabaseHelper::month('created_at') . ' as month, count(*) as count')
                             ->orderBy('year')
                             ->orderBy('month')
                             ->get(),
                         'status_trends' => Coa::whereBetween('updated_at', [$dateFrom, $dateTo])
-                            ->groupBy('status', \DB::raw('DATE(updated_at)'))
-                            ->selectRaw('status, DATE(updated_at) as date, count(*) as count')
+                            ->groupBy('status', \DB::raw(\App\Helpers\DatabaseHelper::dateOnly('updated_at')))
+                            ->selectRaw('status, ' . \App\Helpers\DatabaseHelper::dateOnly('updated_at') . ' as date, count(*) as count')
                             ->orderBy('date')
                             ->get()
                             ->groupBy('status')
@@ -1451,8 +1451,8 @@ class CoaController extends Controller
                                 ->where('status', 'revoked')->count()
                         ],
                         'daily_breakdown' => Coa::whereBetween('created_at', [$dateFrom, $dateTo])
-                            ->groupBy(\DB::raw('DATE(created_at)'))
-                            ->selectRaw('DATE(created_at) as date, count(*) as count')
+                            ->groupBy(\DB::raw(\App\Helpers\DatabaseHelper::dateOnly('created_at')))
+                            ->selectRaw(\App\Helpers\DatabaseHelper::dateOnly('created_at') . ' as date, count(*) as count')
                             ->orderBy('date')
                             ->get()
                     ];

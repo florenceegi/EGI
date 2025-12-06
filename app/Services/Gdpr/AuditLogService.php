@@ -395,7 +395,7 @@ class AuditLogService {
                 // Most active day (last 90 days)
                 $mostActiveDay = $user->activities()
                     ->where('created_at', '>=', now()->subDays(90))
-                    ->select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as count'))
+                    ->select(DB::raw(\App\Helpers\DatabaseHelper::dateOnly('created_at') . ' as date'), DB::raw('count(*) as count'))
                     ->groupBy('date')
                     ->orderBy('count', 'desc')
                     ->first();

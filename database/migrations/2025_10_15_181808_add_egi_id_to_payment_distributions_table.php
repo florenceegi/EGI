@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\DatabaseHelper;
 
 /**
  * @Oracode Migration: Add egi_id to payment_distributions
@@ -39,11 +40,11 @@ return new class extends Migration {
 
         // Populate egi_id for existing records only if column was just created
         if (Schema::hasColumn('payment_distributions', 'egi_id')) {
-            // Use Eloquent for SQLite compatibility
+            // Use Eloquent for SQLite and PostgreSQL compatibility
             $connection = config('database.default');
 
-            if ($connection === 'sqlite') {
-                // SQLite-compatible approach using Eloquent
+            if ($connection === 'sqlite' || DatabaseHelper::isPostgres()) {
+                // SQLite/PostgreSQL-compatible approach using Eloquent
                 $distributions = DB::table('payment_distributions')
                     ->whereNull('egi_id')
                     ->get();
@@ -83,7 +84,7 @@ return new class extends Migration {
             }
 
             // To change NOT NULL with foreign key, we need to drop and recreate
-            if ($connection !== 'sqlite') {
+            if (DatabaseHelper::isMysql()) {
                 // Check if foreign key exists before dropping
                 $foreignKeys = DB::select("
                     SELECT CONSTRAINT_NAME
@@ -108,6 +109,22 @@ return new class extends Migration {
                 if (!empty($indexes)) {
                     DB::statement("ALTER TABLE payment_distributions DROP INDEX idx_payment_dist_egi_source");
                 }
+            } elseif (DatabaseHelper::isPostgres()) {
+                // PostgreSQL: drop constraints using pg_constraint
+                $foreignKeys = DB::select("
+                    SELECT conname
+                    FROM pg_constraint
+                    WHERE conrelid = 'payment_distributions'::regclass
+                    AND contype = 'f'
+                    AND conname LIKE '%egi_id%'
+                ");
+
+                foreach ($foreignKeys as $fk) {
+                    DB::statement("ALTER TABLE payment_distributions DROP CONSTRAINT IF EXISTS \"{$fk->conname}\"");
+                }
+
+                // Drop index if exists
+                DB::statement("DROP INDEX IF EXISTS idx_payment_dist_egi_source");
             }
 
             // Change column to NOT NULL
@@ -115,7 +132,8 @@ return new class extends Migration {
                 $table->unsignedBigInteger('egi_id')->nullable(false)->change();
             });
 
-            // Recreate foreign key and index (only for MySQL)
+            // Recreate foreign key and index (except SQLite)
+            $connection = config('database.default');
             if ($connection !== 'sqlite') {
                 Schema::table('payment_distributions', function (Blueprint $table) {
                     $table->foreign('egi_id')->references('id')->on('egis')->onDelete('cascade');

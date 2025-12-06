@@ -23,12 +23,13 @@ $dateFormatSql = DatabaseHelper::dateFormat('created_at', $dateFormat);
 ```
 
 **Mapping formati DATE_FORMAT MySQL → TO_CHAR PostgreSQL:**
-- `%Y` → `YYYY` (anno 4 cifre)
-- `%m` → `MM` (mese 2 cifre)
-- `%d` → `DD` (giorno 2 cifre)
-- `%H` → `HH24` (ora 24h)
-- `%i` → `MI` (minuti)
-- `%s` → `SS` (secondi)
+
+-   `%Y` → `YYYY` (anno 4 cifre)
+-   `%m` → `MM` (mese 2 cifre)
+-   `%d` → `DD` (giorno 2 cifre)
+-   `%H` → `HH24` (ora 24h)
+-   `%i` → `MI` (minuti)
+-   `%s` → `SS` (secondi)
 
 ---
 
@@ -77,6 +78,7 @@ if ($driver === 'pgsql') {
 ```
 
 **Prerequisito PostgreSQL**: Creare colonna `tsvector` e trigger:
+
 ```sql
 ALTER TABLE egi_acts ADD COLUMN oggetto_tsv tsvector;
 CREATE INDEX idx_egi_acts_fts ON egi_acts USING GIN(oggetto_tsv);
@@ -88,7 +90,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trig_egi_acts_tsv 
+CREATE TRIGGER trig_egi_acts_tsv
 BEFORE INSERT OR UPDATE ON egi_acts
 FOR EACH ROW EXECUTE FUNCTION update_oggetto_tsv();
 ```
@@ -97,17 +99,19 @@ FOR EACH ROW EXECUTE FUNCTION update_oggetto_tsv();
 
 ## 📋 Checklist File Critici
 
-- [ ] `app/Services/DualTrackingAnalyticsService.php`
-  - [ ] Convertire `DATE_FORMAT` → `TO_CHAR` (o helper)
-  - [ ] Verificare altri usi di funzioni MySQL
+-   [ ] `app/Services/DualTrackingAnalyticsService.php`
 
-- [ ] `app/Models/PaymentDistribution.php`
-  - [ ] Convertire `GROUP_CONCAT` → `STRING_AGG`
-  - [ ] Verificare altri usi di funzioni MySQL
+    -   [ ] Convertire `DATE_FORMAT` → `TO_CHAR` (o helper)
+    -   [ ] Verificare altri usi di funzioni MySQL
 
-- [ ] `app/Models/EgiAct.php`
-  - [ ] Implementare Full Text Search cross-database
-  - [ ] Creare migration per colonna `tsvector` e trigger
+-   [ ] `app/Models/PaymentDistribution.php`
+
+    -   [ ] Convertire `GROUP_CONCAT` → `STRING_AGG`
+    -   [ ] Verificare altri usi di funzioni MySQL
+
+-   [ ] `app/Models/EgiAct.php`
+    -   [ ] Implementare Full Text Search cross-database
+    -   [ ] Creare migration per colonna `tsvector` e trigger
 
 ---
 
@@ -130,7 +134,7 @@ class DatabaseHelper
     public static function dateFormat(string $column, string $format): string
     {
         $driver = DB::getDriverName();
-        
+
         if ($driver === 'pgsql') {
             // Convert MySQL format to PostgreSQL format
             $pgFormat = str_replace(
@@ -140,28 +144,28 @@ class DatabaseHelper
             );
             return "TO_CHAR({$column}, '{$pgFormat}')";
         }
-        
+
         return "DATE_FORMAT({$column}, '{$format}')";
     }
-    
+
     /**
      * Convert GROUP_CONCAT (MySQL) to STRING_AGG (PostgreSQL)
      */
     public static function groupConcat(
-        string $column, 
+        string $column,
         string $separator = ',',
         bool $distinct = false
     ): string {
         $driver = DB::getDriverName();
         $distinctSql = $distinct ? 'DISTINCT ' : '';
-        
+
         if ($driver === 'pgsql') {
             return "STRING_AGG({$distinctSql}{$column}::TEXT, '{$separator}')";
         }
-        
+
         return "GROUP_CONCAT({$distinctSql}{$column} SEPARATOR '{$separator}')";
     }
-    
+
     /**
      * Convert IFNULL (MySQL) to COALESCE (standard SQL)
      */
@@ -170,17 +174,17 @@ class DatabaseHelper
         // COALESCE works in both MySQL and PostgreSQL
         return "COALESCE({$column}, {$default})";
     }
-    
+
     /**
      * Full Text Search cross-database
      */
     public static function fullTextSearch(
-        string $column, 
+        string $column,
         string $searchTerm,
         string $language = 'italian'
     ): array {
         $driver = DB::getDriverName();
-        
+
         if ($driver === 'pgsql') {
             // Assumes tsvector column exists as {column}_tsv
             $tsvColumn = "{$column}_tsv";
@@ -189,14 +193,14 @@ class DatabaseHelper
                 'bindings' => [$searchTerm]
             ];
         }
-        
+
         // MySQL/MariaDB
         return [
             'where' => "MATCH({$column}) AGAINST(? IN BOOLEAN MODE)",
             'bindings' => [$searchTerm]
         ];
     }
-    
+
     /**
      * Get current timestamp
      */
@@ -205,46 +209,46 @@ class DatabaseHelper
         // NOW() works in both
         return 'NOW()';
     }
-    
+
     /**
      * Get current date
      */
     public static function currentDate(): string
     {
         $driver = DB::getDriverName();
-        
+
         if ($driver === 'pgsql') {
             return 'CURRENT_DATE';
         }
-        
+
         return 'CURDATE()';
     }
-    
+
     /**
      * Unix timestamp from date
      */
     public static function unixTimestamp(string $column): string
     {
         $driver = DB::getDriverName();
-        
+
         if ($driver === 'pgsql') {
             return "EXTRACT(EPOCH FROM {$column})::INTEGER";
         }
-        
+
         return "UNIX_TIMESTAMP({$column})";
     }
-    
+
     /**
      * From Unix timestamp to date
      */
     public static function fromUnixTimestamp(string $timestamp): string
     {
         $driver = DB::getDriverName();
-        
+
         if ($driver === 'pgsql') {
             return "TO_TIMESTAMP({$timestamp})";
         }
-        
+
         return "FROM_UNIXTIME({$timestamp})";
     }
 }
@@ -275,21 +279,22 @@ grep -rn "DATE_FORMAT\|GROUP_CONCAT\|MATCH.*AGAINST\|UNIX_TIMESTAMP\|IFNULL\|FIN
 2. Eseguire le migration
 3. Eseguire la test suite completa
 4. Verificare manualmente le funzionalità di:
-   - Analytics (DATE_FORMAT)
-   - Payment distributions (GROUP_CONCAT)
-   - Ricerca atti PA (MATCH AGAINST)
+    - Analytics (DATE_FORMAT)
+    - Payment distributions (GROUP_CONCAT)
+    - Ricerca atti PA (MATCH AGAINST)
 
 ---
 
 ## ⚠️ Indici FULLTEXT da Convertire
 
-| Tabella | Colonna | Migration |
-|---------|---------|-----------|
-| `security_events` | `description` | Da creare |
+| Tabella             | Colonna                            | Migration |
+| ------------------- | ---------------------------------- | --------- |
+| `security_events`   | `description`                      | Da creare |
 | `consent_histories` | `reason_for_action`, `admin_notes` | Da creare |
-| `egi_acts` | `oggetto` | Da creare |
+| `egi_acts`          | `oggetto`                          | Da creare |
 
 Per ogni indice FULLTEXT, creare:
+
 1. Colonna `tsvector`
 2. Indice GIN
 3. Trigger per aggiornamento automatico

@@ -491,7 +491,7 @@ class ActivityLogService
 
             // Get daily activity counts
             $dailyActivity = GdprAuditLog::where('timestamp', '>=', $startDate)
-                ->selectRaw('DATE(timestamp) as date, COUNT(*) as count')
+                ->selectRaw(\App\Helpers\DatabaseHelper::dateOnly('timestamp') . ' as date, COUNT(*) as count')
                 ->groupBy('date')
                 ->pluck('count', 'date')
                 ->toArray();

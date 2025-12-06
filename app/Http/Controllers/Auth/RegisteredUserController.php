@@ -502,7 +502,7 @@ class RegisteredUserController extends Controller {
             // CollectionService potrebbe aver già fatto il link, quindi usiamo sync invece di attach
             // is_owner = true for creator-type roles (creator, company, enterprise, pa_entity)
             $isOwnerRole = in_array($collectionRole, ['creator', 'company', 'epp']);
-            
+
             $collection->users()->syncWithoutDetaching([
                 $user->id => [
                     'role' => $collectionRole,

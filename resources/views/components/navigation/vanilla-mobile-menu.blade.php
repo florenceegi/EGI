@@ -251,7 +251,8 @@
                     {{-- Companies Link - Corporate Blue #1E3A5F, Gold #C9A227 --}}
                     <a href="{{ url('/company') }}"
                         class="mobile-nav-item {{ request()->routeIs('company.*') ? 'bg-[#1E3A5F]/20 text-[#C9A227]' : '' }} flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-colors hover:bg-[#1E3A5F]/10 dark:text-gray-200 dark:hover:bg-[#1E3A5F]/30">
-                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1E3A5F] text-[#C9A227]">
+                        <div
+                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1E3A5F] text-[#C9A227]">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />

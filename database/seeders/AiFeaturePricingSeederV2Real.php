@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\AiFeaturePricing;
 use Illuminate\Database\Seeder;
+use App\Helpers\DatabaseHelper;
 
 /**
  * AI Feature Pricing Seeder V2 - REAL FEATURES ONLY
@@ -31,9 +32,15 @@ class AiFeaturePricingSeederV2Real extends Seeder
     public function run(): void
     {
         // Delete all existing features (including soft deleted)
-        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        \DB::table('ai_feature_pricing')->truncate();
-        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // Disable FK checks in database-agnostic way
+        if (DatabaseHelper::isMysql()) {
+            \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            \DB::table('ai_feature_pricing')->truncate();
+            \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        } else {
+            // PostgreSQL: use TRUNCATE ... CASCADE or DELETE
+            \DB::table('ai_feature_pricing')->delete();
+        }
 
         $features = [
             

@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use App\Helpers\DatabaseHelper;
 
 /**
  * @package Database\Migrations
@@ -77,16 +79,10 @@ return new class extends Migration
         Schema::table('tenants', function (Blueprint $table) {
             // Foreign key constraint
             if (Schema::hasColumn('tenants', 'parent_tenant_id')) {
-                // Check if FK exists using DB query (Laravel 11 compatible)
-                $fkExists = DB::select("
-                    SELECT CONSTRAINT_NAME 
-                    FROM information_schema.KEY_COLUMN_USAGE 
-                    WHERE TABLE_SCHEMA = DATABASE() 
-                    AND TABLE_NAME = 'tenants' 
-                    AND CONSTRAINT_NAME = 'fk_tenants_parent'
-                ");
+                // Check if FK exists
+                $fkExists = $this->hasForeignKey('tenants', 'fk_tenants_parent');
                 
-                if (empty($fkExists)) {
+                if (!$fkExists) {
                     $table->foreign('parent_tenant_id')
                         ->references('id')
                         ->on('tenants')
@@ -107,32 +103,71 @@ return new class extends Migration
             ];
             
             foreach ($indexesToCreate as $indexName => $columnName) {
-                $indexExists = DB::select("
-                    SELECT INDEX_NAME 
-                    FROM information_schema.STATISTICS 
-                    WHERE TABLE_SCHEMA = DATABASE() 
-                    AND TABLE_NAME = 'tenants' 
-                    AND INDEX_NAME = ?
-                ", [$indexName]);
-                
-                if (empty($indexExists)) {
+                if (!$this->hasIndex('tenants', $indexName)) {
                     $table->index($columnName, $indexName);
                 }
             }
             
             // Compound index (prefix + level)
-            $compoundIndexExists = DB::select("
-                SELECT INDEX_NAME 
-                FROM information_schema.STATISTICS 
-                WHERE TABLE_SCHEMA = DATABASE() 
-                AND TABLE_NAME = 'tenants' 
-                AND INDEX_NAME = 'idx_tenants_prefix_level'
-            ");
-            
-            if (empty($compoundIndexExists)) {
+            if (!$this->hasIndex('tenants', 'idx_tenants_prefix_level')) {
                 $table->index(['tenant_prefix', 'level'], 'idx_tenants_prefix_level');
             }
         });
+    }
+    
+    /**
+     * Check if a foreign key exists.
+     */
+    private function hasForeignKey(string $table, string $name): bool
+    {
+        if (DatabaseHelper::isPostgres()) {
+            $result = DB::select("
+                SELECT conname
+                FROM pg_constraint
+                WHERE conrelid = ?::regclass
+                AND conname = ?
+                AND contype = 'f'
+            ", [$table, $name]);
+        } elseif (DatabaseHelper::isMysql()) {
+            $result = DB::select("
+                SELECT CONSTRAINT_NAME 
+                FROM information_schema.KEY_COLUMN_USAGE 
+                WHERE TABLE_SCHEMA = DATABASE() 
+                AND TABLE_NAME = ? 
+                AND CONSTRAINT_NAME = ?
+            ", [$table, $name]);
+        } else {
+            return false; // SQLite: assume not exists
+        }
+        
+        return count($result) > 0;
+    }
+    
+    /**
+     * Check if an index exists.
+     */
+    private function hasIndex(string $table, string $name): bool
+    {
+        if (DatabaseHelper::isPostgres()) {
+            $result = DB::select("
+                SELECT indexname
+                FROM pg_indexes
+                WHERE tablename = ?
+                AND indexname = ?
+            ", [$table, $name]);
+        } elseif (DatabaseHelper::isMysql()) {
+            $result = DB::select("
+                SELECT INDEX_NAME 
+                FROM information_schema.STATISTICS 
+                WHERE TABLE_SCHEMA = DATABASE() 
+                AND TABLE_NAME = ? 
+                AND INDEX_NAME = ?
+            ", [$table, $name]);
+        } else {
+            return false; // SQLite: assume not exists
+        }
+        
+        return count($result) > 0;
     }
 
     /**
@@ -167,4 +202,3 @@ return new class extends Migration
         });
     }
 };
-

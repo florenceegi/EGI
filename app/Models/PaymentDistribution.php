@@ -341,14 +341,16 @@ class PaymentDistribution extends Model {
             default => '%Y-%m-%d'
         };
 
+        $dateFormatSql = \App\Helpers\DatabaseHelper::dateFormat('created_at', $dateFormat);
+
         return static::selectRaw("
-                DATE_FORMAT(created_at, '{$dateFormat}') as period,
+                {$dateFormatSql} as period,
                 COUNT(*) as count,
                 SUM(amount_eur) as total_amount,
                 AVG(amount_eur) as avg_amount
             ")
-            ->groupByRaw("DATE_FORMAT(created_at, '{$dateFormat}')")
-            ->orderByRaw("DATE_FORMAT(created_at, '{$dateFormat}') DESC")
+            ->groupByRaw($dateFormatSql)
+            ->orderByRaw("{$dateFormatSql} DESC")
             ->limit($limit)
             ->get()
             ->toArray();
@@ -432,17 +434,17 @@ class PaymentDistribution extends Model {
         return static::join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
             ->join('egis', 'reservations.egi_id', '=', 'egis.id')
             ->join('collections', 'egis.collection_id', '=', 'collections.id')
-            ->selectRaw('
+            ->selectRaw("
                 collections.id as collection_id,
                 collections.collection_name as collection_name,
                 COUNT(DISTINCT payment_distributions.reservation_id) as reservations_count,
                 COUNT(payment_distributions.id) as distributions_count,
                 SUM(payment_distributions.amount_eur) as total_distributed,
                 AVG(payment_distributions.amount_eur) as avg_distribution,
-                SUM(CASE WHEN payment_distributions.user_type = "creator" THEN payment_distributions.amount_eur ELSE 0 END) as total_to_creators,
-                SUM(CASE WHEN payment_distributions.user_type = "epp" THEN payment_distributions.amount_eur ELSE 0 END) as total_to_epp,
-                SUM(CASE WHEN payment_distributions.user_type = "collector" THEN payment_distributions.amount_eur ELSE 0 END) as total_to_collectors
-            ')
+                SUM(CASE WHEN payment_distributions.user_type = 'creator' THEN payment_distributions.amount_eur ELSE 0 END) as total_to_creators,
+                SUM(CASE WHEN payment_distributions.user_type = 'epp' THEN payment_distributions.amount_eur ELSE 0 END) as total_to_epp,
+                SUM(CASE WHEN payment_distributions.user_type = 'collector' THEN payment_distributions.amount_eur ELSE 0 END) as total_to_collectors
+            ")
             ->groupBy('collections.id', 'collections.collection_name')
             ->orderBy('total_distributed', 'DESC')
             ->limit($limit)
@@ -573,6 +575,8 @@ class PaymentDistribution extends Model {
      * @return array
      */
     public static function getCreatorMonthlyEarnings(int $creatorId, int $months = 12): array {
+        $monthFormat = \App\Helpers\DatabaseHelper::dateFormat('payment_distributions.created_at', '%Y-%m');
+
         return static::join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
             ->join('egis', 'reservations.egi_id', '=', 'egis.id')
             ->join('collections', 'egis.collection_id', '=', 'collections.id')
@@ -580,15 +584,15 @@ class PaymentDistribution extends Model {
             ->where('payment_distributions.user_type', UserTypeEnum::CREATOR)
             ->where('reservations.sub_status', 'highest')
             ->where('payment_distributions.created_at', '>=', now()->subMonths($months))
-            ->selectRaw('
-                DATE_FORMAT(payment_distributions.created_at, "%Y-%m") as month,
+            ->selectRaw("
+                {$monthFormat} as month,
                 COUNT(payment_distributions.id) as distributions_count,
                 SUM(payment_distributions.amount_eur) as monthly_earnings,
                 AVG(payment_distributions.amount_eur) as avg_earnings,
                 COUNT(DISTINCT reservations.id) as sales_count
-            ')
-            ->groupByRaw('DATE_FORMAT(payment_distributions.created_at, "%Y-%m")')
-            ->orderByRaw('DATE_FORMAT(payment_distributions.created_at, "%Y-%m") DESC')
+            ")
+            ->groupByRaw($monthFormat)
+            ->orderByRaw("{$monthFormat} DESC")
             ->limit($months)
             ->get()
             ->map(function ($item) {

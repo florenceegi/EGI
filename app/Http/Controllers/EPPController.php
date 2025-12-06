@@ -97,7 +97,7 @@ class EPPController extends Controller {
 
         // Get monthly funding data for charts
         $monthlyFunding = DB::table('epp_transactions')
-            ->select(DB::raw('YEAR(created_at) as year'), DB::raw('MONTH(created_at) as month'), DB::raw('SUM(amount) as total'))
+            ->select(DB::raw(\App\Helpers\DatabaseHelper::year('created_at') . ' as year'), DB::raw(\App\Helpers\DatabaseHelper::month('created_at') . ' as month'), DB::raw('SUM(amount) as total'))
             ->groupBy('year', 'month')
             ->orderBy('year')
             ->orderBy('month')

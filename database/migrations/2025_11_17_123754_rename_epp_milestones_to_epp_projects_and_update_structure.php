@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\DatabaseHelper;
 
 return new class extends Migration {
     /**
@@ -34,7 +35,7 @@ return new class extends Migration {
                     AND COLUMN_NAME = 'epp_id'
                     AND REFERENCED_TABLE_NAME IS NOT NULL
                 ");
-                
+
                 foreach ($fks as $fk) {
                     DB::statement("ALTER TABLE epp_projects DROP FOREIGN KEY {$fk->CONSTRAINT_NAME}");
                 }
@@ -123,7 +124,7 @@ return new class extends Migration {
                     AND COLUMN_NAME = 'epp_id'
                     AND REFERENCED_TABLE_NAME IS NOT NULL
                 ");
-                
+
                 foreach ($fks as $fk) {
                     DB::statement("ALTER TABLE collections DROP FOREIGN KEY {$fk->CONSTRAINT_NAME}");
                 }
@@ -160,7 +161,7 @@ return new class extends Migration {
 
         // Clean up orphaned epp_project_id values before adding foreign key
         $driver = Schema::getConnection()->getDriverName();
-        
+
         if ($driver === 'mysql') {
             DB::statement('
                 UPDATE collections c
@@ -205,22 +206,34 @@ return new class extends Migration {
     private function hasForeignKey($table, $name) {
         $conn = Schema::getConnection();
         $driver = $conn->getDriverName();
-        
+
         // SQLite doesn't support information_schema, skip check (test will work anyway)
         if ($driver === 'sqlite') {
             return false; // In SQLite test, let migration attempt to drop (will fail silently if not exists)
         }
-        
+
         $database = $conn->getDatabaseName();
 
-        $result = $conn->select("
-            SELECT CONSTRAINT_NAME
-            FROM information_schema.TABLE_CONSTRAINTS
-            WHERE TABLE_SCHEMA = ?
-            AND TABLE_NAME = ?
-            AND CONSTRAINT_NAME = ?
-            AND CONSTRAINT_TYPE = 'FOREIGN KEY'
-        ", [$database, $table, $name]);
+        if (DatabaseHelper::isPostgres()) {
+            // PostgreSQL: use pg_constraint
+            $result = $conn->select("
+                SELECT conname
+                FROM pg_constraint
+                WHERE conrelid = ?::regclass
+                AND conname = ?
+                AND contype = 'f'
+            ", [$table, $name]);
+        } else {
+            // MySQL/MariaDB
+            $result = $conn->select("
+                SELECT CONSTRAINT_NAME
+                FROM information_schema.TABLE_CONSTRAINTS
+                WHERE TABLE_SCHEMA = ?
+                AND TABLE_NAME = ?
+                AND CONSTRAINT_NAME = ?
+                AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+            ", [$database, $table, $name]);
+        }
 
         return count($result) > 0;
     }
@@ -231,21 +244,32 @@ return new class extends Migration {
     private function hasIndex($table, $name) {
         $conn = Schema::getConnection();
         $driver = $conn->getDriverName();
-        
+
         // SQLite doesn't support information_schema, skip check
         if ($driver === 'sqlite') {
             return false;
         }
-        
+
         $database = $conn->getDatabaseName();
 
-        $result = $conn->select("
-            SELECT INDEX_NAME
-            FROM information_schema.STATISTICS
-            WHERE TABLE_SCHEMA = ?
-            AND TABLE_NAME = ?
-            AND INDEX_NAME = ?
-        ", [$database, $table, $name]);
+        if (DatabaseHelper::isPostgres()) {
+            // PostgreSQL: use pg_indexes
+            $result = $conn->select("
+                SELECT indexname
+                FROM pg_indexes
+                WHERE tablename = ?
+                AND indexname = ?
+            ", [$table, $name]);
+        } else {
+            // MySQL/MariaDB
+            $result = $conn->select("
+                SELECT INDEX_NAME
+                FROM information_schema.STATISTICS
+                WHERE TABLE_SCHEMA = ?
+                AND TABLE_NAME = ?
+                AND INDEX_NAME = ?
+            ", [$database, $table, $name]);
+        }
 
         return count($result) > 0;
     }

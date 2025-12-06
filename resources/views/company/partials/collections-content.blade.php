@@ -12,15 +12,15 @@
         <div class="mb-8">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div class="rounded-lg border border-[#1E3A5F]/50 bg-gray-900/50 p-4">
-                    <span class="text-[#C9A227] block text-2xl font-bold">{{ $stats['total_collections'] ?? 0 }}</span>
+                    <span class="block text-2xl font-bold text-[#C9A227]">{{ $stats['total_collections'] ?? 0 }}</span>
                     <span class="text-sm text-gray-300">{{ __('company.collections.total_collections') }}</span>
                 </div>
                 <div class="rounded-lg border border-[#1E3A5F]/50 bg-gray-900/50 p-4">
-                    <span class="text-[#C9A227] block text-2xl font-bold">{{ $stats['total_egis'] ?? 0 }}</span>
+                    <span class="block text-2xl font-bold text-[#C9A227]">{{ $stats['total_egis'] ?? 0 }}</span>
                     <span class="text-sm text-gray-300">{{ __('company.collections.total_egis') }}</span>
                 </div>
                 <div class="rounded-lg border border-[#1E3A5F]/50 bg-gray-900/50 p-4">
-                    <span class="text-[#C9A227] block text-2xl font-bold">{{ $stats['total_supporters'] ?? 0 }}</span>
+                    <span class="block text-2xl font-bold text-[#C9A227]">{{ $stats['total_supporters'] ?? 0 }}</span>
                     <span class="text-sm text-gray-300">{{ __('company.collections.total_supporters') }}</span>
                 </div>
             </div>
@@ -33,7 +33,8 @@
                 @endforeach
             </div>
         @else
-            <div class="rounded-2xl border border-[#1E3A5F]/30 bg-gradient-to-br from-gray-800/50 to-transparent p-12 text-center">
+            <div
+                class="rounded-2xl border border-[#1E3A5F]/30 bg-gradient-to-br from-gray-800/50 to-transparent p-12 text-center">
                 <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#1E3A5F]/20">
                     <svg class="h-10 w-10 text-[#C9A227]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"

@@ -189,7 +189,7 @@ class AiApiController extends Controller
             
             $avgResponseTime = 850; // ms placeholder
 
-            $requestsByDay = AiTraitGeneration::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            $requestsByDay = AiTraitGeneration::selectRaw(\App\Helpers\DatabaseHelper::dateOnly('created_at') . ' as date, COUNT(*) as count')
                 ->where('created_at', '>=', now()->subDays(7))
                 ->groupBy('date')
                 ->orderBy('date')
@@ -201,7 +201,7 @@ class AiApiController extends Controller
             $requestsByModel = [];
             
             if ($hasModel && $hasTokensUsed) {
-                $requestsByModel = AiTraitGeneration::selectRaw('COALESCE(model, "gpt-4") as model, COUNT(*) as count, SUM(tokens_used) as tokens')
+                $requestsByModel = AiTraitGeneration::selectRaw('COALESCE(model, \'gpt-4\') as model, COUNT(*) as count, SUM(tokens_used) as tokens')
                     ->groupBy('model')
                     ->get()
                     ->map(fn($r) => [
@@ -210,7 +210,7 @@ class AiApiController extends Controller
                         'tokens' => (int) $r->tokens,
                     ]);
             } elseif ($hasModel) {
-                $requestsByModel = AiTraitGeneration::selectRaw('COALESCE(model, "gpt-4") as model, COUNT(*) as count')
+                $requestsByModel = AiTraitGeneration::selectRaw('COALESCE(model, \'gpt-4\') as model, COUNT(*) as count')
                     ->groupBy('model')
                     ->get()
                     ->map(fn($r) => [

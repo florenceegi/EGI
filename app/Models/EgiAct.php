@@ -38,8 +38,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon|null $deleted_at
  */
-class EgiAct extends Model
-{
+class EgiAct extends Model {
     use HasFactory, SoftDeletes;
 
     /**
@@ -101,8 +100,7 @@ class EgiAct extends Model
     /**
      * Spatie Activity Log configuration
      */
-    public function getActivitylogOptions(): LogOptions
-    {
+    public function getActivitylogOptions(): LogOptions {
         return LogOptions::defaults()
             ->logOnly([
                 'tipo_atto',
@@ -118,8 +116,7 @@ class EgiAct extends Model
     /**
      * Boot method for model events
      */
-    protected static function boot()
-    {
+    protected static function boot() {
         parent::boot();
 
         // Auto-generate document_id if not provided
@@ -139,32 +136,28 @@ class EgiAct extends Model
     /**
      * Scope: Filter by tipo_atto
      */
-    public function scopeOfType($query, string $tipo)
-    {
+    public function scopeOfType($query, string $tipo) {
         return $query->where('tipo_atto', $tipo);
     }
 
     /**
      * Scope: Filter by ente
      */
-    public function scopeByEnte($query, string $ente)
-    {
+    public function scopeByEnte($query, string $ente) {
         return $query->where('ente', $ente);
     }
 
     /**
      * Scope: Filter by direzione
      */
-    public function scopeByDirezione($query, string $direzione)
-    {
+    public function scopeByDirezione($query, string $direzione) {
         return $query->where('direzione', $direzione);
     }
 
     /**
      * Scope: Filter by date range
      */
-    public function scopeDateRange($query, $from = null, $to = null)
-    {
+    public function scopeDateRange($query, $from = null, $to = null) {
         if ($from) {
             $query->where('data_atto', '>=', $from);
         }
@@ -177,8 +170,7 @@ class EgiAct extends Model
     /**
      * Scope: Filter by importo range
      */
-    public function scopeImportoRange($query, $min = null, $max = null)
-    {
+    public function scopeImportoRange($query, $min = null, $max = null) {
         if ($min !== null) {
             $query->where('importo', '>=', $min);
         }
@@ -191,24 +183,21 @@ class EgiAct extends Model
     /**
      * Scope: Only completed acts
      */
-    public function scopeCompleted($query)
-    {
+    public function scopeCompleted($query) {
         return $query->where('processing_status', 'completed');
     }
 
     /**
      * Scope: Only pending acts
      */
-    public function scopePending($query)
-    {
+    public function scopePending($query) {
         return $query->where('processing_status', 'pending');
     }
 
     /**
      * Scope: Only failed acts
      */
-    public function scopeFailed($query)
-    {
+    public function scopeFailed($query) {
         return $query->where('processing_status', 'failed');
     }
 
@@ -216,8 +205,7 @@ class EgiAct extends Model
      * Scope: Full-text search on oggetto
      * Uses FULLTEXT index on MySQL/MariaDB, tsvector with GIN index on PostgreSQL
      */
-    public function scopeSearch($query, string $searchTerm)
-    {
+    public function scopeSearch($query, string $searchTerm) {
         if (DatabaseHelper::isMysql()) {
             // MySQL/MariaDB fulltext search
             return $query->whereRaw(
@@ -237,8 +225,7 @@ class EgiAct extends Model
     /**
      * Scope: Recent acts (last 30 days)
      */
-    public function scopeRecent($query, int $days = 30)
-    {
+    public function scopeRecent($query, int $days = 30) {
         return $query->where('created_at', '>=', now()->subDays($days));
     }
 
@@ -251,48 +238,42 @@ class EgiAct extends Model
     /**
      * Get categories from metadata_json
      */
-    public function getCategoriaAttribute(): array
-    {
+    public function getCategoriaAttribute(): array {
         return $this->metadata_json['categoria'] ?? [];
     }
 
     /**
      * Get firmatari from metadata_json
      */
-    public function getFirmatariAttribute(): array
-    {
+    public function getFirmatariAttribute(): array {
         return $this->metadata_json['firmatari'] ?? [];
     }
 
     /**
      * Get urgenza from metadata_json
      */
-    public function getUrgenzaAttribute(): ?string
-    {
+    public function getUrgenzaAttribute(): ?string {
         return $this->metadata_json['urgenza'] ?? null;
     }
 
     /**
      * Get scadenza from metadata_json
      */
-    public function getScadenzaAttribute(): ?string
-    {
+    public function getScadenzaAttribute(): ?string {
         return $this->metadata_json['scadenza'] ?? null;
     }
 
     /**
      * Check if act is blockchain certified
      */
-    public function getIsCertifiedAttribute(): bool
-    {
+    public function getIsCertifiedAttribute(): bool {
         return !empty($this->blockchain_tx);
     }
 
     /**
      * Get verification URL
      */
-    public function getVerificationUrlAttribute(): ?string
-    {
+    public function getVerificationUrlAttribute(): ?string {
         if (!$this->qr_code) {
             return null;
         }
@@ -309,8 +290,7 @@ class EgiAct extends Model
     /**
      * Mark act as completed
      */
-    public function markAsCompleted(): self
-    {
+    public function markAsCompleted(): self {
         $this->update(['processing_status' => 'completed']);
         return $this;
     }
@@ -318,8 +298,7 @@ class EgiAct extends Model
     /**
      * Mark act as failed
      */
-    public function markAsFailed(): self
-    {
+    public function markAsFailed(): self {
         $this->update(['processing_status' => 'failed']);
         return $this;
     }
@@ -327,8 +306,7 @@ class EgiAct extends Model
     /**
      * Get formatted importo
      */
-    public function getFormattedImporto(): string
-    {
+    public function getFormattedImporto(): string {
         if (!$this->importo) {
             return '-';
         }
@@ -339,16 +317,14 @@ class EgiAct extends Model
     /**
      * Get formatted data_atto
      */
-    public function getFormattedData(): string
-    {
+    public function getFormattedData(): string {
         return $this->data_atto->format('d/m/Y');
     }
 
     /**
      * Get short oggetto (truncated)
      */
-    public function getShortOggetto(int $length = 100): string
-    {
+    public function getShortOggetto(int $length = 100): string {
         return strlen($this->oggetto) > $length
             ? substr($this->oggetto, 0, $length) . '...'
             : $this->oggetto;
@@ -357,8 +333,7 @@ class EgiAct extends Model
     /**
      * Get AI cost formatted
      */
-    public function getFormattedAiCost(): string
-    {
+    public function getFormattedAiCost(): string {
         if (!$this->ai_cost) {
             return '€ 0.00';
         }
@@ -369,32 +344,28 @@ class EgiAct extends Model
     /**
      * Check if act has QR code
      */
-    public function hasQrCode(): bool
-    {
+    public function hasQrCode(): bool {
         return !empty($this->qr_code);
     }
 
     /**
      * Check if processing is complete
      */
-    public function isCompleted(): bool
-    {
+    public function isCompleted(): bool {
         return $this->processing_status === 'completed';
     }
 
     /**
      * Check if processing is pending
      */
-    public function isPending(): bool
-    {
+    public function isPending(): bool {
         return $this->processing_status === 'pending';
     }
 
     /**
      * Check if processing has failed
      */
-    public function isFailed(): bool
-    {
+    public function isFailed(): bool {
         return $this->processing_status === 'failed';
     }
 }

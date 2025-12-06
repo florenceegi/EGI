@@ -340,6 +340,7 @@ class StatisticsTestFactory {
         $userCollectionIds = $this->user3Data['collections']; // Already an array of IDs
         $collectionIdsStr = implode(',', $userCollectionIds);
 
+        $trueValue = \App\Helpers\DatabaseHelper::booleanValue(true);
         $sql = "
             WITH RankedReservations AS (
                 SELECT
@@ -356,7 +357,7 @@ class StatisticsTestFactory {
                 INNER JOIN collections c ON c.id = e.collection_id
                 WHERE c.id IN ({$collectionIdsStr})
                   AND r.status = 'active'
-                  AND r.is_current = 1
+                  AND r.is_current = {$trueValue}
             )
             SELECT id
             FROM RankedReservations
@@ -457,6 +458,7 @@ class StatisticsTestFactory {
         $userCollectionIds = $this->user3Data['collections'];
         $collectionIdsStr = implode(',', $userCollectionIds);
 
+        $trueValue = \App\Helpers\DatabaseHelper::booleanValue(true);
         $sql = "
             WITH RankedReservations AS (
                 SELECT
@@ -474,7 +476,7 @@ class StatisticsTestFactory {
                 INNER JOIN egis e ON e.id = r.egi_id
                 INNER JOIN collections c ON c.id = e.collection_id
                 WHERE r.status = 'active'
-                  AND r.is_current = 1
+                  AND r.is_current = {$trueValue}
                   AND c.id IN ({$collectionIdsStr})
             )
             SELECT *
@@ -548,6 +550,7 @@ class StatisticsTestFactory {
         // Use same ROW_NUMBER logic as StatisticsService per valid reservations
         $userCollectionIds = $this->user3Data['collections'];
         $collectionIdsStr = implode(',', $userCollectionIds);
+        $trueValue = \App\Helpers\DatabaseHelper::booleanValue(true);
 
         $sql = "
             WITH RankedReservations AS (
@@ -564,7 +567,7 @@ class StatisticsTestFactory {
                 INNER JOIN egis e ON e.id = r.egi_id
                 INNER JOIN collections c ON c.id = e.collection_id
                 WHERE r.status = 'active'
-                  AND r.is_current = 1
+                  AND r.is_current = {$trueValue}
                   AND c.id IN ({$collectionIdsStr})
             )
             SELECT *

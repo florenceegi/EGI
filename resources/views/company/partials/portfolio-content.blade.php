@@ -6,21 +6,22 @@
     $ownedSet = $ownedEgis ?? collect();
     $currentEgis = $currentMode === 'owned' ? $ownedSet : $createdSet;
     $currentStats = $portfolioStats ?? ($stats ?? []);
-    $summaryLabels = $currentMode === 'owned'
-        ? [
-            'collections' => __('company.portfolio.owned_collections'),
-            'egis' => __('company.portfolio.owned_egis'),
-        ]
-        : [
-            'collections' => __('company.portfolio.collections'),
-            'egis' => __('company.portfolio.egis'),
-        ];
-    $emptyTitle = $currentMode === 'owned'
-        ? __('company.portfolio.empty_owned_title')
-        : __('company.portfolio.empty_title');
-    $emptyDescription = $currentMode === 'owned'
-        ? __('company.portfolio.empty_owned_description')
-        : __('company.portfolio.empty_description');
+    $summaryLabels =
+        $currentMode === 'owned'
+            ? [
+                'collections' => __('company.portfolio.owned_collections'),
+                'egis' => __('company.portfolio.owned_egis'),
+            ]
+            : [
+                'collections' => __('company.portfolio.collections'),
+                'egis' => __('company.portfolio.egis'),
+            ];
+    $emptyTitle =
+        $currentMode === 'owned' ? __('company.portfolio.empty_owned_title') : __('company.portfolio.empty_title');
+    $emptyDescription =
+        $currentMode === 'owned'
+            ? __('company.portfolio.empty_owned_description')
+            : __('company.portfolio.empty_description');
 @endphp
 
 <div class="min-h-screen bg-gray-800">
@@ -30,11 +31,12 @@
         <div class="mb-8 text-center">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                    <span class="text-[#C9A227] block text-xl font-bold">{{ $currentStats['total_collections'] ?? 0 }}</span>
+                    <span
+                        class="block text-xl font-bold text-[#C9A227]">{{ $currentStats['total_collections'] ?? 0 }}</span>
                     <span class="text-sm text-gray-300">{{ $summaryLabels['collections'] }}</span>
                 </div>
                 <div>
-                    <span class="text-[#C9A227] block text-xl font-bold">{{ $currentStats['total_egis'] ?? 0 }}</span>
+                    <span class="block text-xl font-bold text-[#C9A227]">{{ $currentStats['total_egis'] ?? 0 }}</span>
                     <span class="text-sm text-gray-300">{{ $summaryLabels['egis'] }}</span>
                 </div>
             </div>
@@ -67,14 +69,17 @@
                         class="view-toggle {{ ($view ?? 'grid') == 'grid' ? 'bg-[#1E3A5F] text-[#C9A227]' : 'bg-gray-700 text-gray-300' }} rounded-l-lg border border-gray-600 p-2 transition-colors hover:bg-[#1E3A5F]/80"
                         type="button" aria-pressed="{{ ($view ?? 'grid') == 'grid' ? 'true' : 'false' }}">
                         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zm6-6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                            <path
+                                d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zm6-6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                         </svg>
                     </button>
                     <button data-view="list"
                         class="view-toggle {{ ($view ?? 'grid') == 'list' ? 'bg-[#1E3A5F] text-[#C9A227]' : 'bg-gray-700 text-gray-300' }} rounded-r-lg border border-gray-600 p-2 transition-colors hover:bg-[#1E3A5F]/80"
                         type="button" aria-pressed="{{ ($view ?? 'grid') == 'list' ? 'true' : 'false' }}">
                         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                            <path fill-rule="evenodd"
+                                d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                                clip-rule="evenodd" />
                         </svg>
                     </button>
                 </div>
@@ -98,7 +103,8 @@
                 </div>
             @endif
         @else
-            <div class="rounded-2xl border border-[#1E3A5F]/30 bg-gradient-to-br from-gray-800/50 to-transparent p-12 text-center">
+            <div
+                class="rounded-2xl border border-[#1E3A5F]/30 bg-gradient-to-br from-gray-800/50 to-transparent p-12 text-center">
                 <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#1E3A5F]/20">
                     <svg class="h-10 w-10 text-[#C9A227]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"

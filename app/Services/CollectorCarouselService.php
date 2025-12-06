@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Helpers\DatabaseHelper;
 use App\Models\User;
 use App\Services\CurrencyService;
 use Illuminate\Support\Collection;
@@ -40,35 +41,42 @@ class CollectorCarouselService {
      * @return Collection Collection of collectors with spending stats
      */
     public function getTopCollectors(int $limit = 10): Collection {
+        // Build cross-database compatible boolean comparison
+        $trueValue = DatabaseHelper::booleanValue(true);
+        
+        // Build the total spending subquery as a string for both select and where
+        $totalSpendingSubquery = "
+            COALESCE((
+                SELECT SUM(r.offer_amount_fiat)
+                FROM reservations r
+                WHERE r.user_id = users.id
+                AND r.is_current = {$trueValue}
+                AND r.status = 'active'
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM reservations r2
+                    WHERE r2.egi_id = r.egi_id
+                    AND r2.offer_amount_fiat > r.offer_amount_fiat
+                    AND r2.is_current = {$trueValue}
+                    AND r2.status = 'active'
+                )
+            ), 0)
+        ";
+        
         return User::select([
             'users.*',
-            DB::raw('
-                    COALESCE((
-                        SELECT SUM(reservations.offer_amount_fiat)
-                        FROM reservations
-                        WHERE reservations.user_id = users.id
-                        AND reservations.is_current = 1
-                        AND reservations.status = "active"
-                        AND NOT EXISTS (
-                            SELECT 1
-                            FROM reservations r2
-                            WHERE r2.egi_id = reservations.egi_id
-                            AND r2.offer_amount_fiat > reservations.offer_amount_fiat
-                            AND r2.is_current = 1
-                            AND r2.status = "active"
-                        )
-                    ), 0) as total_spending
-                ')
+            DB::raw("{$totalSpendingSubquery} as total_spending")
         ])
-            ->whereExists(function ($query) {
+            ->whereExists(function ($query) use ($trueValue) {
                 $query->select(DB::raw(1))
                     ->from('reservations')
                     ->whereColumn('reservations.user_id', 'users.id')
-                    ->where('reservations.is_current', true)
+                    ->whereRaw("reservations.is_current = {$trueValue}")
                     ->where('reservations.status', 'active');
             })
-            ->having('total_spending', '>', 0)
-            ->orderByDesc('total_spending')
+            // PostgreSQL doesn't allow aliases in HAVING, use the raw expression
+            ->whereRaw("{$totalSpendingSubquery} > 0")
+            ->orderByRaw("{$totalSpendingSubquery} DESC")
             ->limit($limit)
             ->get()
             ->map(function ($collector) {
@@ -89,16 +97,18 @@ class CollectorCarouselService {
      * Get count of winning reservations for a collector (Multi-Currency)
      */
     private function getWinningReservationsCount(int $userId): int {
+        $trueValue = DatabaseHelper::booleanValue(true);
+        
         return DB::table('reservations')
             ->where('user_id', $userId)
-            ->where('is_current', true)
+            ->whereRaw("is_current = {$trueValue}")
             ->where('status', 'active')
-            ->whereNotExists(function ($query) {
+            ->whereNotExists(function ($query) use ($trueValue) {
                 $query->select(DB::raw(1))
                     ->from('reservations as r2')
                     ->whereColumn('r2.egi_id', 'reservations.egi_id')
                     ->whereColumn('r2.offer_amount_fiat', '>', 'reservations.offer_amount_fiat')
-                    ->where('r2.is_current', true)
+                    ->whereRaw("r2.is_current = {$trueValue}")
                     ->where('r2.status', 'active');
             })
             ->count();
@@ -108,20 +118,22 @@ class CollectorCarouselService {
      * Get count of activated EGIs (EGIs where this collector has winning reservation)
      */
     private function getActivatedEgisCount(int $userId): int {
+        $trueValue = DatabaseHelper::booleanValue(true);
+        
         return DB::table('egis')
-            ->whereExists(function ($query) use ($userId) {
+            ->whereExists(function ($query) use ($userId, $trueValue) {
                 $query->select(DB::raw(1))
                     ->from('reservations')
                     ->whereColumn('reservations.egi_id', 'egis.id')
                     ->where('reservations.user_id', $userId)
-                    ->where('reservations.is_current', true)
+                    ->whereRaw("reservations.is_current = {$trueValue}")
                     ->where('reservations.status', 'active')
-                    ->whereNotExists(function ($subquery) {
+                    ->whereNotExists(function ($subquery) use ($trueValue) {
                         $subquery->select(DB::raw(1))
                             ->from('reservations as r2')
                             ->whereColumn('r2.egi_id', 'reservations.egi_id')
                             ->whereColumn('r2.offer_amount_fiat', '>', 'reservations.offer_amount_fiat')
-                            ->where('r2.is_current', true)
+                            ->whereRaw("r2.is_current = {$trueValue}")
                             ->where('r2.status', 'active');
                     });
             })
@@ -138,16 +150,18 @@ class CollectorCarouselService {
             return [];
         }
 
+        $trueValue = DatabaseHelper::booleanValue(true);
+
         $totalSpending = DB::table('reservations')
             ->where('user_id', $userId)
-            ->where('is_current', true)
+            ->whereRaw("is_current = {$trueValue}")
             ->where('status', 'active')
-            ->whereNotExists(function ($query) {
+            ->whereNotExists(function ($query) use ($trueValue) {
                 $query->select(DB::raw(1))
                     ->from('reservations as r2')
                     ->whereColumn('r2.egi_id', 'reservations.egi_id')
                     ->whereColumn('r2.offer_amount_fiat', '>', 'reservations.offer_amount_fiat')
-                    ->where('r2.is_current', true)
+                    ->whereRaw("r2.is_current = {$trueValue}")
                     ->where('r2.status', 'active');
             })
             ->sum('offer_amount_fiat');
@@ -174,9 +188,11 @@ class CollectorCarouselService {
      * Get count of active reservations for a collector
      */
     private function getActiveReservationsCount(int $userId): int {
+        $trueValue = DatabaseHelper::booleanValue(true);
+        
         return DB::table('reservations')
             ->where('user_id', $userId)
-            ->where('is_current', true)
+            ->whereRaw("is_current = {$trueValue}")
             ->where('status', 'active')
             ->count();
     }

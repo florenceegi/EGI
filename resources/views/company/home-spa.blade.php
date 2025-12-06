@@ -12,9 +12,18 @@
                 --company-accent-light: #D4B445;
                 --company-success: #2D7D46;
             }
-            .text-company-accent { color: var(--company-accent); }
-            .border-company-accent { border-color: var(--company-accent); }
-            .bg-company-primary { background-color: var(--company-primary); }
+
+            .text-company-accent {
+                color: var(--company-accent);
+            }
+
+            .border-company-accent {
+                border-color: var(--company-accent);
+            }
+
+            .bg-company-primary {
+                background-color: var(--company-primary);
+            }
         </style>
     @endpush
 
@@ -43,7 +52,8 @@
                 {{-- Logo + Info --}}
                 <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:gap-8 md:col-span-8">
                     <div class="group relative flex-shrink-0">
-                        <div class="h-32 w-32 overflow-hidden rounded-2xl shadow-2xl ring-4 ring-[#C9A227]/30 md:h-40 md:w-40">
+                        <div
+                            class="h-32 w-32 overflow-hidden rounded-2xl shadow-2xl ring-4 ring-[#C9A227]/30 md:h-40 md:w-40">
                             <img src="{{ $company->profile_photo_url }}" alt="{{ $company->name }}"
                                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                                 loading="lazy">
@@ -61,16 +71,20 @@
 
                     <div class="flex flex-col text-center sm:text-left">
                         <div class="mb-2 flex items-center justify-center gap-2 sm:justify-start">
-                            <span class="rounded-full bg-[#1E3A5F] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#C9A227]">
+                            <span
+                                class="rounded-full bg-[#1E3A5F] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#C9A227]">
                                 {{ __('company.home.business_badge') }}
                             </span>
                         </div>
-                        <h1 class="font-playfair mb-1 text-3xl font-bold text-white md:text-5xl">{{ $company->name }}</h1>
+                        <h1 class="font-playfair mb-1 text-3xl font-bold text-white md:text-5xl">{{ $company->name }}
+                        </h1>
                         @if ($company->tagline)
-                            <p class="text-[#C9A227] font-source-sans text-lg italic md:text-xl">"{{ $company->tagline }}"</p>
+                            <p class="font-source-sans text-lg italic text-[#C9A227] md:text-xl">
+                                "{{ $company->tagline }}"</p>
                         @endif
                         <div class="mt-3">
-                            <p class="text-gray-400">{{ __('company.home.member_since', ['year' => $company->created_at->format('Y')]) }}</p>
+                            <p class="text-gray-400">
+                                {{ __('company.home.member_since', ['year' => $company->created_at->format('Y')]) }}</p>
                         </div>
                     </div>
                 </div>
@@ -80,15 +94,20 @@
                     <div class="flex gap-8 text-center">
                         <div>
                             <p class="text-2xl font-bold text-white">{{ number_format($stats['total_egis'] ?? 0) }}</p>
-                            <p class="text-sm uppercase tracking-wider text-gray-400">{{ __('company.home.stats.egis') }}</p>
+                            <p class="text-sm uppercase tracking-wider text-gray-400">
+                                {{ __('company.home.stats.egis') }}</p>
                         </div>
                         <div>
-                            <p class="text-2xl font-bold text-white">{{ number_format($stats['total_collections'] ?? 0) }}</p>
-                            <p class="text-sm uppercase tracking-wider text-gray-400">{{ __('company.home.stats.collections') }}</p>
+                            <p class="text-2xl font-bold text-white">
+                                {{ number_format($stats['total_collections'] ?? 0) }}</p>
+                            <p class="text-sm uppercase tracking-wider text-gray-400">
+                                {{ __('company.home.stats.collections') }}</p>
                         </div>
                         <div>
-                            <p class="text-2xl font-bold text-white">{{ number_format($stats['total_supporters'] ?? 0) }}</p>
-                            <p class="text-sm uppercase tracking-wider text-gray-400">{{ __('company.home.stats.supporters') }}</p>
+                            <p class="text-2xl font-bold text-white">
+                                {{ number_format($stats['total_supporters'] ?? 0) }}</p>
+                            <p class="text-sm uppercase tracking-wider text-gray-400">
+                                {{ __('company.home.stats.supporters') }}</p>
                         </div>
                     </div>
                 </div>
@@ -125,7 +144,8 @@
     {{-- CONTENUTO DINAMICO --}}
     <x-slot name="heroFullWidth">
         <div id="content-loader" class="hidden py-12 text-center">
-            <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#C9A227] border-t-transparent"></div>
+            <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#C9A227] border-t-transparent">
+            </div>
             <p class="mt-4 text-gray-400">{{ __('common.loading') }}</p>
         </div>
 
@@ -186,23 +206,26 @@
                 showLoader();
 
                 fetch(url + '?partial=1', {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'text/html'
-                    }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    contentContainer.innerHTML = html;
-                    hideLoader();
-                    history.pushState({ url: url }, '', url);
-                    initializePortfolioViewToggle();
-                })
-                .catch(error => {
-                    console.error('Error loading content:', error);
-                    contentContainer.innerHTML = '<p class="text-red-500 text-center py-12">Error loading content</p>';
-                    hideLoader();
-                });
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'text/html'
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        contentContainer.innerHTML = html;
+                        hideLoader();
+                        history.pushState({
+                            url: url
+                        }, '', url);
+                        initializePortfolioViewToggle();
+                    })
+                    .catch(error => {
+                        console.error('Error loading content:', error);
+                        contentContainer.innerHTML =
+                            '<p class="text-red-500 text-center py-12">Error loading content</p>';
+                        hideLoader();
+                    });
             }
 
             function initializePortfolioViewToggle() {
@@ -225,19 +248,25 @@
                         showLoader();
 
                         fetch(modeFetchUrl.toString(), {
-                            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' }
-                        })
-                        .then(response => response.text())
-                        .then(html => {
-                            contentContainer.innerHTML = html;
-                            hideLoader();
-                            history.pushState({ url: modeUrl.toString() }, '', modeUrl.toString());
-                        })
-                        .catch(error => {
-                            console.error('Error loading portfolio mode:', error);
-                            contentContainer.innerHTML = '<p class="text-red-500 text-center py-12">Error loading content</p>';
-                            hideLoader();
-                        });
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'text/html'
+                                }
+                            })
+                            .then(response => response.text())
+                            .then(html => {
+                                contentContainer.innerHTML = html;
+                                hideLoader();
+                                history.pushState({
+                                    url: modeUrl.toString()
+                                }, '', modeUrl.toString());
+                            })
+                            .catch(error => {
+                                console.error('Error loading portfolio mode:', error);
+                                contentContainer.innerHTML =
+                                    '<p class="text-red-500 text-center py-12">Error loading content</p>';
+                                hideLoader();
+                            });
                         return;
                     }
 
@@ -258,19 +287,25 @@
                     showLoader();
 
                     fetch(fetchUrl.toString(), {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' }
-                    })
-                    .then(response => response.text())
-                    .then(html => {
-                        contentContainer.innerHTML = html;
-                        hideLoader();
-                        history.pushState({ url: url.toString() }, '', url.toString());
-                    })
-                    .catch(error => {
-                        console.error('Error loading view:', error);
-                        contentContainer.innerHTML = '<p class="text-red-500 text-center py-12">Error loading content</p>';
-                        hideLoader();
-                    });
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'text/html'
+                            }
+                        })
+                        .then(response => response.text())
+                        .then(html => {
+                            contentContainer.innerHTML = html;
+                            hideLoader();
+                            history.pushState({
+                                url: url.toString()
+                            }, '', url.toString());
+                        })
+                        .catch(error => {
+                            console.error('Error loading view:', error);
+                            contentContainer.innerHTML =
+                                '<p class="text-red-500 text-center py-12">Error loading content</p>';
+                            hideLoader();
+                        });
                 });
 
                 contentContainer.dataset.viewToggleBound = 'true';

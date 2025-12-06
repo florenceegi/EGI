@@ -53,10 +53,10 @@ return new class extends Migration {
             $table->timestamps();
 
             // Indexes for performance
-            $table->index(['user_id', 'created_at'], 'idx_user_actions');
-            $table->index('action_code', 'idx_action_code');
-            $table->index('status', 'idx_status');
-            $table->index(['user_id', 'status'], 'idx_user_status');
+            $table->index(['user_id', 'created_at'], 'idx_natan_tutor_user_actions');
+            $table->index('action_code', 'idx_natan_tutor_action_code');
+            $table->index('status', 'idx_natan_tutor_status');
+            $table->index(['user_id', 'status'], 'idx_natan_tutor_user_status');
         });
     }
 

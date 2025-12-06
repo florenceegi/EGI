@@ -9,10 +9,10 @@
 
     {{-- Header Slot: Definisce l'intestazione principale della pagina --}}
     <x-slot name="header">
-        <h1 id="privacy-policy-title" class="text-3xl font-bold text-gray-900">
+        <h1 id="privacy-policy-title" class="text-3xl font-bold text-base-content">
             {{ __('gdpr.privacy_policy') }}
         </h1>
-        <p class="mt-2 text-gray-600" id="privacy-policy-desc">
+        <p class="mt-2 text-base-content/70" id="privacy-policy-desc">
             {{ __('gdpr.privacy_policy_description') }}
         </p>
     </x-slot>
