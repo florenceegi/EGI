@@ -214,7 +214,7 @@ class EgiAct extends Model
 
     /**
      * Scope: Full-text search on oggetto
-     * Uses FULLTEXT index on MySQL/MariaDB, LIKE fallback on PostgreSQL/SQLite
+     * Uses FULLTEXT index on MySQL/MariaDB, tsvector with GIN index on PostgreSQL
      */
     public function scopeSearch($query, string $searchTerm)
     {
@@ -225,12 +225,9 @@ class EgiAct extends Model
                 [$searchTerm]
             );
         } elseif (DatabaseHelper::isPostgres()) {
-            // PostgreSQL: use tsvector if available, otherwise ILIKE
-            // Note: For full FTS support, a tsvector column should be added
-            return $query->whereRaw(
-                'oggetto ILIKE ?',
-                ['%' . $searchTerm . '%']
-            );
+            // PostgreSQL: use tsvector column with GIN index
+            $fts = DatabaseHelper::fullTextSearch('oggetto', 'italian');
+            return $query->whereRaw($fts['where'], [$searchTerm]);
         } else {
             // SQLite and other databases: fallback to LIKE
             return $query->where('oggetto', 'LIKE', "%{$searchTerm}%");
