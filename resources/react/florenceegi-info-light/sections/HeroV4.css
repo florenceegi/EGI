@@ -2,6 +2,9 @@
  * Hero Section V4 Styles
  */
 
+/* Motto - Font distintivo corsivo - MUST be at top */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600&display=swap');
+
 .hero-v4 {
     min-height: 100vh;
     display: flex;
@@ -47,7 +50,6 @@
 }
 
 /* Motto - Font distintivo corsivo */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600&display=swap');
 
 .hero-v4__motto {
     font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
