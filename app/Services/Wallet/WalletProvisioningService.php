@@ -587,8 +587,7 @@ class WalletProvisioningService {
      * @return array ['txId' => string, 'amount' => int, 'block' => int]
      * @throws \Exception if funding fails
      */
-    public function fundWallet(Wallet $wallet, ?int $amountMicroAlgos = null): array
-    {
+    public function fundWallet(Wallet $wallet, ?int $amountMicroAlgos = null): array {
         try {
             // 1. Validate wallet has an address
             if (empty($wallet->wallet)) {
@@ -677,8 +676,7 @@ class WalletProvisioningService {
      * @return Wallet The created and optionally funded wallet
      * @throws \Exception
      */
-    public function provisionAndFundWallet(User $user, array $data = [], ?bool $autoFund = null, ?int $fundAmount = null): Wallet
-    {
+    public function provisionAndFundWallet(User $user, array $data = [], ?bool $autoFund = null, ?int $fundAmount = null): Wallet {
         // 1. Create wallet
         $wallet = $this->provisionUserWallet($user, $data);
 

@@ -53,12 +53,17 @@
                             @php
                                 $monetizationType = $collection->monetization_type ?? 'epp';
                                 $isEpp = $monetizationType === 'epp';
-                                $isCompanyCollection = $collection->is_epp_voluntary || ($collection->creator && $collection->creator->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value);
+                                $isCompanyCollection =
+                                    $collection->is_epp_voluntary ||
+                                    ($collection->creator &&
+                                        $collection->creator->usertype ===
+                                            \App\Enums\User\MerchantUserTypeEnum::COMPANY->value);
                             @endphp
 
                             @if ($isCompanyCollection)
                                 {{-- COMPANY MODE: Subscription Required + Voluntary EPP Donation --}}
-                                <div class="flex items-start gap-4 rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-4">
+                                <div
+                                    class="flex items-start gap-4 rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-4">
                                     <div class="flex-shrink-0 rounded-lg bg-indigo-500/20 p-2">
                                         <span class="material-symbols-outlined text-2xl text-indigo-400">business</span>
                                     </div>
@@ -67,11 +72,13 @@
                                             <h5 class="font-semibold text-indigo-400">
                                                 {{ __('collection.show.dashboard.company_mode') }}</h5>
                                             @if ($collection->subscription_status === 'active')
-                                                <span class="rounded-full border border-green-500/30 bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400">
+                                                <span
+                                                    class="rounded-full border border-green-500/30 bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400">
                                                     {{ __('collection.show.dashboard.active') }}
                                                 </span>
                                             @else
-                                                <span class="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2 py-1 text-xs font-medium text-yellow-400">
+                                                <span
+                                                    class="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2 py-1 text-xs font-medium text-yellow-400">
                                                     {{ __('collection.show.dashboard.subscription_required') }}
                                                 </span>
                                             @endif
@@ -81,11 +88,13 @@
                                         </p>
                                         <div class="space-y-1 text-sm text-gray-400">
                                             <div class="flex items-center gap-2">
-                                                <span class="material-symbols-outlined text-indigo-400" style="font-size: 16px;">check_circle</span>
+                                                <span class="material-symbols-outlined text-indigo-400"
+                                                    style="font-size: 16px;">check_circle</span>
                                                 {{ __('collection.show.dashboard.subscription_access') }}
                                             </div>
                                             <div class="flex items-center gap-2">
-                                                <span class="material-symbols-outlined text-green-400" style="font-size: 16px;">volunteer_activism</span>
+                                                <span class="material-symbols-outlined text-green-400"
+                                                    style="font-size: 16px;">volunteer_activism</span>
                                                 {{ __('collection.company_epp_voluntary') }}
                                             </div>
                                         </div>
@@ -105,27 +114,31 @@
                                     @if ($collection->eppProject)
                                         <div class="mb-4 rounded border border-green-500/20 bg-green-500/10 p-3">
                                             <p class="text-sm text-gray-300">
-                                                {{ __('collection.show.dashboard.supporting') }}: 
-                                                <strong class="text-green-400">{{ $collection->eppProject->name }}</strong>
+                                                {{ __('collection.show.dashboard.supporting') }}:
+                                                <strong
+                                                    class="text-green-400">{{ $collection->eppProject->name }}</strong>
                                             </p>
                                             <p class="mt-1 text-xs text-gray-400">
-                                                {{ __('collection.donation_percentage_label') }}: 
-                                                <strong class="text-green-400">{{ $collection->epp_donation_percentage ?? 0 }}%</strong>
+                                                {{ __('collection.donation_percentage_label') }}:
+                                                <strong
+                                                    class="text-green-400">{{ $collection->epp_donation_percentage ?? 0 }}%</strong>
                                             </p>
                                         </div>
                                     @endif
 
                                     {{-- Donation Percentage Slider --}}
                                     <div class="mb-4">
-                                        <label for="companyDonationPercentage" class="mb-2 block text-sm font-medium text-gray-300">
+                                        <label for="companyDonationPercentage"
+                                            class="mb-2 block text-sm font-medium text-gray-300">
                                             {{ __('collection.donation_percentage_label') }}
                                         </label>
                                         <div class="flex items-center gap-4">
-                                            <input type="range" id="companyDonationPercentage" 
+                                            <input type="range" id="companyDonationPercentage"
                                                 class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-700 accent-green-500"
-                                                min="0" max="100" step="1" 
+                                                min="0" max="100" step="1"
                                                 value="{{ $collection->epp_donation_percentage ?? 0 }}">
-                                            <span id="donationPercentageValue" class="min-w-[3rem] text-center text-lg font-bold text-green-400">
+                                            <span id="donationPercentageValue"
+                                                class="min-w-[3rem] text-center text-lg font-bold text-green-400">
                                                 {{ $collection->epp_donation_percentage ?? 0 }}%
                                             </span>
                                         </div>
@@ -318,7 +331,8 @@
                                                     <div class="text-xs text-gray-400">{{ $tierData['egis'] }}
                                                         {{ __('collection.show.dashboard.egis_per_month') }}</div>
                                                 </div>
-                                                <div class="text-lg font-bold text-indigo-400">{{ $tierData['price'] }}
+                                                <div class="text-lg font-bold text-indigo-400">
+                                                    {{ $tierData['price'] }}
                                                 </div>
                                             </div>
                                         </button>
@@ -573,7 +587,8 @@
                     @else
                         <div class="rounded-xl border border-gray-700 bg-gray-800/30 p-12 text-center">
                             <span class="material-symbols-outlined text-4xl text-gray-600">subscriptions</span>
-                            <p class="mt-2 text-gray-400">{{ __('collection.show.dashboard.no_active_subscription') }}
+                            <p class="mt-2 text-gray-400">
+                                {{ __('collection.show.dashboard.no_active_subscription') }}
                             </p>
                             <p class="text-sm text-gray-500">{{ __('collection.show.dashboard.using_epp_mode') }}</p>
                         </div>

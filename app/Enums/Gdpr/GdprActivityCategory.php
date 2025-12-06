@@ -16,85 +16,85 @@ use App\Enums\Gdpr\PrivacyLevel;
  * v1.1: Aggiunto supporto completo per sistema Biography e gestione contenuti.
  */
 enum GdprActivityCategory: string {
-/** Login/logout activities */
+    /** Login/logout activities */
     case AUTHENTICATION = 'authentication';
 
-/** Authentication-related activities */
+    /** Authentication-related activities */
     case AUTHENTICATION_LOGIN = 'authentication_login';
 
-/** Logout activities */
+    /** Logout activities */
     case AUTHENTICATION_LOGOUT = 'authentication_logout';
 
-/** User Registration Activities */
+    /** User Registration Activities */
     case REGISTRATION = 'registration';
 
-/** GDPR-related actions */
+    /** GDPR-related actions */
     case GDPR_ACTIONS = 'gdpr_actions';
 
-/** Data viewing/downloading */
+    /** Data viewing/downloading */
     case DATA_ACCESS = 'data_access';
 
-/** Data deletion and erasure */
+    /** Data deletion and erasure */
     case DATA_DELETION = 'data_deletion';
 
-/** Content creation activities (biographies, posts, etc.) */
+    /** Content creation activities (biographies, posts, etc.) */
     case CONTENT_CREATION = 'content_creation';
 
-/** Content modification and updates */
+    /** Content modification and updates */
     case CONTENT_MODIFICATION = 'content_modification';
 
-/** General platform interaction */
+    /** General platform interaction */
     case PLATFORM_USAGE = 'platform_usage';
 
-/** System interactions and UI operations */
+    /** System interactions and UI operations */
     case SYSTEM_INTERACTION = 'system_interaction';
 
-/** Security-related activities */
+    /** Security-related activities */
     case SECURITY_EVENTS = 'security_events';
 
-/** Administrative access to back-office (superadmin/admin) */
+    /** Administrative access to back-office (superadmin/admin) */
     case ADMIN_ACCESS = 'admin_access';
 
-/** Administrative actions and changes in back-office */
+    /** Administrative actions and changes in back-office */
     case ADMIN_ACTION = 'admin_action';
 
-/** Blockchain/NFT activities */
+    /** Blockchain/NFT activities */
     case BLOCKCHAIN_ACTIVITY = 'blockchain_activity';
 
-/** File and media operations */
+    /** File and media operations */
     case MEDIA_MANAGEMENT = 'media_management';
 
-/** Privacy and consent operations */
+    /** Privacy and consent operations */
     case PRIVACY_MANAGEMENT = 'privacy_management';
 
-/** Personal data updates */
+    /** Personal data updates */
     case PERSONAL_DATA_UPDATE = 'personal_data_update';
 
-/** Wallet and financial operations */
+    /** Wallet and financial operations */
     case WALLET_MANAGEMENT = 'wallet_management';
 
-/** Wallet creation (registration) */
+    /** Wallet creation (registration) */
     case WALLET_CREATED = 'wallet_created';
 
-/** Wallet secret accessed (mnemonic export) */
+    /** Wallet secret accessed (mnemonic export) */
     case WALLET_SECRET_ACCESSED = 'wallet_secret_accessed';
 
-/** Wallet fully redeemed (custodial to non-custodial transfer) */
+    /** Wallet fully redeemed (custodial to non-custodial transfer) */
     case WALLET_REDEEMED = 'wallet_redeemed';
 
-/** Wallet mnemonic permanently deleted from platform */
+    /** Wallet mnemonic permanently deleted from platform */
     case WALLET_MNEMONIC_DELETED = 'wallet_mnemonic_deleted';
 
-/** Notification management and interactions */
+    /** Notification management and interactions */
     case NOTIFICATION_MANAGEMENT = 'notification_management';
 
-/** AI processing and analysis activities */
+    /** AI processing and analysis activities */
     case AI_PROCESSING = 'ai_processing';
 
-/** AI Credits usage and financial tracking */
+    /** AI Credits usage and financial tracking */
     case AI_CREDITS_USAGE = 'ai_credits_usage';
 
-/** EGI trait management (creation, modification) */
+    /** EGI trait management (creation, modification) */
     case EGI_TRAIT_MANAGEMENT = 'egi_trait_management';
 
     /**

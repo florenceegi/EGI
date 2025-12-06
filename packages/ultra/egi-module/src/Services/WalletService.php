@@ -143,12 +143,12 @@ class WalletService implements WalletServiceInterface {
         try {
             // Check if this is a company collection (EPP is voluntary, 0% by default)
             $isCompanyCollection = $collection->is_epp_voluntary === true || $user->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value;
-            
+
             // Calculate percentages based on collection type
             // For company: Creator gets EPP share since EPP is 0%
             $creatorMintRoyalty = WalletRoleEnum::CREATOR->getMintRoyalty();
             $eppMintRoyalty = WalletRoleEnum::EPP->getMintRoyalty();
-            
+
             if ($isCompanyCollection) {
                 // Company: Creator gets 88% (68% + 20% EPP), EPP gets 0%
                 $creatorMintRoyalty = $creatorMintRoyalty + $eppMintRoyalty; // 88%
@@ -174,7 +174,7 @@ class WalletService implements WalletServiceInterface {
                 if ($isCompanyCollection && $role === WalletRoleEnum::EPP) {
                     $mintRoyalty = $eppMintRoyalty; // 0% for company
                 }
-                
+
                 $platformWallets[$role->value] = $this->createWallet(
                     $collection->id,
                     $role->getUserId(),

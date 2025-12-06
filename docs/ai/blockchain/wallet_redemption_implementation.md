@@ -99,6 +99,7 @@ GET /wallet/redemption
 ```
 
 Il controller:
+
 1. Verifica che l'utente abbia un wallet
 2. Verifica che il wallet non sia già riscattato
 3. Calcola il costo basato sul numero di EGI
@@ -111,6 +112,7 @@ POST /wallet/redemption/execute
 ```
 
 **Request Body:**
+
 ```json
 {
     "confirmation_text": "CONFERMO RISCATTO",
@@ -119,6 +121,7 @@ POST /wallet/redemption/execute
 ```
 
 **Response (Success):**
+
 ```json
 {
     "success": true,
@@ -175,19 +178,19 @@ La sequenza esatta delle operazioni blockchain:
 
 ### Microservice (Node.js)
 
-| File | Modifiche |
-|------|-----------|
+| File                             | Modifiche                                                                                     |
+| -------------------------------- | --------------------------------------------------------------------------------------------- |
 | `algokit-microservice/server.js` | +5 nuovi endpoint: `/opt-in-asa`, `/batch-opt-in-asa`, `/transfer-asa`, `/batch-transfer-asa` |
 
 ### Laravel Backend
 
-| File | Modifiche |
-|------|-----------|
-| `app/Services/Wallet/WalletRedemptionService.php` | **NUOVO** - Servizio orchestratore completo |
-| `app/Services/Blockchain/AlgorandClient.php` | +4 metodi: `optInToAsa()`, `batchOptInToAsas()`, `transferAsa()`, `batchTransferAsas()` |
-| `app/Http/Controllers/WalletController.php` | +3 metodi: `executeRedemption()`, `getRedemptionCost()`, `getUserEgisForRedemption()` |
-| `app/Enums/Gdpr/GdprActivityCategory.php` | +2 casi: `WALLET_REDEEMED`, `WALLET_MNEMONIC_DELETED` |
-| `routes/web.php` | +3 rotte: `/redemption/execute`, `/redemption/cost`, `/redemption/egis` |
+| File                                              | Modifiche                                                                               |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `app/Services/Wallet/WalletRedemptionService.php` | **NUOVO** - Servizio orchestratore completo                                             |
+| `app/Services/Blockchain/AlgorandClient.php`      | +4 metodi: `optInToAsa()`, `batchOptInToAsas()`, `transferAsa()`, `batchTransferAsas()` |
+| `app/Http/Controllers/WalletController.php`       | +3 metodi: `executeRedemption()`, `getRedemptionCost()`, `getUserEgisForRedemption()`   |
+| `app/Enums/Gdpr/GdprActivityCategory.php`         | +2 casi: `WALLET_REDEEMED`, `WALLET_MNEMONIC_DELETED`                                   |
+| `routes/web.php`                                  | +3 rotte: `/redemption/execute`, `/redemption/cost`, `/redemption/egis`                 |
 
 ---
 
@@ -219,9 +222,10 @@ const EGILI_PER_ALGO = 100;
 ### GDPR Compliance
 
 Tutti gli accessi sensibili sono loggati:
-- `WALLET_SECRET_ACCESSED` - Accesso alla mnemonic
-- `WALLET_REDEEMED` - Riscatto completato
-- `WALLET_MNEMONIC_DELETED` - Cancellazione mnemonic
+
+-   `WALLET_SECRET_ACCESSED` - Accesso alla mnemonic
+-   `WALLET_REDEEMED` - Riscatto completato
+-   `WALLET_MNEMONIC_DELETED` - Cancellazione mnemonic
 
 ### Memory Security
 
@@ -253,6 +257,7 @@ $this->logger->info('WalletRedemption: Opt-in to ASA', [
 **Problema**: Le transazioni opt-in falliscono dopo che gli EGILI sono stati detratti.
 
 **Soluzione**:
+
 1. La transazione è in un blocco `DB::transaction()`
 2. Se opt-in fallisce, l'intera operazione viene rollback
 3. Gli EGILI vengono ripristinati automaticamente
@@ -262,6 +267,7 @@ $this->logger->info('WalletRedemption: Opt-in to ASA', [
 **Problema**: Il transfer ASA fallisce dopo opt-in riuscito.
 
 **Soluzione**:
+
 1. Il sistema usa batch atomici - se un transfer fallisce, tutto il batch fallisce
 2. Il rollback ripristina lo stato pre-redemption
 3. L'utente può riprovare
@@ -271,11 +277,13 @@ $this->logger->info('WalletRedemption: Opt-in to ASA', [
 **Problema**: L'utente non ha salvato la mnemonic e il wallet è stato riscattato.
 
 **Soluzione**:
-- ⚠️ **NESSUN RECOVERY POSSIBILE**
-- La mnemonic è stata cancellata dal database
-- L'utente perde l'accesso al wallet e a tutti gli ASA
+
+-   ⚠️ **NESSUN RECOVERY POSSIBILE**
+-   La mnemonic è stata cancellata dal database
+-   L'utente perde l'accesso al wallet e a tutti gli ASA
 
 **Prevenzione**:
+
 1. UI richiede conferma esplicita ("CONFERMO RISCATTO")
 2. Documento scaricabile con mnemonic
 3. Warning multipli prima della cancellazione
@@ -285,6 +293,7 @@ $this->logger->info('WalletRedemption: Opt-in to ASA', [
 **Problema**: Il microservice Algorand non risponde.
 
 **Soluzione**:
+
 1. `AlgorandClient::ensureMicroserviceRunning()` verifica la disponibilità
 2. Se non disponibile, l'operazione fallisce prima di qualsiasi modifica
 3. UEM logga l'errore per monitoraggio
@@ -294,6 +303,7 @@ $this->logger->info('WalletRedemption: Opt-in to ASA', [
 **Problema**: La Treasury non ha abbastanza ALGO per il funding.
 
 **Soluzione**:
+
 1. Monitorare il saldo Treasury regolarmente
 2. Alert quando sotto soglia minima
 3. L'errore viene propagato all'utente con messaggio chiaro
@@ -338,6 +348,7 @@ public function test_mnemonic_deleted_after_successful_redemption()
 Calcola il costo del riscatto senza eseguirlo.
 
 **Response:**
+
 ```json
 {
     "success": true,
@@ -365,6 +376,7 @@ Calcola il costo del riscatto senza eseguirlo.
 Lista degli EGI dell'utente che verranno trasferiti.
 
 **Response:**
+
 ```json
 {
     "success": true,
@@ -386,6 +398,7 @@ Lista degli EGI dell'utente che verranno trasferiti.
 Esegue il riscatto completo. **IRREVERSIBILE**.
 
 **Request:**
+
 ```json
 {
     "confirmation_text": "CONFERMO RISCATTO",
@@ -394,6 +407,7 @@ Esegue il riscatto completo. **IRREVERSIBILE**.
 ```
 
 **Response (Success):**
+
 ```json
 {
     "success": true,
@@ -418,14 +432,15 @@ Esegue il riscatto completo. **IRREVERSIBILE**.
 2. **Batch Size**: Il limite di 16 è imposto dal protocollo Algorand per atomic transaction groups.
 
 3. **MainNet**: Prima del deploy su MainNet, verificare:
-   - Treasury wallet configurato correttamente
-   - Mnemonic Treasury sicura (non in codice)
-   - Rate limiting sugli endpoint
+
+    - Treasury wallet configurato correttamente
+    - Mnemonic Treasury sicura (non in codice)
+    - Rate limiting sugli endpoint
 
 4. **Monitoring**: Implementare dashboard per monitorare:
-   - Numero di redemption giornalieri
-   - Saldo Treasury
-   - Errori di blockchain
+    - Numero di redemption giornalieri
+    - Saldo Treasury
+    - Errori di blockchain
 
 ---
 
@@ -439,4 +454,4 @@ Per problemi con il sistema di wallet redemption:
 
 ---
 
-*Documento generato automaticamente - FlorenceEGI Platform*
+_Documento generato automaticamente - FlorenceEGI Platform_

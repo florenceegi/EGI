@@ -12,13 +12,11 @@ use Illuminate\Support\Facades\Schema;
  *          Possono però scegliere di donare una percentuale a un progetto EPP.
  * @date 2025-12-05
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::table('collections', function (Blueprint $table) {
             // Percentuale donazione EPP volontaria (solo per company)
             // Range: 0.01 (0.01%) a 100.00 (100%), NULL = nessuna donazione
@@ -39,8 +37,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('collections', function (Blueprint $table) {
             $table->dropColumn(['epp_donation_percentage', 'is_epp_voluntary']);
         });

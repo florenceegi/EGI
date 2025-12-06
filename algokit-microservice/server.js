@@ -695,9 +695,7 @@ app.post("/transfer-asa", async (req, res) => {
             undefined, // close remainder to
             undefined, // revocation target
             transferAmount, // amount
-            new Uint8Array(
-                Buffer.from(`EGI-TRANSFER-${asa_id}-${Date.now()}`)
-            ), // note
+            new Uint8Array(Buffer.from(`EGI-TRANSFER-${asa_id}-${Date.now()}`)), // note
             parseInt(asa_id), // asset index
             params // suggested params
         );

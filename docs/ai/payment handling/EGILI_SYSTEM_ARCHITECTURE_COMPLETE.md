@@ -10,12 +10,14 @@
 ## 📊 **EXECUTIVE SUMMARY**
 
 FlorenceEGI implementa un'economia interna basata su **Egili**, con due tipologie distinte:
+
 1. **Egili Lifetime** (acquistati dall'utente - EUR/Crypto → Egili)
 2. **Egili Gift** (donati dalla piattaforma - con scadenza temporale)
 
 Le **feature** sono **SEMPRE visibili a tutti** (no Spatie permissions blocking), ma:
-- Se hai Egili → consumi e usi
-- Se NON hai Egili → modale "Buy More Egili"
+
+-   Se hai Egili → consumi e usi
+-   Se NON hai Egili → modale "Buy More Egili"
 
 Alcune feature sono **lifetime** (es: EGI Living), altre **consumabili** (es: Descrizioni AI).
 
@@ -26,6 +28,7 @@ Alcune feature sono **lifetime** (es: EGI Living), altre **consumabili** (es: De
 ## 🎯 **PRINCIPI ARCHITETTURALI FONDAMENTALI**
 
 ### **1. VISIBILITY-FIRST (NO BLOCKING)**
+
 ```
 ❌ VECCHIA LOGICA (Spatie blocking):
    if (!$user->can('feature-x')) {
@@ -49,12 +52,13 @@ Alcune feature sono **lifetime** (es: EGI Living), altre **consumabili** (es: De
 
 ### **2. DUE TIPOLOGIE EGILI**
 
-| Tipo | Caratteristiche | Acquisizione | Scadenza | Priorità Consumo |
-|------|-----------------|--------------|----------|------------------|
-| **Gift** | Donati da piattaforma | Admin grant, rewards | ⏰ N giorni | 🔴 Prima (scadenza più vicina) |
-| **Lifetime** | Comprati dall'user | EUR/Crypto purchase | ♾️ MAI | 🟢 Dopo |
+| Tipo         | Caratteristiche       | Acquisizione         | Scadenza    | Priorità Consumo               |
+| ------------ | --------------------- | -------------------- | ----------- | ------------------------------ |
+| **Gift**     | Donati da piattaforma | Admin grant, rewards | ⏰ N giorni | 🔴 Prima (scadenza più vicina) |
+| **Lifetime** | Comprati dall'user    | EUR/Crypto purchase  | ♾️ MAI      | 🟢 Dopo                        |
 
 **ESEMPIO:**
+
 ```
 User balance: 5000 Egili
 ├─ 3000 Lifetime (acquistati 01/10/2025)
@@ -66,6 +70,7 @@ User spende 1500 Egili:
 ```
 
 **TABELLE:**
+
 ```sql
 egili_transactions:
 ├─ transaction_type: 'purchase' | 'gift'
@@ -78,12 +83,13 @@ egili_transactions:
 
 ### **3. DUE TIPOLOGIE FEATURE**
 
-| Tipo | Esempio | Logica | Tracking |
-|------|---------|--------|----------|
-| **Lifetime** | EGI Living | Compri 1 volta → per sempre | NO consumo, YES purchase record |
-| **Consumabile** | Descrizione AI | Ogni uso costa | YES consumo, YES usage tracking |
+| Tipo            | Esempio        | Logica                      | Tracking                        |
+| --------------- | -------------- | --------------------------- | ------------------------------- |
+| **Lifetime**    | EGI Living     | Compri 1 volta → per sempre | NO consumo, YES purchase record |
+| **Consumabile** | Descrizione AI | Ogni uso costa              | YES consumo, YES usage tracking |
 
 **STRUTTURA:**
+
 ```sql
 ai_feature_pricing:
 ├─ feature_type: 'lifetime' | 'consumable'
@@ -100,6 +106,7 @@ user_feature_purchases:
 ```
 
 **ESEMPI:**
+
 ```php
 // EGI Living (LIFETIME)
 'egi_living_subscription' => [
@@ -133,6 +140,7 @@ user_feature_purchases:
 **REQUISITI FUNZIONALI:**
 
 #### **A) Gestione Prezzario**
+
 ```
 Route: /enterprise/features/pricing
 Access: Admin + SuperAdmin
@@ -148,6 +156,7 @@ UI: Tabella editabile + form modale
 ```
 
 #### **B) Gestione Promozioni**
+
 ```
 Route: /enterprise/features/promotions
 Access: Admin + SuperAdmin
@@ -162,6 +171,7 @@ UI: Calendar view + promo cards
 ```
 
 #### **C) Analytics Dashboard**
+
 ```
 Route: /enterprise/features/analytics
 Access: Admin + SuperAdmin
@@ -178,6 +188,7 @@ UI: Charts + tabelle + filtri date
 ```
 
 #### **D) Gestione Egili**
+
 ```
 Route: /enterprise/egili/management
 Access: SuperAdmin only
@@ -193,6 +204,7 @@ UI: Action cards + transaction log
 ```
 
 #### **E) Featured EGI Management**
+
 ```
 Route: /enterprise/featured/calendar
 Access: Admin + SuperAdmin
@@ -268,11 +280,11 @@ UI: Drag&drop calendar + request queue
    cost_per_use = 50 Egili
    ↓
 3. Check: user ha crediti disponibili?
-   
+
    Query: UserFeaturePurchase::where('feature_code', 'ai_description')
           ->where('quantity_used', '<', 'quantity_purchased')
           ->exists()
-   
+
    YES → Usa crediti esistenti (passo 6)
    NO → Deve comprare (passo 4)
    ↓
@@ -331,7 +343,7 @@ UI: Drag&drop calendar + request queue
    b) Update purchase: status = 'approved'
    c) Update EGI: featured_until = '2025-11-17 23:59:59'
    d) Notification user: "Featured approved!"
-   
+
 7b. REJECTION:
    a) Release reserved Egili (no charge)
    b) Update purchase: status = 'rejected'
@@ -357,23 +369,26 @@ ALTER TABLE egili_transactions ADD COLUMN:
 ```
 
 **LOGIC:**
-- Lifetime: expires_at = NULL, priority_order ASC (FIFO)
-- Gift: expires_at = NOW + N days, priority_order DESC (LIFO expiring first)
+
+-   Lifetime: expires_at = NULL, priority_order ASC (FIFO)
+-   Gift: expires_at = NOW + N days, priority_order DESC (LIFO expiring first)
 
 ---
 
 ### **2. ai_feature_pricing (ESISTENTE - OK)**
 
 Tabella già completa con tutti i campi necessari:
-- ✅ cost_egili
-- ✅ tier_pricing
-- ✅ discount_percentage
-- ✅ duration_hours
-- ✅ is_bundle, bundle_features
-- ✅ max_uses_per_purchase
-- ✅ stackable
+
+-   ✅ cost_egili
+-   ✅ tier_pricing
+-   ✅ discount_percentage
+-   ✅ duration_hours
+-   ✅ is_bundle, bundle_features
+-   ✅ max_uses_per_purchase
+-   ✅ stackable
 
 **DA AGGIUNGERE:**
+
 ```sql
 ALTER TABLE ai_feature_pricing ADD COLUMN:
 ├─ feature_type ENUM('lifetime', 'consumable', 'temporal') DEFAULT 'consumable'
@@ -406,47 +421,47 @@ ALTER TABLE user_feature_purchases ADD COLUMN:
 ```sql
 CREATE TABLE feature_promotions (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    
+
     -- Promo Identity
     promo_code VARCHAR(50) UNIQUE NOT NULL,
     promo_name VARCHAR(255) NOT NULL,
     promo_description TEXT,
-    
+
     -- Scope
     is_global BOOLEAN DEFAULT false,
     feature_code VARCHAR(100) NULL, -- NULL se globale
     feature_category VARCHAR(100) NULL, -- Applica a categoria
-    
+
     -- Discount
     discount_type ENUM('percentage', 'fixed_amount') DEFAULT 'percentage',
     discount_value DECIMAL(10,2) NOT NULL,
-    
+
     -- Temporal
     start_at TIMESTAMP NOT NULL,
     end_at TIMESTAMP NOT NULL,
-    
+
     -- Limits
     max_uses INT NULL, -- Max utilizzi totali promo
     max_uses_per_user INT NULL, -- Max per singolo user
     current_uses INT DEFAULT 0,
-    
+
     -- Display
     is_active BOOLEAN DEFAULT true,
     is_featured BOOLEAN DEFAULT false,
     badge_text VARCHAR(50) NULL, -- "BLACK FRIDAY -50%"
-    
+
     -- Admin
     created_by_admin_id BIGINT NOT NULL,
     admin_notes TEXT,
-    
+
     -- Stats
     total_egili_saved INT DEFAULT 0,
     total_purchases_with_promo INT DEFAULT 0,
-    
+
     -- Timestamps
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    
+
     INDEX idx_active_dates (is_active, start_at, end_at),
     INDEX idx_feature_code (feature_code),
     INDEX idx_global (is_global),
@@ -468,6 +483,7 @@ ALTER TABLE egis ADD COLUMN:
 ```
 
 **VERIFICA ESISTENTE:**
+
 ```bash
 grep -n "hyper" database/migrations/*egis*.php
 ```
@@ -494,7 +510,7 @@ public function grantGift(
 
 /**
  * Spend Egili with priority logic (Lifetime first, then Gift)
- * 
+ *
  * LOGIC:
  * 1. Get all available Egili (lifetime + non-expired gift)
  * 2. Sort: Lifetime FIFO, Gift LIFO (expiring first)
@@ -529,7 +545,7 @@ class FeatureCreditService
 {
     /**
      * Purchase feature credits
-     * 
+     *
      * @param User $user
      * @param string $featureCode
      * @param int $quantity How many uses to buy
@@ -540,10 +556,10 @@ class FeatureCreditService
         string $featureCode,
         int $quantity = 1
     ): UserFeaturePurchase;
-    
+
     /**
      * Consume one credit
-     * 
+     *
      * @param User $user
      * @param string $featureCode
      * @param array $usageMetadata (es: tokens_consumed, ai_model)
@@ -554,12 +570,12 @@ class FeatureCreditService
         string $featureCode,
         array $usageMetadata = []
     ): bool;
-    
+
     /**
      * Get available credits for feature
      */
     public function getAvailableCredits(User $user, string $featureCode): int;
-    
+
     /**
      * Convert unused credits to Egili (80% value)
      * Max 1 conversion/month per feature
@@ -587,7 +603,7 @@ class FeaturePricingService
 {
     /**
      * Calculate final price for feature purchase
-     * 
+     *
      * @param string $featureCode
      * @param User $user (for tier pricing)
      * @param int $quantity
@@ -607,12 +623,12 @@ class FeaturePricingService
     //   'promo_applied' => 'BLACK_FRIDAY_2025',
     //   'savings' => 150
     // ]
-    
+
     /**
      * Get active promotions for feature
      */
     public function getActivePromotions(string $featureCode): Collection;
-    
+
     /**
      * Apply best promotion (highest discount%)
      */
@@ -641,12 +657,12 @@ class FeaturePromotionService
     public function deletePromotion(int $id): bool;
     public function activatePromotion(int $id): void;
     public function deactivatePromotion(int $id): void;
-    
+
     /**
      * Get all active promotions (for pricing calculation)
      */
     public function getActivePromotions(?string $featureCode = null): Collection;
-    
+
     /**
      * Record promotion usage
      */
@@ -655,7 +671,7 @@ class FeaturePromotionService
         User $user,
         int $egiliSaved
     ): void;
-    
+
     /**
      * Check promo usage limits
      */
@@ -684,7 +700,7 @@ class FeaturedEgiService
         Egi $egi,
         int $durationDays
     ): UserFeaturePurchase; // Status: pending_approval, Egili reserved
-    
+
     /**
      * Approve featured request (admin)
      */
@@ -694,7 +710,7 @@ class FeaturedEgiService
         Carbon $startDate,
         Carbon $endDate
     ): void; // Spend Egili, set featured_until
-    
+
     /**
      * Reject featured request (admin)
      */
@@ -703,7 +719,7 @@ class FeaturedEgiService
         User $admin,
         string $reason
     ): void; // Release Egili, notification
-    
+
     /**
      * Get calendar availability
      */
@@ -711,12 +727,12 @@ class FeaturedEgiService
         Carbon $startDate,
         Carbon $endDate
     ): array; // Returns: slots_available per day
-    
+
     /**
      * Get pending requests
      */
     public function getPendingRequests(): Collection;
-    
+
     /**
      * Auto-expire featured EGI (cron job)
      */
@@ -762,6 +778,7 @@ class FeaturedEgiService
 ```
 
 **Edit Modal:**
+
 ```
 Feature: EGI Living Subscription
 ├─ Feature Type: [Lifetime ▼]
@@ -798,6 +815,7 @@ Feature: EGI Living Subscription
 ```
 
 **Create Promo Modal:**
+
 ```
 New Promotion
 ├─ Promo Code: [BLACK_FRIDAY_2025]
@@ -897,7 +915,7 @@ STEP 2: Loop and consume
 $remaining = 1500;
 foreach ($sources as $source) {
     $available = $source->balance_remaining;
-    
+
     if ($available >= $remaining) {
         // This source covers all remaining
         $source->balance_remaining -= $remaining;
@@ -943,6 +961,7 @@ AGGIUNGI:
 ## 🎯 **PRIORITÀ IMPLEMENTAZIONE**
 
 ### **FASE 1 - FOUNDATION (Critical)**
+
 1. ✅ Estendi `egili_transactions` (lifetime/gift, expires_at)
 2. ✅ Estendi `EgiliService` (grantGift, spendWithPriority, expire cron)
 3. ✅ Crea `FeatureCreditService` (purchase, consume, convert)
@@ -950,23 +969,27 @@ AGGIUNGI:
 5. ✅ Estendi `ai_feature_pricing` (feature_type, cost_per_use)
 
 ### **FASE 2 - PRICING & PROMO**
+
 6. ✅ Crea `feature_promotions` table
 7. ✅ Crea `FeaturePricingService` (calculate with discounts)
 8. ✅ Crea `FeaturePromotionService` (CRUD promo)
 9. ✅ Integra pricing dinamico in purchase flow
 
 ### **FASE 3 - FEATURED/HYPER**
+
 10. ✅ Aggiungi campi `egis` (featured_until, etc)
 11. ✅ Crea `FeaturedEgiService` (request, approve, reject)
 12. ✅ Admin panel Featured Calendar
 
 ### **FASE 4 - ADMIN PANELS**
+
 13. ✅ Admin: Pricing Manager
 14. ✅ Admin: Promotions Manager
 15. ✅ Admin: Egili Management
 16. ✅ Admin: Analytics Dashboard
 
 ### **FASE 5 - USER EXPERIENCE**
+
 17. ✅ Pagina "Le mie Feature" (credits, usage, history)
 18. ✅ Conversione feature → Egili UI
 19. ✅ Featured EGI request UI (creator side)
@@ -990,7 +1013,3 @@ Fabio, prima di procedere serve confermare:
 ---
 
 **Vuoi che discutiamo questi punti PRIMA di fare il piano operativo dettagliato?** 🎯
-
-
-
-

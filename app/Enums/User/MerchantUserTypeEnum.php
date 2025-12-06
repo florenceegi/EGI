@@ -55,7 +55,7 @@ enum MerchantUserTypeEnum: string {
 
     /**
      * Get user types that can own collections
-     * 
+     *
      * @return array<string>
      */
     public static function collectionOwnerTypes(): array {

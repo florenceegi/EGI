@@ -170,8 +170,7 @@ class WalletController extends Controller {
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function executeRedemption(Request $request)
-    {
+    public function executeRedemption(Request $request) {
         $request->validate([
             'confirmation_text' => 'required|string',
             'accept_terms' => 'required|accepted',
@@ -258,8 +257,7 @@ class WalletController extends Controller {
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getRedemptionCost()
-    {
+    public function getRedemptionCost() {
         $user = Auth::user();
 
         $validation = $this->redemptionService->validateRedemption($user);
@@ -280,8 +278,7 @@ class WalletController extends Controller {
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getUserEgisForRedemption()
-    {
+    public function getUserEgisForRedemption() {
         $user = Auth::user();
 
         $egis = $this->redemptionService->getUserEgis($user);

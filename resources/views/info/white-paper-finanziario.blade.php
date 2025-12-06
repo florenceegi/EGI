@@ -270,16 +270,16 @@
 <body class="antialiased">
     <div class="min-h-screen">
         <header class="sticky top-0 z-50 bg-white shadow-sm" role="banner">
-            <div class="px-4 py-6 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-4 py-6 text-center sm:px-6 lg:px-8">
                 <h1 class="text-3xl font-bold text-emerald-800">White Paper Finanziario Interattivo</h1>
-                <p class="mt-2 text-gray-600 text-md">Esplora la gestione finanziaria e fiscale di FlorenceEGI in modo
+                <p class="text-md mt-2 text-gray-600">Esplora la gestione finanziaria e fiscale di FlorenceEGI in modo
                     semplice e intuitivo.</p>
             </div>
         </header>
 
-        <main class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8" role="main">
-            <div class="p-6 mb-8 bg-white shadow-lg rounded-2xl">
-                <h2 class="mb-4 text-xl font-bold text-center text-gray-800">Inizia da qui: seleziona un argomento o il
+        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" role="main">
+            <div class="mb-8 rounded-2xl bg-white p-6 shadow-lg">
+                <h2 class="mb-4 text-center text-xl font-bold text-gray-800">Inizia da qui: seleziona un argomento o il
                     tuo ruolo.</h2>
                 <nav id="role-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4" role="navigation"
                     aria-label="Navigazione per ruolo">
@@ -290,10 +290,10 @@
             </div>
 
             <!-- GLOSSARIO INSERITO QUI -->
-            <section id="glossario" class="mt-16 fade-in">
-                <h2 class="pt-12 mb-10 text-4xl font-bold text-center border-t border-gray-200 text-emerald-800">
+            <section id="glossario" class="fade-in mt-16">
+                <h2 class="mb-10 border-t border-gray-200 pt-12 text-center text-4xl font-bold text-emerald-800">
                     Glossario</h2>
-                <div class="p-8 bg-white shadow-lg rounded-2xl">
+                <div class="rounded-2xl bg-white p-8 shadow-lg">
                     <dl class="space-y-8">
                         <div>
                             <dt id="glossary-anchor-hash" class="text-xl font-bold text-emerald-700">Anchor hash</dt>
@@ -331,9 +331,16 @@
                                     class="glossary-link">blockchain</a> di Algorand.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-egili" class="text-xl font-bold text-emerald-700">EGILI (Token Utility Interno)
+                            <dt id="glossary-egili" class="text-xl font-bold text-emerald-700">EGILI (Token Utility
+                                Interno)
                             </dt>
-                            <dd class="mt-1 text-gray-700">Token utility interno di FlorenceEGI, non trasferibile e non quotato su exchange. Si guadagna attraverso attività meritevoli sulla piattaforma (vendite, referral, partecipazione community). Tasso di conversione percepito: 1 EGILO = €0,01. Classificato come <strong>punto fedeltà</strong>, fuori dal perimetro <a href="#glossary-mica" class="glossary-link">MiCA</a>. Può essere usato per pagare <a href="#glossary-egi" class="glossary-link">EGI</a> (se abilitato dal Creator) o servizi della piattaforma.</dd>
+                            <dd class="mt-1 text-gray-700">Token utility interno di FlorenceEGI, non trasferibile e non
+                                quotato su exchange. Si guadagna attraverso attività meritevoli sulla piattaforma
+                                (vendite, referral, partecipazione community). Tasso di conversione percepito: 1 EGILO =
+                                €0,01. Classificato come <strong>punto fedeltà</strong>, fuori dal perimetro <a
+                                    href="#glossary-mica" class="glossary-link">MiCA</a>. Può essere usato per pagare <a
+                                    href="#glossary-egi" class="glossary-link">EGI</a> (se abilitato dal Creator) o
+                                servizi della piattaforma.</dd>
                         </div>
                         <div>
                             <dt id="glossary-fiat" class="text-xl font-bold text-emerald-700">FIAT</dt>
@@ -759,24 +766,46 @@
                                 pieno controllo dei fondi. Non va MAI condivisa.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-mnemonic" class="text-xl font-bold text-emerald-700">Mnemonic (Seed Phrase / Frase Segreta)
+                            <dt id="glossary-mnemonic" class="text-xl font-bold text-emerald-700">Mnemonic (Seed
+                                Phrase / Frase Segreta)
                             </dt>
-                            <dd class="mt-1 text-gray-700">Sequenza di 25 parole (nel caso di Algorand) che rappresenta la <a href="#glossary-chiave-privata" class="glossary-link">chiave privata</a> di un <a href="#glossary-wallet" class="glossary-link">wallet</a> in formato leggibile. Chiunque possieda questa frase può ricostruire il wallet e controllarne i contenuti. Deve essere conservata in modo sicuro e offline.</dd>
+                            <dd class="mt-1 text-gray-700">Sequenza di 25 parole (nel caso di Algorand) che rappresenta
+                                la <a href="#glossary-chiave-privata" class="glossary-link">chiave privata</a> di un
+                                <a href="#glossary-wallet" class="glossary-link">wallet</a> in formato leggibile.
+                                Chiunque possieda questa frase può ricostruire il wallet e controllarne i contenuti.
+                                Deve essere conservata in modo sicuro e offline.</dd>
                         </div>
                         <div>
                             <dt id="glossary-opt-in" class="text-xl font-bold text-emerald-700">Opt-in (Algorand)
                             </dt>
-                            <dd class="mt-1 text-gray-700">Operazione obbligatoria su <a href="#glossary-algoritmo" class="glossary-link">Algorand</a> che un <a href="#glossary-wallet" class="glossary-link">wallet</a> deve eseguire prima di poter ricevere un determinato <a href="#glossary-asa" class="glossary-link">ASA</a>. L'opt-in richiede il blocco di 0,1 <a href="#glossary-algo" class="glossary-link">ALGO</a> come bilancio minimo per ogni asset, importo che viene liberato con l'operazione inversa (opt-out).</dd>
+                            <dd class="mt-1 text-gray-700">Operazione obbligatoria su <a href="#glossary-algoritmo"
+                                    class="glossary-link">Algorand</a> che un <a href="#glossary-wallet"
+                                    class="glossary-link">wallet</a> deve eseguire prima di poter ricevere un
+                                determinato <a href="#glossary-asa" class="glossary-link">ASA</a>. L'opt-in richiede
+                                il blocco di 0,1 <a href="#glossary-algo" class="glossary-link">ALGO</a> come bilancio
+                                minimo per ogni asset, importo che viene liberato con l'operazione inversa (opt-out).
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-algo" class="text-xl font-bold text-emerald-700">ALGO
                             </dt>
-                            <dd class="mt-1 text-gray-700">Criptovaluta nativa della <a href="#glossary-blockchain" class="glossary-link">blockchain</a> <a href="#glossary-algoritmo" class="glossary-link">Algorand</a>. Viene utilizzata per pagare le fee di transazione e come requisito di bilancio minimo per detenere <a href="#glossary-asa" class="glossary-link">ASA</a>.</dd>
+                            <dd class="mt-1 text-gray-700">Criptovaluta nativa della <a href="#glossary-blockchain"
+                                    class="glossary-link">blockchain</a> <a href="#glossary-algoritmo"
+                                    class="glossary-link">Algorand</a>. Viene utilizzata per pagare le fee di
+                                transazione e come requisito di bilancio minimo per detenere <a href="#glossary-asa"
+                                    class="glossary-link">ASA</a>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-treasury" class="text-xl font-bold text-emerald-700">Treasury (Wallet di Piattaforma)
+                            <dt id="glossary-treasury" class="text-xl font-bold text-emerald-700">Treasury (Wallet di
+                                Piattaforma)
                             </dt>
-                            <dd class="mt-1 text-gray-700"><a href="#glossary-wallet" class="glossary-link">Wallet</a> controllato dalla piattaforma FlorenceEGI utilizzato per le operazioni tecniche di <a href="#glossary-mint" class="glossary-link">minting</a> e gestione degli <a href="#glossary-egi" class="glossary-link">EGI</a>. Nel modello <a href="#glossary-custodial" class="glossary-link">custodiale</a>, gli ASA sono conservati nel Treasury fino al riscatto da parte dell'utente.</dd>
+                            <dd class="mt-1 text-gray-700"><a href="#glossary-wallet"
+                                    class="glossary-link">Wallet</a> controllato dalla piattaforma FlorenceEGI
+                                utilizzato per le operazioni tecniche di <a href="#glossary-mint"
+                                    class="glossary-link">minting</a> e gestione degli <a href="#glossary-egi"
+                                    class="glossary-link">EGI</a>. Nel modello <a href="#glossary-custodial"
+                                    class="glossary-link">custodiale</a>, gli ASA sono conservati nel Treasury fino al
+                                riscatto da parte dell'utente.</dd>
                         </div>
                         <div>
                             <dt id="glossary-token" class="text-xl font-bold text-emerald-700">Token</dt>
@@ -815,12 +844,12 @@
                                         class="glossary-link">FlorenceEGI Core</a> coordina cinque blocchi
                                     specializzati, ognuno con responsabilità precise:
                                 </p>
-                                <ul class="mt-3 space-y-3 text-gray-700 list-disc list-inside">
+                                <ul class="mt-3 list-inside list-disc space-y-3 text-gray-700">
                                     <li>
                                         <strong>NATAN Market Engine</strong> – l’intelligenza del <a
                                             href="#glossary-natan" class="glossary-link">tenant NATAN</a> che rende la
                                         piattaforma un vero market maker. Comprende due componenti inscindibili:
-                                        <ul class="mt-2 ml-5 space-y-1 text-gray-700 list-disc list-inside">
+                                        <ul class="ml-5 mt-2 list-inside list-disc space-y-1 text-gray-700">
                                             <li><strong>Valuation</strong> – definisce valore, floor price e traiettoria
                                                 economica analizzando qualità, storico e domanda.</li>
                                             <li><strong>Activation</strong> – orchestra campagne, alert e suggerimenti
@@ -877,8 +906,8 @@
             </section>
         </main>
 
-        <footer class="mt-16 text-white bg-gray-900">
-            <div class="container px-6 py-12 mx-auto max-w-7xl">
+        <footer class="mt-16 bg-gray-900 text-white">
+            <div class="container mx-auto max-w-7xl px-6 py-12">
                 <p class="text-center text-gray-500">&copy; 2025 Florence EGI | Tutti i diritti riservati.</p>
             </div>
         </footer>

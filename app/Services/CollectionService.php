@@ -40,8 +40,7 @@ use Throwable;
  *
  * @signature [CollectionService::v2.1] florence-egi-enhanced-collection-manager
  */
-class CollectionService
-{
+class CollectionService {
     /** @var UltraLogManager Enhanced logging for service operations */
     private UltraLogManager $logger;
 
@@ -97,8 +96,7 @@ class CollectionService
      *
      * @changelog 2025-12-05: Added company usertype handling - EPP voluntary, subscription required
      */
-    public function createDefaultCollection(User $user, ?bool $isDefault = true, ?string $collectionName = ''): Collection|JsonResponse
-    {
+    public function createDefaultCollection(User $user, ?bool $isDefault = true, ?string $collectionName = ''): Collection|JsonResponse {
         // Enhanced name sanitization
         $firstName = $this->sanitizeUserName($user->name);
 
@@ -178,7 +176,6 @@ class CollectionService
             ]);
 
             return $collection;
-
         } catch (Throwable $e) {
             $errorContext = array_merge($logContext, [
                 'error_message' => $e->getMessage(),
@@ -209,8 +206,7 @@ class CollectionService
      * @oracode-enhanced-fallback-strategy Multi-level fallback with validation
      * @oracode-upload-handler-integration Designed for EgiUploadHandler context preservation
      */
-    public function findOrCreateUserCollection(User $user, array $logContext = []): Collection|JsonResponse
-    {
+    public function findOrCreateUserCollection(User $user, array $logContext = []): Collection|JsonResponse {
         $enhancedLogContext = array_merge($logContext, [
             'creator_id' => $user->id,
             'operation' => 'find_or_create_user_collection',
@@ -255,7 +251,6 @@ class CollectionService
             }
 
             return $newCollection;
-
         } catch (Throwable $e) {
             $errorContext = array_merge($enhancedLogContext, [
                 'error_message' => $e->getMessage(),
@@ -280,8 +275,7 @@ class CollectionService
      *
      * @oracode-validation-enhanced Adds collection existence and ownership validation
      */
-    protected function findCurrentCollectionWithValidation(User $user, array $logContext): ?Collection
-    {
+    protected function findCurrentCollectionWithValidation(User $user, array $logContext): ?Collection {
         $currentCollectionId = session('current_collection_id') ?? $user->current_collection_id;
 
         if (!$currentCollectionId) {
@@ -335,8 +329,7 @@ class CollectionService
      * @param array $logContext Enhanced logging context
      * @return Collection|null The default collection or null if not found/invalid
      */
-    protected function findDefaultCollectionWithValidation(User $user, array $logContext): ?Collection
-    {
+    protected function findDefaultCollectionWithValidation(User $user, array $logContext): ?Collection {
         $collection = Collection::where('creator_id', $user->id)
             ->where('is_default', true)
             ->first();
@@ -365,15 +358,13 @@ class CollectionService
      *
      * @oracode-error-recovery Enhanced error handling with recovery strategies
      */
-    protected function attachDefaultWalletsWithErrorHandling(Collection $collection, User $user, array $logContext): void
-    {
+    protected function attachDefaultWalletsWithErrorHandling(Collection $collection, User $user, array $logContext): void {
         try {
             $this->logger->debug('[CollectionService] Attaching default wallets via WalletService', $logContext);
 
             $this->walletService->attachDefaultWalletsToCollection($collection, $user);
 
             $this->logger->info('[CollectionService] Default wallets attached successfully via WalletService', $logContext);
-
         } catch (Throwable $eWallet) {
             $walletErrorContext = array_merge($logContext, [
                 'wallet_service_error' => $eWallet->getMessage(),
@@ -397,15 +388,13 @@ class CollectionService
      *
      * @oracode-error-recovery Enhanced error handling with recovery strategies
      */
-    protected function assignCreatorRoleWithErrorHandling(User $user, array $logContext): void
-    {
+    protected function assignCreatorRoleWithErrorHandling(User $user, array $logContext): void {
         try {
             $this->logger->debug('[CollectionService] Assigning creator role via UserRoleService', $logContext);
 
             $this->roleService->assignCreatorRole($user->id);
 
             $this->logger->info('[CollectionService] Creator role assigned successfully via UserRoleService', $logContext);
-
         } catch (Throwable $eRole) {
             $roleErrorContext = array_merge($logContext, [
                 'role_service_error' => $eRole->getMessage(),
@@ -428,8 +417,7 @@ class CollectionService
      * @param array $logContext Enhanced logging context
      * @return void
      */
-    protected function setupCollectionRelationships(Collection $collection, User $user, array $logContext): void
-    {
+    protected function setupCollectionRelationships(Collection $collection, User $user, array $logContext): void {
         try {
             $this->logger->debug('[CollectionService] Setting up collection relationships via UserRoleService', $logContext);
 
@@ -448,7 +436,6 @@ class CollectionService
                 // Fallback al vecchio metodo se necessario
                 $this->fallbackToDirectAttach($collection, $user, $logContext);
             }
-
         } catch (Throwable $e) {
             $relationshipErrorContext = array_merge($logContext, [
                 'relationship_error' => $e->getMessage()
@@ -468,8 +455,7 @@ class CollectionService
      * @param User $user The user to validate
      * @throws Exception If user validation fails
      */
-    protected function validateUserForCollectionCreation(User $user): void
-    {
+    protected function validateUserForCollectionCreation(User $user): void {
         if (!$user->id) {
             throw new Exception("User must have a valid ID for collection creation");
         }
@@ -490,8 +476,7 @@ class CollectionService
     /**
      * 🚨 Fallback method using direct attach if UserRoleService fails
      */
-    protected function fallbackToDirectAttach(Collection $collection, User $user, array $logContext): void
-    {
+    protected function fallbackToDirectAttach(Collection $collection, User $user, array $logContext): void {
         try {
             // Vecchio metodo come fallback
             $collection->users()->attach($user->id, [
@@ -501,7 +486,6 @@ class CollectionService
             ]);
 
             $this->logger->info('[CollectionService] Fallback attach method successful', $logContext);
-
         } catch (Throwable $e) {
             $this->logger->error('[CollectionService] Even fallback method failed', array_merge($logContext, [
                 'fallback_error' => $e->getMessage()
@@ -518,8 +502,7 @@ class CollectionService
      * @param string|null $userName The user's full name
      * @return string Sanitized first name
      */
-    protected function sanitizeUserName(?string $userName): string
-    {
+    protected function sanitizeUserName(?string $userName): string {
         if (empty($userName)) {
             return 'User';
         }
@@ -539,8 +522,7 @@ class CollectionService
      * @param User $user The user
      * @return int Next available position
      */
-    protected function calculateCollectionPosition(User $user): int
-    {
+    protected function calculateCollectionPosition(User $user): int {
         $maxPosition = Collection::where('creator_id', $user->id)->max('position') ?? 0;
         return $maxPosition + 1;
     }
@@ -557,8 +539,7 @@ class CollectionService
      * @oracode-service-delegation Delegates user updates to UserRoleService for proper separation
      * @oracode-session-management Maintains session state as CollectionService responsibility
      */
-    protected function updateCurrentCollectionSafely(User $user, Collection $collection, array $logContext): void
-    {
+    protected function updateCurrentCollectionSafely(User $user, Collection $collection, array $logContext): void {
         try {
             $enhancedLogContext = array_merge($logContext, [
                 'method' => 'updateCurrentCollectionSafely',
@@ -601,7 +582,6 @@ class CollectionService
             ]);
 
             $this->logger->info('[CollectionService] Current collection updated safely via service delegation', $successContext);
-
         } catch (\Throwable $e) {
             // Enhanced error context for this specific operation
             $updateErrorContext = array_merge($logContext, [
@@ -633,8 +613,7 @@ class CollectionService
      * @param int $invalidCollectionId The invalid collection ID
      * @return void
      */
-    protected function cleanupInvalidCollectionReference(User $user, int $invalidCollectionId): void
-    {
+    protected function cleanupInvalidCollectionReference(User $user, int $invalidCollectionId): void {
         try {
             $user->current_collection_id = null;
             $user->save();
@@ -647,7 +626,6 @@ class CollectionService
                 'invalid_collection_id' => $invalidCollectionId,
                 'operation' => 'cleanup_invalid_reference'
             ]);
-
         } catch (Throwable $e) {
             $this->logger->warning('[CollectionService] Failed to cleanup invalid collection reference', [
                 'creator_id' => $user->id,
@@ -666,8 +644,7 @@ class CollectionService
      * @return Collection|JsonResponse
      * @deprecated Use findOrCreateUserCollection() instead
      */
-    public function findOrCreateDefaultCollection(User $user, array $logContext = []): Collection|JsonResponse
-    {
+    public function findOrCreateDefaultCollection(User $user, array $logContext = []): Collection|JsonResponse {
         $this->logger->warning('[CollectionService] Legacy method called', [
             'method' => 'findOrCreateDefaultCollection',
             'creator_id' => $user->id,

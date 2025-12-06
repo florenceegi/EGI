@@ -18,8 +18,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-10-22
  * @purpose Secure wallet generation via Node.js algosdk
  */
-class AlgorandClient
-{
+class AlgorandClient {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected string $microserviceUrl;
@@ -43,8 +42,7 @@ class AlgorandClient
      * @return array ['address' => string, 'mnemonic' => string, 'privateKeyBase64' => string]
      * @throws \Exception if account creation fails
      */
-    public function createAccount(): array
-    {
+    public function createAccount(): array {
         try {
             // 0. Ensure microservice is running (auto-start if needed)
             if (!$this->ensureMicroserviceRunning()) {
@@ -118,8 +116,7 @@ class AlgorandClient
      * @return array Account info
      * @throws \Exception if request fails
      */
-    public function getAccountInfo(string $address): array
-    {
+    public function getAccountInfo(string $address): array {
         try {
             // 0. Ensure microservice is running (auto-start if needed)
             if (!$this->ensureMicroserviceRunning()) {
@@ -166,8 +163,7 @@ class AlgorandClient
      *
      * @return bool true if microservice is healthy
      */
-    public function healthCheck(): bool
-    {
+    public function healthCheck(): bool {
         try {
             $response = Http::timeout(5)->get("{$this->microserviceUrl}/health");
 
@@ -191,8 +187,7 @@ class AlgorandClient
      *
      * @return bool true if microservice is running
      */
-    protected function ensureMicroserviceRunning(): bool
-    {
+    protected function ensureMicroserviceRunning(): bool {
         // ULM: Trace health check start
         $this->logger->debug('AlgorandClient: Microservice health check starting', [
             'url' => $this->microserviceUrl
@@ -242,8 +237,7 @@ class AlgorandClient
      *
      * @return bool true if auto-start successful
      */
-    protected function attemptMicroserviceAutoStart(): bool
-    {
+    protected function attemptMicroserviceAutoStart(): bool {
         try {
             $microservicePath = base_path('algokit-microservice');
             $serverJs = $microservicePath . '/server.js';
@@ -346,8 +340,7 @@ class AlgorandClient
      * @return array ['txId' => string, 'amount' => int, 'block' => int]
      * @throws \Exception if funding fails
      */
-    public function fundWallet(string $address, ?int $amountMicroAlgos = null): array
-    {
+    public function fundWallet(string $address, ?int $amountMicroAlgos = null): array {
         try {
             // 0. Ensure microservice is running
             if (!$this->ensureMicroserviceRunning()) {
@@ -428,8 +421,7 @@ class AlgorandClient
      * @return array ['txId' => string, 'asa_id' => int, 'block' => int]
      * @throws \Exception if opt-in fails
      */
-    public function optInToAsa(string $userMnemonic, int $asaId): array
-    {
+    public function optInToAsa(string $userMnemonic, int $asaId): array {
         try {
             // 0. Ensure microservice is running
             if (!$this->ensureMicroserviceRunning()) {
@@ -503,8 +495,7 @@ class AlgorandClient
      * @return array ['groupTxId' => string, 'asa_ids' => array, 'count' => int, 'block' => int]
      * @throws \Exception if batch opt-in fails
      */
-    public function batchOptInToAsas(string $userMnemonic, array $asaIds): array
-    {
+    public function batchOptInToAsas(string $userMnemonic, array $asaIds): array {
         try {
             // Validate batch size
             if (count($asaIds) > 16) {
@@ -589,8 +580,7 @@ class AlgorandClient
      * @return array ['txId' => string, 'asa_id' => int, 'block' => int]
      * @throws \Exception if transfer fails
      */
-    public function transferAsa(string $toAddress, int $asaId, int $amount = 1): array
-    {
+    public function transferAsa(string $toAddress, int $asaId, int $amount = 1): array {
         try {
             // 0. Ensure microservice is running
             if (!$this->ensureMicroserviceRunning()) {
@@ -673,8 +663,7 @@ class AlgorandClient
      * @return array ['groupTxId' => string, 'asa_ids' => array, 'count' => int, 'block' => int]
      * @throws \Exception if batch transfer fails
      */
-    public function batchTransferAsas(string $toAddress, array $asaIds): array
-    {
+    public function batchTransferAsas(string $toAddress, array $asaIds): array {
         try {
             // Validate batch size
             if (count($asaIds) > 16) {

@@ -1228,7 +1228,8 @@ if (auth()->check()) {
 
             async function updateCollectionEppProject(projectId) {
                 const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                const isCompanyCollection = {{ ($collection->is_epp_voluntary || ($collection->creator && $collection->creator->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value)) ? 'true' : 'false' }};
+                const isCompanyCollection =
+                    {{ $collection->is_epp_voluntary || ($collection->creator && $collection->creator->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value) ? 'true' : 'false' }};
 
                 // For company collections, get the donation percentage from slider
                 let donationPercentage = null;
@@ -1254,7 +1255,7 @@ if (auth()->check()) {
                     const requestBody = {
                         epp_project_id: projectId
                     };
-                    
+
                     // Add donation percentage for company collections
                     if (isCompanyCollection && donationPercentage !== null) {
                         requestBody.epp_donation_percentage = donationPercentage;
@@ -1375,13 +1376,16 @@ if (auth()->check()) {
                         Swal.fire({
                             title: '{{ __('common.loading') }}...',
                             allowOutsideClick: false,
-                            didOpen: () => { Swal.showLoading(); },
+                            didOpen: () => {
+                                Swal.showLoading();
+                            },
                             background: '#1F2937',
                             color: '#F3F4F6'
                         });
 
                         try {
-                            const response = await fetch(`/api/collections/{{ $collection->id }}/epp-project`, {
+                            const response = await fetch(
+                            `/api/collections/{{ $collection->id }}/epp-project`, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
