@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\DatabaseHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -213,17 +214,25 @@ class EgiAct extends Model
 
     /**
      * Scope: Full-text search on oggetto
+     * Uses FULLTEXT index on MySQL/MariaDB, LIKE fallback on PostgreSQL/SQLite
      */
     public function scopeSearch($query, string $searchTerm)
     {
-        if (config('database.default') === 'mysql') {
-            // MySQL fulltext search
+        if (DatabaseHelper::isMysql()) {
+            // MySQL/MariaDB fulltext search
             return $query->whereRaw(
                 'MATCH(oggetto) AGAINST(? IN BOOLEAN MODE)',
                 [$searchTerm]
             );
+        } elseif (DatabaseHelper::isPostgres()) {
+            // PostgreSQL: use tsvector if available, otherwise ILIKE
+            // Note: For full FTS support, a tsvector column should be added
+            return $query->whereRaw(
+                'oggetto ILIKE ?',
+                ['%' . $searchTerm . '%']
+            );
         } else {
-            // Fallback to LIKE for other databases
+            // SQLite and other databases: fallback to LIKE
             return $query->where('oggetto', 'LIKE', "%{$searchTerm}%");
         }
     }

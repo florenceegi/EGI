@@ -13,6 +13,7 @@ namespace App\Services;
 use App\Models\PaymentDistribution;
 use App\Models\Collection;
 use App\Enums\PaymentDistributionSourceType;
+use App\Helpers\DatabaseHelper;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -310,8 +311,11 @@ class DualTrackingAnalyticsService {
             default => '%Y-%m'
         };
 
+        // Build cross-database date format SQL
+        $dateFormatSql = DatabaseHelper::dateFormat('created_at', $dateFormat);
+
         $query = PaymentDistribution::query()
-            ->selectRaw("DATE_FORMAT(created_at, ?) as period", [$dateFormat])
+            ->selectRaw("{$dateFormatSql} as period")
             ->selectRaw('source_type')
             ->selectRaw('SUM(amount) as total_amount')
             ->selectRaw('COUNT(*) as count')

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PaymentDistribution\UserTypeEnum;
 use App\Enums\PaymentDistribution\DistributionStatusEnum;
+use App\Helpers\DatabaseHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -935,7 +936,7 @@ class PaymentDistribution extends Model {
                 AVG(payment_distributions.amount_eur) as avg_earning_per_distribution,
                 COUNT(DISTINCT payment_distributions.collection_id) as collections_count,
                 COUNT(DISTINCT payment_distributions.reservation_id) as reservations_count,
-                GROUP_CONCAT(DISTINCT collection_user.role) as roles_held
+                ' . DatabaseHelper::groupConcat('collection_user.role', ',', true) . ' as roles_held
             ')
             ->first();
 
