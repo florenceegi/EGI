@@ -19,19 +19,24 @@ return new class extends Migration {
      * Aggiunge i tipi PDF firmati che mancavano nell'enum causando errore di troncamento
      */
     public function up(): void {
-        // Per MySQL: gestisci l'indice prima di modificare la colonna
+        // Per MySQL: gestisci FK, indice e colonna nell'ordine corretto
         if (DB::getDriverName() === 'mysql') {
-            // Prima rimuoviamo l'indice esistente
+            // 1. Prima rimuoviamo la foreign key (blocca l'eliminazione dell'indice)
+            Schema::table('coa_files', function (Blueprint $table) {
+                $table->dropForeign(['coa_id']);
+            });
+
+            // 2. Poi rimuoviamo l'indice
             Schema::table('coa_files', function (Blueprint $table) {
                 $table->dropIndex(['coa_id', 'kind']);
             });
 
-            // Prima rimuoviamo il constraint esistente
+            // 3. Rimuoviamo la colonna
             Schema::table('coa_files', function (Blueprint $table) {
                 $table->dropColumn('kind');
             });
 
-            // Poi ricreiamo la colonna con tutti i valori necessari
+            // 4. Ricreiamo la colonna con tutti i valori necessari
             Schema::table('coa_files', function (Blueprint $table) {
                 $table->enum('kind', [
                     // Tipi originali
@@ -51,9 +56,14 @@ return new class extends Migration {
                 ])->after('coa_id')->comment('Tipologia file CoA');
             });
 
-            // Ricreiamo l'indice
+            // 5. Ricreiamo l'indice
             Schema::table('coa_files', function (Blueprint $table) {
                 $table->index(['coa_id', 'kind']);
+            });
+
+            // 6. Ricreiamo la foreign key
+            Schema::table('coa_files', function (Blueprint $table) {
+                $table->foreign('coa_id')->references('id')->on('coa')->onDelete('cascade');
             });
         }
         // Per SQLite non facciamo nulla (manteniamo la struttura esistente)
@@ -65,12 +75,17 @@ return new class extends Migration {
     public function down(): void {
         // Per MySQL: ripristiniamo l'enum precedente
         if (DB::getDriverName() === 'mysql') {
-            // Rimuoviamo l'indice
+            // 1. Rimuoviamo la foreign key
+            Schema::table('coa_files', function (Blueprint $table) {
+                $table->dropForeign(['coa_id']);
+            });
+
+            // 2. Rimuoviamo l'indice
             Schema::table('coa_files', function (Blueprint $table) {
                 $table->dropIndex(['coa_id', 'kind']);
             });
 
-            // Ripristiniamo l'enum precedente
+            // 3. Ripristiniamo l'enum precedente
             Schema::table('coa_files', function (Blueprint $table) {
                 $table->dropColumn('kind');
             });
@@ -88,9 +103,14 @@ return new class extends Migration {
                 ])->after('coa_id')->comment('Tipologia file CoA');
             });
 
-            // Ricreiamo l'indice
+            // 4. Ricreiamo l'indice
             Schema::table('coa_files', function (Blueprint $table) {
                 $table->index(['coa_id', 'kind']);
+            });
+
+            // 5. Ricreiamo la foreign key
+            Schema::table('coa_files', function (Blueprint $table) {
+                $table->foreign('coa_id')->references('id')->on('coa')->onDelete('cascade');
             });
         }
         // Per SQLite non facciamo nulla (manteniamo la struttura esistente)
