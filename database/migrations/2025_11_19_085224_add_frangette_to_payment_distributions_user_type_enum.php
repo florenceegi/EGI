@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\DatabaseHelper;
 
 /**
  * @Oracode Migration: Add 'frangette' to payment_distributions user_type enum
@@ -17,7 +18,12 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        // Modify enum to add 'frangette' value
+        // Only MySQL/MariaDB support MODIFY COLUMN ENUM syntax
+        // PostgreSQL uses VARCHAR which accepts any value
+        if (!DatabaseHelper::isMysql()) {
+            return;
+        }
+
         DB::statement("ALTER TABLE payment_distributions MODIFY COLUMN user_type ENUM(
             'weak',
             'creator',
@@ -36,6 +42,10 @@ return new class extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
+        if (!DatabaseHelper::isMysql()) {
+            return;
+        }
+
         // Remove 'frangette' from enum (only if no records use it)
         // Note: This will fail if any records have user_type = 'frangette'
         DB::statement("ALTER TABLE payment_distributions MODIFY COLUMN user_type ENUM(

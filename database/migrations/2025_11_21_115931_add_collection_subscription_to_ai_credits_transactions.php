@@ -12,6 +12,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\DatabaseHelper;
 
 return new class extends Migration {
     /**
@@ -21,7 +22,11 @@ return new class extends Migration {
      * per tracciare pagamenti abbonamenti collection in Egili
      */
     public function up(): void {
-        // MariaDB: ALTER ENUM
+        // Only MySQL/MariaDB support MODIFY COLUMN ENUM syntax
+        if (!DatabaseHelper::isMysql()) {
+            return;
+        }
+
         DB::statement("
             ALTER TABLE ai_credits_transactions 
             MODIFY COLUMN source_type ENUM(
@@ -46,6 +51,10 @@ return new class extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
+        if (!DatabaseHelper::isMysql()) {
+            return;
+        }
+
         // Rimuove 'collection_subscription' dall'enum
         DB::statement("
             ALTER TABLE ai_credits_transactions 

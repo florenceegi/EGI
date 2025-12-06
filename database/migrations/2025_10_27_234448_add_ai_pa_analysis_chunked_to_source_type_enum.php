@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\DatabaseHelper;
 
 /**
  * Add 'ai_pa_analysis_chunked' to source_type enum
@@ -16,8 +17,9 @@ use Illuminate\Support\Facades\DB;
  */
 return new class extends Migration {
     public function up(): void {
-        // Skip for SQLite (enum handled differently)
-        if (config('database.default') === 'sqlite') {
+        // Only MySQL/MariaDB support MODIFY COLUMN ENUM syntax
+        // PostgreSQL uses VARCHAR, SQLite doesn't support MODIFY
+        if (!DatabaseHelper::isMysql()) {
             return;
         }
 
@@ -40,7 +42,7 @@ return new class extends Migration {
     }
 
     public function down(): void {
-        if (config('database.default') === 'sqlite') {
+        if (!DatabaseHelper::isMysql()) {
             return;
         }
 

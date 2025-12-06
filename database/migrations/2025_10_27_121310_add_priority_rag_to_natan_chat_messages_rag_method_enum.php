@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\DatabaseHelper;
 
 return new class extends Migration {
     /**
@@ -19,32 +20,36 @@ return new class extends Migration {
      * - TIER 3: PA acts (weight 0.5)
      */
     public function up(): void {
-        // SQLite doesn't support MODIFY COLUMN - skip for testing
-        if (config('database.default') !== 'sqlite') {
-            // MariaDB/MySQL: ALTER TABLE MODIFY COLUMN to change enum values
-            DB::statement("
+        // Only MySQL/MariaDB support MODIFY COLUMN ENUM syntax
+        // PostgreSQL uses VARCHAR, SQLite doesn't support MODIFY
+        if (!DatabaseHelper::isMysql()) {
+            return;
+        }
+
+        DB::statement("
                 ALTER TABLE `natan_chat_messages`
                 MODIFY COLUMN `rag_method` ENUM('semantic', 'keyword', 'none', 'priority_rag') NULL
             ");
-        }
     }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void {
-        if (config('database.default') !== 'sqlite') {
-            // Remove 'priority_rag' from enum (data will be set to NULL if exists)
-            DB::statement("
+        if (!DatabaseHelper::isMysql()) {
+            return;
+        }
+
+        // Remove 'priority_rag' from enum (data will be set to NULL if exists)
+        DB::statement("
                 UPDATE `natan_chat_messages`
                 SET `rag_method` = NULL
                 WHERE `rag_method` = 'priority_rag'
             ");
 
-            DB::statement("
+        DB::statement("
                 ALTER TABLE `natan_chat_messages`
                 MODIFY COLUMN `rag_method` ENUM('semantic', 'keyword', 'none') NULL
             ");
-        }
     }
 };
