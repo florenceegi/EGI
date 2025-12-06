@@ -31,6 +31,22 @@
                     verificabili la proprietà e la storia degli oggetti digitali registrati su di essa.</dd>
             </div>
 
+            {{-- CAD --}}
+            <div>
+                <dt id="glossary-cad" class="text-xl font-bold text-emerald-700">CAD (Codice Amministrazione Digitale)</dt>
+                <dd class="mt-1 text-gray-700">D.Lgs. 82/2005, testo normativo italiano che disciplina la gestione
+                    documentale digitale della PA e dei privati. Definisce le regole per firma digitale, conservazione
+                    sostitutiva, PEC e validità legale dei documenti informatici.</dd>
+            </div>
+
+            {{-- Conservazione Sostitutiva --}}
+            <div>
+                <dt id="glossary-conservazione-sostitutiva" class="text-xl font-bold text-emerald-700">Conservazione Sostitutiva</dt>
+                <dd class="mt-1 text-gray-700">Procedura regolamentata che consente di conservare documenti in formato
+                    digitale con pieno valore legale, sostituendo l'originale cartaceo. Richiede firma digitale, marca
+                    temporale e archiviazione presso conservatori accreditati AgID per almeno 10 anni.</dd>
+            </div>
+
             {{-- Custodial --}}
             <div>
                 <dt id="glossary-custodial" class="text-xl font-bold text-emerald-700">Custodial (Wallet)</dt>
@@ -88,6 +104,15 @@
                 <dd class="mt-1 text-gray-700">Un tipo di <a href="#glossary-wallet" class="glossary-link">wallet</a> in
                     cui solo l'utente ha il pieno controllo delle chiavi private e, di conseguenza, dei fondi. La
                     responsabilità della sicurezza è interamente dell'utente.</dd>
+            </div>
+
+            {{-- OAM --}}
+            <div>
+                <dt id="glossary-oam" class="text-xl font-bold text-emerald-700">OAM (Organismo Agenti e Mediatori)</dt>
+                <dd class="mt-1 text-gray-700">Ente italiano che gestisce il registro pubblico degli operatori in
+                    cripto-attività (VASP). L'iscrizione all'OAM è obbligatoria per exchange, custodian e piattaforme
+                    che offrono servizi su crypto-asset in Italia, a garanzia della <a href="#glossary-compliance"
+                        class="glossary-link">compliance</a> normativa.</dd>
             </div>
 
             {{-- Off-chain --}}
@@ -163,7 +188,23 @@
                     piattaforma, indipendentemente dalla normativa SIAE.</dd>
             </div>
 
-            {{-- Diritto di Seguito --}}
+            {{-- SCA --}}
+            <div>
+                <dt id="glossary-sca" class="text-xl font-bold text-emerald-700">SCA (Strong Customer Authentication)</dt>
+                <dd class="mt-1 text-gray-700">Autenticazione forte del cliente prevista dalla <a href="#glossary-psd2"
+                        class="glossary-link">PSD2</a>. Richiede almeno due dei tre fattori: qualcosa che l'utente
+                    conosce (password), possiede (telefono) o è (biometria). Obbligatoria per pagamenti online >€30.</dd>
+            </div>
+
+            {{-- SdI --}}
+            <div>
+                <dt id="glossary-sdi" class="text-xl font-bold text-emerald-700">SdI (Sistema di Interscambio)</dt>
+                <dd class="mt-1 text-gray-700">Sistema dell'Agenzia delle Entrate italiana che gestisce la ricezione,
+                    controllo e trasmissione delle fatture elettroniche tra emittenti e destinatari, garantendo la <a
+                        href="#glossary-compliance" class="glossary-link">compliance</a> fiscale.</dd>
+            </div>
+
+            {{-- Settlement --}}
             <div>
                 <dt id="glossary-diritto-seguito" class="text-xl font-bold text-emerald-700">Diritto di Seguito (Droit
                     de Suite)</dt>
@@ -366,7 +407,15 @@
                     tassazione come "redditi diversi" o "redditi da capitale".</dd>
             </div>
 
-            {{-- Merchant --}}
+            {{-- PSD2 --}}
+            <div>
+                <dt id="glossary-psd2" class="text-xl font-bold text-emerald-700">PSD2 (Payment Services Directive 2)</dt>
+                <dd class="mt-1 text-gray-700">Direttiva europea 2015/2366 che regola i servizi di pagamento nel
+                    mercato interno. Introduce la <a href="#glossary-sca" class="glossary-link">SCA</a> (autenticazione
+                    forte), l'open banking e tutele rafforzate per i consumatori. Recepita in Italia con D.Lgs. 11/2010.</dd>
+            </div>
+
+            {{-- PSP --}}
             <div>
                 <dt id="glossary-merchant" class="text-xl font-bold text-emerald-700">Merchant</dt>
                 <dd class="mt-1 text-gray-700">Termine generico per indicare il venditore o fornitore di servizi che
@@ -438,7 +487,16 @@
                         class="glossary-link">EGI</a> posseduti, report fiscali e strumenti di gestione.</dd>
             </div>
 
-            {{-- QR Code --}}
+            {{-- DPO --}}
+            <div>
+                <dt id="glossary-dpo" class="text-xl font-bold text-emerald-700">DPO (Data Protection Officer)</dt>
+                <dd class="mt-1 text-gray-700">Responsabile della Protezione dei Dati, figura prevista dal <a
+                        href="#glossary-gdpr" class="glossary-link">GDPR</a> che supervisiona la conformità al
+                    regolamento privacy, gestisce le richieste degli interessati e funge da punto di contatto con
+                    l'Autorità Garante.</dd>
+            </div>
+
+            {{-- Drops --}}
             <div>
                 <dt id="glossary-qr-code" class="text-xl font-bold text-emerald-700">QR Code (Verifica Pubblica)</dt>
                 <dd class="mt-1 text-gray-700">Codice QR associato a ogni <a href="#glossary-egi"
@@ -462,14 +520,6 @@
                 <dd class="mt-1 text-gray-700">Sistema software per la gestione delle relazioni con i clienti,
                     utilizzato per tracciare interazioni, vendite, supporto e marketing. Utilizzato da grandi enti per
                     integrare dati da FlorenceEGI.</dd>
-            </div>
-
-            {{-- SDI --}}
-            <div>
-                <dt id="glossary-sdi" class="text-xl font-bold text-emerald-700">SDI (Sistema di Interscambio)</dt>
-                <dd class="mt-1 text-gray-700">Sistema dell'Agenzia delle Entrate italiana che gestisce la ricezione,
-                    controllo e trasmissione delle fatture elettroniche tra emittenti e destinatari, garantendo la <a
-                        href="#glossary-compliance" class="glossary-link">compliance</a> fiscale.</dd>
             </div>
 
             {{-- Export CSV/XML --}}
@@ -517,6 +567,14 @@
                     <a href="#glossary-audit-trail" class="glossary-link">audit trail</a> della piattaforma.</dd>
             </div>
 
+            {{-- 2FA --}}
+            <div>
+                <dt id="glossary-2fa" class="text-xl font-bold text-emerald-700">2FA (Two-Factor Authentication)</dt>
+                <dd class="mt-1 text-gray-700">Autenticazione a due fattori che richiede, oltre alla password, un
+                    secondo elemento di verifica (es. codice SMS, app authenticator, chiave hardware) per accedere
+                    all'account. Obbligatoria per operazioni sensibili su FlorenceEGI.</dd>
+            </div>
+
             {{-- Algorand --}}
             <div>
                 <dt id="glossary-algoritmo" class="text-xl font-bold text-emerald-700">Algorand</dt>
@@ -527,6 +585,14 @@
                 </dd>
             </div>
 
+            {{-- AML --}}
+            <div>
+                <dt id="glossary-aml" class="text-xl font-bold text-emerald-700">AML (Anti-Money Laundering)</dt>
+                <dd class="mt-1 text-gray-700">Insieme di normative e procedure volte a prevenire il riciclaggio di
+                    denaro e il finanziamento del terrorismo. In Italia regolato dal D.Lgs. 231/2007, richiede
+                    l'adeguata verifica della clientela e la segnalazione di operazioni sospette.</dd>
+            </div>
+
             {{-- Hash --}}
             <div>
                 <dt id="glossary-hash" class="text-xl font-bold text-emerald-700">Hash (Impronta Digitale)</dt>
@@ -535,7 +601,24 @@
                     diverso, garantendo integrità e verificabilità.</dd>
             </div>
 
-            {{-- Chiave Privata --}}
+            {{-- INTRASTAT --}}
+            <div>
+                <dt id="glossary-intrastat" class="text-xl font-bold text-emerald-700">INTRASTAT</dt>
+                <dd class="mt-1 text-gray-700">Sistema di rilevazione statistica degli scambi di beni e servizi tra
+                    Stati membri UE. Obbligo mensile/trimestrale per soggetti IVA che superano determinate soglie di
+                    operazioni intracomunitarie. Gestito in Italia dall'Agenzia delle Dogane.</dd>
+            </div>
+
+            {{-- KYC --}}
+            <div>
+                <dt id="glossary-kyc" class="text-xl font-bold text-emerald-700">KYC (Know Your Customer)</dt>
+                <dd class="mt-1 text-gray-700">Processo di identificazione e verifica dell'identità dei clienti,
+                    obbligatorio per normativa <a href="#glossary-aml" class="glossary-link">AML</a>. Include verifica
+                    documenti, controlli antiriciclaggio e valutazione del rischio. Su FlorenceEGI si applica a più
+                    livelli in base alle soglie operative.</dd>
+            </div>
+
+            {{-- Mecenate --}}
             <div>
                 <dt id="glossary-chiave-privata" class="text-xl font-bold text-emerald-700">Chiave Privata</dt>
                 <dd class="mt-1 text-gray-700">Codice segreto crittografico che permette di controllare e autorizzare
@@ -612,7 +695,24 @@
                     donazioni di un utente in un determinato periodo, facilitando la dichiarazione fiscale.</dd>
             </div>
 
-            {{-- AMMk --}}
+            {{-- Registro Immutabile --}}
+            <div>
+                <dt id="glossary-registro-immutabile" class="text-xl font-bold text-emerald-700">Registro Immutabile</dt>
+                <dd class="mt-1 text-gray-700">Sistema di archiviazione dove i dati, una volta scritti, non possono
+                    essere modificati o cancellati. Su FlorenceEGI le transazioni sono registrate sia in database
+                    tradizionale (audit trail) sia <a href="#glossary-on-chain" class="glossary-link">on-chain</a>,
+                    garantendo tracciabilità completa e valore probatorio.</dd>
+            </div>
+
+            {{-- RUNTS --}}
+            <div>
+                <dt id="glossary-runts" class="text-xl font-bold text-emerald-700">RUNTS (Registro Unico Nazionale Terzo Settore)</dt>
+                <dd class="mt-1 text-gray-700">Registro pubblico istituito dal D.Lgs. 117/2017 che censisce tutti gli
+                    <a href="#glossary-ets" class="glossary-link">ETS</a> italiani. L'iscrizione al RUNTS è condizione
+                    per accedere alle agevolazioni fiscali del Terzo Settore e per il riconoscimento giuridico dell'ente.</dd>
+            </div>
+
+            {{-- Royalties --}}
             <div>
                 <dt id="glossary-ammk" class="text-xl font-bold text-emerald-700">AMMk (Asset Market Maker)</dt>
                 <dd class="mt-1 text-gray-700">
@@ -679,6 +779,25 @@
                     es. <strong>Natan</strong> (assistente documentale/AI) o <strong>FlorenceArtEGI</strong> (arte e
                     marketplace). Ogni tenant eredita sicurezza e fiscalità dal core, mantenendo processi e interfacce
                     proprie.</dd>
+            </div>
+
+            {{-- TSA --}}
+            <div>
+                <dt id="glossary-tsa" class="text-xl font-bold text-emerald-700">TSA (Time Stamp Authority)</dt>
+                <dd class="mt-1 text-gray-700">Ente accreditato che emette marche temporali con valore legale,
+                    attestando che un documento esisteva in un determinato momento. Essenziale per la <a
+                        href="#glossary-conservazione-sostitutiva" class="glossary-link">conservazione sostitutiva</a>
+                    e la validità probatoria dei documenti digitali.</dd>
+            </div>
+
+            {{-- VASP --}}
+            <div>
+                <dt id="glossary-vasp" class="text-xl font-bold text-emerald-700">VASP (Virtual Asset Service Provider)</dt>
+                <dd class="mt-1 text-gray-700">Fornitore di servizi su asset virtuali (exchange, custodian, wallet
+                    provider). Soggetto a normativa <a href="#glossary-aml" class="glossary-link">AML</a> e, in Italia,
+                    obbligo di iscrizione al registro <a href="#glossary-oam" class="glossary-link">OAM</a>. Con
+                    l'entrata in vigore del <a href="#glossary-mica" class="glossary-link">MiCA</a>, diventa <a
+                        href="#glossary-casp" class="glossary-link">CASP</a>.</dd>
             </div>
         </dl>
     </div>
