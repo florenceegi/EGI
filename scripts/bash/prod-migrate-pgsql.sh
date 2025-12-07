@@ -124,25 +124,18 @@ echo ""
 echo -e "${PURPLE}🌱 Esecuzione seeders nella sequenza corretta...${NC}"
 echo ""
 
-# Array dei seeder in ordine
+# Array dei seeder in ordine (da DatabaseSeeder.php)
 SEEDERS=(
     "RolesAndPermissionsSeeder"
-    "PlatformSeeder"
-    "UserSeeder"
-    "LanguageSeeder"
-    "CountrySeeder"
-    "NotificationSeeder"
-    "TranslationsSeeder"
-    "BoilerplateSeeder"
-    "EgiStatusSeeder"
-    "CategorySeeder"
-    "TagSeeder"
-    "LicenseSeeder"
-    "CollectionSeeder"
-    "EgiSeeder"
-    "TraitCategorySeeder"
-    "TraitSeeder"
-    "EgiTraitSeeder"
+    "SystemUsersSeeder"
+    "ConsentTypeSeeder"
+    "IconSeeder"
+    "FlorenceEgiPrivacyPolicySeeder"
+    "VocabularyTermSeeder"
+    "TraitDefaultsSeeder"
+    "PlatformKnowledgeSectionSeeder"
+    "AiFeaturePricingSeederV2Real"
+    "PaWebScraperSeeder"
 )
 
 for seeder in "${SEEDERS[@]}"; do
