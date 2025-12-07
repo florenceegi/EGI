@@ -8,6 +8,90 @@ Il sistema è progettato per **tutti**: dal neofita che usa solo euro al crypto-
 
 ---
 
+## Tokenomics e Distribuzione Royalty
+
+### Due Tipologie di Merchant: Creator vs Company
+
+FlorenceEGI distingue due tipologie di merchant con regole diverse:
+
+#### **CREATOR** (Artista/Individuo)
+
+Il Creator è un artista, artigiano o individuo che crea e vende opere digitali.
+
+**Distribuzione Royalty (Primary Market - Mint)**:
+| Destinatario | Percentuale | Note |
+|--------------|-------------|------|
+| Creator | 68% | Royalty artista |
+| EPP | 0-20% | Volontario, per collection |
+| Natan (Piattaforma) | 10% | Infrastruttura tecnologica |
+| Frangette | 2% | Sviluppo ecosistema |
+
+**Opzioni per Collection**:
+Il Creator deve scegliere **una** delle seguenti opzioni per ogni collection:
+
+-   **Opzione A - EPP Volontario**: Assegna una percentuale (es. 20%) all'EPP per quella collection
+-   **Opzione B - Abbonamento**: Sottoscrive un abbonamento per mantenere la collection (senza obbligo EPP)
+
+**Una delle due opzioni è obbligatoria per creare/mantenere una collection.**
+
+#### **COMPANY** (Azienda/Ente Business)
+
+La Company è un'entità business (azienda, ente, istituzione) che utilizza la piattaforma.
+
+**Distribuzione Royalty (Primary Market - Mint)**:
+| Destinatario | Percentuale | Note |
+|--------------|-------------|------|
+| Company | 88% | Include quota ex-EPP + ex-Frangette |
+| EPP | 0% | Volontario (può aggiungere se vuole) |
+| Natan (Piattaforma) | 10% | Infrastruttura tecnologica |
+| Frangette | 0% | Esente (entità business) |
+| **Totale** | 98% + EPP opzionale | |
+
+**Note**: La Company riceve 88% perché non è obbligata a EPP (20%) né a Frangette (2%).
+
+**Requisiti Collection**:
+
+-   **Abbonamento obbligatorio**: Ogni collection richiede abbonamento attivo
+-   **EPP facoltativo**: Può volontariamente assegnare una percentuale a EPP
+
+### EPP: Modello Per Collection (Non Più Per Utente)
+
+**Cambiamento importante**: L'associazione EPP non avviene più alla registrazione utente, ma **collection per collection**.
+
+#### Come Funziona
+
+1. **Alla creazione collection**: Il merchant sceglie se assegnare % a EPP
+2. **Per ogni collection**: L'EPP può essere diverso (associazione diversa, % diversa)
+3. **Modificabile**: La % EPP può essere modificata (con limitazioni temporali)
+
+#### Vantaggi
+
+-   Flessibilità: Diverse collection possono avere diversi EPP
+-   Scelta consapevole: Il merchant decide per ogni progetto
+-   Trasparenza: L'acquirente sa esattamente dove va la % EPP
+
+### Rebind (Secondary Market)
+
+**Distribuzione Royalty Secondarie** (vendita tra utenti):
+| Destinatario | Creator | Company |
+|--------------|---------|---------|
+| Proprietario originale | 4.5% | 4.5% |
+| EPP | 0.8% (se assegnato) | 0% (opzionale) |
+| Natan | 0.7% | 0.7% |
+| Frangette | 0.1% | 0% |
+| **Totale** | 6.1% | 5.2% + EPP opz. |
+
+### Riepilogo Differenze
+
+| Aspetto                    | Creator                        | Company      |
+| -------------------------- | ------------------------------ | ------------ |
+| **Frangette (2%)**         | ✅ Obbligatorio                | ❌ Esente    |
+| **EPP**                    | Obbligatorio (% o abbonamento) | Facoltativo  |
+| **Abbonamento Collection** | Opzionale (alternativa a EPP)  | Obbligatorio |
+| **Royalty Base**           | 68%                            | 88%          |
+
+---
+
 ## Livello 1 — Nessun Wallet (100% FIAT Tradizionale)
 
 ### Per il Cliente
@@ -26,27 +110,25 @@ Il sistema è progettato per **tutti**: dal neofita che usa solo euro al crypto-
 
 1. Imposta prezzo EGI in euro
 2. Cliente paga → PSP incassa
-3. **PSP esegue split payment**:
-   - Creator: 68% (configurabile)
-   - EPP: 20%
-   - Piattaforma: 10%
-   - Associazione: 2%
+3. **PSP esegue split payment** (vedi sezione Tokenomics sopra):
+   - **Creator**: 68% (se Creator) o 88% (se Company)
+   - **EPP**: 0-20% (volontario, configurato per collection)
+   - **Piattaforma (Natan)**: 10%
+   - **Associazione (Frangette)**: 2% (solo Creator, Company esente)
 4. **Payout FIAT** sul conto bancario merchant (timing: T+2/T+7 secondo PSP)
 5. Merchant riceve report dettagliato transazione
 
-**Royalty e ripartizioni gestite off-chain dal PSP.**
-
-### Wallet Auto-Generato (Custodia Tecnica Limitata)
+**Royalty e ripartizioni gestite off-chain dal PSP.**### Wallet Auto-Generato (Custodia Tecnica Limitata)
 
 Per utenti che pagano in FIAT e non hanno wallet, FlorenceEGI **genera automaticamente** un wallet Algorand.
 
 #### Caratteristiche
 
-- **Creazione**: Al momento registrazione o primo acquisto
-- **Contenuto**: SOLO NFT unici (EGI), **nessuna criptovaluta**
-- **Sicurezza**: Chiavi private cifrate AES-256 server-side
-- **Storage**: Database conforme GDPR
-- **Invisibile**: Utente non vede il wallet (gestione trasparente)
+-   **Creazione**: Al momento registrazione o primo acquisto
+-   **Contenuto**: SOLO NFT unici (EGI), **nessuna criptovaluta**
+-   **Sicurezza**: Chiavi private cifrate AES-256 server-side
+-   **Storage**: Database conforme GDPR
+-   **Invisibile**: Utente non vede il wallet (gestione trasparente)
 
 #### Diritti Utente
 
@@ -63,10 +145,10 @@ L'utente può **in qualsiasi momento**:
 
 Il wallet **NON può essere utilizzato** per:
 
-- Detenere ALGO (criptovaluta nativa)
-- Ricevere/inviare stablecoin (USDCa, EURC)
-- Trading crypto
-- Operazioni finanziarie
+-   Detenere ALGO (criptovaluta nativa)
+-   Ricevere/inviare stablecoin (USDCa, EURC)
+-   Trading crypto
+-   Operazioni finanziarie
 
 **Solo NFT unici (EGI) con valore artistico/culturale.**
 
@@ -76,15 +158,15 @@ Questa gestione costituisce **custodia tecnica limitata di asset digitali non fi
 
 **Motivazioni**:
 
-- Nessun cambio valuta
-- Nessuna custodia fondi monetari
-- Nessuna intermediazione finanziaria
-- Solo certificati digitali di autenticità
+-   Nessun cambio valuta
+-   Nessuna custodia fondi monetari
+-   Nessuna intermediazione finanziaria
+-   Solo certificati digitali di autenticità
 
 **FlorenceEGI opera fuori dal perimetro MiCA**, soggetta esclusivamente a:
 
-- Sicurezza informatica (GDPR Art. 32)
-- Protezione dati personali (GDPR)
+-   Sicurezza informatica (GDPR Art. 32)
+-   Protezione dati personali (GDPR)
 
 ---
 
@@ -102,10 +184,10 @@ Questa gestione costituisce **custodia tecnica limitata di asset digitali non fi
 
 **Vantaggi**:
 
-- Controllo totale (non-custodial)
-- Può trasferire EGI liberamente
-- Può importare in altri marketplace compatibili Algorand
-- Sicurezza: solo tu hai le chiavi
+-   Controllo totale (non-custodial)
+-   Può trasferire EGI liberamente
+-   Può importare in altri marketplace compatibili Algorand
+-   Sicurezza: solo tu hai le chiavi
 
 ### Per il Merchant
 
@@ -151,9 +233,9 @@ FlorenceEGI mint EGI con sender=wallet_cliente → Blockchain Algorand
 
 #### Conformità MiCA-safe
 
-- **Nessuna custodia**: Wallet sotto controllo esclusivo utente
-- **Nessuna intermediazione**: Minting diretto a wallet utente
-- **Nessun scambio**: Pagamento FIAT ↛ crypto (sono processi separati)
+-   **Nessuna custodia**: Wallet sotto controllo esclusivo utente
+-   **Nessuna intermediazione**: Minting diretto a wallet utente
+-   **Nessun scambio**: Pagamento FIAT ↛ crypto (sono processi separati)
 
 **Fuori perimetro MiCA**: Semplice emissione NFT unico verso wallet proprietà utente, con pagamento valuta tradizionale.
 
@@ -186,10 +268,10 @@ FlorenceEGI mint EGI con sender=wallet_cliente → Blockchain Algorand
 
 #### Responsabilità
 
-- **KYC/AML**: Partner autorizzato
-- **Conversione crypto/FIAT**: Partner (se richiesto)
-- **Tax reporting**: Partner + Merchant
-- **Compliance MiCA**: Partner (licenza CASP)
+-   **KYC/AML**: Partner autorizzato
+-   **Conversione crypto/FIAT**: Partner (se richiesto)
+-   **Tax reporting**: Partner + Merchant
+-   **Compliance MiCA**: Partner (licenza CASP)
 
 ### Per il Cliente
 
@@ -227,9 +309,9 @@ FlorenceEGI mint EGI con sender=wallet_cliente → Blockchain Algorand
 
 **Devono essere emesse da soggetti conformi MiCA** e riconosciuti:
 
-- **USDCa** (USD Coin Algorand) - Circle
-- **EURC** (Euro Coin) - Circle
-- **USDT** (Tether, se conforme)
+-   **USDCa** (USD Coin Algorand) - Circle
+-   **EURC** (Euro Coin) - Circle
+-   **USDT** (Tether, se conforme)
 
 #### Conformità MiCA-safe
 
@@ -237,10 +319,10 @@ FlorenceEGI opera **unicamente come infrastruttura di registrazione blockchain**
 
 **Responsabilità**:
 
-- **Pagamento crypto**: PSP Partner (licenza CASP/EMI)
-- **Conversione**: PSP (se applicabile)
-- **Custody**: Utente (wallet proprio) e PSP (wallet merchant)
-- **Minting NFT**: FlorenceEGI (fuori perimetro MiCA)
+-   **Pagamento crypto**: PSP Partner (licenza CASP/EMI)
+-   **Conversione**: PSP (se applicabile)
+-   **Custody**: Utente (wallet proprio) e PSP (wallet merchant)
+-   **Minting NFT**: FlorenceEGI (fuori perimetro MiCA)
 
 **Rapporto contrattuale diretto**: Utente ↔ PSP Partner
 
@@ -252,11 +334,11 @@ FlorenceEGI opera **unicamente come infrastruttura di registrazione blockchain**
 
 **Egili** è il **token utility interno** di FlorenceEGI con caratteristiche specifiche:
 
-- ✅ **Non trasferibile**: Non può essere scambiato tra utenti
-- ✅ **Non quotato**: Nessuna quotazione su exchange esterni
-- ✅ **Account-bound**: Legato all'account utente (no wallet crypto)
-- ✅ **Merit-based**: Si guadagna attraverso attività meritevoli, non si compra
-- ✅ **MiCA-safe**: Punti fedeltà fuori perimetro crypto-asset
+-   ✅ **Non trasferibile**: Non può essere scambiato tra utenti
+-   ✅ **Non quotato**: Nessuna quotazione su exchange esterni
+-   ✅ **Account-bound**: Legato all'account utente (no wallet crypto)
+-   ✅ **Merit-based**: Si guadagna attraverso attività meritevoli, non si compra
+-   ✅ **MiCA-safe**: Punti fedeltà fuori perimetro crypto-asset
 
 **Tasso di conversione**: **1 Egilo = €0.01** (valore percepito interno)
 
@@ -284,10 +366,10 @@ Gli utenti accumulano Egili automaticamente attraverso:
 
 1. Buyer sceglie EGI da acquistare (es: €25.00)
 2. Nella pagina checkout vede opzioni:
-   - Carta di credito (Stripe/PayPal)
-   - Bonifico bancario
-   - Crypto via PSP Partner
-   - **🪙 Pagamento con Egili** (se abilitato dal Creator)
+    - Carta di credito (Stripe/PayPal)
+    - Bonifico bancario
+    - Crypto via PSP Partner
+    - **🪙 Pagamento con Egili** (se abilitato dal Creator)
 
 **Step 2: Verifica Saldo**
 
@@ -310,14 +392,14 @@ Saldo utente: 1,500 Egili
 
 1. Buyer seleziona "Paga con Egili"
 2. Sistema mostra riepilogo:
-   ```
-   ┌─────────────────────────────────────────┐
-   │ EGI: "Sunset Over Florence"            │
-   │ Prezzo: €25.00                          │
-   │ Egili richiesti: 2,500                  │
-   │ Tuo saldo: 5,000 → 2,500 (dopo acquisto)│
-   └─────────────────────────────────────────┘
-   ```
+    ```
+    ┌─────────────────────────────────────────┐
+    │ EGI: "Sunset Over Florence"            │
+    │ Prezzo: €25.00                          │
+    │ Egili richiesti: 2,500                  │
+    │ Tuo saldo: 5,000 → 2,500 (dopo acquisto)│
+    └─────────────────────────────────────────┘
+    ```
 3. Conferma → **2,500 Egili vengono "bruciati"** (consumo irreversibile)
 4. Wallet: `5,000 - 2,500 = 2,500 Egili rimanenti`
 
@@ -325,9 +407,9 @@ Saldo utente: 1,500 Egili
 
 1. Sistema genera riferimento pagamento: `EGL-X9K2P7M4Q1W8`
 2. Crea record blockchain con:
-   - `payment_provider: 'egili_internal'`
-   - `paid_currency: 'EGL'`
-   - `paid_amount_recorded: 2500` (Egili spesi)
+    - `payment_provider: 'egili_internal'`
+    - `paid_currency: 'EGL'`
+    - `paid_amount_recorded: 2500` (Egili spesi)
 3. **Mint asincrono** su Algorand (identico agli altri livelli)
 4. Buyer riceve EGI nel wallet (auto-generato o proprio)
 
@@ -337,20 +419,20 @@ Ogni pagamento Egili genera:
 
 1. **EgiliTransaction** record:
 
-   ```json
-   {
-     "transaction_type": "spent",
-     "amount": 2500,
-     "reason": "egi_direct_mint",
-     "category": "mint",
-     "balance_before": 5000,
-     "balance_after": 2500,
-     "metadata": {
-       "egi_id": 42,
-       "payment_reference": "EGL-X9K2P7M4Q1W8"
-     }
-   }
-   ```
+    ```json
+    {
+        "transaction_type": "spent",
+        "amount": 2500,
+        "reason": "egi_direct_mint",
+        "category": "mint",
+        "balance_before": 5000,
+        "balance_after": 2500,
+        "metadata": {
+            "egi_id": 42,
+            "payment_reference": "EGL-X9K2P7M4Q1W8"
+        }
+    }
+    ```
 
 2. **GDPR Audit Log**: Categoria `BLOCKCHAIN_ACTIVITY`
 3. **ULM Log**: `EGILI_SPEND_SUCCESS`
@@ -360,10 +442,10 @@ Ogni pagamento Egili genera:
 
 **Egili NON sono crypto-asset** perché:
 
-- ✅ Non trasferibili (no exchange)
-- ✅ Non convertibili in denaro
-- ✅ Utilizzo esclusivo interno piattaforma
-- ✅ Classificazione: **Punti fedeltà** (come programmi loyalty tradizionali)
+-   ✅ Non trasferibili (no exchange)
+-   ✅ Non convertibili in denaro
+-   ✅ Utilizzo esclusivo interno piattaforma
+-   ✅ Classificazione: **Punti fedeltà** (come programmi loyalty tradizionali)
 
 **Fuori perimetro MiCA**: Nessun obbligo licenza CASP/EMI.
 
@@ -371,28 +453,28 @@ Ogni pagamento Egili genera:
 
 **Per Creator**:
 
-- Incentiva fidelizzazione utenti attivi
-- Riduce barriera economica acquisto
-- Premia community engagement
+-   Incentiva fidelizzazione utenti attivi
+-   Riduce barriera economica acquisto
+-   Premia community engagement
 
 **Per Buyer**:
 
-- Utilizza ricompense guadagnate
-- Zero costi bancari (no PSP fee)
-- Esperienza gamificata
+-   Utilizza ricompense guadagnate
+-   Zero costi bancari (no PSP fee)
+-   Esperienza gamificata
 
 **Per Piattaforma**:
 
-- Circolarità economica interna
-- Engagement aumentato
-- Compliance semplificata (no crypto)
+-   Circolarità economica interna
+-   Engagement aumentato
+-   Compliance semplificata (no crypto)
 
 ### Limitazioni
 
-- ❌ **Solo fee di mint**: Egili coprono il costo transazione, non royalty Creator/EPP
-- ❌ **Opt-in Creator**: Creator deve abilitare esplicitamente per ogni EGI
-- ❌ **Irreversibile**: Egili spesi sono bruciati definitivamente (no refund)
-- ❌ **Non cumulabile**: Non si può pagare "metà Egili + metà FIAT" (tutto o niente)
+-   ❌ **Solo fee di mint**: Egili coprono il costo transazione, non royalty Creator/EPP
+-   ❌ **Opt-in Creator**: Creator deve abilitare esplicitamente per ogni EGI
+-   ❌ **Irreversibile**: Egili spesi sono bruciati definitivamente (no refund)
+-   ❌ **Non cumulabile**: Non si può pagare "metà Egili + metà FIAT" (tutto o niente)
 
 ---
 
@@ -414,22 +496,22 @@ Ogni pagamento Egili genera:
 
 ### ✅ Cosa FlorenceEGI FA
 
-- Incassa **FIAT** tramite PSP per propria **fee** (10% default)
-- Gestisce **Egili** (token interno non-crypto, punti fedeltà)
-- Emette e trasferisce **EGI** (NFT unici)
-- Scrive **anchor hash** su blockchain (notarizzazione)
-- Gestisce **QR code** e verifica pubblica autenticità
-- Calcola **royalty** per istruire PSP su split payment
-- Fornisce **dashboard** e reportistica
+-   Incassa **FIAT** tramite PSP per propria **fee** (10% default)
+-   Gestisce **Egili** (token interno non-crypto, punti fedeltà)
+-   Emette e trasferisce **EGI** (NFT unici)
+-   Scrive **anchor hash** su blockchain (notarizzazione)
+-   Gestisce **QR code** e verifica pubblica autenticità
+-   Calcola **royalty** per istruire PSP su split payment
+-   Fornisce **dashboard** e reportistica
 
 ### ❌ Cosa FlorenceEGI NON FA
 
-- **NON custodisce** criptovalute per terzi (solo NFT unici in wallet auto-generati)
-- **NON fa da exchange** crypto/fiat o Egili/fiat (Egili non convertibili)
-- **NON processa** pagamenti crypto direttamente (tramite PSP Partner autorizzati)
-- **NON detiene** fondi utenti (né FIAT né crypto)
-- **NON svolge** attività CASP (MiCA-safe by design)
-- **NON permette** trasferimento Egili tra utenti (account-bound)
+-   **NON custodisce** criptovalute per terzi (solo NFT unici in wallet auto-generati)
+-   **NON fa da exchange** crypto/fiat o Egili/fiat (Egili non convertibili)
+-   **NON processa** pagamenti crypto direttamente (tramite PSP Partner autorizzati)
+-   **NON detiene** fondi utenti (né FIAT né crypto)
+-   **NON svolge** attività CASP (MiCA-safe by design)
+-   **NON permette** trasferimento Egili tra utenti (account-bound)
 
 ---
 
