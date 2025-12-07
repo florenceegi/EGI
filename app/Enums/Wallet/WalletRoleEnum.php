@@ -8,15 +8,15 @@ namespace App\Enums\Wallet;
  * @version 1.0.0 (FlorenceEGI - Tokenomics)
  * @date 2025-10-10
  * @purpose Define wallet roles with immutable royalty percentages
- * 
+ *
  * @rationale Centralized, type-safe, immutable source of truth for royalty distribution.
  *            Replaces fragile config files with enum-based tokenomics management.
  *            Ensures compile-time validation and prevents runtime configuration corruption.
- * 
+ *
  * @context FlorenceEGI tokenomics distribution:
  *          MINT (Primary Market): Creator 68%, EPP 20%, Natan 10%, Frangette 2% = 100%
  *          REBIND (Secondary Market): Creator 4.5%, EPP 0.8%, Natan 0.7%, Frangette 0.1% = 6.1%
- * 
+ *
  * @legislative Complies with Legge 633/1941 Art. 144 (droit de suite 0.25%-4%)
  *              FlorenceEGI applies 4.5% rebind to creator (disclosed in T&C)
  */
@@ -25,15 +25,17 @@ enum WalletRoleEnum: string {
     case EPP = 'EPP';
     case NATAN = 'Natan';
     case FRANGETTE = 'Frangette';
+    case COMPANY = 'Company';
 
     /**
      * Get mint royalty percentage for this role (Primary Market)
-     * 
+     * Note: COMPANY and CREATOR are mutually exclusive and share the same royalties
+     *
      * @return float Percentage (0-100)
      */
     public function getMintRoyalty(): float {
         return match ($this) {
-            self::CREATOR => 68.0,
+            self::CREATOR, self::COMPANY => 68.0, // Same royalty - mutually exclusive roles
             self::EPP => 20.0,
             self::NATAN => 10.0,
             self::FRANGETTE => 2.0,
@@ -42,12 +44,13 @@ enum WalletRoleEnum: string {
 
     /**
      * Get rebind (secondary market) royalty percentage for this role
-     * 
+     * Note: COMPANY and CREATOR are mutually exclusive and share the same royalties
+     *
      * @return float Percentage (0-6.1)
      */
     public function getRebindRoyalty(): float {
         return match ($this) {
-            self::CREATOR => 4.5,
+            self::CREATOR, self::COMPANY => 4.5, // Same royalty - mutually exclusive roles
             self::EPP => 0.8,
             self::NATAN => 0.7,
             self::FRANGETTE => 0.1,
@@ -56,50 +59,59 @@ enum WalletRoleEnum: string {
 
     /**
      * Get wallet address from config for platform roles
-     * 
-     * @return string|null Algorand wallet address (null for CREATOR - dynamic)
+     *
+     * @return string|null Algorand wallet address (null for dynamic user roles)
      */
     public function getWalletAddress(): ?string {
         return match ($this) {
             self::NATAN => config('app.natan_wallet_address'),
             self::EPP => config('app.epp_wallet_address'),
             self::FRANGETTE => config('app.frangette_wallet_address'),
-            self::CREATOR => null, // User's wallet - dynamic
+            self::CREATOR, self::COMPANY => null, // User's wallet - dynamic
         };
     }
 
     /**
      * Get user ID from config for platform roles
-     * 
-     * @return int|null Platform user ID (null for CREATOR - dynamic)
+     *
+     * @return int|null Platform user ID (null for dynamic user roles)
      */
     public function getUserId(): ?int {
         return match ($this) {
             self::NATAN => config('app.natan_id', 1),
             self::EPP => config('app.epp_id', 2),
             self::FRANGETTE => config('app.frangette_id', 3),
-            self::CREATOR => null, // Dynamic user
+            self::CREATOR, self::COMPANY => null, // Dynamic user
         };
     }
 
     /**
      * Check if this role is a platform role (not user-specific)
-     * 
+     * Platform roles are system accounts: EPP, Natan, Frangette
+     * User roles are dynamic: Creator, Company
+     *
      * @return bool
      */
     public function isPlatformRole(): bool {
-        return $this !== self::CREATOR;
+        return !in_array($this, [self::CREATOR, self::COMPANY], true);
     }
 
     /**
      * Validate total mint percentages sum to 100%
-     * 
+     * Note: Excludes COMPANY as it's mutually exclusive with CREATOR
+     *
      * @return bool
      */
     public static function validateMintTotal(): bool {
+        // Exclude COMPANY from total - it's mutually exclusive with CREATOR
+        $roles = array_filter(
+            self::cases(),
+            fn($role) => $role !== self::COMPANY
+        );
+
         $total = array_sum(array_map(
             fn($role) => $role->getMintRoyalty(),
-            self::cases()
+            $roles
         ));
 
         return abs($total - 100.0) < 0.01; // Float precision tolerance
@@ -107,19 +119,26 @@ enum WalletRoleEnum: string {
 
     /**
      * Get total rebind percentage across all roles
-     * 
+     * Note: Excludes COMPANY as it's mutually exclusive with CREATOR
+     *
      * @return float Total secondary market royalty (should be 6.1%)
      */
     public static function getTotalRebindPercentage(): float {
+        // Exclude COMPANY from total - it's mutually exclusive with CREATOR
+        $roles = array_filter(
+            self::cases(),
+            fn($role) => $role !== self::COMPANY
+        );
+
         return array_sum(array_map(
             fn($role) => $role->getRebindRoyalty(),
-            self::cases()
+            $roles
         ));
     }
 
     /**
      * Get all platform roles (exclude Creator)
-     * 
+     *
      * @return array<WalletRoleEnum>
      */
     public static function platformRoles(): array {
@@ -131,12 +150,13 @@ enum WalletRoleEnum: string {
 
     /**
      * Get formatted description for this role
-     * 
+     *
      * @return string Human-readable description
      */
     public function getDescription(): string {
         return match ($this) {
             self::CREATOR => 'Creator/Artist - Intellectual property owner',
+            self::COMPANY => 'Company/Business - Corporate entity',
             self::EPP => 'EPP Association - Environmental impact partner',
             self::NATAN => 'Natan Platform - Technology & infrastructure',
             self::FRANGETTE => 'Frangette Association - Ecosystem development',
@@ -145,7 +165,7 @@ enum WalletRoleEnum: string {
 
     /**
      * Get formatted tokenomics summary
-     * 
+     *
      * @return string Formatted string with mint and rebind percentages
      */
     public function getTokenomicsSummary(): string {
