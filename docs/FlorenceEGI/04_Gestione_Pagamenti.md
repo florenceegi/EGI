@@ -41,13 +41,13 @@ La Company è un'entità business (azienda, ente, istituzione) che utilizza la p
 **Distribuzione Royalty (Primary Market - Mint)**:
 | Destinatario | Percentuale | Note |
 |--------------|-------------|------|
-| Company | 88% | Include quota ex-EPP + ex-Frangette |
+| Company | 90% | Esente da EPP e Frangette |
 | EPP | 0% | Volontario (può aggiungere se vuole) |
 | Natan (Piattaforma) | 10% | Infrastruttura tecnologica |
 | Frangette | 0% | Esente (entità business) |
-| **Totale** | 98% + EPP opzionale | |
+| **Totale** | 100% (o meno se aggiunge EPP) | |
 
-**Note**: La Company riceve 88% perché non è obbligata a EPP (20%) né a Frangette (2%).
+**Note**: La Company riceve 90% perché non è obbligata a EPP né a Frangette. Se sceglie di aggiungere EPP (es. 10%), la sua quota scende a 80%.
 
 **Requisiti Collection**:
 
@@ -88,7 +88,7 @@ La Company è un'entità business (azienda, ente, istituzione) che utilizza la p
 | **Frangette (2%)**         | ✅ Obbligatorio                | ❌ Esente    |
 | **EPP**                    | Obbligatorio (% o abbonamento) | Facoltativo  |
 | **Abbonamento Collection** | Opzionale (alternativa a EPP)  | Obbligatorio |
-| **Royalty Base**           | 68%                            | 88%          |
+| **Royalty Base**           | 68%                            | 90%          |
 
 ---
 

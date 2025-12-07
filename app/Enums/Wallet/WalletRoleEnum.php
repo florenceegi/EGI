@@ -29,13 +29,17 @@ enum WalletRoleEnum: string {
 
     /**
      * Get mint royalty percentage for this role (Primary Market)
-     * Note: COMPANY and CREATOR are mutually exclusive and share the same royalties
+     * 
+     * Note: These are BASE royalties. Actual distribution depends on user type:
+     * - CREATOR: 68% (+ EPP mandatory via % or subscription + Frangette 2%)
+     * - COMPANY: 90% base (no EPP obligation, no Frangette) - EPP voluntary reduces this
      *
      * @return float Percentage (0-100)
      */
     public function getMintRoyalty(): float {
         return match ($this) {
-            self::CREATOR, self::COMPANY => 68.0, // Same royalty - mutually exclusive roles
+            self::CREATOR => 68.0,
+            self::COMPANY => 90.0, // No EPP, no Frangette obligation
             self::EPP => 20.0,
             self::NATAN => 10.0,
             self::FRANGETTE => 2.0,
@@ -44,13 +48,17 @@ enum WalletRoleEnum: string {
 
     /**
      * Get rebind (secondary market) royalty percentage for this role
-     * Note: COMPANY and CREATOR are mutually exclusive and share the same royalties
+     * 
+     * Note: COMPANY does not pay Frangette (0.1%) and EPP is optional
+     * - CREATOR total rebind: 4.5% + 0.8% EPP + 0.7% Natan + 0.1% Frangette = 6.1%
+     * - COMPANY total rebind: 4.6% + 0.7% Natan = 5.3% (EPP optional)
      *
-     * @return float Percentage (0-6.1)
+     * @return float Percentage
      */
     public function getRebindRoyalty(): float {
         return match ($this) {
-            self::CREATOR, self::COMPANY => 4.5, // Same royalty - mutually exclusive roles
+            self::CREATOR => 4.5,
+            self::COMPANY => 4.6, // Gets Frangette share (4.5 + 0.1)
             self::EPP => 0.8,
             self::NATAN => 0.7,
             self::FRANGETTE => 0.1,
