@@ -921,8 +921,9 @@ class CoaController extends Controller {
                 'request_ip' => $request->ip()
             ]);
 
-            // Check if user owns the EGI
-            $egi = $user->egis()->find($egiId);
+            // Check if user owns the EGI (through owned collections)
+            $egi = \App\Models\Egi::whereIn('collection_id', $user->ownedCollections()->pluck('id'))
+                ->find($egiId);
             if (!$egi) {
                 $this->errorManager->handle('COA_EGI_NOT_OWNED', [
                     'user_id' => $user->id,
@@ -1776,8 +1777,9 @@ class CoaController extends Controller {
                 'request_ip' => $request->ip()
             ]);
 
-            // Check if user owns the EGI
-            $egi = $user->egis()->find($egiId);
+            // Check if user owns the EGI (through owned collections)
+            $egi = \App\Models\Egi::whereIn('collection_id', $user->ownedCollections()->pluck('id'))
+                ->find($egiId);
             if (!$egi) {
                 return response()->json([
                     'success' => false,

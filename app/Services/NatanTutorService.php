@@ -489,8 +489,8 @@ class NatanTutorService {
     protected function getRecommendedActions(User $user): array {
         $recommendations = [];
 
-        // Check if user has any EGIs
-        $egiCount = $user->egis()->count();
+        // Check if user has any EGIs (through owned collections)
+        $egiCount = \App\Models\Egi::whereIn('collection_id', $user->ownedCollections()->pluck('id'))->count();
         if ($egiCount === 0) {
             $recommendations[] = [
                 'action' => 'mint',
