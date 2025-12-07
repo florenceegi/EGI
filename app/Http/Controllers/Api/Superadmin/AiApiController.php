@@ -14,21 +14,18 @@ use Illuminate\Support\Facades\Schema;
  * @Oracode API Controller: SuperAdmin AI Management
  * 🎯 Purpose: API per gestione AI consultations, credits, features, statistics
  */
-class AiApiController extends Controller
-{
+class AiApiController extends Controller {
     /**
      * Check if a table exists and has a specific column
      */
-    private function hasTableColumn(string $table, string $column): bool
-    {
+    private function hasTableColumn(string $table, string $column): bool {
         return Schema::hasTable($table) && Schema::hasColumn($table, $column);
     }
 
     /**
      * Get AI consultations list
      */
-    public function consultations(Request $request): JsonResponse
-    {
+    public function consultations(Request $request): JsonResponse {
         try {
             if (!Schema::hasTable('ai_trait_generations')) {
                 return response()->json([
@@ -71,13 +68,12 @@ class AiApiController extends Controller
     /**
      * Get AI credits management data
      */
-    public function credits(Request $request): JsonResponse
-    {
+    public function credits(Request $request): JsonResponse {
         try {
             $hasAiCredits = $this->hasTableColumn('users', 'ai_credits');
             $hasAiCreditsTotal = $this->hasTableColumn('users', 'ai_credits_total');
             $hasAiCreditsUsed = $this->hasTableColumn('users', 'ai_credits_used');
-            
+
             $usersWithCredits = $hasAiCredits ? User::where('ai_credits', '>', 0)->count() : 0;
             $totalCreditsIssued = $hasAiCreditsTotal ? (int) User::sum('ai_credits_total') : 0;
             $totalCreditsUsed = $hasAiCreditsUsed ? (int) User::sum('ai_credits_used') : 0;
@@ -108,8 +104,7 @@ class AiApiController extends Controller
     /**
      * Get AI features configuration
      */
-    public function features(Request $request): JsonResponse
-    {
+    public function features(Request $request): JsonResponse {
         try {
             $traitUsage = 0;
             if (Schema::hasTable('ai_trait_generations')) {
@@ -164,8 +159,7 @@ class AiApiController extends Controller
     /**
      * Get AI statistics
      */
-    public function statistics(Request $request): JsonResponse
-    {
+    public function statistics(Request $request): JsonResponse {
         try {
             if (!Schema::hasTable('ai_trait_generations')) {
                 return response()->json([
@@ -179,14 +173,14 @@ class AiApiController extends Controller
             }
 
             $totalRequests = AiTraitGeneration::count();
-            
+
             // Verifica se la colonna tokens_used esiste
             $hasTokensUsed = $this->hasTableColumn('ai_trait_generations', 'tokens_used');
             $totalTokens = $hasTokensUsed ? (int) (AiTraitGeneration::sum('tokens_used') ?? 0) : 0;
-            
+
             // Costo stimato (assumendo $0.03 per 1000 tokens per GPT-4)
             $totalCost = ($totalTokens / 1000) * 0.03;
-            
+
             $avgResponseTime = 850; // ms placeholder
 
             $requestsByDay = AiTraitGeneration::selectRaw(\App\Helpers\DatabaseHelper::dateOnly('created_at') . ' as date, COUNT(*) as count')
@@ -199,7 +193,7 @@ class AiApiController extends Controller
             // Verifica se la colonna model esiste
             $hasModel = $this->hasTableColumn('ai_trait_generations', 'model');
             $requestsByModel = [];
-            
+
             if ($hasModel && $hasTokensUsed) {
                 $requestsByModel = AiTraitGeneration::selectRaw('COALESCE(model, \'gpt-4\') as model, COUNT(*) as count, SUM(tokens_used) as tokens')
                     ->groupBy('model')

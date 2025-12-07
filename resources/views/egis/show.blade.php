@@ -25,24 +25,32 @@
             $collectionRole = null;
 
             if ($isAuthenticated) {
-                $collectionMembership = $collection
-                    ->users()
-                    ->where('user_id', $currentUserId)
-                    ->first();
+                $collectionMembership = $collection->users()->where('user_id', $currentUserId)->first();
 
                 $collectionRole = $collectionMembership?->pivot?->role;
             }
 
-            $hasCollectionUpdateRole = in_array($collectionRole, ['admin', 'editor', 'creator'], true);
-            $hasCollectionDeleteRole = in_array($collectionRole, ['admin', 'creator'], true);
+            // Use Spatie to check permissions based on collection role
+            $hasCollectionUpdateRole = false;
+            $hasCollectionDeleteRole = false;
+            if ($collectionRole) {
+                $spatieRole = \Spatie\Permission\Models\Role::where('name', $collectionRole)->first();
+                if ($spatieRole) {
+                    $hasCollectionUpdateRole =
+                        $spatieRole->hasPermissionTo('manage_EGI') || $spatieRole->hasPermissionTo('update_EGI');
+                    $hasCollectionDeleteRole =
+                        $spatieRole->hasPermissionTo('manage_EGI') || $spatieRole->hasPermissionTo('delete_EGI');
+                }
+            }
 
             $isMinted = !is_null($egi->token_EGI);
             $isOwner = $isAuthenticated && (int) $egi->owner_id === (int) $currentUserId;
-            $isCoCreator = $isAuthenticated && !is_null($egi->co_creator_id) && (int) $egi->co_creator_id === (int) $currentUserId;
+            $isCoCreator =
+                $isAuthenticated && !is_null($egi->co_creator_id) && (int) $egi->co_creator_id === (int) $currentUserId;
 
             // Permessi granulari basati sui tre ruoli inscindibili:
             // - Creator (user_id): autore originale, IMMUTABILE
-            // - Co-Creator (co_creator_id): chi ha mintato, IMMUTABILE dopo mint  
+            // - Co-Creator (co_creator_id): chi ha mintato, IMMUTABILE dopo mint
             // - Owner (owner_id): proprietario commerciale, VARIABILE con vendite
 
             // Può modificare metadati (titolo, descrizione, traits, immagine):
@@ -60,15 +68,15 @@
 
             // Can update se: ha ALMENO un permesso tra metadata, CoA o price
             // Oppure ha permessi di collezione / canManage globale
-            $canUpdateEgi = ($canManage ?? false) ||
-                ($isAuthenticated &&
-                    App\Helpers\FegiAuth::user()->can('update_EGI') &&
-                    $hasCollectionUpdateRole) ||
-                $canEditMetadata || $canManageCoA || $canManagePrice;
+            $canUpdateEgi =
+                ($canManage ?? false) ||
+                ($isAuthenticated && App\Helpers\FegiAuth::user()->can('update_EGI') && $hasCollectionUpdateRole) ||
+                $canEditMetadata ||
+                $canManageCoA ||
+                $canManagePrice;
 
-            $canDeleteEgi = $isAuthenticated &&
-                App\Helpers\FegiAuth::user()->can('delete_EGI') &&
-                $hasCollectionDeleteRole;
+            $canDeleteEgi =
+                $isAuthenticated && App\Helpers\FegiAuth::user()->can('delete_EGI') && $hasCollectionDeleteRole;
 
             // Inizializzazione delle variabili di prenotazione e prezzo
             // Ottengo la prenotazione con priorità più alta per questo EGI
@@ -97,7 +105,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
     // 🔧 FIX: Proteggo da valori null o non numerici
     $fallbackPrice = $egi->price && is_numeric($egi->price) ? $egi->price * 0.3 : 0;
-            $displayPrice = $highestPriorityReservation->offer_amount_fiat ?? $fallbackPrice;
+    $displayPrice = $highestPriorityReservation->offer_amount_fiat ?? $fallbackPrice;
     $displayUser = $highestPriorityReservation->user;
 
     // 🎯 EUR-ONLY SYSTEM: Sistema semplificato
@@ -118,68 +126,72 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
     }
 } else {
     // Se NON c'è prenotazione, usa il prezzo base dell'EGI (sempre in EUR)
-                // Sistema semplificato: tutto in EUR
-            }
+    // Sistema semplificato: tutto in EUR
+}
 
-            // 🔧 VALIDATION: Assicuro che displayPrice sia sempre un numero valido
-            $displayPrice = is_numeric($displayPrice) ? (float) $displayPrice : 0;
+// 🔧 VALIDATION: Assicuro che displayPrice sia sempre un numero valido
+$displayPrice = is_numeric($displayPrice) ? (float) $displayPrice : 0;
 
-            $isForSale = $displayPrice && $displayPrice > 0 && !$egi->mint;
-            $canBeReserved =
-                !$egi->mint &&
-                ($egi->is_published ||
-                    (App\Helpers\FegiAuth::check() && App\Helpers\FegiAuth::id() === $collection->creator_id)) &&
-                $displayPrice &&
-                $displayPrice > 0 &&
-                !$isCreator;
+$isForSale = $displayPrice && $displayPrice > 0 && !$egi->mint;
+$canBeReserved =
+    !$egi->mint &&
+    ($egi->is_published ||
+        (App\Helpers\FegiAuth::check() && App\Helpers\FegiAuth::id() === $collection->creator_id)) &&
+    $displayPrice &&
+    $displayPrice > 0 &&
+    !$isCreator;
 
-            // 🔒 PRICE LOCK: Determina se il prezzo può essere modificato dal creator
-            $canModifyPrice = ($isCreator || $ownsMintedEgi) && !$highestPriorityReservation;
-            $isPriceLocked = ($isCreator || $ownsMintedEgi) && $highestPriorityReservation;
+// 🔒 PRICE LOCK: Determina se il prezzo può essere modificato dal creator
+$canModifyPrice = ($isCreator || $ownsMintedEgi) && !$highestPriorityReservation;
+$isPriceLocked = ($isCreator || $ownsMintedEgi) && $highestPriorityReservation;
 
-            $creatorOwner = $collection->creator ?? $egi->user;
-            $currentOwner = null;
-            $ownershipLabel = null;
-            $ownershipRoleLabel = null;
-            $ownershipSubtitle = null;
-            $ownershipStatusBadge = null;
-            $mintedAtDisplay = null;
+$creatorOwner = $collection->creator ?? $egi->user;
+$currentOwner = null;
+$ownershipLabel = null;
+$ownershipRoleLabel = null;
+$ownershipSubtitle = null;
+$ownershipStatusBadge = null;
+$mintedAtDisplay = null;
 
-            if (!is_null($egi->token_EGI) && $egi->owner) {
-                $currentOwner = $egi->owner;
-                $ownershipLabel = __('egi.ownership.current_owner');
-                $ownershipRoleLabel = __('egi.ownership.roles.collector');
+if (!is_null($egi->token_EGI) && $egi->owner) {
+    $currentOwner = $egi->owner;
+    $ownershipLabel = __('egi.ownership.current_owner');
+    $ownershipRoleLabel = __('egi.ownership.roles.collector');
 
-                $mintedAt = optional($egi->blockchain)->minted_at;
+    $mintedAt = optional($egi->blockchain)->minted_at;
 
-                if ($mintedAt instanceof \Illuminate\Support\Carbon) {
-                    $mintedAtDisplay = $mintedAt->copy()->locale(app()->getLocale())->isoFormat('LL');
-                } elseif ($mintedAt) {
-                    $mintedAtDisplay = \Illuminate\Support\Carbon::parse($mintedAt)
-                        ->locale(app()->getLocale())
-                        ->isoFormat('LL');
-                }
+    if ($mintedAt instanceof \Illuminate\Support\Carbon) {
+        $mintedAtDisplay = $mintedAt
+            ->copy()
+            ->locale(app()->getLocale())
+            ->isoFormat('LL');
+    } elseif ($mintedAt) {
+        $mintedAtDisplay = \Illuminate\Support\Carbon::parse($mintedAt)
+            ->locale(app()->getLocale())
+            ->isoFormat('LL');
+    }
 
-                $ownershipSubtitle = $mintedAtDisplay
-                    ? __('egi.ownership.collector_since', ['date' => $mintedAtDisplay])
-                    : __('egi.ownership.collector_default');
+    $ownershipSubtitle = $mintedAtDisplay
+        ? __('egi.ownership.collector_since', ['date' => $mintedAtDisplay])
+        : __('egi.ownership.collector_default');
 
-                $ownershipStatusBadge = $mintedAtDisplay
-                    ? __('egi.ownership.minted_on', ['date' => $mintedAtDisplay])
-                    : __('egi.ownership.minted_unknown');
-            } else {
-                $currentOwner = $creatorOwner;
-                $ownershipLabel = __('egi.ownership.creator_owner');
-                $ownershipRoleLabel = __('egi.ownership.roles.creator');
-                $ownershipSubtitle = __('egi.ownership.creator_default');
-                $ownershipStatusBadge = __('egi.ownership.unminted_hint');
-            }
+    $ownershipStatusBadge = $mintedAtDisplay
+        ? __('egi.ownership.minted_on', ['date' => $mintedAtDisplay])
+        : __('egi.ownership.minted_unknown');
+} else {
+    $currentOwner = $creatorOwner;
+    $ownershipLabel = __('egi.ownership.creator_owner');
+    $ownershipRoleLabel = __('egi.ownership.roles.creator');
+    $ownershipSubtitle = __('egi.ownership.creator_default');
+    $ownershipStatusBadge = __('egi.ownership.unminted_hint');
+}
 
-            $ownerName = $currentOwner?->name ?? __('egi.unknown_creator');
-            $ownerAvatar = $currentOwner?->profile_photo_url;
+$ownerName = $currentOwner?->name ?? __('egi.unknown_creator');
+$ownerAvatar = $currentOwner?->profile_photo_url;
 
-            if (empty($ownerAvatar)) {
-                $ownerAvatar = 'https://ui-avatars.com/api/?name=' . urlencode($ownerName) . '&color=FFFFFF&background=1B365D';
+if (empty($ownerAvatar)) {
+    $ownerAvatar =
+        'https://ui-avatars.com/api/?name=' . urlencode($ownerName) . '&color=FFFFFF&background=1B365D';
             }
         @endphp
 
@@ -187,7 +199,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
             <section class="px-4 pt-6 sm:px-6 lg:px-8">
                 <div class="mx-auto max-w-7xl">
                     <div
-                        class="relative overflow-hidden rounded-2xl border border-emerald-400/30 bg-gradient-to-r from-emerald-900/60 via-emerald-700/40 to-emerald-900/60 shadow-2xl">
+                        class="relative overflow-hidden border shadow-2xl rounded-2xl border-emerald-400/30 bg-gradient-to-r from-emerald-900/60 via-emerald-700/40 to-emerald-900/60">
                         <div class="absolute inset-0 opacity-40"
                             style="background: radial-gradient(circle at top, rgba(74, 222, 128, 0.35), transparent);">
                         </div>
@@ -196,9 +208,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                             <div class="flex items-center gap-4">
                                 <img src="{{ $ownerAvatar }}"
                                     alt="{{ __('egi.ownership.owner_avatar_alt', ['name' => $ownerName]) }}"
-                                    class="h-16 w-16 rounded-full border-2 border-emerald-300/60 object-cover shadow-lg sm:h-20 sm:w-20">
+                                    class="object-cover w-16 h-16 border-2 rounded-full shadow-lg border-emerald-300/60 sm:h-20 sm:w-20">
                                 <div class="space-y-1">
-                                    <p class="text-xs font-semibold uppercase tracking-widest text-emerald-200">
+                                    <p class="text-xs font-semibold tracking-widest uppercase text-emerald-200">
                                         {{ __('egi.ownership.badge_title') }}</p>
                                     <p class="text-sm font-medium text-emerald-100 sm:text-base">{{ $ownershipLabel }}
                                     </p>
@@ -212,8 +224,8 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                             </div>
                             <div class="flex flex-col items-start gap-2 sm:items-end">
                                 <span
-                                    class="inline-flex items-center gap-2 rounded-full border border-emerald-300/40 bg-emerald-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-50 sm:text-sm">
-                                    <svg class="h-4 w-4 text-emerald-200" fill="none" stroke="currentColor"
+                                    class="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold tracking-wide uppercase border rounded-full border-emerald-300/40 bg-emerald-500/15 text-emerald-50 sm:text-sm">
+                                    <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2a3 3 0 00-5.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2a3 3 0 015.356-1.857M12 4a3 3 0 110 6 3 3 0 010-6z" />
@@ -223,13 +235,13 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                 <span
                                     class="flex items-center gap-2 text-xs font-medium text-emerald-100/90 sm:text-sm">
                                     @if (!is_null($egi->token_EGI))
-                                        <svg class="h-4 w-4 text-emerald-200" fill="none" stroke="currentColor"
+                                        <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     @else
-                                        <svg class="h-4 w-4 text-emerald-200" fill="none" stroke="currentColor"
+                                        <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -879,10 +891,10 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
     console.log('==========================================');
     console.log('🚀 [EGI-CRUD-DIRECT] Script DIRECTLY in file');
     console.log('==========================================');
-    
+
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🎯 [EGI-CRUD-DIRECT] DOMContentLoaded fired');
-        
+
         const editStartBtn = document.getElementById('egi-edit-start');
         const editToggleBtn = document.getElementById('egi-edit-toggle');
         const editForm = document.getElementById('egi-edit-form');
@@ -904,7 +916,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                 console.error('[CRUD-EDIT] Cannot toggle - elements not found!');
                 return;
             }
-            
+
             const isEditing = editForm.style.display !== 'none';
 
             if (isEditing) {

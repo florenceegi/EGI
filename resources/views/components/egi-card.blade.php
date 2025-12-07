@@ -263,10 +263,10 @@ $isCreator = FegiAuth::check() && FegiAuth::id() === $creatorId;
         @endif
     @endif
     {{-- 🖼️ Sezione Immagine --}}
-    <figure class="relative aspect-[4/5] w-full overflow-hidden bg-black">
-        <a href="{{ route('egis.show', $egi->id) }}" class="block h-full w-full">
+    <figure class="relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden bg-black">
+        <a href="{{ route('egis.show', $egi->id) }}" class="block flex h-full w-full items-center justify-center">
             {{-- 🖼️ Media Display (Image / PDF / etc) --}}
-            <x-egi-media-display :egi="$egi" />
+            <x-egi-media-display :egi="$egi" class="object-contain" />
 
             {{-- Overlay leggero su hover --}}
             <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">

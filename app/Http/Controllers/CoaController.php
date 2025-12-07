@@ -37,8 +37,7 @@ use Carbon\Carbon;
  * @date 2025-09-18
  * @purpose Professional certificate management following FlorenceEGI architecture
  */
-class CoaController extends Controller
-{
+class CoaController extends Controller {
     /**
      * Logger instance for audit trail
      * @var UltraLogManager
@@ -127,8 +126,7 @@ class CoaController extends Controller
      * @transparency-level Medium - certificate listing with metadata
      * @narrative-coherence Links certificates to user's collection
      */
-    public function index(Request $request): JsonResponse
-    {
+    public function index(Request $request): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -221,8 +219,7 @@ class CoaController extends Controller
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|void
      * @privacy-safe Touches minimal PII-like location string; full GDPR logging
      */
-    public function updateLocation(Request $request, Coa $coa)
-    {
+    public function updateLocation(Request $request, Coa $coa) {
         try {
             $user = Auth::user();
 
@@ -301,8 +298,7 @@ class CoaController extends Controller
      * @return JsonResponse
      * @privacy-safe Returns certificate only if user owns the associated EGI
      */
-    public function show(Request $request, Coa $coa): JsonResponse
-    {
+    public function show(Request $request, Coa $coa): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -389,8 +385,7 @@ class CoaController extends Controller
      * @return JsonResponse|void UEM può gestire la risposta automaticamente
      * @privacy-safe Issues certificate only for authenticated user's EGI
      */
-    public function issue(Request $request)
-    {
+    public function issue(Request $request) {
 
         try {
             $user = Auth::user();
@@ -568,8 +563,7 @@ class CoaController extends Controller
      * @return JsonResponse
      * @privacy-safe Re-issues certificate only for authenticated user's CoA
      */
-    public function reissue(Request $request, Coa $coa): JsonResponse
-    {
+    public function reissue(Request $request, Coa $coa): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -662,8 +656,7 @@ class CoaController extends Controller
      * @return JsonResponse
      * @privacy-safe Revokes certificate only for authenticated user's CoA
      */
-    public function revoke(Request $request, Coa $coa): JsonResponse
-    {
+    public function revoke(Request $request, Coa $coa): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -754,8 +747,7 @@ class CoaController extends Controller
      * @return JsonResponse
      * @privacy-safe Creates bundle only for authenticated user's CoA
      */
-    public function createBundle(Request $request, Coa $coa): JsonResponse
-    {
+    public function createBundle(Request $request, Coa $coa): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -845,8 +837,7 @@ class CoaController extends Controller
      * @return JsonResponse
      * @privacy-safe Returns statistics only for authenticated user's certificates
      */
-    public function statistics(Request $request): JsonResponse
-    {
+    public function statistics(Request $request): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -915,8 +906,7 @@ class CoaController extends Controller
      * @uem-pattern Ultra Error Manager pattern for EGI certificate validation
      * @narrative-coherence Prevents duplicate certificate issuance
      */
-    public function checkEgiCertificate(Request $request): JsonResponse
-    {
+    public function checkEgiCertificate(Request $request): JsonResponse {
         try {
             $request->validate([
                 'egi_id' => 'required|integer|exists:egis,id'
@@ -997,8 +987,7 @@ class CoaController extends Controller
      * @uem-pattern Ultra Error Manager for admin operations
      * @narrative-coherence Provides administrative oversight of CoA system
      */
-    public function adminDashboard(Request $request): JsonResponse
-    {
+    public function adminDashboard(Request $request): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -1079,8 +1068,7 @@ class CoaController extends Controller
      * @uem-pattern Ultra Error Manager for batch operations
      * @narrative-coherence Enables efficient mass certificate management
      */
-    public function batchRevoke(Request $request): JsonResponse
-    {
+    public function batchRevoke(Request $request): JsonResponse {
         try {
             $request->validate([
                 'certificate_ids' => 'required|array|min:1|max:100',
@@ -1170,8 +1158,7 @@ class CoaController extends Controller
      * @uem-pattern Ultra Error Manager for reporting operations
      * @narrative-coherence Provides detailed analytical insights
      */
-    public function reports(Request $request): JsonResponse
-    {
+    public function reports(Request $request): JsonResponse {
         try {
             $request->validate([
                 'report_type' => 'required|string|in:summary,detailed,activity,trends',
@@ -1308,8 +1295,7 @@ class CoaController extends Controller
      * @uem-pattern Ultra Error Manager for settings operations
      * @narrative-coherence Manages CoA system configuration
      */
-    public function settings(Request $request): JsonResponse
-    {
+    public function settings(Request $request): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -1375,8 +1361,7 @@ class CoaController extends Controller
      * @uem-pattern Ultra Error Manager for export operations
      * @narrative-coherence Enables data portability and backup
      */
-    public function exportData(Request $request)
-    {
+    public function exportData(Request $request) {
         try {
             $request->validate([
                 'export_type' => 'required|string|in:certificates,events,statistics',
@@ -1501,8 +1486,7 @@ class CoaController extends Controller
      * @uem-pattern Ultra Error Manager for search operations
      * @narrative-coherence Enables comprehensive certificate discovery
      */
-    public function search(Request $request): JsonResponse
-    {
+    public function search(Request $request): JsonResponse {
         try {
             $request->validate([
                 'query' => 'nullable|string|max:255',
@@ -1622,8 +1606,7 @@ class CoaController extends Controller
      * @uem-pattern Ultra Error Manager for validation operations
      * @narrative-coherence Ensures serial number integrity
      */
-    public function validateSerial(Request $request): JsonResponse
-    {
+    public function validateSerial(Request $request): JsonResponse {
         try {
             $request->validate([
                 'serial' => 'required|string|max:50'
@@ -1688,8 +1671,7 @@ class CoaController extends Controller
      * @uem-pattern Ultra Error Manager for preview operations
      * @narrative-coherence Allows bundle review before finalization
      */
-    public function previewBundle(Request $request, int $coaId): JsonResponse
-    {
+    public function previewBundle(Request $request, int $coaId): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -1779,8 +1761,7 @@ class CoaController extends Controller
      * @uem-pattern Ultra Error Manager for requirement validation
      * @narrative-coherence Validates all prerequisites for certificate issuance
      */
-    public function checkIssueRequirements(Request $request): JsonResponse
-    {
+    public function checkIssueRequirements(Request $request): JsonResponse {
         try {
             $request->validate([
                 'egi_id' => 'required|integer|exists:egis,id'
@@ -1877,8 +1858,7 @@ class CoaController extends Controller
      * @param Coa $coa
      * @return JsonResponse
      */
-    public function checkPdf(Coa $coa): JsonResponse
-    {
+    public function checkPdf(Coa $coa): JsonResponse {
         try {
             $bundleService = app(BundleService::class);
             $pdfExists = $bundleService->pdfExists($coa);
@@ -1908,8 +1888,7 @@ class CoaController extends Controller
      * @param Coa $coa
      * @return JsonResponse
      */
-    public function generatePdf(Coa $coa): JsonResponse
-    {
+    public function generatePdf(Coa $coa): JsonResponse {
         try {
             $bundleService = app(BundleService::class);
             $pdfPath = $bundleService->generateCoaPdf($coa);
@@ -1946,8 +1925,7 @@ class CoaController extends Controller
      * @param Coa $coa
      * @return JsonResponse
      */
-    public function regeneratePdf(Coa $coa): JsonResponse
-    {
+    public function regeneratePdf(Coa $coa): JsonResponse {
         try {
             $user = Auth::user();
             $bundleService = app(BundleService::class);
@@ -2226,8 +2204,7 @@ class CoaController extends Controller
      * @param Coa $coa
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function downloadPdf(Coa $coa)
-    {
+    public function downloadPdf(Coa $coa) {
         try {
             $bundleService = app(BundleService::class);
 
@@ -2347,8 +2324,7 @@ class CoaController extends Controller
      * @param Coa $coa
      * @return JsonResponse
      */
-    public function countersignInspector(Request $request, Coa $coa): JsonResponse
-    {
+    public function countersignInspector(Request $request, Coa $coa): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -2508,8 +2484,7 @@ class CoaController extends Controller
      * @param string $role
      * @return JsonResponse
      */
-    public function removeSignature(Request $request, Coa $coa, string $role): JsonResponse
-    {
+    public function removeSignature(Request $request, Coa $coa, string $role): JsonResponse {
         try {
             $user = Auth::user();
             $bundleService = app(BundleService::class);
@@ -2634,8 +2609,7 @@ class CoaController extends Controller
      * @param Coa $coa
      * @return JsonResponse
      */
-    public function signAuthor(Request $request, Coa $coa): JsonResponse
-    {
+    public function signAuthor(Request $request, Coa $coa): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -2779,8 +2753,7 @@ class CoaController extends Controller
      * @param Coa $coa
      * @return \Illuminate\View\View
      */
-    public function viewCertificate(Coa $coa)
-    {
+    public function viewCertificate(Coa $coa) {
         try {
             // Load relationships needed for certificate view
             $coa->load([
@@ -2813,8 +2786,7 @@ class CoaController extends Controller
     /**
      * Get complete chain of custody for a CoA
      */
-    public function getChainOfCustody(Coa $coa): JsonResponse
-    {
+    public function getChainOfCustody(Coa $coa): JsonResponse {
         try {
             $chainOfCustodyService = app(ChainOfCustodyService::class);
             $chain = $chainOfCustodyService->getChainOfCustody($coa);
@@ -2839,8 +2811,7 @@ class CoaController extends Controller
     /**
      * Get signature timeline for a CoA
      */
-    public function getSignatureTimeline(Coa $coa): JsonResponse
-    {
+    public function getSignatureTimeline(Coa $coa): JsonResponse {
         try {
             $chainOfCustodyService = app(ChainOfCustodyService::class);
             $timeline = $chainOfCustodyService->getSignatureTimeline($coa);
@@ -2865,8 +2836,7 @@ class CoaController extends Controller
     /**
      * Get PDF operations timeline for a CoA
      */
-    public function getPdfOperations(Coa $coa): JsonResponse
-    {
+    public function getPdfOperations(Coa $coa): JsonResponse {
         try {
             $chainOfCustodyService = app(ChainOfCustodyService::class);
             $operations = $chainOfCustodyService->getPdfOperationsTimeline($coa);
@@ -2891,8 +2861,7 @@ class CoaController extends Controller
     /**
      * Validate chain of custody integrity
      */
-    public function validateChainIntegrity(Coa $coa): JsonResponse
-    {
+    public function validateChainIntegrity(Coa $coa): JsonResponse {
         try {
             $chainOfCustodyService = app(ChainOfCustodyService::class);
             $validation = $chainOfCustodyService->validateChainIntegrity($coa);

@@ -31,7 +31,7 @@ return [
     // ========================================
 
     'algokit_microservice' => [
-        'url' => env('ALGOKIT_MICROSERVICE_URL', 'http://localhost:3000'),
+        'url' => env('ALGOKIT_MICROSERVICE_URL', 'http://localhost:3001'),
         'timeout' => env('ALGOKIT_MICROSERVICE_TIMEOUT', 30),
         'retries' => env('ALGOKIT_MICROSERVICE_RETRIES', 3),
         'retry_delay' => env('ALGOKIT_MICROSERVICE_RETRY_DELAY', 1000), // milliseconds

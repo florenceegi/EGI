@@ -562,7 +562,7 @@ class SystemUsersSeeder extends Seeder {
             ]);
             return;
         }
-        
+
         try {
             // Try to create audit record via service
             $auditService = app(\App\Services\Gdpr\AuditLogService::class);

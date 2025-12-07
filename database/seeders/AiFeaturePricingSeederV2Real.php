@@ -24,13 +24,11 @@ use App\Helpers\DatabaseHelper;
  * @date 2025-11-03
  * @purpose Seed ONLY implemented features with correct feature_type logic
  */
-class AiFeaturePricingSeederV2Real extends Seeder
-{
+class AiFeaturePricingSeederV2Real extends Seeder {
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
+    public function run(): void {
         // Delete all existing features (including soft deleted)
         // Disable FK checks in database-agnostic way
         if (DatabaseHelper::isMysql()) {
@@ -43,7 +41,7 @@ class AiFeaturePricingSeederV2Real extends Seeder
         }
 
         $features = [
-            
+
             // ============================================
             // 1. EGI LIVING (LIFETIME - Già implementato)
             // ============================================
@@ -52,19 +50,19 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 'feature_name' => 'EGI Living Subscription',
                 'feature_description' => 'Abbonamento completo per gestione EGI con aggiornamenti automatici CoA e blockchain monitoring',
                 'feature_category' => 'platform_services',
-                
+
                 // PRICING (placeholder - Fabio rivedrà)
                 'cost_fiat_eur' => 9.90,
                 'cost_egili' => 500,
                 'is_free' => false,
-                
+
                 // FEATURE TYPE: LIFETIME
                 'feature_type' => 'lifetime',
                 'lifetime_cost' => 500, // Costo una-tantum per acquisto lifetime
                 'cost_per_use' => null, // Non applicabile per lifetime
                 'requires_admin_approval' => false,
                 'max_concurrent_slots' => null,
-                
+
                 // METADATA
                 'is_active' => true,
                 'display_order' => 10,
@@ -78,7 +76,7 @@ class AiFeaturePricingSeederV2Real extends Seeder
                     'Per sempre (acquisto una volta)'
                 ],
             ],
-            
+
             // ============================================
             // 2. AI TRAIT GENERATION (CONSUMABLE)
             // ============================================
@@ -87,19 +85,19 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 'feature_name' => 'Generazione Traits AI',
                 'feature_description' => 'Analisi immagine con AI Vision per generare 1-10 traits artistici con fuzzy matching sul vocabulary',
                 'feature_category' => 'ai_services',
-                
+
                 // PRICING (placeholder)
                 'cost_fiat_eur' => null, // Solo Egili per AI services
                 'cost_egili' => 50,
                 'is_free' => false,
-                
+
                 // FEATURE TYPE: CONSUMABLE
                 'feature_type' => 'consumable',
                 'cost_per_use' => 50, // 50 Egili per ogni generazione
                 'lifetime_cost' => null, // Non applicabile per consumable
                 'requires_admin_approval' => false,
                 'max_concurrent_slots' => null,
-                
+
                 // METADATA
                 'is_active' => true,
                 'display_order' => 20,
@@ -119,7 +117,7 @@ class AiFeaturePricingSeederV2Real extends Seeder
                     'uses_fuzzy_matching' => true,
                 ],
             ],
-            
+
             // ============================================
             // 3. AI DESCRIPTION GENERATION (CONSUMABLE)
             // ============================================
@@ -128,19 +126,19 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 'feature_name' => 'Generazione Descrizione AI',
                 'feature_description' => 'Analisi immagine con AI per generare descrizione professionale dell\'opera con supporto linee guida utente',
                 'feature_category' => 'ai_services',
-                
+
                 // PRICING
                 'cost_fiat_eur' => null, // Solo Egili per AI services
                 'cost_egili' => 30,
                 'is_free' => false,
-                
+
                 // FEATURE TYPE: CONSUMABLE
                 'feature_type' => 'consumable',
                 'cost_per_use' => 30, // 30 Egili per ogni generazione
                 'lifetime_cost' => null, // Non applicabile per consumable
                 'requires_admin_approval' => false,
                 'max_concurrent_slots' => null,
-                
+
                 // METADATA
                 'is_active' => true,
                 'display_order' => 25,
@@ -159,7 +157,7 @@ class AiFeaturePricingSeederV2Real extends Seeder
                     'uses_anthropic_claude' => true,
                 ],
             ],
-            
+
             // ============================================
             // 4. AI COLLECTION STRATEGY (CONSUMABLE)
             // ============================================
@@ -168,19 +166,19 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 'feature_name' => 'Consulenza Strategica Collection',
                 'feature_description' => 'Analisi AI completa della collection con suggerimenti su descrizione, social, lancio e mantenimento',
                 'feature_category' => 'ai_services',
-                
+
                 // PRICING (placeholder)
                 'cost_fiat_eur' => null,
                 'cost_egili' => 300,
                 'is_free' => false,
-                
+
                 // FEATURE TYPE: CONSUMABLE
                 'feature_type' => 'consumable',
                 'cost_per_use' => 300, // 300 Egili per consulenza completa
                 'lifetime_cost' => null,
                 'requires_admin_approval' => false,
                 'max_concurrent_slots' => null,
-                
+
                 // METADATA
                 'is_active' => true,
                 'display_order' => 35,
@@ -200,7 +198,7 @@ class AiFeaturePricingSeederV2Real extends Seeder
                     'generates_launch_strategy' => true,
                 ],
             ],
-            
+
             // ============================================
             // 5. FEATURED EGI 7 GIORNI (TEMPORAL + APPROVAL)
             // ============================================
@@ -209,23 +207,23 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 'feature_name' => 'Featured EGI - 7 giorni',
                 'feature_description' => 'EGI in evidenza in homepage per 7 giorni (soggetto ad approvazione admin e disponibilità slot)',
                 'feature_category' => 'premium_visibility',
-                
+
                 // PRICING (placeholder)
                 'cost_fiat_eur' => null,
                 'cost_egili' => 500,
                 'is_free' => false,
-                
+
                 // FEATURE TYPE: TEMPORAL
                 'feature_type' => 'temporal',
                 'cost_per_use' => 500, // 500 Egili per 7 giorni
                 'lifetime_cost' => null,
                 'duration_hours' => 168, // 7 giorni
                 'expires' => true,
-                
+
                 // ADMIN APPROVAL (Limited Slots)
                 'requires_admin_approval' => true, // Admin decide slot scheduling
                 'max_concurrent_slots' => 3, // Max 3 Featured EGI in homepage
-                
+
                 // METADATA
                 'is_active' => true,
                 'display_order' => 40,
@@ -240,7 +238,7 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 ],
                 'expected_roi_multiplier' => 3.00, // +200% views estimated
             ],
-            
+
             // ============================================
             // 5. HYPER MODE 7 GIORNI (TEMPORAL + APPROVAL)
             // ============================================
@@ -249,23 +247,23 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 'feature_name' => 'Hyper Mode - 7 giorni',
                 'feature_description' => 'Modalità Hyper con boost visibilità e badge speciale per 7 giorni (soggetto ad approvazione admin)',
                 'feature_category' => 'premium_visibility',
-                
+
                 // PRICING (placeholder)
                 'cost_fiat_eur' => null,
                 'cost_egili' => 300,
                 'is_free' => false,
-                
+
                 // FEATURE TYPE: TEMPORAL
                 'feature_type' => 'temporal',
                 'cost_per_use' => 300, // 300 Egili per 7 giorni Hyper
                 'lifetime_cost' => null,
                 'duration_hours' => 168, // 7 giorni
                 'expires' => true,
-                
+
                 // ADMIN APPROVAL (Admin discretion)
                 'requires_admin_approval' => true,
                 'max_concurrent_slots' => null, // No hard limit, admin decides
-                
+
                 // METADATA
                 'is_active' => true,
                 'display_order' => 50,
@@ -280,7 +278,7 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 ],
                 'expected_roi_multiplier' => 1.50,
             ],
-            
+
             // ============================================
             // 6. AI CHAT ASSISTANT (CONSUMABLE - Token-Based)
             // ============================================
@@ -289,19 +287,19 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 'feature_name' => 'Assistente AI - Art Advisor',
                 'feature_description' => 'Chat illimitata con Art Advisor AI esperto in arte, NFT e strategie marketplace (costo basato su token Claude consumati)',
                 'feature_category' => 'ai_services',
-                
+
                 // PRICING (token-based - fractional)
                 'cost_fiat_eur' => null, // Solo Egili
                 'cost_egili' => null, // Costo dinamico basato su token usage
                 'is_free' => false,
-                
+
                 // FEATURE TYPE: CONSUMABLE (token-based)
                 'feature_type' => 'consumable',
                 'cost_per_use' => null, // Variable (calculated per token)
                 'lifetime_cost' => null,
                 'requires_admin_approval' => false,
                 'max_concurrent_slots' => null,
-                
+
                 // TOKEN-BASED PRICING (stored in metadata)
                 'feature_parameters' => [
                     'charging_model' => 'token_based',
@@ -309,7 +307,7 @@ class AiFeaturePricingSeederV2Real extends Seeder
                     'batch_threshold_egili' => 10, // Charge when pending >= 10 Egili
                     'cost_per_token' => 0.000001, // 1 Egili / 1M tokens
                 ],
-                
+
                 // METADATA
                 'is_active' => true,
                 'display_order' => 60,
@@ -324,7 +322,7 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 ],
                 'admin_notes' => 'Token-based pricing: accumula debt frazionale, addebita batch quando >= 10 Egili. Remainder sempre preservato.',
             ],
-            
+
         ];
 
         foreach ($features as $feature) {
@@ -342,4 +340,3 @@ class AiFeaturePricingSeederV2Real extends Seeder
         $this->command->info('  7. ai_chat_assistant (consumable - token-based)');
     }
 }
-

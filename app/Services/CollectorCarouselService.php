@@ -43,7 +43,7 @@ class CollectorCarouselService {
     public function getTopCollectors(int $limit = 10): Collection {
         // Build cross-database compatible boolean comparison
         $trueValue = DatabaseHelper::booleanValue(true);
-        
+
         // Build the total spending subquery as a string for both select and where
         $totalSpendingSubquery = "
             COALESCE((
@@ -62,7 +62,7 @@ class CollectorCarouselService {
                 )
             ), 0)
         ";
-        
+
         return User::select([
             'users.*',
             DB::raw("{$totalSpendingSubquery} as total_spending")
@@ -98,7 +98,7 @@ class CollectorCarouselService {
      */
     private function getWinningReservationsCount(int $userId): int {
         $trueValue = DatabaseHelper::booleanValue(true);
-        
+
         return DB::table('reservations')
             ->where('user_id', $userId)
             ->whereRaw("is_current = {$trueValue}")
@@ -119,7 +119,7 @@ class CollectorCarouselService {
      */
     private function getActivatedEgisCount(int $userId): int {
         $trueValue = DatabaseHelper::booleanValue(true);
-        
+
         return DB::table('egis')
             ->whereExists(function ($query) use ($userId, $trueValue) {
                 $query->select(DB::raw(1))
@@ -189,7 +189,7 @@ class CollectorCarouselService {
      */
     private function getActiveReservationsCount(int $userId): int {
         $trueValue = DatabaseHelper::booleanValue(true);
-        
+
         return DB::table('reservations')
             ->where('user_id', $userId)
             ->whereRaw("is_current = {$trueValue}")

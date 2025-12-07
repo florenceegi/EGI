@@ -38,8 +38,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * - FegiAuth: Unified authentication helper
  * - ULM/UEM/GDPR: Full Ultra ecosystem integration
  */
-class EgiController extends Controller
-{
+class EgiController extends Controller {
     /**
      * Ultra Error Manager instance for standardized error handling
      *
@@ -119,8 +118,7 @@ class EgiController extends Controller
      * @param Request $request
      * @return View|RedirectResponse
      */
-    public function index(Request $request): View | RedirectResponse
-    {
+    public function index(Request $request): View | RedirectResponse {
         try {
             // Authentication required for EGI list
             if (!FegiAuth::check()) {
@@ -166,8 +164,7 @@ class EgiController extends Controller
      *
      * @return View|RedirectResponse
      */
-    public function create(): View | RedirectResponse
-    {
+    public function create(): View | RedirectResponse {
         try {
             // Authentication required
             if (!FegiAuth::check()) {
@@ -217,8 +214,7 @@ class EgiController extends Controller
      * @param Egi $egi EGI model instance (route model binding)
      * @return View|RedirectResponse
      */
-    public function edit(Egi $egi): View | RedirectResponse
-    {
+    public function edit(Egi $egi): View | RedirectResponse {
         try {
             // Authentication required
             if (!FegiAuth::check()) {
@@ -276,8 +272,7 @@ class EgiController extends Controller
      * @param Egi $egi EGI model instance (route model binding)
      * @return View|RedirectResponse
      */
-    public function show(Egi $egi): View | RedirectResponse
-    {
+    public function show(Egi $egi): View | RedirectResponse {
         try {
             // Check authentication (public access allowed for published EGIs)
             if (!FegiAuth::check()) {
@@ -387,8 +382,7 @@ class EgiController extends Controller
      * @param Egi $egi
      * @return JsonResponse|RedirectResponse
      */
-    public function update(Request $request, Egi $egi)
-    {
+    public function update(Request $request, Egi $egi) {
         try {
             // Check authentication
             if (!FegiAuth::check()) {
@@ -427,7 +421,7 @@ class EgiController extends Controller
             // 🔒 VALIDAZIONE CONDIZIONALE: Se EGI è mintato, title/description non sono required
             // perché nel form sono disabled e non vengono inviati dal browser
             $isMinted = !is_null($egi->token_EGI);
-            
+
             // Validate input (including auction configuration)
             $validator = Validator::make($request->all(), [
                 'title' => $isMinted ? 'nullable|string|max:60' : 'required|string|max:60',
@@ -515,7 +509,7 @@ class EgiController extends Controller
                         'blocked_fields' => array_values($blockedFields),
                         'allowed_fields' => $allowedFields
                     ]);
-                    
+
                     return $this->errorManager->handle('EGI_METADATA_IMMUTABLE', [
                         'user_id' => $user->id,
                         'egi_id' => $egi->id,
@@ -592,8 +586,7 @@ class EgiController extends Controller
      * @param Egi $egi
      * @return JsonResponse|RedirectResponse
      */
-    public function destroy(Request $request, Egi $egi)
-    {
+    public function destroy(Request $request, Egi $egi) {
         try {
             // Check authentication
             if (!FegiAuth::check()) {
@@ -696,17 +689,16 @@ class EgiController extends Controller
      * @param Egi $egi
      * @return array
      */
-    private function resolveMerchantPspStatus(Egi $egi): array
-    {
+    private function resolveMerchantPspStatus(Egi $egi): array {
         // Validate ALL collection wallets for Stripe
         $stripeValidation = $this->merchantAccountResolver->validateAllCollectionWallets($egi, 'stripe');
-        
+
         // Validate ALL collection wallets for PayPal
         $paypalValidation = $this->merchantAccountResolver->validateAllCollectionWallets($egi, 'paypal');
 
         $hasStripe = $stripeValidation['total_wallets'] > 0;
         $hasPaypal = $paypalValidation['total_wallets'] > 0;
-        
+
         $stripeValid = $stripeValidation['can_accept_payments'];
         $paypalValid = $paypalValidation['can_accept_payments'];
 
@@ -767,8 +759,7 @@ class EgiController extends Controller
      * @param Egi $egi EGI being accessed
      * @return bool True if user can manage this EGI
      */
-    protected function canManageEgi($user, Egi $egi): bool
-    {
+    protected function canManageEgi($user, Egi $egi): bool {
         try {
             // Se l'EGI è già stato mintato e l'utente corrente è l'owner attuale,
             // consenti comunque la gestione anche se non è membro della collection.
@@ -778,7 +769,7 @@ class EgiController extends Controller
 
             $collection = $egi->collection;
 
-            // Check collection membership via collection_users pivot table
+            // Check collection membership via collection_user pivot table
             $membership = $collection->users()
                 ->where('user_id', $user->id)
                 ->first();
@@ -787,10 +778,28 @@ class EgiController extends Controller
                 return false;
             }
 
-            // Check role - only admin/editor/creator can manage EGIs
-            $userRole = $membership->pivot->role ?? null;
+            // Get the user's role in this specific collection
+            $collectionRole = $membership->pivot->role ?? null;
 
-            return in_array($userRole, ['admin', 'editor', 'creator']);
+            if (!$collectionRole) {
+                return false;
+            }
+
+            // Use Spatie to check if the collection role has 'manage_EGI' permission
+            // This respects the permission matrix defined in RolesAndPermissionsSeeder
+            $role = \Spatie\Permission\Models\Role::findByName($collectionRole, 'web');
+
+            if (!$role) {
+                $this->logger->warning('EGI_PERMISSION_CHECK: Role not found in Spatie', [
+                    'user_id' => $user->id,
+                    'egi_id' => $egi->id,
+                    'collection_role' => $collectionRole
+                ]);
+                return false;
+            }
+
+            // Check if the role has manage_EGI or update_EGI permission
+            return $role->hasPermissionTo('manage_EGI') || $role->hasPermissionTo('update_EGI');
         } catch (\Exception $e) {
             // Log error (developers only - English)
             $this->logger->error('EGI_PERMISSION_CHECK_ERROR: Failed to check EGI management permissions', [
@@ -811,8 +820,7 @@ class EgiController extends Controller
      * @param int $collectionId
      * @return float
      */
-    private function calculateRarity($traitTypeId, $value, $collectionId)
-    {
+    private function calculateRarity($traitTypeId, $value, $collectionId) {
         $cacheKey = "trait_rarity_{$collectionId}_{$traitTypeId}_{$value}";
 
         return \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function () use ($traitTypeId, $value, $collectionId) {
@@ -840,8 +848,7 @@ class EgiController extends Controller
      * @param int $collectionId
      * @return void
      */
-    private function clearTraitsRarityCache(int $collectionId): void
-    {
+    private function clearTraitsRarityCache(int $collectionId): void {
         try {
             // Get all cache keys that match the pattern for this collection
             $pattern = "trait_rarity_{$collectionId}_*";
@@ -869,8 +876,7 @@ class EgiController extends Controller
      * @param int $collectionId
      * @return void
      */
-    private function updateRarityPercentages(int $collectionId): void
-    {
+    private function updateRarityPercentages(int $collectionId): void {
         try {
             $this->logger->info('Updating rarity percentages for collection', ['collection_id' => $collectionId]);
 
@@ -935,8 +941,7 @@ class EgiController extends Controller
      * @param Egi $egi
      * @return JsonResponse
      */
-    public function dossier(Egi $egi): JsonResponse
-    {
+    public function dossier(Egi $egi): JsonResponse {
         try {
             $this->logger->info('Loading dossier for EGI', ['egi_id' => $egi->id]);
 

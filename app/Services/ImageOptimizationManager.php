@@ -308,7 +308,7 @@ class ImageOptimizationManager implements ImageOptimizationManagerInterface {
     }
 
     /**
-     * Process resized variant (fixed size)
+     * Process resized variant (maintaining aspect ratio, no cropping)
      *
      * @param \Imagick $imagick Imagick instance
      * @param array $config Variant configuration
@@ -316,18 +316,12 @@ class ImageOptimizationManager implements ImageOptimizationManagerInterface {
      * @param int $originalHeight Original height
      */
     protected function processResizedVariant(\Imagick $imagick, array $config, int $originalWidth, int $originalHeight): void {
-        $targetSize = $config['size'];
+        $targetWidth = $config['width'] ?? $config['size'] ?? 300;
+        $targetHeight = $config['height'] ?? $config['size'] ?? 300;
 
-        // Calculate crop dimensions for square output
-        $cropSize = min($originalWidth, $originalHeight);
-        $cropX = intval(($originalWidth - $cropSize) / 2);
-        $cropY = intval(($originalHeight - $cropSize) / 2);
-
-        // Crop to square
-        $imagick->cropImage($cropSize, $cropSize, $cropX, $cropY);
-
-        // Resize to target size
-        $imagick->resizeImage($targetSize, $targetSize, \Imagick::FILTER_LANCZOS, 1);
+        // Resize maintaining aspect ratio (best fit within target dimensions)
+        // This will NOT crop the image, just scale it to fit within the box
+        $imagick->thumbnailImage($targetWidth, $targetHeight, true);
     }
 
     /**

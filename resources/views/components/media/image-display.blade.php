@@ -10,7 +10,7 @@
 {{-- 🎯 Immagine Principale o Placeholder --}}
 @if ($optimizedImageUrl)
     <img src="{{ $optimizedImageUrl }}" {{-- Usa l'URL ottimizzato con fallback --}} alt="{{ $egi->title ?? 'EGI Image' }}"
-        class="object-contain object-center w-full h-full transition-transform duration-300 ease-in-out bg-gray-800 group-hover:scale-105"
+        class="h-auto max-h-full w-full object-contain object-center transition-transform duration-300 ease-in-out group-hover:scale-105"
         loading="lazy" {{-- Supporto WebP con fallback automatico del browser --}}
         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
     {{-- Fallback visivo in caso di errore caricamento immagine --}}

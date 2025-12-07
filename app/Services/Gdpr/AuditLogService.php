@@ -102,7 +102,7 @@ class AuditLogService {
     ): UserActivity {
         try {
             $category ??= GdprActivityCategory::SYSTEM_INTERACTION;
-            
+
             $this->logger->debug('Audit Log Service: Logging user action', [
                 'user_id' => $user->id,
                 'action' => $action,

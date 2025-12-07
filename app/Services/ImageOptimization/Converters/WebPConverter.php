@@ -154,15 +154,15 @@ class WebPConverter implements ImageConverterInterface {
     }
 
     /**
-     * Resize image maintaining aspect ratio
+     * Resize image maintaining aspect ratio (no cropping)
      */
     protected function resizeImage(\Imagick $imagick, array $config): void {
         $width = $config['width'] ?? null;
         $height = $config['height'] ?? null;
 
         if ($width && $height) {
-            // Resize to exact dimensions (may crop)
-            $imagick->cropThumbnailImage($width, $height);
+            // Resize maintaining aspect ratio, fitting within the box (no crop)
+            $imagick->thumbnailImage($width, $height, true);
         } elseif ($width || $height) {
             // Resize maintaining aspect ratio
             $imagick->thumbnailImage($width, $height, true);
