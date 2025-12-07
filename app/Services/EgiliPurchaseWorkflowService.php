@@ -143,6 +143,32 @@ class EgiliPurchaseWorkflowService {
             // Egili payments go directly to platform account (no merchant context needed)
             $paymentResult = $paymentService->processPayment(request: $paymentRequest);
 
+            // Handle Stripe Checkout redirect (pending status with redirect URL)
+            if ($paymentResult->status === 'pending' && !empty($paymentResult->redirectUrl)) {
+                // Update merchant record with payment ID
+                $merchantPurchase->update([
+                    'payment_external_id' => $paymentResult->paymentId,
+                    'payment_status' => 'pending_checkout'
+                ]);
+
+                $this->logger->info('Egili purchase redirecting to Stripe Checkout', [
+                    'user_id' => $user->id,
+                    'order_reference' => $merchantPurchase->order_reference,
+                    'checkout_url' => $paymentResult->redirectUrl,
+                    'log_category' => 'EGILI_PURCHASE_CHECKOUT_REDIRECT'
+                ]);
+
+                // Return redirect URL for frontend
+                return [
+                    'success' => true,
+                    'requires_redirect' => true,
+                    'redirect_url' => $paymentResult->redirectUrl,
+                    'order_reference' => $merchantPurchase->order_reference,
+                    'payment_id' => $paymentResult->paymentId,
+                    'message' => 'Redirect to Stripe Checkout'
+                ];
+            }
+
             if (!$paymentResult->success) {
                 // Payment failed - update merchant record
                 $merchantPurchase->update([

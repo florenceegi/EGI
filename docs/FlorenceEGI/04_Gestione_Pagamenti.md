@@ -111,10 +111,10 @@ La Company è un'entità business (azienda, ente, istituzione) che utilizza la p
 1. Imposta prezzo EGI in euro
 2. Cliente paga → PSP incassa
 3. **PSP esegue split payment** (vedi sezione Tokenomics sopra):
-   - **Creator**: 68% (se Creator) o 88% (se Company)
-   - **EPP**: 0-20% (volontario, configurato per collection)
-   - **Piattaforma (Natan)**: 10%
-   - **Associazione (Frangette)**: 2% (solo Creator, Company esente)
+    - **Creator**: 68% (se Creator) o 88% (se Company)
+    - **EPP**: 0-20% (volontario, configurato per collection)
+    - **Piattaforma (Natan)**: 10%
+    - **Associazione (Frangette)**: 2% (solo Creator, Company esente)
 4. **Payout FIAT** sul conto bancario merchant (timing: T+2/T+7 secondo PSP)
 5. Merchant riceve report dettagliato transazione
 

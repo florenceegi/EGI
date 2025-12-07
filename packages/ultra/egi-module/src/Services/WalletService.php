@@ -150,10 +150,10 @@ class WalletService implements WalletServiceInterface {
             // Calculate royalties based on user type
             // Company: 90% owner, 0% EPP, 0% Frangette, 10% Natan
             // Creator: 68% owner, 20% EPP, 2% Frangette, 10% Natan
-            $ownerMintRoyalty = $isCompanyCollection 
+            $ownerMintRoyalty = $isCompanyCollection
                 ? WalletRoleEnum::COMPANY->getMintRoyalty()  // 90%
                 : WalletRoleEnum::CREATOR->getMintRoyalty(); // 68%
-            
+
             $ownerRebindRoyalty = $isCompanyCollection
                 ? WalletRoleEnum::COMPANY->getRebindRoyalty()  // 4.6%
                 : WalletRoleEnum::CREATOR->getRebindRoyalty(); // 4.5%
@@ -176,7 +176,7 @@ class WalletService implements WalletServiceInterface {
                 // Determine mint royalty
                 $mintRoyalty = $role->getMintRoyalty();
                 $rebindRoyalty = $role->getRebindRoyalty();
-                
+
                 if ($isCompanyCollection) {
                     // Company: EPP and Frangette at 0%, Natan stays at 10%
                     if ($role === WalletRoleEnum::EPP || $role === WalletRoleEnum::FRANGETTE) {

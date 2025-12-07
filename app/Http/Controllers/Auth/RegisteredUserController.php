@@ -665,7 +665,7 @@ class RegisteredUserController extends Controller {
 
         $typeNames = [
             'creator' => "{$firstName}'s Arte",
-            'enterprise' => "{$firstName} Corporate Gallery",
+            'company' => "{$firstName} Corporate Gallery",
             'patron' => "Patronato di {$firstName}",
             'pa_entity' => "Collezione Istituzionale {$firstName}",
         ];

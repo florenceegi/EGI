@@ -86,33 +86,6 @@ class StripeRealPaymentService implements PaymentServiceInterface {
             $amountCents = $request->getAmountInCents();
             $currency = strtolower($request->currency);
 
-            $params = [
-                'amount' => $amountCents,
-                'currency' => $currency,
-                'description' => $requiresSplit
-                    ? sprintf('EGI Mint #%s (Multi-wallet Distribution)', $request->egiId)
-                    : sprintf('EGI Mint #%s', $request->egiId ?? 'unknown'),
-                'metadata' => array_merge($metadata, [
-                    'requires_split' => $requiresSplit ? 'true' : 'false',
-                    'collection_id' => $collectionId,
-                ]),
-                'receipt_email' => $request->customerEmail,
-                'confirmation_method' => 'automatic',
-            ];
-
-            // Add return_url if provided (required for redirect-based payment methods)
-            if ($request->successUrl) {
-                $params['return_url'] = $request->successUrl;
-            }
-
-            if ($this->autoConfirm) {
-                $params['confirm'] = true;
-
-                if ($this->isSandbox() && $this->sandboxPaymentMethod) {
-                    $params['payment_method'] = $this->sandboxPaymentMethod;
-                }
-            }
-
             // MiCA-SAFE ARCHITECTURE:
             // SPLIT PAYMENT: Create DIRECT charges to Connected Accounts (NO platform transit)
             // SINGLE CONNECT: Use specific Connected Account
@@ -133,41 +106,47 @@ class StripeRealPaymentService implements PaymentServiceInterface {
                 );
             }
 
+            // Use Stripe Checkout for real user interaction (card input)
+            if (!$this->autoConfirm) {
+                return $this->createCheckoutSession($request, $metadata, $isConnectPayment, $stripeAccountId);
+            }
+
+            // Auto-confirm mode (sandbox testing without user interaction)
+            $params = [
+                'amount' => $amountCents,
+                'currency' => $currency,
+                'description' => $requiresSplit
+                    ? sprintf('EGI Mint #%s (Multi-wallet Distribution)', $request->egiId)
+                    : sprintf('EGI Mint #%s', $request->egiId ?? 'unknown'),
+                'metadata' => array_merge($metadata, [
+                    'requires_split' => $requiresSplit ? 'true' : 'false',
+                    'collection_id' => $collectionId,
+                ]),
+                'receipt_email' => $request->customerEmail,
+                'confirmation_method' => 'automatic',
+                'confirm' => true,
+            ];
+
+            if ($this->isSandbox() && $this->sandboxPaymentMethod) {
+                $params['payment_method'] = $this->sandboxPaymentMethod;
+            }
+
             // Single merchant or platform direct payment
             $createOptions = $isConnectPayment ? ['stripe_account' => $stripeAccountId] : [];
             $paymentIntent = $this->client->paymentIntents->create($params, $createOptions);
 
-            $this->logger->info('Stripe payment intent created', [
+            $this->logger->info('Stripe payment intent created (auto-confirm)', [
                 'payment_intent_id' => $paymentIntent->id,
                 'status' => $paymentIntent->status,
                 'amount' => $paymentIntent->amount,
                 'currency' => $paymentIntent->currency,
                 'auto_confirm' => $this->autoConfirm,
                 'sandbox' => $this->isSandbox(),
-                'requires_split' => $requiresSplit,
                 'is_connect_payment' => $isConnectPayment,
                 'connected_account_id' => $stripeAccountId,
-                'collection_id' => $collectionId,
             ]);
 
             if ($paymentIntent->status !== 'succeeded') {
-                // In production we expect the frontend to handle confirmation
-                if (!$this->autoConfirm) {
-                    $redirectUrl = $paymentIntent->next_action['redirect_to_url']['url'] ?? null;
-
-                    return PaymentResult::pending(
-                        paymentId: $paymentIntent->id,
-                        amount: $request->amount,
-                        currency: $request->currency,
-                        redirectUrl: $redirectUrl ?? '',
-                        metadata: array_merge($metadata, [
-                            'client_secret' => $paymentIntent->client_secret,
-                            'status' => $paymentIntent->status,
-                            'requires_split' => $requiresSplit,
-                        ])
-                    );
-                }
-
                 throw new \RuntimeException(
                     sprintf('Stripe payment failed with status %s', $paymentIntent->status)
                 );
@@ -362,5 +341,80 @@ class StripeRealPaymentService implements PaymentServiceInterface {
 
     private function isSandbox(): bool {
         return strtolower((string) Arr::get($this->config, 'mode', 'sandbox')) === 'sandbox';
+    }
+
+    /**
+     * Create Stripe Checkout Session for real user interaction
+     * Redirects user to Stripe-hosted payment page with card input
+     *
+     * @param PaymentRequest $request
+     * @param array $metadata
+     * @param bool $isConnectPayment
+     * @param string|null $stripeAccountId
+     * @return PaymentResult
+     */
+    private function createCheckoutSession(
+        PaymentRequest $request,
+        array $metadata,
+        bool $isConnectPayment,
+        ?string $stripeAccountId
+    ): PaymentResult {
+        $amountCents = $request->getAmountInCents();
+        $currency = strtolower($request->currency);
+
+        // Build line item description
+        $description = $metadata['description'] ?? 'Egili Purchase';
+        if (isset($metadata['egili_amount'])) {
+            $description = sprintf('Acquisto %s Egili', number_format($metadata['egili_amount']));
+        }
+
+        $sessionParams = [
+            'payment_method_types' => ['card'],
+            'mode' => 'payment',
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => $currency,
+                    'product_data' => [
+                        'name' => $description,
+                        'description' => 'FlorenceEGI - Piattaforma NFT',
+                    ],
+                    'unit_amount' => $amountCents,
+                ],
+                'quantity' => 1,
+            ]],
+            'customer_email' => $request->customerEmail,
+            'metadata' => $metadata,
+            'success_url' => $request->successUrl . (str_contains($request->successUrl, '?') ? '&' : '?') . 'session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => $request->cancelUrl ?? url()->previous(),
+        ];
+
+        // For Connect payments, add the connected account
+        $createOptions = [];
+        if ($isConnectPayment && $stripeAccountId) {
+            $createOptions['stripe_account'] = $stripeAccountId;
+        }
+
+        $session = $this->client->checkout->sessions->create($sessionParams, $createOptions);
+
+        $this->logger->info('Stripe Checkout session created', [
+            'session_id' => $session->id,
+            'amount' => $amountCents,
+            'currency' => $currency,
+            'checkout_url' => $session->url,
+            'is_connect_payment' => $isConnectPayment,
+            'connected_account_id' => $stripeAccountId,
+        ]);
+
+        // Return pending with redirect URL to Stripe Checkout
+        return PaymentResult::pending(
+            paymentId: $session->id,
+            amount: $request->amount,
+            currency: $request->currency,
+            redirectUrl: $session->url,
+            metadata: array_merge($metadata, [
+                'checkout_session_id' => $session->id,
+                'payment_status' => 'pending_checkout',
+            ])
+        );
     }
 }

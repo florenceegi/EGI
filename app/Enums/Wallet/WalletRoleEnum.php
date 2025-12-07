@@ -29,7 +29,7 @@ enum WalletRoleEnum: string {
 
     /**
      * Get mint royalty percentage for this role (Primary Market)
-     * 
+     *
      * Note: These are BASE royalties. Actual distribution depends on user type:
      * - CREATOR: 68% (+ EPP mandatory via % or subscription + Frangette 2%)
      * - COMPANY: 90% base (no EPP obligation, no Frangette) - EPP voluntary reduces this
@@ -48,7 +48,7 @@ enum WalletRoleEnum: string {
 
     /**
      * Get rebind (secondary market) royalty percentage for this role
-     * 
+     *
      * Note: COMPANY does not pay Frangette (0.1%) and EPP is optional
      * - CREATOR total rebind: 4.5% + 0.8% EPP + 0.7% Natan + 0.1% Frangette = 6.1%
      * - COMPANY total rebind: 4.6% + 0.7% Natan = 5.3% (EPP optional)

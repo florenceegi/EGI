@@ -117,6 +117,16 @@ class EgiliPurchaseController extends Controller
                     ])
                 );
 
+                // Handle Stripe Checkout redirect
+                if (!empty($result['requires_redirect']) && !empty($result['redirect_url'])) {
+                    return response()->json([
+                        'success' => true,
+                        'redirect_url' => $result['redirect_url'],
+                        'order_reference' => $result['order_reference'],
+                        'message' => __('egili.purchase.redirect_to_payment'),
+                    ]);
+                }
+
                 // FIAT completes immediately - redirect to confirmation
                 return response()->json([
                     'success' => true,
@@ -179,11 +189,13 @@ class EgiliPurchaseController extends Controller
 
     /**
      * Show purchase confirmation page
+     * Also handles Stripe Checkout callback when session_id is present
      *
+     * @param Request $request
      * @param string $orderReference
      * @return View
      */
-    public function showConfirmation(string $orderReference): View
+    public function showConfirmation(Request $request, string $orderReference): View
     {
         try {
             $user = Auth::user();
@@ -200,10 +212,18 @@ class EgiliPurchaseController extends Controller
                 abort(403, __('egili.purchase.unauthorized'));
             }
 
-            // 3. Get current Egili balance
+            // 3. Handle Stripe Checkout callback - verify and complete payment
+            $sessionId = $request->query('session_id');
+            if ($sessionId && $purchase->payment_status === 'pending_checkout') {
+                $this->completeCheckoutPayment($purchase, $sessionId, $user);
+                // Refresh purchase record
+                $purchase->refresh();
+            }
+
+            // 4. Get current Egili balance
             $currentBalance = $this->egiliService->getBalance($user);
 
-            // 4. ULM: Log confirmation page view
+            // 5. ULM: Log confirmation page view
             $this->logger->info('Egili purchase confirmation viewed', [
                 'user_id' => $user->id,
                 'order_reference' => $orderReference,
@@ -211,7 +231,7 @@ class EgiliPurchaseController extends Controller
                 'log_category' => 'EGILI_PURCHASE_CONFIRMATION_VIEW'
             ]);
 
-            // 5. Return confirmation view
+            // 6. Return confirmation view
             return view('egili.purchase-confirmation', compact(
                 'purchase',
                 'currentBalance'
@@ -268,6 +288,83 @@ class EgiliPurchaseController extends Controller
                 'success' => false,
                 'message' => __('egili.purchase.pricing_error'),
             ], 500);
+        }
+    }
+
+    /**
+     * Complete payment after Stripe Checkout success
+     *
+     * @param \App\Models\EgiliMerchantPurchase $purchase
+     * @param string $sessionId
+     * @param \App\Models\User $user
+     * @return void
+     */
+    private function completeCheckoutPayment($purchase, string $sessionId, $user): void
+    {
+        try {
+            // Verify Stripe Checkout session
+            $stripe = new \Stripe\StripeClient(config('algorand.payments.stripe.secret_key'));
+            $session = $stripe->checkout->sessions->retrieve($sessionId);
+
+            if ($session->payment_status !== 'paid') {
+                $this->logger->warning('Stripe Checkout session not paid', [
+                    'session_id' => $sessionId,
+                    'payment_status' => $session->payment_status,
+                    'order_reference' => $purchase->order_reference,
+                ]);
+                return;
+            }
+
+            // Update purchase record
+            $purchase->update([
+                'payment_status' => 'completed',
+                'payment_external_id' => $session->payment_intent,
+                'completed_at' => now(),
+            ]);
+
+            // Mint Egili to user wallet
+            $this->egiliService->earn(
+                $user,
+                $purchase->egili_amount,
+                'egili_purchase',
+                'purchase',
+                [
+                    'order_reference' => $purchase->order_reference,
+                    'payment_method' => $purchase->payment_method,
+                    'payment_provider' => $purchase->payment_provider,
+                    'total_paid_eur' => $purchase->total_price_eur,
+                    'stripe_session_id' => $sessionId,
+                ]
+            );
+
+            // GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'egili_purchase_completed_checkout',
+                [
+                    'order_reference' => $purchase->order_reference,
+                    'egili_amount' => $purchase->egili_amount,
+                    'total_eur' => $purchase->total_price_eur,
+                    'stripe_session_id' => $sessionId,
+                    'new_balance' => $this->egiliService->getBalance($user),
+                ],
+                \App\Enums\Gdpr\GdprActivityCategory::WALLET_MANAGEMENT
+            );
+
+            $this->logger->info('Egili purchase completed via Stripe Checkout', [
+                'user_id' => $user->id,
+                'order_reference' => $purchase->order_reference,
+                'egili_amount' => $purchase->egili_amount,
+                'stripe_session_id' => $sessionId,
+                'log_category' => 'EGILI_PURCHASE_CHECKOUT_COMPLETED'
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to complete Stripe Checkout payment', [
+                'session_id' => $sessionId,
+                'order_reference' => $purchase->order_reference,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 }
