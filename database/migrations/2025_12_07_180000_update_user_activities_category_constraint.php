@@ -24,10 +24,10 @@ return new class extends Migration {
         if ($driver === 'pgsql') {
             // PostgreSQL: Drop old constraint and create new one with all categories
             DB::statement('ALTER TABLE user_activities DROP CONSTRAINT IF EXISTS user_activities_category_check');
-            
+
             DB::statement("
-                ALTER TABLE user_activities 
-                ADD CONSTRAINT user_activities_category_check 
+                ALTER TABLE user_activities
+                ADD CONSTRAINT user_activities_category_check
                 CHECK (category IN (
                     'authentication',
                     'authentication_login',
@@ -73,10 +73,10 @@ return new class extends Migration {
         if ($driver === 'pgsql') {
             // Revert to original constraint (though this might fail if new categories are in use)
             DB::statement('ALTER TABLE user_activities DROP CONSTRAINT IF EXISTS user_activities_category_check');
-            
+
             DB::statement("
-                ALTER TABLE user_activities 
-                ADD CONSTRAINT user_activities_category_check 
+                ALTER TABLE user_activities
+                ADD CONSTRAINT user_activities_category_check
                 CHECK (category IN (
                     'authentication',
                     'authentication_login',
