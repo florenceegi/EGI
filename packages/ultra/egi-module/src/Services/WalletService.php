@@ -155,7 +155,11 @@ class WalletService implements WalletServiceInterface {
                 $eppMintRoyalty = 0.0; // Company can set this later
             }
 
-            // 1. Create CREATOR wallet (user-specific, dynamic)
+            // Determine the correct platform_role based on user type
+            // Company users should have 'Company' as platform_role, not 'Creator'
+            $ownerPlatformRole = $this->determineOwnerPlatformRole($user->usertype);
+
+            // 1. Create OWNER wallet (user-specific, dynamic)
             // Use getAttributes to bypass the wallet accessor that returns Wallet object
             $creatorWallet = $this->createWallet(
                 $collection->id,
@@ -163,7 +167,7 @@ class WalletService implements WalletServiceInterface {
                 $user->getAttributes()['wallet'] ?? null,
                 $creatorMintRoyalty,
                 WalletRoleEnum::CREATOR->getRebindRoyalty(),
-                WalletRoleEnum::CREATOR->value
+                $ownerPlatformRole
             );
 
             // 2. Create PLATFORM wallets (EPP, Natan, Frangette - static system accounts)
@@ -549,6 +553,31 @@ class WalletService implements WalletServiceInterface {
 
             return false;
         }
+    }
+
+    /**
+     * 🧱 Determine the correct platform_role for the collection owner based on user type.
+     *
+     * This ensures that the wallet's platform_role correctly reflects the user's type
+     * (e.g., 'Company' for company users, 'Creator' for creators).
+     *
+     * @param string|null $userType The user's type (e.g., 'creator', 'company', 'epp')
+     * @return string The platform_role to assign to the owner's wallet
+     */
+    protected function determineOwnerPlatformRole(?string $userType): string {
+        // Map user types to platform roles
+        $platformRoleMapping = [
+            'creator' => 'Creator',
+            'company' => 'Company',
+            'epp' => 'EPP',
+            'patron' => 'Creator', // Patron acts as creator
+            'collector' => 'Collector',
+            'commissioner' => 'Commissioner',
+            'trader_pro' => 'Trader Pro',
+            'pa_entity' => 'PA Entity',
+        ];
+
+        return $platformRoleMapping[$userType] ?? 'Creator';
     }
 
     /**
