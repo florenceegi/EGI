@@ -243,9 +243,9 @@ class WalletProvisioningService {
                 'royalty_rebind' => null,
                 'is_anonymous' => false,
 
-                // Encryption fields
-                'secret_ciphertext' => base64_decode($encrypted['ciphertext']),
-                'secret_nonce' => base64_decode($encrypted['nonce']),
+                // Encryption fields - store as base64 strings for PostgreSQL text compatibility
+                'secret_ciphertext' => $encrypted['ciphertext'], // Already base64 encoded
+                'secret_nonce' => $encrypted['nonce'], // Already base64 encoded
                 'dek_encrypted' => json_encode($encrypted['encrypted_dek']),
                 'cipher_algo' => $encrypted['algorithm'],
 
@@ -324,9 +324,9 @@ class WalletProvisioningService {
                 'royalty_rebind' => null,
                 'is_anonymous' => false,
 
-                // Encryption fields
-                'secret_ciphertext' => base64_decode($encrypted['ciphertext']),
-                'secret_nonce' => base64_decode($encrypted['nonce']),
+                // Encryption fields - store as base64 strings for PostgreSQL bytea compatibility
+                'secret_ciphertext' => $encrypted['ciphertext'], // Already base64 encoded
+                'secret_nonce' => $encrypted['nonce'], // Already base64 encoded
                 'dek_encrypted' => json_encode($encrypted['encrypted_dek']),
                 'cipher_algo' => $encrypted['algorithm'],
 
@@ -587,8 +587,7 @@ class WalletProvisioningService {
      * @return array ['txId' => string, 'amount' => int, 'block' => int]
      * @throws \Exception if funding fails
      */
-    public function fundWallet(Wallet $wallet, ?int $amountMicroAlgos = null): array
-    {
+    public function fundWallet(Wallet $wallet, ?int $amountMicroAlgos = null): array {
         try {
             // 1. Validate wallet has an address
             if (empty($wallet->wallet)) {
@@ -677,8 +676,7 @@ class WalletProvisioningService {
      * @return Wallet The created and optionally funded wallet
      * @throws \Exception
      */
-    public function provisionAndFundWallet(User $user, array $data = [], ?bool $autoFund = null, ?int $fundAmount = null): Wallet
-    {
+    public function provisionAndFundWallet(User $user, array $data = [], ?bool $autoFund = null, ?int $fundAmount = null): Wallet {
         // 1. Create wallet
         $wallet = $this->provisionUserWallet($user, $data);
 
