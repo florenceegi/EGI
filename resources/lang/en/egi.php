@@ -920,4 +920,16 @@ return [
         'description' => 'Description',
     ],
 
+    // Collection monetization block
+    'monetization' => [
+        'block_title' => 'Collection not enabled for sales',
+        'badge_text' => 'Configure monetization to sell',
+        'no_monetization_configured' => 'To sell your EGIs, you must first configure a monetization method for the collection. You can choose between a monthly subscription or linking an EPP project.',
+        'subscription_inactive' => 'Your subscription is not active. Reactivate your subscription to be able to sell EGIs from this collection.',
+        'epp_not_linked' => 'You haven\'t linked an EPP project to this collection yet. Link an EPP to enable EGI sales.',
+        'epp_royalty_insufficient' => 'The linked EPP project must have a royalty of at least 20%. Modify the EPP settings from the collection dashboard.',
+        'generic_block' => 'The collection does not meet the requirements for sales. Configure monetization from the dashboard.',
+        'configure_button' => 'Configure Monetization',
+    ],
+
 ];

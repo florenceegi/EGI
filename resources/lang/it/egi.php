@@ -17,7 +17,7 @@ return [
     'image_alt_default' => 'Immagine EGI',
     'view_full' => 'Visualizzazione Completa',
     'artwork_loading' => 'Caricamento Opera...',
-    
+
     // PDF Viewer
     'pdf_viewer_fallback' => 'Impossibile visualizzare il PDF direttamente in questa pagina.',
     'download_pdf' => 'Scarica PDF',
@@ -186,7 +186,7 @@ return [
     // Sezioni Informative
     'properties' => 'Proprietà',
     'supports_epp' => 'Supporta EPP',
-    
+
     // EPP
     'epp' => [
         'supports' => 'Sostiene EPP',
@@ -953,6 +953,18 @@ return [
     // Campi generici
     'fields' => [
         'description' => 'Descrizione',
+    ],
+
+    // Blocco monetizzazione Collection
+    'monetization' => [
+        'block_title' => 'Collezione non abilitata alla vendita',
+        'badge_text' => 'Configura monetizzazione per vendere',
+        'no_monetization_configured' => 'Per mettere in vendita i tuoi EGI, devi prima configurare un metodo di monetizzazione per la collezione. Puoi scegliere tra un abbonamento mensile o collegare un progetto EPP.',
+        'subscription_inactive' => 'Il tuo abbonamento non è attivo. Riattiva l\'abbonamento per poter vendere gli EGI di questa collezione.',
+        'epp_not_linked' => 'Non hai ancora collegato un progetto EPP a questa collezione. Collega un EPP per abilitare la vendita degli EGI.',
+        'epp_royalty_insufficient' => 'Il progetto EPP collegato deve avere una royalty di almeno il 20%. Modifica le impostazioni EPP dalla dashboard della collezione.',
+        'generic_block' => 'La collezione non soddisfa i requisiti per la vendita. Configura la monetizzazione dalla dashboard.',
+        'configure_button' => 'Configura Monetizzazione',
     ],
 
 ];
