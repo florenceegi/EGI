@@ -69,18 +69,94 @@
                 </div>
 
                 {{-- Prezzo Originale --}}
-                <div class="rounded-lg bg-green-50 p-6">
-                    <h3 class="mb-2 font-semibold text-green-900">
-                        {{ __('mint.payment.price_label') }}
+                <div class="{{ $isGoldBar ?? false ? 'bg-amber-50' : 'bg-green-50' }} rounded-lg p-6">
+                    <h3 class="{{ $isGoldBar ?? false ? 'text-amber-900' : 'text-green-900' }} mb-2 font-semibold">
+                        {{ $isGoldBar ?? false ? __('gold_bar.indicative_value') : __('mint.payment.price_label') }}
                     </h3>
-                    <div class="text-3xl font-bold text-green-600">
-                        €{{ number_format($paymentAmountEur, 2) }}
+                    <div class="{{ $isGoldBar ?? false ? 'text-amber-600' : 'text-green-600' }} text-3xl font-bold">
+                        €{{ number_format($paymentAmountEur ?? 0, 2) }}
                     </div>
-                    @if ($reservation && $reservation->amount_eur < $egi->price)
-                        <p class="mt-2 text-sm text-green-700">
-                            ✅ {{ __('mint.payment.winning_reservation') }}:
-                            €{{ number_format($reservation->amount_eur, 2) }}
-                        </p>
+
+                    {{-- Gold Bar specific info --}}
+                    @if (($isGoldBar ?? false) && !empty($goldBarData) && is_array($goldBarData))
+                        <div class="mt-3 space-y-2 border-l-4 border-amber-400 pl-3 text-sm text-amber-700">
+                            <div class="flex items-center gap-2 font-semibold">
+                                <img src="{{ asset('images/icons/goldbar.png') }}" alt="Gold Bar" class="h-5 w-5">
+                                <span>{{ __('gold_bar.indicative_value') }}</span>
+                            </div>
+
+                            {{-- Gold Bar Details --}}
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div>
+                                    <span class="text-gray-500">{{ __('gold_bar.weight') }}:</span>
+                                    <span
+                                        class="font-medium">{{ number_format($goldBarData['weight_grams'] ?? 0, 2) }}g</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500">{{ __('gold_bar.pure_gold') }}:</span>
+                                    <span
+                                        class="font-medium">{{ number_format($goldBarData['pure_gold_grams'] ?? 0, 2) }}g</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500">{{ __('gold_bar.gold_price') }}:</span>
+                                    <span
+                                        class="font-medium">€{{ number_format($goldBarData['gold_price_per_gram'] ?? 0, 2) }}/g</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500">{{ __('gold_bar.base_value') }}:</span>
+                                    <span
+                                        class="font-medium">€{{ number_format($goldBarData['base_value'] ?? 0, 2) }}</span>
+                                </div>
+                                @if (($goldBarData['margin_applied'] ?? 0) > 0)
+                                    <div class="col-span-2">
+                                        <span class="text-gray-500">{{ __('gold_bar.creator_margin') }}:</span>
+                                        <span
+                                            class="font-medium">+€{{ number_format($goldBarData['margin_applied'] ?? 0, 2) }}</span>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="border-t border-amber-300 pt-2">
+                                <span class="text-gray-600">{{ __('gold_bar.final_value') }}:</span>
+                                <span
+                                    class="text-lg font-bold text-amber-900">€{{ number_format($goldBarData['final_value'] ?? 0, 2) }}</span>
+                            </div>
+                        </div>
+
+                        {{-- 10-minute timer --}}
+                        <div id="gold-bar-timer" class="mt-4 rounded-lg border border-amber-400 bg-amber-100 p-3"
+                            data-valid-until="{{ $goldPriceValidUntil ?? '' }}">
+                            <div class="flex items-center gap-2 text-sm font-medium text-amber-800">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>{{ __('gold_bar.price_updated_at') }}: <span
+                                        id="gold-timer-countdown">10:00</span></span>
+                            </div>
+                            <p class="mt-1 text-xs text-amber-700">{{ __('gold_bar.mint_price_warning') }}</p>
+                        </div>
+
+                        {{-- Timer expired modal placeholder --}}
+                        <div id="gold-bar-expired-modal"
+                            class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+                            <div class="mx-4 max-w-md rounded-lg bg-white p-6 shadow-xl">
+                                <h3 class="mb-2 text-lg font-bold text-amber-900">⏱️
+                                    {{ __('gold_bar.mint_price_warning') }}</h3>
+                                <p class="mb-4 text-sm text-gray-700">{{ __('gold_bar.mint_price_expired') }}</p>
+                                <button onclick="window.location.reload()"
+                                    class="w-full rounded-lg bg-amber-500 px-4 py-2 font-semibold text-white hover:bg-amber-600">
+                                    {{ __('gold_bar.refresh_button') }}
+                                </button>
+                            </div>
+                        </div>
+                    @else
+                        @if ($reservation && $reservation->amount_eur < $egi->price)
+                            <p class="mt-2 text-sm text-green-700">
+                                ✅ {{ __('mint.payment.winning_reservation') }}:
+                                €{{ number_format($reservation->amount_eur, 2) }}
+                            </p>
+                        @endif
                     @endif
                 </div>
 
@@ -336,6 +412,18 @@
                 const form = this;
                 const btn = document.getElementById('submit-mint-btn');
 
+                // Check if Gold Bar timer expired
+                const timerElement = document.getElementById('gold-bar-timer');
+                if (timerElement) {
+                    const validUntil = new Date(timerElement.dataset.validUntil);
+                    if (new Date() > validUntil) {
+                        // Show expired modal
+                        document.getElementById('gold-bar-expired-modal').classList.remove('hidden');
+                        document.getElementById('gold-bar-expired-modal').classList.add('flex');
+                        return;
+                    }
+                }
+
                 // Disabilita button e mostra spinner
                 btn.disabled = true;
                 btn.innerHTML =
@@ -370,6 +458,47 @@
                     form.submit();
                 }
             });
+
+            // Gold Bar 10-minute timer
+            const goldBarTimer = document.getElementById('gold-bar-timer');
+            if (goldBarTimer) {
+                const validUntil = new Date(goldBarTimer.dataset.validUntil);
+                const countdownElement = document.getElementById('gold-timer-countdown');
+
+                function updateGoldBarTimer() {
+                    const now = new Date();
+                    const diff = validUntil - now;
+
+                    if (diff <= 0) {
+                        // Timer expired - show modal
+                        countdownElement.textContent = '00:00';
+                        countdownElement.classList.add('text-red-600', 'font-bold');
+                        goldBarTimer.classList.add('border-red-400', 'bg-red-100');
+                        goldBarTimer.classList.remove('border-amber-400', 'bg-amber-100');
+
+                        // Show expired modal
+                        document.getElementById('gold-bar-expired-modal').classList.remove('hidden');
+                        document.getElementById('gold-bar-expired-modal').classList.add('flex');
+
+                        // Disable form submission
+                        document.getElementById('submit-mint-btn').disabled = true;
+                        return;
+                    }
+
+                    const minutes = Math.floor(diff / 60000);
+                    const seconds = Math.floor((diff % 60000) / 1000);
+                    countdownElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                    // Warning color when less than 2 minutes
+                    if (diff < 120000) {
+                        countdownElement.classList.add('text-red-600', 'font-bold');
+                    }
+
+                    setTimeout(updateGoldBarTimer, 1000);
+                }
+
+                updateGoldBarTimer();
+            }
         </script>
     @endpush
 
