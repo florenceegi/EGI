@@ -73,7 +73,7 @@ Route::prefix('gold')->name('api.gold.')->group(function () {
     // Get current gold price (from cache)
     Route::get('/price', [App\Http\Controllers\Api\GoldPriceController::class, 'getPrice'])
         ->name('price');
-    
+
     // Get refresh info (cost, time until next refresh)
     Route::get('/refresh-info', [App\Http\Controllers\Api\GoldPriceController::class, 'getRefreshInfo'])
         ->name('refresh-info');
@@ -84,6 +84,10 @@ Route::middleware(['web'])->prefix('gold')->name('api.gold.')->group(function ()
     // Force refresh gold price (costs 1 Egili)
     Route::post('/refresh', [App\Http\Controllers\Api\GoldPriceController::class, 'forceRefresh'])
         ->name('refresh');
+
+    // Pre-mint refresh (free, only for Gold Bar EGIs about to be minted)
+    Route::post('/egi/{egi}/pre-mint-refresh', [App\Http\Controllers\Api\GoldPriceController::class, 'refreshForMint'])
+        ->name('pre-mint-refresh');
 });
 
 // === PROTECTED Legacy Currency Route (for authenticated users) ===

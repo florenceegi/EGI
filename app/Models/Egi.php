@@ -538,8 +538,14 @@ class Egi extends Model {
 
     /**
      * Nome categoria (display_value > value > default config)
+     * Per Gold Bar, restituisce sempre "Lingotto d'Oro" (localizzato)
      */
     public function getCategoryNameAttribute(): string {
+        // 🥇 Gold Bar override: se è un lingotto d'oro, mostra sempre "Gold Bar" / "Lingotto d'Oro"
+        if ($this->isGoldBar()) {
+            return __('gold_bar.category_name');
+        }
+
         $trait = $this->category_trait;
         $raw = $trait ? ($trait->display_value ?: $trait->value) : null;
         // Restituiamo sempre la versione LOCALIZZATA da trait_elements.values
@@ -549,8 +555,14 @@ class Egi extends Model {
 
     /**
      * Classi CSS Tailwind per il badge della categoria.
+     * Per Gold Bar, usa palette oro distintiva.
      */
     public function getCategoryBadgeClassesAttribute(): string {
+        // 🥇 Gold Bar override: usa palette oro distintiva
+        if ($this->isGoldBar()) {
+            return 'bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 text-gray-900 font-bold shadow-lg shadow-yellow-500/30';
+        }
+
         $trait = $this->category_trait;
         $raw = $trait ? ($trait->display_value ?: $trait->value) : null;
         [$canonical, $_localized] = $this->resolveCategoryCanonicalAndLocalized($raw);
