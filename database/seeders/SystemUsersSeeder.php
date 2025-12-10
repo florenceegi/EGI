@@ -503,45 +503,76 @@ class SystemUsersSeeder extends Seeder {
      * Process GDPR consents - Simplified version for seeder
      * Creates basic consent records directly using UserConsent model
      * Uses firstOrCreate to avoid duplicate key violations on PostgreSQL
+     *
+     * IMPORTANT: Uses correct slugs from ConsentTypeSeeder
      */
     protected function processGdprConsents(User $user, array $userData, array $logContext): void {
         try {
-            // Create basic consent records directly for system users
-            $basicConsents = [
-                'privacy_policy' => 'Privacy Policy Acceptance',
-                'marketing' => 'Marketing Communications',
+            // System users need these consents with CORRECT slugs from ConsentTypeSeeder
+            // These are platform/system users that participate in payment splits
+            $systemUserConsents = [
+                'privacy-policy' => 'Privacy Policy Acceptance',
+                'terms-of-service' => 'Terms of Service Acceptance',
+                'platform-services' => 'Platform Services',
+                'allow-personal-data-processing' => 'Personal Data Processing',
+                'allow-payment-processing' => 'Payment Processing (required for receiving payments)',
                 'analytics' => 'Analytics and Performance',
-                'platform_operation' => 'Platform Operation',
             ];
 
-            foreach ($basicConsents as $consentType => $description) {
+            // Get or create consent version for system users
+            $consentVersion = DB::table('consent_versions')
+                ->where('version', '1.1-system')
+                ->first();
+
+            if (!$consentVersion) {
+                $versionId = DB::table('consent_versions')->insertGetId([
+                    'version' => '1.1-system',
+                    'consent_types' => json_encode(array_keys($systemUserConsents)),
+                    'changes' => json_encode(['description' => 'System users consent version']),
+                    'configuration' => json_encode(['system_users' => true]),
+                    'effective_date' => now(),
+                    'is_active' => true,
+                    'created_by' => 1,
+                    'notes' => 'Created for system users (Natan, EPP, Frangette)',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } else {
+                $versionId = $consentVersion->id;
+            }
+
+            foreach ($systemUserConsents as $consentSlug => $description) {
                 UserConsent::firstOrCreate(
                     [
                         'user_id' => $user->id,
-                        'consent_type' => $consentType,
+                        'consent_type' => $consentSlug,
                     ],
                     [
+                        'consent_version_id' => $versionId,
                         'granted' => true,
-                        'legal_basis' => 'consent',
+                        'legal_basis' => 'contract',
                         'ip_address' => '127.0.0.1',
                         'user_agent' => 'SystemSeeder/1.0',
-                        'metadata' => [
+                        'metadata' => json_encode([
                             'source' => 'system_seeder',
                             'system_user' => true,
                             'description' => $description,
-                        ],
+                        ]),
                         'status' => 'active',
                     ]
                 );
             }
 
+            $this->command->info("   📋 GDPR Consents: ✅ Created (" . count($systemUserConsents) . " consents)");
+
             $this->safeLog('info', '[Seeder] GDPR consents processed successfully', [
                 'user_id' => $user->id,
-                'consents_created' => array_keys($basicConsents),
+                'consents_created' => array_keys($systemUserConsents),
                 'consent_method' => 'direct_seeder_creation'
             ]);
         } catch (\Exception $e) {
             // Make GDPR consent creation non-blocking for system users
+            $this->command->warn("   📋 GDPR Consents: ⚠️ Failed (non-blocking) - " . $e->getMessage());
             $this->safeLog('warning', "[Seeder] Failed to process GDPR consents for {$userData['name']} (non-blocking)", [
                 'user_id' => $user->id,
                 'error' => $e->getMessage()
