@@ -594,6 +594,15 @@ class User extends Authenticatable implements HasMedia {
         return $this->wallets()->first();
     }
 
+    /**
+     * Get the user's Egili balance from their primary wallet.
+     *
+     * @return int
+     */
+    public function getEgiliBalanceAttribute(): int {
+        return $this->primaryWallet?->egili_balance ?? 0;
+    }
+
     public function customNotifications() {
         return $this->morphMany(CustomDatabaseNotification::class, 'notifiable');
     }
