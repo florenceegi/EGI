@@ -74,6 +74,10 @@ console.log('biography-edit.js importato.');
 import '../ts/features/search/universalSearch.ts';
 console.log('Universal Search (vanilla) importato.');
 
+// --- 🥇 GOLD PRICE REFRESH (Alpine.js Component) ---
+import './components/gold-price-refresh';
+console.log('Gold Price Refresh component importato.');
+
 console.log('app.js setup complete (dependencies only - orchestration in main.ts).'); // Debugging
 
 // --- 📚 DOCUMENTAZIONE POLYFILL ---

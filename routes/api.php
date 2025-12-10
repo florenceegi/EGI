@@ -57,6 +57,35 @@ Route::prefix('currency')->name('api.currency.')->group(function () {
         ->name('algo-exchange-rate');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Gold Price API Routes
+|--------------------------------------------------------------------------
+|
+| Routes for gold price quotations used by Gold Bar EGIs.
+| - PUBLIC: Get current cached gold price
+| - PROTECTED: Force refresh (costs Egili)
+|
+*/
+
+// === PUBLIC Gold Price Routes ===
+Route::prefix('gold')->name('api.gold.')->group(function () {
+    // Get current gold price (from cache)
+    Route::get('/price', [App\Http\Controllers\Api\GoldPriceController::class, 'getPrice'])
+        ->name('price');
+    
+    // Get refresh info (cost, time until next refresh)
+    Route::get('/refresh-info', [App\Http\Controllers\Api\GoldPriceController::class, 'getRefreshInfo'])
+        ->name('refresh-info');
+});
+
+// === PROTECTED Gold Price Routes (requires authentication) ===
+Route::middleware(['web'])->prefix('gold')->name('api.gold.')->group(function () {
+    // Force refresh gold price (costs 1 Egili)
+    Route::post('/refresh', [App\Http\Controllers\Api\GoldPriceController::class, 'forceRefresh'])
+        ->name('refresh');
+});
+
 // === PROTECTED Legacy Currency Route (for authenticated users) ===
 // MOVED TO web.php - queste sono chiamate interne, non API esterne
 

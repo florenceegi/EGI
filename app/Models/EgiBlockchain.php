@@ -188,6 +188,7 @@ class EgiBlockchain extends Model {
     public function getMintStatusLabelAttribute(): string {
         return match ($this->mint_status) {
             'unminted' => 'Non Mintato',
+            'pending_checkout' => 'In Attesa Pagamento',
             'minting_queued' => 'In Coda',
             'minting' => 'Minting in Corso',
             'minted' => 'Mintato',

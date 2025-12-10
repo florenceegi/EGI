@@ -11,6 +11,7 @@ return [
         'Cultural' => 'Cultural',
         'Accessories' => 'Acessórios',
         'Categories' => 'Categorias',
+        'Gold Bar' => 'Barra de Ouro',
     ],
 
     // Trait Types
@@ -54,6 +55,13 @@ return [
         'Water Protection' => 'Proteção contra Água',
         'Personalization' => 'Personalização',
         'Structure' => 'Estrutura',
+
+        // Gold Bar types
+        'Gold Weight' => 'Peso Ouro',
+        'Gold Weight Unit' => 'Unidade Peso Ouro',
+        'Gold Purity' => 'Pureza Ouro',
+        'Gold Margin Percent' => 'Margem Ouro (%)',
+        'Gold Margin Fixed' => 'Margem Ouro (Fixo)',
     ],
 
     // Values
@@ -551,5 +559,17 @@ return [
         'Semi-Structured' => 'Semi-Estruturado',
         'Structured' => 'Estruturado',
         'Padded' => 'Acolchoado',
+
+        // Gold Weight Unit values
+        'Grams' => 'Gramas',
+        'Ounces' => 'Onças',
+        'Troy Ounces' => 'Onças Troy',
+
+        // Gold Purity values
+        '999' => '999 (24k - 99.9%)',
+        '995' => '995 (99.5%)',
+        '990' => '990 (99.0%)',
+        '916' => '916 (22k - 91.6%)',
+        '750' => '750 (18k - 75.0%)',
     ],
 ];

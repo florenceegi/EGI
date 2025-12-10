@@ -106,6 +106,8 @@ class MintController extends Controller {
 
             // ✅ Se il pagamento è stato completato con successo (redirect da Stripe)
             if ($paymentSuccess == '1') {
+                $sessionId = request()->query('session_id');
+
                 // Cerca il blockchain record più recente per questo EGI e utente
                 $blockchainRecord = EgiBlockchain::where('egi_id', $egiId)
                     ->where('buyer_user_id', Auth::id())
@@ -113,6 +115,43 @@ class MintController extends Controller {
                     ->first();
 
                 if ($blockchainRecord) {
+                    // Se il record è in pending_checkout, dobbiamo completare il pagamento
+                    if ($blockchainRecord->mint_status === 'pending_checkout' && $sessionId) {
+                        $this->logger->info('Completing pending checkout payment', [
+                            'user_id' => Auth::id(),
+                            'egi_id' => $egiId,
+                            'blockchain_record_id' => $blockchainRecord->id,
+                            'session_id' => $sessionId,
+                        ]);
+
+                        try {
+                            // Verify payment with Stripe
+                            $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
+                            $session = $stripe->checkout->sessions->retrieve($sessionId);
+
+                            if ($session->payment_status === 'paid') {
+                                // Update blockchain record to start minting
+                                $blockchainRecord->update([
+                                    'mint_status' => 'minting_queued',
+                                    'payment_completed_at' => now(),
+                                ]);
+
+                                $this->logger->info('Payment verified, dispatching mint job', [
+                                    'blockchain_record_id' => $blockchainRecord->id,
+                                    'stripe_session_id' => $sessionId,
+                                ]);
+
+                                // Dispatch mint job
+                                \App\Jobs\ProcessMintJob::dispatch($blockchainRecord->id);
+                            }
+                        } catch (\Exception $e) {
+                            $this->logger->error('Failed to verify Stripe payment', [
+                                'error' => $e->getMessage(),
+                                'session_id' => $sessionId,
+                            ]);
+                        }
+                    }
+
                     $this->logger->info('Payment success redirect - showing mint result', [
                         'user_id' => Auth::id(),
                         'egi_id' => $egiId,
@@ -1219,16 +1258,41 @@ class MintController extends Controller {
                         'flow' => 'direct_mint',
                         'initiated_at' => now()->toIso8601String(),
                     ],
-                    successUrl: route('mint.success', ['egi' => $egi->id]),
-                    cancelUrl: route('mint.payment-form', ['egi' => $egi->id]),
+                    // Use same pattern as reservation mint - redirect to payment-form with success flag
+                    successUrl: route('mint.payment-form', ['egiId' => $egi->id]) . '?payment_success=1',
+                    cancelUrl: route('mint.payment-form', ['egiId' => $egi->id]),
                     merchantContext: $merchantContext
                 );
 
                 $paymentResultObject = $paymentService->processPayment($paymentRequest);
 
                 if ($paymentResultObject->requiresAction() && $paymentResultObject->redirectUrl) {
-                    $this->logger->info('Direct mint payment requires action', [
+                    $this->logger->info('Direct mint payment requires action - creating pending record', [
                         'provider' => $paymentService->getProviderName(),
+                        'payment_id' => $paymentResultObject->paymentId,
+                    ]);
+
+                    // Create blockchain record in pending_checkout status BEFORE redirect to Stripe
+                    // This ensures we can find the record when user returns from payment
+                    $blockchainRecord = EgiBlockchain::create([
+                        'egi_id' => $egi->id,
+                        'reservation_id' => null,
+                        'payment_method' => $paymentMethod,
+                        'psp_provider' => $paymentService->getProviderName(),
+                        'payment_reference' => $paymentResultObject->paymentId,
+                        'paid_amount' => $paymentAmountEur,
+                        'paid_currency' => 'EUR',
+                        'buyer_user_id' => Auth::id(),
+                        'buyer_wallet' => $validated['wallet_address'] ?? null,
+                        'ownership_type' => isset($validated['wallet_address']) ? 'wallet' : 'treasury',
+                        'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
+                        'mint_status' => 'pending_checkout',
+                        'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
+                    ]);
+
+                    $this->logger->info('Created pending blockchain record for Stripe Checkout', [
+                        'blockchain_record_id' => $blockchainRecord->id,
+                        'egi_id' => $egi->id,
                         'payment_id' => $paymentResultObject->paymentId,
                     ]);
 

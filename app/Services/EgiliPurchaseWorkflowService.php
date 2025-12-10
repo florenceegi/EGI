@@ -136,8 +136,9 @@ class EgiliPurchaseWorkflowService {
                     'egili_amount' => $egiliAmount,
                     'description' => "Egili Purchase - {$egiliAmount} Egili"
                 ],
-                successUrl: $paymentData['return_url'] ?? route('egili.purchase.confirmation', ['orderReference' => $merchantPurchase->order_reference]),
-                cancelUrl: $paymentData['return_url'] ?? url()->previous()
+                // Always use confirmation page - ignore return_url from frontend to ensure proper completion flow
+                successUrl: route('egili.purchase.confirmation', ['orderReference' => $merchantPurchase->order_reference]),
+                cancelUrl: route('home')
             );
 
             // Egili payments go directly to platform account (no merchant context needed)

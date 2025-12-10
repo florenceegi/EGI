@@ -30,8 +30,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-11-02
  * @purpose Frontend controller for Egili purchase workflow
  */
-class EgiliPurchaseController extends Controller
-{
+class EgiliPurchaseController extends Controller {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -69,8 +68,7 @@ class EgiliPurchaseController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function processPurchase(Request $request): JsonResponse
-    {
+    public function processPurchase(Request $request): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -136,7 +134,6 @@ class EgiliPurchaseController extends Controller
                     'order_reference' => $result['order_reference'],
                     'message' => __('egili.purchase.payment_success'),
                 ]);
-
             } else {
                 // Crypto payment flow
                 $result = $this->purchaseWorkflow->purchaseWithCrypto(
@@ -156,7 +153,6 @@ class EgiliPurchaseController extends Controller
                     'message' => __('egili.purchase.crypto_redirect'),
                 ]);
             }
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Validation errors
             $this->logger->warning('Egili purchase validation failed', [
@@ -170,7 +166,6 @@ class EgiliPurchaseController extends Controller
                 'errors' => $e->errors(),
                 'message' => __('validation.failed'),
             ], 422);
-
         } catch (\Exception $e) {
             // UEM: Handle unexpected errors
             $this->errorManager->handle('EGILI_PURCHASE_PROCESS_FAILED', [
@@ -195,8 +190,7 @@ class EgiliPurchaseController extends Controller
      * @param string $orderReference
      * @return View
      */
-    public function showConfirmation(Request $request, string $orderReference): View
-    {
+    public function showConfirmation(Request $request, string $orderReference): View {
         try {
             $user = Auth::user();
 
@@ -214,10 +208,20 @@ class EgiliPurchaseController extends Controller
 
             // 3. Handle Stripe Checkout callback - verify and complete payment
             $sessionId = $request->query('session_id');
+
+            $this->logger->info('showConfirmation called', [
+                'order_reference' => $orderReference,
+                'session_id_from_url' => $sessionId,
+                'payment_status' => $purchase->payment_status,
+                'user_id' => $user->id,
+            ]);
+
             if ($sessionId && $purchase->payment_status === 'pending_checkout') {
+                $this->logger->info('Calling completeCheckoutPayment...');
                 $this->completeCheckoutPayment($purchase, $sessionId, $user);
                 // Refresh purchase record
                 $purchase->refresh();
+                $this->logger->info('After refresh', ['new_status' => $purchase->payment_status]);
             }
 
             // 4. Get current Egili balance
@@ -236,7 +240,6 @@ class EgiliPurchaseController extends Controller
                 'purchase',
                 'currentBalance'
             ));
-
         } catch (\Exception $e) {
             // UEM: Handle error and redirect to safe page
             $this->errorManager->handle('EGILI_PURCHASE_CONFIRMATION_ERROR', [
@@ -255,8 +258,7 @@ class EgiliPurchaseController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function getPricing(Request $request): JsonResponse
-    {
+    public function getPricing(Request $request): JsonResponse {
         try {
             $egiliAmount = $request->input('egili_amount', 0);
 
@@ -282,7 +284,6 @@ class EgiliPurchaseController extends Controller
                 'max_purchase' => $maxPurchase,
                 'is_valid' => $egiliAmount >= $minPurchase && $egiliAmount <= $maxPurchase,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -299,12 +300,23 @@ class EgiliPurchaseController extends Controller
      * @param \App\Models\User $user
      * @return void
      */
-    private function completeCheckoutPayment($purchase, string $sessionId, $user): void
-    {
+    private function completeCheckoutPayment($purchase, string $sessionId, $user): void {
+        $this->logger->info('completeCheckoutPayment CALLED', [
+            'session_id' => $sessionId,
+            'order_reference' => $purchase->order_reference,
+            'current_status' => $purchase->payment_status,
+            'user_id' => $user->id,
+        ]);
+
         try {
             // Verify Stripe Checkout session
             $stripe = new \Stripe\StripeClient(config('algorand.payments.stripe.secret_key'));
             $session = $stripe->checkout->sessions->retrieve($sessionId);
+
+            $this->logger->info('Stripe session retrieved', [
+                'stripe_payment_status' => $session->payment_status,
+                'stripe_status' => $session->status,
+            ]);
 
             if ($session->payment_status !== 'paid') {
                 $this->logger->warning('Stripe Checkout session not paid', [
@@ -358,7 +370,6 @@ class EgiliPurchaseController extends Controller
                 'stripe_session_id' => $sessionId,
                 'log_category' => 'EGILI_PURCHASE_CHECKOUT_COMPLETED'
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to complete Stripe Checkout payment', [
                 'session_id' => $sessionId,

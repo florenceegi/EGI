@@ -164,4 +164,25 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Gold Price API Services
+    |--------------------------------------------------------------------------
+    |
+    | API services for fetching real-time gold prices.
+    | Used by GoldPriceService for Gold Bar EGI valuations.
+    |
+    | Free tier options:
+    | - Gold-API.io: 300 requests/month free
+    | - MetalPriceAPI: Limited free tier
+    |
+    */
+    'gold_api' => [
+        'key' => env('GOLD_API_KEY'),
+    ],
+
+    'metal_price_api' => [
+        'key' => env('METAL_PRICE_API_KEY'),
+    ],
+
 ];

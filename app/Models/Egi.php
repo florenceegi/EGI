@@ -1335,4 +1335,101 @@ class Egi extends Model {
     public function chunks(): HasMany {
         return $this->hasMany(ProjectDocumentChunk::class, 'egi_id');
     }
+
+    // =====================================================
+    // GOLD BAR ACCESSORS
+    // =====================================================
+
+    /**
+     * Check if this EGI is a Gold Bar
+     * A Gold Bar has at least the required traits: weight, unit, and purity
+     *
+     * @return bool
+     */
+    public function isGoldBar(): bool {
+        return $this->getGoldWeight() !== null
+            && $this->getGoldWeightUnit() !== null
+            && $this->getGoldPurity() !== null;
+    }
+
+    /**
+     * Get the gold weight trait value
+     *
+     * @return float|null
+     */
+    public function getGoldWeight(): ?float {
+        $trait = $this->getTraitByTypeSlug('gold-weight');
+        return $trait ? (float) $trait->value : null;
+    }
+
+    /**
+     * Get the gold weight unit trait value
+     *
+     * @return string|null (Grams, Ounces, Troy Ounces)
+     */
+    public function getGoldWeightUnit(): ?string {
+        $trait = $this->getTraitByTypeSlug('gold-weight-unit');
+        return $trait ? $trait->value : null;
+    }
+
+    /**
+     * Get the gold purity trait value
+     *
+     * @return string|null (999, 995, 990, 916, 750)
+     */
+    public function getGoldPurity(): ?string {
+        $trait = $this->getTraitByTypeSlug('gold-purity');
+        return $trait ? $trait->value : null;
+    }
+
+    /**
+     * Get the gold margin percent trait value
+     *
+     * @return float|null
+     */
+    public function getGoldMarginPercent(): ?float {
+        $trait = $this->getTraitByTypeSlug('gold-margin-percent');
+        return $trait ? (float) $trait->value : null;
+    }
+
+    /**
+     * Get the gold margin fixed trait value
+     *
+     * @return float|null
+     */
+    public function getGoldMarginFixed(): ?float {
+        $trait = $this->getTraitByTypeSlug('gold-margin-fixed');
+        return $trait ? (float) $trait->value : null;
+    }
+
+    /**
+     * Get a trait by its type slug
+     * Helper method for accessing traits by slug
+     *
+     * @param string $typeSlug
+     * @return EgiTrait|null
+     */
+    protected function getTraitByTypeSlug(string $typeSlug): ?EgiTrait {
+        return $this->traits->first(function ($trait) use ($typeSlug) {
+            return $trait->traitType && $trait->traitType->slug === $typeSlug;
+        });
+    }
+
+    /**
+     * Get calculated gold bar value using GoldPriceService
+     * This is a convenience method that returns the full calculation
+     *
+     * @param string $currency Currency code (EUR, USD, GBP)
+     * @return array|null Returns calculation array or null if not a gold bar or service unavailable
+     */
+    public function getGoldBarValue(string $currency = 'EUR'): ?array {
+        if (!$this->isGoldBar()) {
+            return null;
+        }
+
+        /** @var \App\Services\GoldPriceService $goldService */
+        $goldService = app(\App\Services\GoldPriceService::class);
+
+        return $goldService->calculateFromEgi($this, $currency);
+    }
 }

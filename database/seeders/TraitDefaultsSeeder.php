@@ -42,6 +42,7 @@ class TraitDefaultsSeeder extends Seeder {
             ['name' => 'Sustainability', 'slug' => 'sustainability', 'icon' => '🌿', 'color' => '#2D5016', 'is_system' => true, 'sort_order' => 5],
             ['name' => 'Cultural', 'slug' => 'cultural', 'icon' => '🏛️', 'color' => '#8B4513', 'is_system' => true, 'sort_order' => 6],
             ['name' => 'Categories', 'slug' => 'categories', 'icon' => '📋', 'color' => '#6366F1', 'is_system' => true, 'sort_order' => 8],
+            ['name' => 'Gold Bar', 'slug' => 'gold-bar', 'icon' => '🥇', 'color' => '#FFD700', 'is_system' => true, 'sort_order' => 9],
         ];
 
         foreach ($categories as $category) {
@@ -856,6 +857,51 @@ class TraitDefaultsSeeder extends Seeder {
                             'Monoprint',
                             'Artist Proof'
                         ])
+                    ]
+                ];
+                break;
+
+            case 'gold-bar':
+                $traitTypes = [
+                    [
+                        'name' => 'Gold Weight',
+                        'slug' => 'gold-weight',
+                        'display_type' => 'number',
+                        'allowed_values' => null
+                    ],
+                    [
+                        'name' => 'Gold Weight Unit',
+                        'slug' => 'gold-weight-unit',
+                        'display_type' => 'text',
+                        'allowed_values' => json_encode([
+                            'Grams',
+                            'Ounces',
+                            'Troy Ounces'
+                        ])
+                    ],
+                    [
+                        'name' => 'Gold Purity',
+                        'slug' => 'gold-purity',
+                        'display_type' => 'text',
+                        'allowed_values' => json_encode([
+                            '999',   // 24k - 99.9% pure
+                            '995',   // 99.5% pure
+                            '990',   // 99.0% pure
+                            '916',   // 22k - 91.6% pure
+                            '750'    // 18k - 75.0% pure
+                        ])
+                    ],
+                    [
+                        'name' => 'Gold Margin Percent',
+                        'slug' => 'gold-margin-percent',
+                        'display_type' => 'number',
+                        'allowed_values' => null
+                    ],
+                    [
+                        'name' => 'Gold Margin Fixed',
+                        'slug' => 'gold-margin-fixed',
+                        'display_type' => 'number',
+                        'allowed_values' => null
                     ]
                 ];
                 break;

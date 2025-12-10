@@ -11,6 +11,7 @@ return [
         'Cultural' => 'Cultural',
         'Accessories' => 'Accessories',
         'Categories' => 'Categories',
+        'Gold Bar' => 'Gold Bar',
     ],
 
     // Trait Types
@@ -54,6 +55,13 @@ return [
         'Water Protection' => 'Water Protection',
         'Personalization' => 'Personalization',
         'Structure' => 'Structure',
+
+        // Gold Bar types
+        'Gold Weight' => 'Gold Weight',
+        'Gold Weight Unit' => 'Gold Weight Unit',
+        'Gold Purity' => 'Gold Purity',
+        'Gold Margin Percent' => 'Gold Margin Percent',
+        'Gold Margin Fixed' => 'Gold Margin Fixed',
     ],
 
     // Values
@@ -552,5 +560,17 @@ return [
         'Semi-Structured' => 'Semi-Structured',
         'Structured' => 'Structured',
         'Padded' => 'Padded',
+
+        // Gold Weight Unit values
+        'Grams' => 'Grams',
+        'Ounces' => 'Ounces',
+        'Troy Ounces' => 'Troy Ounces',
+
+        // Gold Purity values
+        '999' => '999 (24k - 99.9%)',
+        '995' => '995 (99.5%)',
+        '990' => '990 (99.0%)',
+        '916' => '916 (22k - 91.6%)',
+        '750' => '750 (18k - 75.0%)',
     ],
 ];

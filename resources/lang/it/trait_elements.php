@@ -18,6 +18,7 @@ return [
         'Cultural' => 'Culturale',
         'Accessories' => 'Accessori',
         'Categories' => 'Categorie',
+        'Gold Bar' => 'Lingotto d\'Oro',
     ],
 
     // Types
@@ -61,6 +62,13 @@ return [
         'Water Protection' => 'Protezione Acqua',
         'Personalization' => 'Personalizzazione',
         'Structure' => 'Struttura',
+
+        // Gold Bar types
+        'Gold Weight' => 'Peso Oro',
+        'Gold Weight Unit' => 'Unità Peso Oro',
+        'Gold Purity' => 'Purezza Oro',
+        'Gold Margin Percent' => 'Margine Oro (%)',
+        'Gold Margin Fixed' => 'Margine Oro (Fisso)',
     ],
 
     // Values
@@ -488,6 +496,18 @@ return [
         'Yellow Gold' => 'Oro Giallo',
         'Zinc' => 'Zinco',
         'Zipper' => 'Cerniera',
+
+        // Gold Weight Unit values
+        'Grams' => 'Grammi',
+        'Ounces' => 'Once',
+        'Troy Ounces' => 'Once Troy',
+
+        // Gold Purity values
+        '999' => '999 (24k - 99.9%)',
+        '995' => '995 (99.5%)',
+        '990' => '990 (99.0%)',
+        '916' => '916 (22k - 91.6%)',
+        '750' => '750 (18k - 75.0%)',
     ],
 
 ];

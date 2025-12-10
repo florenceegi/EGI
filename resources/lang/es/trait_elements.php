@@ -11,6 +11,7 @@ return [
         'Cultural' => 'Cultural',
         'Accessories' => 'Accesorios',
         'Categories' => 'Categorías',
+        'Gold Bar' => 'Lingote de Oro',
     ],
 
     // Trait Types
@@ -54,6 +55,13 @@ return [
         'Water Protection' => 'Protección contra Agua',
         'Personalization' => 'Personalización',
         'Structure' => 'Estructura',
+
+        // Gold Bar types
+        'Gold Weight' => 'Peso Oro',
+        'Gold Weight Unit' => 'Unidad Peso Oro',
+        'Gold Purity' => 'Pureza Oro',
+        'Gold Margin Percent' => 'Margen Oro (%)',
+        'Gold Margin Fixed' => 'Margen Oro (Fijo)',
     ],
 
     // Values
@@ -552,5 +560,17 @@ return [
         'Semi-Structured' => 'Semi-Estructurado',
         'Structured' => 'Estructurado',
         'Padded' => 'Acolchado',
+
+        // Gold Weight Unit values
+        'Grams' => 'Gramos',
+        'Ounces' => 'Onzas',
+        'Troy Ounces' => 'Onzas Troy',
+
+        // Gold Purity values
+        '999' => '999 (24k - 99.9%)',
+        '995' => '995 (99.5%)',
+        '990' => '990 (99.0%)',
+        '916' => '916 (22k - 91.6%)',
+        '750' => '750 (18k - 75.0%)',
     ],
 ];

@@ -11,6 +11,7 @@ return [
         'Cultural' => 'Culturel',
         'Accessories' => 'Accessoires',
         'Categories' => 'Catégories',
+        'Gold Bar' => 'Lingot d\'Or',
     ],
 
     // Trait Types
@@ -54,6 +55,13 @@ return [
         'Water Protection' => 'Protection Contre l\'Eau',
         'Personalization' => 'Personnalisation',
         'Structure' => 'Structure',
+
+        // Gold Bar types
+        'Gold Weight' => 'Poids Or',
+        'Gold Weight Unit' => 'Unité de Poids Or',
+        'Gold Purity' => 'Pureté Or',
+        'Gold Margin Percent' => 'Marge Or (%)',
+        'Gold Margin Fixed' => 'Marge Or (Fixe)',
     ],
 
     // Values
@@ -552,5 +560,17 @@ return [
         'Semi-Structured' => 'Semi-Structuré',
         'Structured' => 'Structuré',
         'Padded' => 'Rembourré',
+
+        // Gold Weight Unit values
+        'Grams' => 'Grammes',
+        'Ounces' => 'Onces',
+        'Troy Ounces' => 'Onces Troy',
+
+        // Gold Purity values
+        '999' => '999 (24k - 99.9%)',
+        '995' => '995 (99.5%)',
+        '990' => '990 (99.0%)',
+        '916' => '916 (22k - 91.6%)',
+        '750' => '750 (18k - 75.0%)',
     ],
 ];
