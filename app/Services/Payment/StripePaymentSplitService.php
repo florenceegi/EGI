@@ -289,11 +289,18 @@ class StripePaymentSplitService {
         $totalAmountCents = (int) round($totalAmountEur * 100);
         $distributedCents = 0;
 
-        foreach ($wallets as $index => $wallet) {
+        // Filter wallets with royalty > 0 (exclude 0% royalty wallets)
+        $activeWallets = $wallets->filter(fn($w) => ($w->royalty_mint ?? 0) > 0)->values();
+        
+        if ($activeWallets->isEmpty()) {
+            throw new \RuntimeException('No wallets with royalty > 0% found for distribution');
+        }
+
+        foreach ($activeWallets as $index => $wallet) {
             $percentage = $wallet->royalty_mint;
 
             // Calculate amount in cents
-            if ($index === $wallets->count() - 1) {
+            if ($index === $activeWallets->count() - 1) {
                 // Last wallet gets remainder to ensure exact total
                 $amountCents = $totalAmountCents - $distributedCents;
             } else {
@@ -332,6 +339,8 @@ class StripePaymentSplitService {
      * - Account has 'transfers' capability active (required for direct payments)
      * - Account has 'card_payments' capability active
      *
+     * NOTE: Skips wallets with 0% royalty (amount_cents = 0) as they won't receive any payment
+     *
      * @param array $distributions
      * @throws \Exception If any wallet missing Stripe account or capabilities
      */
@@ -340,6 +349,16 @@ class StripePaymentSplitService {
         $insufficientCapabilities = [];
 
         foreach ($distributions as $distribution) {
+            // Skip wallets with 0% royalty - they won't receive any payment
+            if (($distribution['amount_cents'] ?? 0) <= 0) {
+                $this->logger->debug('Skipping Stripe validation for 0% royalty wallet', [
+                    'wallet_id' => $distribution['wallet_id'],
+                    'platform_role' => $distribution['platform_role'],
+                    'percentage' => $distribution['percentage'] ?? 0,
+                ]);
+                continue;
+            }
+
             // Check if Stripe account ID exists
             if (empty($distribution['stripe_account_id'])) {
                 $missingAccounts[] = [
@@ -623,6 +642,8 @@ class StripePaymentSplitService {
     /**
      * Validate payment processing consents for all wallet owners (GDPR)
      *
+     * NOTE: Skips wallets with 0% royalty as they won't receive any payment
+     *
      * @param LaravelCollection<Wallet> $wallets
      * @throws \Exception If any wallet owner lacks required consent
      *
@@ -632,6 +653,16 @@ class StripePaymentSplitService {
         $missingConsents = [];
 
         foreach ($wallets as $wallet) {
+            // Skip wallets with 0% royalty - they won't receive any payment
+            if (($wallet->royalty_mint ?? 0) <= 0) {
+                $this->logger->debug('Skipping consent check for 0% royalty wallet', [
+                    'wallet_id' => $wallet->id,
+                    'platform_role' => $wallet->platform_role,
+                    'royalty_mint' => $wallet->royalty_mint ?? 0,
+                ]);
+                continue;
+            }
+
             // Skip wallets without associated users (anonymous/platform wallets)
             if (!$wallet->user_id) {
                 $this->logger->info('Skipping consent check for anonymous wallet', [
@@ -917,11 +948,11 @@ class StripePaymentSplitService {
                 if ($sandboxPM) {
                     $intentParams['payment_method'] = $sandboxPM;
                 }
-            }
 
-            // Return URL for redirect payment methods
-            if ($request->successUrl) {
-                $intentParams['return_url'] = $request->successUrl;
+                // Return URL for redirect payment methods (only valid when confirm=true)
+                if ($request->successUrl) {
+                    $intentParams['return_url'] = $request->successUrl;
+                }
             }
 
             // Create PaymentIntent with destination transfer
