@@ -18,6 +18,7 @@
 
     ALTRE VARIABILI:
     - $isPriceLocked, $displayPrice, $displayUser, $highestPriorityReservation
+    - $canSellEgis: passata da show.blade.php, indica se la collection può vendere
 --}}
 
 {{-- Col 2: CRUD Box Content --}}
@@ -280,7 +281,8 @@ $isSmartContract = $egi->egi_type === 'SmartContract';
                         {{-- Price Field --}}
                         @php
                             // Il prezzo è controllato da $canManagePrice O da $isPriceLocked (prenotazione attiva)
-                            $priceLocked = !($canManagePrice ?? false) || ($isPriceLocked ?? false);
+                            // INOLTRE: se la collection non può vendere, il prezzo è sempre bloccato
+                            $priceLocked = !($canManagePrice ?? false) || ($isPriceLocked ?? false) || !$canSellEgis;
                         @endphp
                         <div>
                             <label for="price"
@@ -324,8 +326,80 @@ $isSmartContract = $egi->egi_type === 'SmartContract';
                             </div>
                         </div>
 
-                        {{-- Sale Mode Selector - Controllato da canManagePrice --}}
-                        @if ($canManagePrice ?? false)
+                        {{-- Gold Bar Margin Fields - Solo per EGI con categoria Lingotto d'Oro --}}
+                        @if ($egi->isGoldBar())
+                            <div
+                                class="space-y-4 rounded-lg border border-yellow-600/40 bg-gradient-to-br from-yellow-900/20 to-amber-900/20 p-4">
+                                <div class="mb-3 flex items-center gap-2">
+                                    <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                                    </svg>
+                                    <h4 class="text-sm font-semibold text-yellow-300">
+                                        {{ __('gold_bar.margin.title') }}</h4>
+                                </div>
+
+                                <p class="mb-3 text-xs text-gray-400">{{ __('gold_bar.margin.description') }}</p>
+
+                                {{-- Margin Percentage --}}
+                                <div>
+                                    <label for="gold_margin_percent"
+                                        class="mb-2 block text-sm font-medium text-yellow-200">
+                                        {{ __('gold_bar.margin.percent_label') }}
+                                    </label>
+                                    <div class="relative">
+                                        <input type="number" id="gold_margin_percent" name="gold_margin_percent"
+                                            value="{{ old('gold_margin_percent', $egi->getGoldMarginPercent()) }}"
+                                            step="0.1" min="0" max="100"
+                                            class="w-full rounded-lg border border-yellow-700/50 bg-black/30 px-3 py-2 text-white placeholder-gray-400 focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                                            placeholder="0">
+                                        <span class="absolute right-3 top-2 text-sm text-gray-400">%</span>
+                                    </div>
+                                    <div class="mt-1 text-xs text-gray-400">
+                                        {{ __('gold_bar.margin.percent_hint') }}
+                                    </div>
+                                </div>
+
+                                {{-- Margin Fixed --}}
+                                <div>
+                                    <label for="gold_margin_fixed"
+                                        class="mb-2 block text-sm font-medium text-yellow-200">
+                                        {{ __('gold_bar.margin.fixed_label') }}
+                                    </label>
+                                    <div class="relative">
+                                        <input type="number" id="gold_margin_fixed" name="gold_margin_fixed"
+                                            value="{{ old('gold_margin_fixed', $egi->getGoldMarginFixed()) }}"
+                                            step="0.01" min="0"
+                                            class="w-full rounded-lg border border-yellow-700/50 bg-black/30 px-3 py-2 text-white placeholder-gray-400 focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                                            placeholder="0.00">
+                                        <span class="absolute right-3 top-2 text-sm text-gray-400">€</span>
+                                    </div>
+                                    <div class="mt-1 text-xs text-gray-400">
+                                        {{ __('gold_bar.margin.fixed_hint') }}
+                                    </div>
+                                </div>
+
+                                {{-- Current Gold Value Preview --}}
+                                @php
+                                    $goldValueData = $egi->getGoldBarValue();
+                                    $goldValue = $goldValueData['total_value'] ?? null;
+                                @endphp
+                                @if ($goldValue)
+                                    <div class="rounded-lg border border-yellow-800/40 bg-black/30 p-3">
+                                        <div class="flex items-center justify-between">
+                                            <span
+                                                class="text-xs text-gray-400">{{ __('gold_bar.margin.current_value') }}</span>
+                                            <span
+                                                class="text-lg font-bold text-yellow-400">€{{ number_format($goldValue, 2, ',', '.') }}</span>
+                                        </div>
+                                        <p class="mt-1 text-xs text-gray-500">{{ __('gold_bar.margin.value_note') }}
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+
+                        {{-- Sale Mode Selector - Controllato da canManagePrice E canSellEgis --}}
+                        @if (($canManagePrice ?? false) && $canSellEgis)
                             <div>
                                 @php
                                     $merchantPspStatus = $merchantPspStatus ?? [
@@ -560,7 +634,8 @@ $isSmartContract = $egi->egi_type === 'SmartContract';
                                     @endif
                                 </span>
                             </label>
-                            <div class="{{ $metadataLocked ? 'text-amber-400' : 'text-gray-400' }} ml-7 mt-1 text-xs">
+                            <div
+                                class="{{ $metadataLocked ? 'text-amber-400' : 'text-gray-400' }} ml-7 mt-1 text-xs">
                                 @if ($metadataLocked)
                                     🔒 {{ __('egi.crud.field_immutable_hint') }}
                                 @else

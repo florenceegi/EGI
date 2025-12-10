@@ -15,4 +15,11 @@
         <x-egi.traits-viewer :egi="$egi" :can-manage="$canManage ?? false" />
     </div>
 
+    {{-- GOLD BAR INFO: Mostra valore indicativo se l'EGI è un lingotto d'oro --}}
+    @if ($egi->isGoldBar())
+        <div class="mt-4">
+            <x-gold-bar-info :egi="$egi" currency="EUR" />
+        </div>
+    @endif
+
 </div>
