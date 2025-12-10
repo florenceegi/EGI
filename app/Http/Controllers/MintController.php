@@ -243,6 +243,45 @@ class MintController extends Controller {
                 'paypal_valid' => $paypalValidation['valid_wallets'],
             ]);
 
+            // Gold Bar specific data
+            $isGoldBar = $egi->isGoldBar();
+            $goldBarData = null;
+            $goldPriceRefreshedAt = null;
+            $goldPriceValidUntil = null;
+
+            if ($isGoldBar) {
+                // Get fresh gold price for Gold Bar EGIs
+                $goldPriceService = app(\App\Services\GoldPriceService::class);
+                $refreshResult = $goldPriceService->forceRefreshFree('EUR', $egi);
+
+                if ($refreshResult['success']) {
+                    $goldBarValue = $goldPriceService->calculateFromEgi($egi, 'EUR');
+                    if ($goldBarValue) {
+                        $goldBarData = $goldBarValue;
+                        $goldPriceRefreshedAt = now()->toIso8601String();
+                        $goldPriceValidUntil = now()->addMinutes(10)->toIso8601String();
+                        // Update payment amount with fresh gold price
+                        $paymentAmountEur = (float) $goldBarValue['final_value'];
+
+                        // Store refresh timestamp in session for validation during mint
+                        session([
+                            'gold_bar_mint_' . $egi->id => [
+                                'refreshed_at' => now()->timestamp,
+                                'valid_until' => now()->addMinutes(10)->timestamp,
+                                'price' => $paymentAmountEur,
+                                'gold_data' => $goldBarValue,
+                            ]
+                        ]);
+
+                        $this->logger->info('Gold Bar price refreshed for mint form', [
+                            'egi_id' => $egi->id,
+                            'final_value' => $paymentAmountEur,
+                            'gold_price_per_gram' => $goldBarValue['gold_price_per_gram'],
+                        ]);
+                    }
+                }
+            }
+
             return view('mint.payment-form', compact(
                 'egi',
                 'reservation',
@@ -254,7 +293,11 @@ class MintController extends Controller {
                 'stripeMerchantAvailable',
                 'stripeMerchantError',
                 'paypalAvailable',
-                'paypalError'
+                'paypalError',
+                'isGoldBar',
+                'goldBarData',
+                'goldPriceRefreshedAt',
+                'goldPriceValidUntil'
             ));
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_CHECKOUT_ERROR', [
@@ -477,6 +520,41 @@ class MintController extends Controller {
                 ]);
             }
 
+            // Gold Bar specific: Check 10-minute price validity timeout
+            $goldBarMintData = null;
+            if ($egi->isGoldBar()) {
+                $goldBarMintData = session('gold_bar_mint_' . $egi->id);
+
+                if (!$goldBarMintData) {
+                    $this->logger->error('Gold Bar mint attempted without price session', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id,
+                    ]);
+                    return redirect()->back()->withErrors([
+                        'error' => __('gold_bar.mint_price_expired'),
+                        'gold_bar_price_expired' => true,
+                    ]);
+                }
+
+                // Check if price is still valid (10-minute timeout)
+                if (now()->timestamp > $goldBarMintData['valid_until']) {
+                    $this->logger->warning('Gold Bar mint price expired', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id,
+                        'valid_until' => $goldBarMintData['valid_until'],
+                        'now' => now()->timestamp,
+                    ]);
+
+                    // Clear expired session
+                    session()->forget('gold_bar_mint_' . $egi->id);
+
+                    return redirect()->back()->withErrors([
+                        'error' => __('gold_bar.mint_price_expired'),
+                        'gold_bar_price_expired' => true,
+                    ]);
+                }
+            }
+
             $paymentAmountEur = $this->resolvePaymentAmount($reservation, $egi);
 
             if ($paymentAmountEur === null || $paymentAmountEur <= 0) {
@@ -618,6 +696,22 @@ class MintController extends Controller {
                 if (!isset($paymentMetadata['merchant_psp']) && !empty($merchantContext)) {
                     $paymentMetadata['merchant_psp'] = $merchantContext;
                 }
+            }
+
+            // Gold Bar: Freeze the price at mint time by saving it to EGI
+            if ($egi->isGoldBar() && $goldBarMintData) {
+                $egi->update([
+                    'price' => $goldBarMintData['price'],
+                ]);
+
+                $this->logger->info('Gold Bar price frozen at mint', [
+                    'egi_id' => $egi->id,
+                    'frozen_price' => $goldBarMintData['price'],
+                    'gold_data' => $goldBarMintData['gold_data'] ?? null,
+                ]);
+
+                // Clear the session data
+                session()->forget('gold_bar_mint_' . $egi->id);
             }
 
             // Create blockchain record
@@ -808,6 +902,15 @@ class MintController extends Controller {
                 return (float) $reservation->offer_amount_fiat;
             }
 
+            return null;
+        }
+
+        // Gold Bar EGI: get calculated gold value
+        if ($egi->isGoldBar()) {
+            $goldValue = $egi->getGoldBarValue();
+            if ($goldValue && isset($goldValue['final_value'])) {
+                return (float) $goldValue['final_value'];
+            }
             return null;
         }
 
@@ -1024,6 +1127,45 @@ class MintController extends Controller {
                 'paypal_valid' => $paypalValidation['valid_wallets'],
             ]);
 
+            // Gold Bar specific data
+            $isGoldBar = $egi->isGoldBar();
+            $goldBarData = null;
+            $goldPriceRefreshedAt = null;
+            $goldPriceValidUntil = null;
+
+            if ($isGoldBar) {
+                // Get fresh gold price for Gold Bar EGIs
+                $goldPriceService = app(\App\Services\GoldPriceService::class);
+                $refreshResult = $goldPriceService->forceRefreshFree('EUR', $egi);
+
+                if ($refreshResult['success']) {
+                    $goldBarValue = $goldPriceService->calculateFromEgi($egi, 'EUR');
+                    if ($goldBarValue) {
+                        $goldBarData = $goldBarValue;
+                        $goldPriceRefreshedAt = now()->toIso8601String();
+                        $goldPriceValidUntil = now()->addMinutes(10)->toIso8601String();
+                        // Update payment amount with fresh gold price
+                        $paymentAmountEur = (float) $goldBarValue['final_value'];
+
+                        // Store refresh timestamp in session for validation during mint
+                        session([
+                            'gold_bar_mint_' . $egi->id => [
+                                'refreshed_at' => now()->timestamp,
+                                'valid_until' => now()->addMinutes(10)->timestamp,
+                                'price' => $paymentAmountEur,
+                                'gold_data' => $goldBarValue,
+                            ]
+                        ]);
+
+                        $this->logger->info('Gold Bar price refreshed for direct mint form', [
+                            'egi_id' => $egi->id,
+                            'final_value' => $paymentAmountEur,
+                            'gold_price_per_gram' => $goldBarValue['gold_price_per_gram'],
+                        ]);
+                    }
+                }
+            }
+
             return view('mint.payment-form', compact(
                 'egi',
                 'availability',
@@ -1038,7 +1180,11 @@ class MintController extends Controller {
                 'stripeMerchantAvailable',
                 'stripeMerchantError',
                 'paypalAvailable',
-                'paypalError'
+                'paypalError',
+                'isGoldBar',
+                'goldBarData',
+                'goldPriceRefreshedAt',
+                'goldPriceValidUntil'
             ));
         } catch (\Exception $e) {
             $this->errorManager->handle('DIRECT_MINT_VALIDATION_ERROR', [
@@ -1156,6 +1302,43 @@ class MintController extends Controller {
 
                 // Se il check fallisce, procediamo comunque (fail-open per non bloccare completamente)
                 // ma logghiamo l'errore per monitoring
+            }
+
+            // Gold Bar specific: Check 10-minute price validity timeout
+            $goldBarMintData = null;
+            if ($egi->isGoldBar()) {
+                $goldBarMintData = session('gold_bar_mint_' . $egi->id);
+
+                if (!$goldBarMintData) {
+                    $this->logger->error('Gold Bar direct mint attempted without price session', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id,
+                    ]);
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'gold_bar_price_expired',
+                        'message' => __('gold_bar.mint_price_expired'),
+                    ], 422);
+                }
+
+                // Check if price is still valid (10-minute timeout)
+                if (now()->timestamp > $goldBarMintData['valid_until']) {
+                    $this->logger->warning('Gold Bar direct mint price expired', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id,
+                        'valid_until' => $goldBarMintData['valid_until'],
+                        'now' => now()->timestamp,
+                    ]);
+
+                    // Clear expired session
+                    session()->forget('gold_bar_mint_' . $egi->id);
+
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'gold_bar_price_expired',
+                        'message' => __('gold_bar.mint_price_expired'),
+                    ], 422);
+                }
             }
 
             $paymentAmountEur = $this->resolvePaymentAmount(null, $egi);
@@ -1325,6 +1508,22 @@ class MintController extends Controller {
                 $paidCurrency = $paymentResultObject->currency ?: $paidCurrency;
                 $paidAmountRecorded = $paymentResultObject->amount ?: $paidAmountRecorded;
                 $paymentMetadata = $paymentResultObject->metadata;
+            }
+
+            // Gold Bar: Freeze the price at mint time by saving it to EGI
+            if ($egi->isGoldBar() && $goldBarMintData) {
+                $egi->update([
+                    'price' => $goldBarMintData['price'],
+                ]);
+
+                $this->logger->info('Gold Bar price frozen at direct mint', [
+                    'egi_id' => $egi->id,
+                    'frozen_price' => $goldBarMintData['price'],
+                    'gold_data' => $goldBarMintData['gold_data'] ?? null,
+                ]);
+
+                // Clear the session data
+                session()->forget('gold_bar_mint_' . $egi->id);
             }
 
             // Create blockchain record (NO reservation_id for direct mint)

@@ -443,6 +443,9 @@ class EgiController extends Controller {
                 // Sale/Auction fields
                 'sale_mode' => 'nullable|in:not_for_sale,fixed_price,auction',
                 'auction_minimum_price' => 'nullable|required_if:sale_mode,auction|numeric|min:0.01',
+                // Gold Bar Margin fields
+                'gold_margin_percent' => 'nullable|numeric|min:0|max:100',
+                'gold_margin_fixed' => 'nullable|numeric|min:0',
                 'auction_start' => 'nullable|required_if:sale_mode,auction|date',
                 'auction_end' => 'nullable|required_if:sale_mode,auction|date|after:auction_start',
                 'auto_mint_highest' => 'nullable|boolean',
@@ -540,6 +543,11 @@ class EgiController extends Controller {
             // Service handles update (transaction, updated_by, cache invalidation)
             $egi = $this->egiService->update($user, $egi, $validated);
 
+            // 🥇 GOLD BAR: Save margin traits if EGI is a gold bar
+            if ($egi->isGoldBar()) {
+                $this->updateGoldBarMarginTraits($egi, $request);
+            }
+
             // Log GDPR audit trail
             $this->auditLogService->logUserAction(
                 $user,
@@ -574,6 +582,77 @@ class EgiController extends Controller {
                 'egi_id' => $egi->id,
             ], $e);
         }
+    }
+
+    /**
+     * Update Gold Bar margin traits for an EGI
+     *
+     * @param Egi $egi
+     * @param Request $request
+     * @return void
+     */
+    protected function updateGoldBarMarginTraits(Egi $egi, Request $request): void {
+        $marginPercent = $request->input('gold_margin_percent');
+        $marginFixed = $request->input('gold_margin_fixed');
+
+        // Get the gold bar trait category
+        $goldCategory = \App\Models\TraitCategory::where('slug', 'gold-bar')->first();
+        if (!$goldCategory) {
+            $this->logger->warning('Gold Bar category not found', ['egi_id' => $egi->id]);
+            return;
+        }
+
+        // Update margin percent trait
+        if ($marginPercent !== null) {
+            $percentType = \App\Models\TraitType::where('slug', 'gold-margin-percent')
+                ->where('category_id', $goldCategory->id)
+                ->first();
+
+            if ($percentType) {
+                \App\Models\EgiTrait::updateOrCreate(
+                    [
+                        'egi_id' => $egi->id,
+                        'trait_type_id' => $percentType->id,
+                    ],
+                    [
+                        'category_id' => $goldCategory->id,
+                        'value' => (string) $marginPercent,
+                        'display_value' => $marginPercent . '%',
+                        'is_locked' => !is_null($egi->token_EGI),
+                    ]
+                );
+            }
+        }
+
+        // Update margin fixed trait
+        if ($marginFixed !== null) {
+            $fixedType = \App\Models\TraitType::where('slug', 'gold-margin-fixed')
+                ->where('category_id', $goldCategory->id)
+                ->first();
+
+            if ($fixedType) {
+                \App\Models\EgiTrait::updateOrCreate(
+                    [
+                        'egi_id' => $egi->id,
+                        'trait_type_id' => $fixedType->id,
+                    ],
+                    [
+                        'category_id' => $goldCategory->id,
+                        'value' => (string) $marginFixed,
+                        'display_value' => '€' . number_format($marginFixed, 2),
+                        'is_locked' => !is_null($egi->token_EGI),
+                    ]
+                );
+            }
+        }
+
+        // Clear the EGI traits cache to reflect changes
+        $egi->refresh();
+        $this->logger->info('Gold Bar margin traits updated', [
+            'egi_id' => $egi->id,
+            'margin_percent' => $marginPercent,
+            'margin_fixed' => $marginFixed,
+        ]);
     }
 
     /**
@@ -685,7 +764,7 @@ class EgiController extends Controller {
     /**
      * Resolve merchant PSP status for EGI (CENTRALIZED METHOD)
      * Uses MerchantAccountResolver->validateAllCollectionWallets() for consistency
-     * 
+     *
      * @param Egi $egi
      * @return array
      */
