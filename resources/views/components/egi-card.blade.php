@@ -533,6 +533,26 @@ $isCreator = FegiAuth::check() && FegiAuth::id() === $creatorId;
                 @endif
             </div>
 
+            {{-- 🥇 GOLD BAR VALUE - Solo per lingotti d'oro --}}
+            @if ($egi->isGoldBar())
+                @php
+                    $goldValueData = $egi->getGoldBarValue();
+                    $goldPrice = $goldValueData['final_value'] ?? null;
+                    $goldWeight = $egi->getGoldWeight();
+                    $goldUnit = $egi->getGoldWeightUnit();
+                @endphp
+                @if ($goldPrice)
+                    <div
+                        class="mb-2 flex items-center gap-2 rounded-lg border border-yellow-500/50 bg-gradient-to-r from-yellow-900/30 to-amber-900/30 p-2">
+                        <img src="{{ asset('images/icons/goldbar.png') }}" alt="Gold Bar" class="h-5 w-5">
+                        <span
+                            class="text-xs font-medium text-yellow-300">{{ number_format($goldWeight, 0) }}{{ $goldUnit === 'Grams' ? 'g' : ($goldUnit === 'Ounces' ? 'oz' : 'oz t') }}</span>
+                        <span
+                            class="ml-auto text-sm font-bold text-yellow-400">€{{ number_format($goldPrice, 2, ',', '.') }}</span>
+                    </div>
+                @endif
+            @endif
+
             {{-- 🎨 CREATOR INFO - SEMPRE VISIBILE --}}
             @if ($egiCreator)
                 <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-700/50 bg-gray-800/50 p-2"
@@ -631,152 +651,154 @@ $isCreator = FegiAuth::check() && FegiAuth::id() === $creatorId;
             @endif
         </div>
 
-        {{-- 💰 PRICE SECTION - SIMPLIFIED --}}
-        <div class="mt-4">
-            @if (!(bool) $egi->is_published)
-                {{-- DRAFT Status --}}
-                <div
-                    class="flex items-center justify-center rounded-xl border border-yellow-500/30 bg-gradient-to-r from-yellow-600/20 to-amber-500/20 p-3">
-                    <div class="flex items-center gap-2">
-                        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500">
-                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium text-yellow-300">{{ __('egi.status.draft') }}</span>
-                    </div>
-                </div>
-            @elseif ($displayPrice && $displayPrice > 0)
-                {{-- ACTIVE PRICE - From highest reservation or base price --}}
-                <div
-                    class="rounded-xl border border-green-500/30 bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-3">
-                    <div class="mb-2 flex items-center justify-between">
+        {{-- 💰 PRICE SECTION - SIMPLIFIED (nascosto per Gold Bar) --}}
+        @if (!$egi->isGoldBar())
+            <div class="mt-4">
+                @if (!(bool) $egi->is_published)
+                    {{-- DRAFT Status --}}
+                    <div
+                        class="flex items-center justify-center rounded-xl border border-yellow-500/30 bg-gradient-to-r from-yellow-600/20 to-amber-500/20 p-3">
                         <div class="flex items-center gap-2">
-                            <div class="flex h-6 w-6 items-center justify-center rounded-full bg-green-500">
+                            <div class="flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500">
                                 <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
-                                        d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                         clip-rule="evenodd" />
                                 </svg>
                             </div>
-                            <span class="text-xs font-medium text-green-300">
-                                @if ($highestReservation)
-                                    {{ __('egi.reservation.highest_bid') }}
-                                @else
-                                    {{ __('egi.price.price') }}
-                                @endif
-                            </span>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-sm font-bold text-white" data-price-display>
-                                <x-currency-price :price="$displayPrice" :egi="$egi" size="small" />
-                            </span>
+                            <span class="text-xs font-medium text-yellow-300">{{ __('egi.status.draft') }}</span>
                         </div>
                     </div>
-
-                    {{-- Show Co-Creator (if minted) or Reservation (if not minted) --}}
-                    @if ($isMinted && ($coCreatorDisplay || $currentOwnerDisplay))
-                        @if ($coCreatorDisplay)
-                            <div class="flex items-center gap-2 border-t border-purple-500/20 pt-2">
-                                <div
-                                    class="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-purple-600">
-                                    @if ($coCreatorDisplay['avatar'])
-                                        <img src="{{ $coCreatorDisplay['avatar'] }}"
-                                            alt="{{ $coCreatorDisplay['name'] }}"
-                                            class="h-4 w-4 rounded-full border border-white/20 object-cover">
-                                    @else
-                                        <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    @endif
-                                </div>
-                                <span class="truncate text-xs text-purple-200">
-                                    {{ __('egi.creator.co_creator') }}
-                                    <span class="font-semibold"
-                                        data-activator-name>{{ $coCreatorDisplay['name'] }}</span>
-                                </span>
-                            </div>
-                        @endif
-
-                        @if ($showSecondaryOwner && $currentOwnerDisplay)
-                            <div
-                                class="{{ $coCreatorDisplay ? 'mt-2' : '' }} flex items-center gap-2 border-t border-emerald-500/20 pt-2">
-                                <div
-                                    class="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-emerald-600">
-                                    @if ($currentOwnerDisplay['avatar'])
-                                        <img src="{{ $currentOwnerDisplay['avatar'] }}"
-                                            alt="{{ $currentOwnerDisplay['name'] }}"
-                                            class="h-4 w-4 rounded-full border border-white/20 object-cover">
-                                    @else
-                                        <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 8a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zm6-6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    @endif
-                                </div>
-                                <span class="truncate text-xs text-emerald-200">
-                                    {{ __('egi.ownership.current_owner') }}
-                                    <span class="font-semibold"
-                                        data-owner-name>{{ $currentOwnerDisplay['name'] }}</span>
-                                </span>
-                            </div>
-                        @endif
-                    @elseif ($highestReservation && $highestReservation->user && !$isMinted)
-                        {{-- NOT MINTED: Show Reservation --}}
-                        @php
-                            $isWeakReservation = $highestReservation->type === 'weak';
-                            $reservationDisplay = !$isWeakReservation
-                                ? formatActivatorDisplay($highestReservation->user)
-                                : null;
-                        @endphp
-                        <div class="flex items-center gap-2 border-t border-green-500/20 pt-2">
-                            <div
-                                class="{{ $isWeakReservation ? 'bg-amber-600' : 'bg-green-600' }} flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full">
-                                @if ($isWeakReservation)
-                                    {{-- Weak reservation: generic icon --}}
-                                    <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                @elseif ($displayPrice && $displayPrice > 0)
+                    {{-- ACTIVE PRICE - From highest reservation or base price --}}
+                    <div
+                        class="rounded-xl border border-green-500/30 bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-3">
+                        <div class="mb-2 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="flex h-6 w-6 items-center justify-center rounded-full bg-green-500">
+                                    <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
-                                            d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"
+                                            d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
                                             clip-rule="evenodd" />
                                     </svg>
-                                @else
-                                    {{-- Strong reservation: usa sempre l'avatar dal backend --}}
-                                    @if ($reservationDisplay && $reservationDisplay['avatar'])
-                                        <img src="{{ $reservationDisplay['avatar'] }}"
-                                            alt="{{ $reservationDisplay['name'] }}"
-                                            class="h-4 w-4 rounded-full border border-white/20 object-cover">
+                                </div>
+                                <span class="text-xs font-medium text-green-300">
+                                    @if ($highestReservation)
+                                        {{ __('egi.reservation.highest_bid') }}
                                     @else
-                                        {{-- Fallback solo se non c'è avatar dal backend (caso molto raro) --}}
+                                        {{ __('egi.price.price') }}
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm font-bold text-white" data-price-display>
+                                    <x-currency-price :price="$displayPrice" :egi="$egi" size="small" />
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- Show Co-Creator (if minted) or Reservation (if not minted) --}}
+                        @if ($isMinted && ($coCreatorDisplay || $currentOwnerDisplay))
+                            @if ($coCreatorDisplay)
+                                <div class="flex items-center gap-2 border-t border-purple-500/20 pt-2">
+                                    <div
+                                        class="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-purple-600">
+                                        @if ($coCreatorDisplay['avatar'])
+                                            <img src="{{ $coCreatorDisplay['avatar'] }}"
+                                                alt="{{ $coCreatorDisplay['name'] }}"
+                                                class="h-4 w-4 rounded-full border border-white/20 object-cover">
+                                        @else
+                                            <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        @endif
+                                    </div>
+                                    <span class="truncate text-xs text-purple-200">
+                                        {{ __('egi.creator.co_creator') }}
+                                        <span class="font-semibold"
+                                            data-activator-name>{{ $coCreatorDisplay['name'] }}</span>
+                                    </span>
+                                </div>
+                            @endif
+
+                            @if ($showSecondaryOwner && $currentOwnerDisplay)
+                                <div
+                                    class="{{ $coCreatorDisplay ? 'mt-2' : '' }} flex items-center gap-2 border-t border-emerald-500/20 pt-2">
+                                    <div
+                                        class="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-emerald-600">
+                                        @if ($currentOwnerDisplay['avatar'])
+                                            <img src="{{ $currentOwnerDisplay['avatar'] }}"
+                                                alt="{{ $currentOwnerDisplay['name'] }}"
+                                                class="h-4 w-4 rounded-full border border-white/20 object-cover">
+                                        @else
+                                            <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 8a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zm6-6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        @endif
+                                    </div>
+                                    <span class="truncate text-xs text-emerald-200">
+                                        {{ __('egi.ownership.current_owner') }}
+                                        <span class="font-semibold"
+                                            data-owner-name>{{ $currentOwnerDisplay['name'] }}</span>
+                                    </span>
+                                </div>
+                            @endif
+                        @elseif ($highestReservation && $highestReservation->user && !$isMinted)
+                            {{-- NOT MINTED: Show Reservation --}}
+                            @php
+                                $isWeakReservation = $highestReservation->type === 'weak';
+                                $reservationDisplay = !$isWeakReservation
+                                    ? formatActivatorDisplay($highestReservation->user)
+                                    : null;
+                            @endphp
+                            <div class="flex items-center gap-2 border-t border-green-500/20 pt-2">
+                                <div
+                                    class="{{ $isWeakReservation ? 'bg-amber-600' : 'bg-green-600' }} flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full">
+                                    @if ($isWeakReservation)
+                                        {{-- Weak reservation: generic icon --}}
                                         <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
-                                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"
                                                 clip-rule="evenodd" />
                                         </svg>
+                                    @else
+                                        {{-- Strong reservation: usa sempre l'avatar dal backend --}}
+                                        @if ($reservationDisplay && $reservationDisplay['avatar'])
+                                            <img src="{{ $reservationDisplay['avatar'] }}"
+                                                alt="{{ $reservationDisplay['name'] }}"
+                                                class="h-4 w-4 rounded-full border border-white/20 object-cover">
+                                        @else
+                                            {{-- Fallback solo se non c'è avatar dal backend (caso molto raro) --}}
+                                            <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        @endif
                                     @endif
-                                @endif
+                                </div>
+                                <span
+                                    class="{{ $isWeakReservation ? 'text-amber-200' : 'text-green-200' }} truncate text-xs">
+                                    @if ($isWeakReservation)
+                                        {{ __('egi.reservation.weak_bidder') }}:
+                                        <span class="font-semibold"
+                                            data-activator-name>{{ $highestReservation->fegi_code ?? 'FG#******' }}</span>
+                                    @else
+                                        {{ __('egi.reservation.reserved_by') }}
+                                        <span class="font-semibold"
+                                            data-activator-name>{{ $reservationDisplay['name'] }}</span>
+                                    @endif
+                                </span>
                             </div>
-                            <span
-                                class="{{ $isWeakReservation ? 'text-amber-200' : 'text-green-200' }} truncate text-xs">
-                                @if ($isWeakReservation)
-                                    {{ __('egi.reservation.weak_bidder') }}:
-                                    <span class="font-semibold"
-                                        data-activator-name>{{ $highestReservation->fegi_code ?? 'FG#******' }}</span>
-                                @else
-                                    {{ __('egi.reservation.reserved_by') }}
-                                    <span class="font-semibold"
-                                        data-activator-name>{{ $reservationDisplay['name'] }}</span>
-                                @endif
-                            </span>
-                        </div>
-                    @endif
-                </div>
-            @endif
-        </div>
+                        @endif
+                    </div>
+                @endif
+            </div>
+        @endif {{-- END: !isGoldBar() --}}
     </div>
 
     {{-- AUCTION INFO BOX - Mostra dettagli asta se sale_mode = auction --}}

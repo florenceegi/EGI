@@ -275,6 +275,26 @@ $currentOwnerDisplay = $currentOwnerUser ? formatActivatorDisplay($currentOwnerU
                 @endif
             </div>
 
+            {{-- 🥇 GOLD BAR VALUE - Solo per lingotti d'oro --}}
+            @if ($egi->isGoldBar())
+                @php
+                    $goldValueData = $egi->getGoldBarValue();
+                    $goldPrice = $goldValueData['final_value'] ?? null;
+                    $goldWeight = $egi->getGoldWeight();
+                    $goldUnit = $egi->getGoldWeightUnit();
+                @endphp
+                @if ($goldPrice)
+                    <div
+                        class="mb-2 flex items-center gap-2 rounded-lg border border-yellow-500/50 bg-gradient-to-r from-yellow-900/30 to-amber-900/30 px-2 py-1">
+                        <img src="{{ asset('images/icons/goldbar.png') }}" alt="Gold Bar" class="h-4 w-4">
+                        <span
+                            class="text-xs font-medium text-yellow-300">{{ number_format($goldWeight, 0) }}{{ $goldUnit === 'Grams' ? 'g' : ($goldUnit === 'Ounces' ? 'oz' : 'oz t') }}</span>
+                        <span
+                            class="ml-auto text-sm font-bold text-yellow-400">€{{ number_format($goldPrice, 2, ',', '.') }}</span>
+                    </div>
+                @endif
+            @endif
+
             <!-- Collection and Creator Info -->
             <div class="mb-2 flex flex-wrap items-center gap-4 text-sm text-gray-400">
                 @if ($egi->collection)
@@ -444,8 +464,8 @@ $currentOwnerDisplay = $currentOwnerUser ? formatActivatorDisplay($currentOwnerU
                 @endif
             @endif
 
-            <!-- Base Price Info -->
-            @if ($egi->price)
+            <!-- Base Price Info (nascosto per Gold Bar) -->
+            @if ($egi->price && !$egi->isGoldBar())
                 @php
                     // 🚀 FIX: Calcola il prezzo da mostrare basato sulla prenotazione più alta
                     $reservationService = app('App\Services\ReservationService');
