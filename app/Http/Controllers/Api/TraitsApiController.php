@@ -77,7 +77,19 @@ class TraitsApiController extends Controller {
      * @return string
      */
     private function translateTraitValue(string $value, ?string $locale = null): string {
-        return __('trait_elements.values.' . $value, [], $locale, $value);
+        // Se il valore è numerico (es. peso "10", "50", "100"), non tradurre
+        if (is_numeric($value)) {
+            return $value;
+        }
+        
+        $translated = __('trait_elements.values.' . $value, [], $locale);
+        
+        // Se la traduzione restituisce la chiave stessa, usa il valore originale
+        if ($translated === 'trait_elements.values.' . $value) {
+            return $value;
+        }
+        
+        return $translated;
     }
 
     /**
