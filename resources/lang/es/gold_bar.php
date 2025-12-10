@@ -1,6 +1,9 @@
 <?php
 
 return [
+    // Nombre de categoría para badge
+    'category_name' => 'Lingote de Oro',
+
     // Etiquetas del componente
     'title' => 'Información del Lingote de Oro',
     'subtitle' => 'Valor Indicativo Basado en el Precio Actual del Oro',
@@ -13,6 +16,7 @@ return [
 
     // Etiquetas de valor
     'gold_price' => 'Precio Spot del Oro',
+    'creator_margin' => 'Margen del Creador',
     'per_gram' => 'por gramo',
     'per_oz' => 'por onza troy',
     'base_value' => 'Valor Base del Oro',
@@ -40,4 +44,28 @@ return [
     'loading' => 'Cargando precio del oro...',
     'error' => 'No se pudo obtener el precio del oro. Por favor, inténtelo más tarde.',
     'not_gold_bar' => 'Este EGI no es un Lingote de Oro.',
+
+    // Función de actualización
+    'refresh_button' => 'Actualizar Precio',
+    'refresh_cost' => 'Costo: :cost Egili',
+    'refresh_available_now' => 'Disponible ahora',
+    'next_refresh' => 'Próxima actualización automática en :time',
+    'refresh_success' => '¡Precio del oro actualizado correctamente!',
+    'insufficient_egili' => 'Egili insuficientes. Necesitas :required pero tienes :current.',
+    'refresh_confirm_title' => '¿Actualizar precio del oro?',
+    'refresh_confirm_message' => 'Esto costará :cost Egili de tu saldo. El precio se actualizará con datos en tiempo real.',
+    'refresh_confirm_button' => 'Actualizar por :cost Egili',
+    'refresh_cancel' => 'Cancelar',
+
+    // Sección de margen CRUD
+    'margin' => [
+        'title' => 'Margen del Lingote de Oro',
+        'description' => 'Establece tu margen sobre el valor del lingote de oro. Puedes usar un porcentaje, una cantidad fija o ambos.',
+        'percent_label' => 'Margen Porcentual',
+        'percent_hint' => 'Porcentaje a añadir al valor del oro (ej. 5%)',
+        'fixed_label' => 'Margen Fijo',
+        'fixed_hint' => 'Cantidad fija en EUR a añadir al valor del oro',
+        'current_value' => 'Valor indicativo actual',
+        'value_note' => 'Calculado a partir del precio spot del oro más márgenes',
+    ],
 ];
