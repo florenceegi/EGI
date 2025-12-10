@@ -9,36 +9,40 @@
  * 🧱 Core Logic: Bootstrap → Editor → Polyfill → Global Libraries → Module Imports
  */
 
-console.log('Inizializzazione di app.js (dependencies only)'); // Debugging
+console.log("Inizializzazione di app.js (dependencies only)"); // Debugging
 
 // --- 🔧 IMPORT BOOTSTRAP E CONFIGURAZIONI BASE ---
-import './bootstrap';
-console.log('bootstrap importato.'); // Debugging
+import "./bootstrap";
+console.log("bootstrap importato."); // Debugging
 
 // --- 📝 IMPORT EDITOR LEGALE ---
-import './legal/editor'; // Importa il file editor.js
-console.log('editor.js importato.'); // Debugging
+import "./legal/editor"; // Importa il file editor.js
+console.log("editor.js importato."); // Debugging
 
 // --- 🌐 IMPORT POLYFILL FETCH ---
-import 'whatwg-fetch';
-import 'trix';
-import 'trix/dist/trix.css';
-console.log('Polyfill whatwg-fetch importato.'); // Debugging
+import "whatwg-fetch";
+import "trix";
+import "trix/dist/trix.css";
+console.log("Polyfill whatwg-fetch importato."); // Debugging
 
 // --- 🍯 IMPORT E SETUP GLOBALE SWEETALERT2 ---
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 window.Swal = Swal; // Rende disponibile globalmente per main.ts
-console.log('SweetAlert2 importato e reso globale.'); // Debugging
+console.log("SweetAlert2 importato e reso globale."); // Debugging
 
 // --- 📦 IMPORT E SETUP GLOBALE JQUERY ---
-import $ from 'jquery';
+import $ from "jquery";
 window.$ = window.jQuery = $; // Rende disponibile globalmente per main.ts
-console.log('jQuery importato e reso globale.'); // Debugging
+console.log("jQuery importato e reso globale."); // Debugging
 
 // --- 🔄 IMPORT UTILITIES (solo import, inizializzazione in main.ts) ---
-import { fetchTranslations, ensureTranslationsLoaded, getTranslation } from './utils/translations';
-import { loadEnums, getEnum, isPendingStatus } from './utils/enums';
-console.log('Utils per translations e enums importati (init in main.ts).'); // Debugging
+import {
+    fetchTranslations,
+    ensureTranslationsLoaded,
+    getTranslation,
+} from "./utils/translations";
+import { loadEnums, getEnum, isPendingStatus } from "./utils/enums";
+console.log("Utils per translations e enums importati (init in main.ts)."); // Debugging
 
 // --- 🎮 IMPORT ANIMAZIONE (disponibile per main.ts) ---
 // import { initThreeAnimation } from './sfera-geodetica';
@@ -49,36 +53,35 @@ import {
     RequestCreateNotificationWallet,
     RequestUpdateNotificationWallet,
     RequestWalletDonation,
-} from './modules/notifications/init/request-notification-wallet-init';
-import { DeleteProposalInvitation } from './modules/notifications/delete-proposal-invitation';
-import { DeleteProposalWallet } from './modules/notifications/delete-proposal-wallet';
-console.log('Moduli wallet importati (init in main.ts).'); // Debugging
-
-
+} from "./modules/notifications/init/request-notification-wallet-init";
+import { DeleteProposalInvitation } from "./modules/notifications/delete-proposal-invitation";
+import { DeleteProposalWallet } from "./modules/notifications/delete-proposal-wallet";
+console.log("Moduli wallet importati (init in main.ts)."); // Debugging
 
 // --- 📤 IMPORT ULTRA UPLOAD MANAGER (disponibile per main.ts) ---
-import { initializeApp as initializeUltraUploadManager } from '/vendor/ultra/ultra-upload-manager/resources/ts/core/file_upload_manager.ts';
-console.log('Modulo file_upload_manager importato (init in main.ts).'); // Debugging
+import { initializeApp as initializeUltraUploadManager } from "/vendor/ultra/ultra-upload-manager/resources/ts/core/file_upload_manager.ts";
+console.log("Modulo file_upload_manager importato (init in main.ts)."); // Debugging
 
 // --- 🔔 IMPORT MODULI NOTIFICHE (auto-eseguiti o passive) ---
-import './notification'; // Se auto-eseguito, rimane qui
-import './modules/notifications/init/notification-response-init'; // Se auto-eseguito, rimane qui
-console.log('Moduli notifiche importati.'); // Debugging
+import "./notification"; // Se auto-eseguito, rimane qui
+import "./modules/notifications/init/notification-response-init"; // Se auto-eseguito, rimane qui
+console.log("Moduli notifiche importati."); // Debugging
 
 // --- ✍️ IMPORT BIOGRAPHY EDIT ---
-import './biography-edit';
-console.log('biography-edit.js importato.');
+import "./biography-edit";
+console.log("biography-edit.js importato.");
 
 // --- 🔍 UNIVERSAL SEARCH (TS) ---
 // Import del modulo TypeScript (auto-initializza se presente il markup della modale)
-import '../ts/features/search/universalSearch.ts';
-console.log('Universal Search (vanilla) importato.');
+import "../ts/features/search/universalSearch.ts";
+console.log("Universal Search (vanilla) importato.");
 
-// --- 🥇 GOLD PRICE REFRESH (Alpine.js Component) ---
-import './components/gold-price-refresh';
-console.log('Gold Price Refresh component importato.');
+// Gold Price Refresh è ora in Vanilla JS inline in gold-bar-info.blade.php
+console.log("Gold Price Refresh component importato.");
 
-console.log('app.js setup complete (dependencies only - orchestration in main.ts).'); // Debugging
+console.log(
+    "app.js setup complete (dependencies only - orchestration in main.ts)."
+); // Debugging
 
 // --- 📚 DOCUMENTAZIONE POLYFILL ---
 // Documentazione: https://github.com/github/fetch
