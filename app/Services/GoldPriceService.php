@@ -22,11 +22,17 @@ use Ultra\UltraLogManager\UltraLogManager;
 class GoldPriceService {
     private const CACHE_KEY_PREFIX = 'gold_price_';
     private const CACHE_TTL_SECONDS = 21600; // 6 hours - gold prices are stable, saves API calls (free tier: 300/month = ~120 calls with 6h cache)
-    
+
     /**
      * Cost in Egili for manual price refresh
      */
     public const REFRESH_COST_EGILI = 1;
+
+    /**
+     * Throttle settings: max refreshes per time window
+     */
+    public const REFRESH_THROTTLE_MAX = 3;
+    public const REFRESH_THROTTLE_WINDOW_SECONDS = 21600; // 6 hours
 
     /**
      * Conversion factors to grams
@@ -53,10 +59,12 @@ class GoldPriceService {
      *
      * @param UltraLogManager $logger
      * @param ErrorManagerInterface $errorManager
+     * @param EgiliService $egiliService
      */
     public function __construct(
         protected UltraLogManager $logger,
-        protected ErrorManagerInterface $errorManager
+        protected ErrorManagerInterface $errorManager,
+        protected EgiliService $egiliService
     ) {
     }
 
@@ -331,6 +339,7 @@ class GoldPriceService {
     /**
      * Force refresh gold price (paid feature - costs Egili)
      * This bypasses the cache and fetches fresh data from API
+     * Throttled to max 3 refreshes per 6 hours per user
      *
      * @param \App\Models\User $user The user requesting the refresh
      * @param string $currency Currency to refresh
@@ -338,32 +347,58 @@ class GoldPriceService {
      */
     public function forceRefresh(\App\Models\User $user, string $currency = 'EUR'): array {
         $currency = strtoupper($currency);
-        
-        // Check if user has enough Egili
-        if ($user->egili_balance < self::REFRESH_COST_EGILI) {
+
+        // Check throttle: max 3 refreshes per 6 hours
+        $throttleCheck = $this->checkRefreshThrottle($user);
+        if (!$throttleCheck['allowed']) {
+            return [
+                'success' => false,
+                'gold_price' => null,
+                'error' => 'throttle_exceeded',
+                'remaining_refreshes' => 0,
+                'reset_at' => $throttleCheck['reset_at'],
+                'seconds_until_reset' => $throttleCheck['seconds_until_reset'],
+            ];
+        }
+
+        // Check if user has enough Egili via EgiliService
+        $userBalance = $this->egiliService->getBalance($user);
+        if ($userBalance < self::REFRESH_COST_EGILI) {
             return [
                 'success' => false,
                 'gold_price' => null,
                 'error' => 'insufficient_egili',
                 'required' => self::REFRESH_COST_EGILI,
-                'current_balance' => $user->egili_balance,
+                'current_balance' => $userBalance,
             ];
         }
 
-        // Deduct Egili from user
-        $user->decrement('egili_balance', self::REFRESH_COST_EGILI);
-        
-        // Log the transaction
-        \App\Models\EgiliTransaction::create([
-            'user_id' => $user->id,
-            'type' => 'gold_price_refresh',
-            'amount' => -self::REFRESH_COST_EGILI,
-            'description' => "Gold price refresh for {$currency}",
-            'metadata' => [
-                'currency' => $currency,
-                'timestamp' => now()->toIso8601String(),
-            ],
-        ]);
+        // Increment throttle counter BEFORE the operation
+        $this->incrementRefreshThrottle($user);
+
+        // Deduct Egili via EgiliService (creates transaction automatically)
+        try {
+            $this->egiliService->spend(
+                $user,
+                self::REFRESH_COST_EGILI,
+                'gold_price_refresh',
+                'service',
+                [
+                    'currency' => $currency,
+                    'timestamp' => now()->toIso8601String(),
+                ]
+            );
+        } catch (\Exception $e) {
+            $this->logger->error('Gold price refresh - Egili deduction failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+            return [
+                'success' => false,
+                'gold_price' => null,
+                'error' => 'payment_failed',
+            ];
+        }
 
         // Clear cache for this currency
         $this->clearCache($currency);
@@ -372,19 +407,24 @@ class GoldPriceService {
         $goldPrice = $this->getGoldPrice($currency);
 
         if (!$goldPrice) {
-            // Refund on failure
-            $user->increment('egili_balance', self::REFRESH_COST_EGILI);
-            
-            \App\Models\EgiliTransaction::create([
-                'user_id' => $user->id,
-                'type' => 'gold_price_refresh_refund',
-                'amount' => self::REFRESH_COST_EGILI,
-                'description' => "Refund: Gold price refresh failed for {$currency}",
-                'metadata' => [
-                    'currency' => $currency,
-                    'reason' => 'api_failure',
-                ],
-            ]);
+            // Refund on failure via EgiliService
+            try {
+                $this->egiliService->earn(
+                    $user,
+                    self::REFRESH_COST_EGILI,
+                    'gold_price_refresh_refund',
+                    'refund',
+                    [
+                        'currency' => $currency,
+                        'reason' => 'api_failure',
+                    ]
+                );
+            } catch (\Exception $e) {
+                $this->logger->error('Gold price refresh - Refund failed', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
 
             return [
                 'success' => false,
@@ -404,7 +444,50 @@ class GoldPriceService {
             'success' => true,
             'gold_price' => $goldPrice,
             'cost' => self::REFRESH_COST_EGILI,
-            'new_balance' => $user->fresh()->egili_balance,
+            'new_balance' => $this->egiliService->getBalance($user),
+        ];
+    }
+
+    /**
+     * Force refresh gold price without charging Egili (for pre-mint operations only)
+     * This method should only be called from the mint flow context.
+     *
+     * @param string $currency
+     * @param \App\Models\Egi|null $egi Optional EGI for logging purposes
+     * @return array
+     */
+    public function forceRefreshFree(string $currency = 'EUR', ?\App\Models\Egi $egi = null): array {
+        $currency = strtoupper($currency);
+
+        // Clear cache for this currency
+        $this->clearCache($currency);
+
+        // Fetch fresh price
+        $goldPrice = $this->getGoldPrice($currency);
+
+        if (!$goldPrice) {
+            $this->logger->error('Pre-mint gold price refresh failed', [
+                'currency' => $currency,
+                'egi_id' => $egi?->id,
+            ]);
+
+            return [
+                'success' => false,
+                'gold_price' => null,
+                'error' => 'api_failure',
+            ];
+        }
+
+        $this->logger->info('Gold price refreshed for pre-mint (free)', [
+            'currency' => $currency,
+            'egi_id' => $egi?->id,
+            'new_price_per_gram' => $goldPrice['price_per_gram'],
+        ]);
+
+        return [
+            'success' => true,
+            'gold_price' => $goldPrice,
+            'refreshed_at' => now()->toIso8601String(),
         ];
     }
 
@@ -416,10 +499,10 @@ class GoldPriceService {
      */
     public function getTimeUntilRefresh(string $currency = 'EUR'): array {
         $cacheKey = self::CACHE_KEY_PREFIX . strtoupper($currency);
-        
+
         // Try to get the cached timestamp
         $cached = Cache::get($cacheKey);
-        
+
         if (!$cached || !isset($cached['timestamp'])) {
             return [
                 'seconds' => 0,
@@ -451,5 +534,91 @@ class GoldPriceService {
      */
     public function getRefreshCost(): int {
         return self::REFRESH_COST_EGILI;
+    }
+
+    /**
+     * Check if user can perform a refresh (throttle check)
+     *
+     * @param \App\Models\User $user
+     * @return array ['allowed' => bool, 'remaining' => int, 'reset_at' => Carbon|null]
+     */
+    public function checkRefreshThrottle(\App\Models\User $user): array {
+        $cacheKey = "gold_refresh_throttle_{$user->id}";
+        $throttleData = Cache::get($cacheKey);
+
+        if (!$throttleData) {
+            return [
+                'allowed' => true,
+                'remaining' => self::REFRESH_THROTTLE_MAX,
+                'reset_at' => null,
+                'seconds_until_reset' => 0,
+            ];
+        }
+
+        $count = $throttleData['count'] ?? 0;
+        $resetAt = $throttleData['reset_at'] ?? now();
+
+        // If reset time has passed, allow
+        if (now()->greaterThanOrEqualTo($resetAt)) {
+            Cache::forget($cacheKey);
+            return [
+                'allowed' => true,
+                'remaining' => self::REFRESH_THROTTLE_MAX,
+                'reset_at' => null,
+                'seconds_until_reset' => 0,
+            ];
+        }
+
+        $remaining = max(0, self::REFRESH_THROTTLE_MAX - $count);
+
+        return [
+            'allowed' => $remaining > 0,
+            'remaining' => $remaining,
+            'reset_at' => $resetAt->toIso8601String(),
+            'seconds_until_reset' => (int) now()->diffInSeconds($resetAt, false),
+        ];
+    }
+
+    /**
+     * Increment the refresh throttle counter for user
+     *
+     * @param \App\Models\User $user
+     * @return void
+     */
+    protected function incrementRefreshThrottle(\App\Models\User $user): void {
+        $cacheKey = "gold_refresh_throttle_{$user->id}";
+        $throttleData = Cache::get($cacheKey);
+
+        if (!$throttleData || now()->greaterThanOrEqualTo($throttleData['reset_at'] ?? now())) {
+            // Start new throttle window
+            Cache::put($cacheKey, [
+                'count' => 1,
+                'reset_at' => now()->addSeconds(self::REFRESH_THROTTLE_WINDOW_SECONDS),
+            ], self::REFRESH_THROTTLE_WINDOW_SECONDS);
+        } else {
+            // Increment existing counter
+            $throttleData['count'] = ($throttleData['count'] ?? 0) + 1;
+            $remainingTtl = (int) now()->diffInSeconds($throttleData['reset_at'], false);
+            Cache::put($cacheKey, $throttleData, max(1, $remainingTtl));
+        }
+    }
+
+    /**
+     * Get throttle info for display in UI
+     *
+     * @param \App\Models\User $user
+     * @return array
+     */
+    public function getThrottleInfo(\App\Models\User $user): array {
+        $check = $this->checkRefreshThrottle($user);
+
+        return [
+            'max_refreshes' => self::REFRESH_THROTTLE_MAX,
+            'remaining_refreshes' => $check['remaining'],
+            'can_refresh' => $check['allowed'],
+            'reset_at' => $check['reset_at'],
+            'seconds_until_reset' => $check['seconds_until_reset'],
+            'window_hours' => self::REFRESH_THROTTLE_WINDOW_SECONDS / 3600,
+        ];
     }
 }

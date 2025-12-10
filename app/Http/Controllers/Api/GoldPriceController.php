@@ -9,25 +9,24 @@ use Illuminate\Http\Request;
 
 /**
  * Gold Price API Controller
- * 
+ *
  * Handles gold price quotation requests and paid refreshes
  */
-class GoldPriceController extends Controller
-{
+class GoldPriceController extends Controller {
     public function __construct(
         protected GoldPriceService $goldPriceService
-    ) {}
+    ) {
+    }
 
     /**
      * Get current gold price (from cache or API)
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
      */
-    public function getPrice(Request $request): JsonResponse
-    {
+    public function getPrice(Request $request): JsonResponse {
         $currency = strtoupper($request->input('currency', 'EUR'));
-        
+
         $goldPrice = $this->goldPriceService->getGoldPrice($currency);
         $timeUntilRefresh = $this->goldPriceService->getTimeUntilRefresh($currency);
 
@@ -57,14 +56,13 @@ class GoldPriceController extends Controller
 
     /**
      * Force refresh gold price (paid - costs Egili)
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
      */
-    public function forceRefresh(Request $request): JsonResponse
-    {
+    public function forceRefresh(Request $request): JsonResponse {
         $user = $request->user();
-        
+
         if (!$user) {
             return response()->json([
                 'success' => false,
@@ -74,12 +72,13 @@ class GoldPriceController extends Controller
         }
 
         $currency = strtoupper($request->input('currency', 'EUR'));
-        
+
         $result = $this->goldPriceService->forceRefresh($user, $currency);
 
         if (!$result['success']) {
-            $statusCode = match($result['error']) {
+            $statusCode = match ($result['error']) {
                 'insufficient_egili' => 402, // Payment Required
+                'throttle_exceeded' => 429, // Too Many Requests
                 'api_failure' => 503,
                 default => 500,
             };
@@ -87,16 +86,19 @@ class GoldPriceController extends Controller
             return response()->json([
                 'success' => false,
                 'error' => $result['error'],
-                'message' => match($result['error']) {
+                'message' => match ($result['error']) {
                     'insufficient_egili' => __('gold_bar.insufficient_egili', [
                         'required' => $result['required'],
                         'current' => $result['current_balance'],
                     ]),
+                    'throttle_exceeded' => __('gold_bar.throttle_exceeded'),
                     'api_failure' => __('gold_bar.error'),
                     default => __('gold_bar.error'),
                 },
                 'required_egili' => $result['required'] ?? null,
                 'current_balance' => $result['current_balance'] ?? null,
+                'reset_at' => $result['reset_at'] ?? null,
+                'seconds_until_reset' => $result['seconds_until_reset'] ?? null,
             ], $statusCode);
         }
 
@@ -124,20 +126,24 @@ class GoldPriceController extends Controller
     }
 
     /**
-     * Get refresh info (cost, time until next refresh)
-     * 
+     * Get refresh info (cost, time until next refresh, throttle status)
+     *
      * @param Request $request
      * @return JsonResponse
      */
-    public function getRefreshInfo(Request $request): JsonResponse
-    {
+    public function getRefreshInfo(Request $request): JsonResponse {
         $currency = strtoupper($request->input('currency', 'EUR'));
         $timeUntilRefresh = $this->goldPriceService->getTimeUntilRefresh($currency);
-        
+
         $user = $request->user();
-        $canAffordRefresh = $user 
+        $canAffordRefresh = $user
             ? $user->egili_balance >= $this->goldPriceService->getRefreshCost()
             : false;
+
+        // Get throttle info if user is authenticated
+        $throttleInfo = $user
+            ? $this->goldPriceService->getThrottleInfo($user)
+            : null;
 
         return response()->json([
             'success' => true,
@@ -148,6 +154,109 @@ class GoldPriceController extends Controller
                 'seconds_until_refresh' => $timeUntilRefresh['seconds'],
                 'can_afford_refresh' => $canAffordRefresh,
                 'user_egili_balance' => $user?->egili_balance,
+                'throttle' => $throttleInfo,
+            ],
+        ]);
+    }
+
+    /**
+     * Refresh gold price for mint (FREE - no Egili cost)
+     * Used before minting a Gold Bar EGI to get fresh price
+     * Returns the calculated value for the specific EGI
+     *
+     * @param Request $request
+     * @param int $egiId
+     * @return JsonResponse
+     */
+    public function refreshForMint(Request $request, int $egiId): JsonResponse {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'error' => 'unauthorized',
+                'message' => __('auth.unauthenticated'),
+            ], 401);
+        }
+
+        $egi = \App\Models\Egi::find($egiId);
+
+        if (!$egi) {
+            return response()->json([
+                'success' => false,
+                'error' => 'egi_not_found',
+                'message' => 'EGI not found',
+            ], 404);
+        }
+
+        // Check if EGI is a Gold Bar
+        if (!$egi->isGoldBar()) {
+            return response()->json([
+                'success' => false,
+                'error' => 'not_gold_bar',
+                'message' => __('gold_bar.not_gold_bar'),
+            ], 400);
+        }
+
+        // Check if user can mint this EGI (creator or has valid reservation)
+        $canMint = $egi->user_id === $user->id ||
+            $egi->reservations()
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->where('is_current', true)
+            ->exists();
+
+        if (!$canMint) {
+            return response()->json([
+                'success' => false,
+                'error' => 'unauthorized',
+                'message' => __('mint.errors.unauthorized'),
+            ], 403);
+        }
+
+        $currency = strtoupper($request->input('currency', 'EUR'));
+
+        // Force refresh the gold price (FREE for mint)
+        $refreshResult = $this->goldPriceService->forceRefreshFree($currency, $egi);
+
+        if (!$refreshResult['success']) {
+            return response()->json([
+                'success' => false,
+                'error' => $refreshResult['error'] ?? 'api_failure',
+                'message' => __('gold_bar.error'),
+            ], 503);
+        }
+
+        // Calculate the EGI gold bar value with fresh price
+        $goldValue = $this->goldPriceService->calculateFromEgi($egi, $currency);
+
+        if (!$goldValue) {
+            return response()->json([
+                'success' => false,
+                'error' => 'calculation_error',
+                'message' => __('gold_bar.error'),
+            ], 500);
+        }
+
+        // Return fresh price with 10-minute validity timestamp
+        $validUntil = now()->addMinutes(10);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('gold_bar.refresh_success'),
+            'data' => [
+                'egi_id' => $egi->id,
+                'gold_weight' => $goldValue['weight_grams'],
+                'gold_purity' => $egi->getGoldPurity(),
+                'pure_gold_grams' => $goldValue['pure_gold_grams'],
+                'gold_price_per_gram' => $goldValue['gold_price_per_gram'],
+                'base_value' => $goldValue['base_value'],
+                'margin_applied' => $goldValue['margin_applied'],
+                'final_value' => $goldValue['final_value'],
+                'currency' => $goldValue['currency'],
+                'refreshed_at' => now()->toIso8601String(),
+                'valid_until' => $validUntil->toIso8601String(),
+                'valid_for_seconds' => 600, // 10 minutes
             ],
         ]);
     }
