@@ -654,6 +654,8 @@ $hasCurrentReservation =
 
             $canMint = $availability['can_mint'];
             $canReserve = $availability['can_reserve'];
+            $canRebind = $availability['can_rebind'] ?? false; // 🔄 Secondary Market
+            $isRebind = $availability['is_rebind'] ?? false;
             $isReservedByUser = $availability['is_reserved_by_user'];
             $recommendedAction = $availability['recommended_action'];
             $availableActions = $availability['available_actions'];
@@ -677,11 +679,12 @@ $hasCurrentReservation =
 
             // 🚨 CRITICAL: For auction mode, buttons visible even if price = 0
             // For fixed_price mode, hide buttons if price = 0
-            $showButtons = $isAuctionMode || $displayPriceForAction > 0;
+            // For rebind, always show if can_rebind
+            $showButtons = $canRebind || $isAuctionMode || $displayPriceForAction > 0;
         @endphp
 
         <div class="mt-3">
-            @if ($isNotForSale)
+            @if ($isNotForSale && !$canRebind)
                 {{-- 🚫 Sale mode = not_for_sale → Show "Non in Vendita" message --}}
                 <div
                     class="flex w-full items-center justify-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-500">
@@ -691,9 +694,21 @@ $hasCurrentReservation =
                     </svg>
                     {{ __('egi.status.not_for_sale') }}
                 </div>
-            @elseif ($showButtons && count($availableActions) > 0)
-                {{-- ✅ SCENARIO 1: User has reservation → Show complete purchase button --}}
-                @if ($isReservedByUser && $canMint && $userReservation)
+            @elseif ($showButtons && (count($availableActions) > 0 || $canRebind))
+                {{-- ✅ SCENARIO 0: REBIND - Secondary Market (minted EGI for sale by owner) - CYAN/TEAL --}}
+                @if ($canRebind)
+                    <a href="{{ route('egi.rebind', $egi->id) }}"
+                        class="rebind-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-cyan-500 to-teal-600 px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-cyan-600 hover:to-teal-700">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        {{ __('egi.actions.rebind') ?? 'Rebind' }} ·
+                        €{{ number_format($displayPriceForAction, 2, ',', '.') }}
+                    </a>
+
+                    {{-- ✅ SCENARIO 1: User has reservation → Show complete purchase button --}}
+                @elseif ($isReservedByUser && $canMint && $userReservation)
                     <a href="{{ route('mint.payment-form', ['egiId' => $egi->id]) }}?reservation_id={{ $userReservation->id }}"
                         class="mint-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-[#7d3c98] hover:to-[#8e44ad]">
                         <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
