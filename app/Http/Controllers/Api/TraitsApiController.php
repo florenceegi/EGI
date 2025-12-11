@@ -81,14 +81,14 @@ class TraitsApiController extends Controller {
         if (is_numeric($value)) {
             return $value;
         }
-        
+
         $translated = __('trait_elements.values.' . $value, [], $locale);
-        
+
         // Se la traduzione restituisce la chiave stessa, usa il valore originale
         if ($translated === 'trait_elements.values.' . $value) {
             return $value;
         }
-        
+
         return $translated;
     }
 

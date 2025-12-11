@@ -291,7 +291,7 @@ class StripePaymentSplitService {
 
         // Filter wallets with royalty > 0 (exclude 0% royalty wallets)
         $activeWallets = $wallets->filter(fn($w) => ($w->royalty_mint ?? 0) > 0)->values();
-        
+
         if ($activeWallets->isEmpty()) {
             throw new \RuntimeException('No wallets with royalty > 0% found for distribution');
         }

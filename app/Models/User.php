@@ -1548,21 +1548,35 @@ class User extends Authenticatable implements HasMedia {
      * @Oracode Collector: Get EGI collection groups for purchased EGIs
      * 🎯 Purpose: Group purchased EGIs by collection for portfolio organization
      * 📤 Returns: Collection of collections with purchased EGIs
+     * 🚀 FIX: Include both reserved EGIs AND owned EGIs (mint/rebind)
      */
     public function getCollectorCollectionsAttribute() {
-        // Get collection IDs from purchased EGIs
-        $collectionIds = $this->purchasedEgis()
+        // Get collection IDs from purchased EGIs (via reservations)
+        $reservedCollectionIds = $this->purchasedEgis()
             ->where('egis.is_published', true)
             ->pluck('collection_id')
             ->unique();
 
+        // Get collection IDs from owned EGIs (mint/rebind - owner_id)
+        $ownedCollectionIds = Egi::where('owner_id', $this->id)
+            ->where('is_published', true)
+            ->pluck('collection_id')
+            ->unique();
+
+        // Merge both collection IDs
+        $collectionIds = $reservedCollectionIds->merge($ownedCollectionIds)->unique();
+
         return Collection::whereIn('id', $collectionIds)
             ->with(['egis' => function ($query) {
-                // Only show EGIs that this collector has purchased
-                $query->whereHas('reservations', function ($subQuery) {
-                    $subQuery->where('user_id', $this->id)
-                        ->whereIn('status', ['active', 'completed']);
-                })->where('is_published', true);
+                // Show EGIs that this collector has purchased OR owns
+                $query->where('is_published', true)
+                    ->where(function ($q) {
+                        $q->whereHas('reservations', function ($subQuery) {
+                            $subQuery->where('user_id', $this->id)
+                                ->whereIn('status', ['active', 'completed']);
+                        })
+                            ->orWhere('owner_id', $this->id);
+                    });
             }])
             ->get();
     }

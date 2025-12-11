@@ -151,7 +151,7 @@ class WalletWelcomeController extends Controller {
 
             // Stripe Connect setup for users that need payment processing (creator, epp)
             $userTypesNeedingStripe = ['creator', 'epp'];
-            
+
             if (in_array($user->usertype ?? null, $userTypesNeedingStripe) && $this->stripeConnectService !== null) {
                 try {
                     $stripeAccountData = $this->stripeConnectService->ensureExpressAccount($wallet, $user);
@@ -163,7 +163,7 @@ class WalletWelcomeController extends Controller {
                             || !($accountArray['charges_enabled'] ?? false);
 
                         // Determine redirect route based on user type
-                        $onboardingRedirectRoute = $user->usertype === 'creator' 
+                        $onboardingRedirectRoute = $user->usertype === 'creator'
                             ? route('creator.onboarding.summary')
                             : route('dashboard');
 
@@ -182,7 +182,6 @@ class WalletWelcomeController extends Controller {
                     $redirectUrl = $user->usertype === 'creator'
                         ? route('creator.onboarding.summary')
                         : route('dashboard');
-                        
                 } catch (\Exception $e) {
                     $this->logger->error('Stripe Connect account creation failed during IBAN setup', [
                         'user_id' => $user->id,
@@ -265,13 +264,10 @@ class WalletWelcomeController extends Controller {
 
     /**
      * Skip IBAN and close modal
+     * When user clicks "Skip", we always save the preference - they made a conscious decision
      */
     public function skipIban(Request $request): JsonResponse {
         try {
-            $request->validate([
-                'dont_show_again' => ['sometimes', 'boolean'],
-            ]);
-
             if (!Auth::check()) {
                 return response()->json([
                     'success' => false,
@@ -281,10 +277,9 @@ class WalletWelcomeController extends Controller {
 
             $user = Auth::user();
 
-            // Save preference if requested
-            if ($request->input('dont_show_again', false)) {
-                $user->update(['preferences->hide_wallet_welcome' => true]);
-            }
+            // Always save preference - user made a conscious decision to skip IBAN
+            // They can always add it later from the "Conto PSP" menu
+            $user->update(['preferences->hide_wallet_welcome' => true]);
 
             // Clear session flag
             session()->forget('show_wallet_welcome');
