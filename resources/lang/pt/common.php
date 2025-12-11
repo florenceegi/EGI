@@ -18,4 +18,6 @@ return [
     'delete' => 'Eliminar',
     'created_at' => 'Criado em',
     'updated_at' => 'Atualizado em',
+    'back' => 'Voltar',
+    'back_to_egi' => 'Voltar ao EGI',
 ];

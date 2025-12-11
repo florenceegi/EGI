@@ -11,6 +11,7 @@ return [
     'notifications' => 'Notifications',
     'notes_optional' => 'Notes (optional)',
     'back' => 'Back',
+    'back_to_egi' => 'Back to EGI',
     'description' => 'Description',
     'quantity' => 'Quantity',
     'unit_price' => 'Unit Price',

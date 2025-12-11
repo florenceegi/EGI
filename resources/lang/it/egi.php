@@ -166,6 +166,8 @@ return [
         'mint_direct' => 'Minta Subito',
         // Auction actions
         'make_offer' => 'Fai un\'Offerta',
+        // Phase 3: Secondary market (Rebind)
+        'rebind' => 'Rebind',
     ],
 
     // Sistema di Cronologia delle Prenotazioni

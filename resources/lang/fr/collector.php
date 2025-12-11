@@ -2,6 +2,7 @@
 
 return [
     // Page Titles & Meta
+    'role' => 'Collectionneur',
     'title_suffix' => 'Profil Collectionneur',
     'meta_description' => 'Profil collectionneur :name - Portfolio et collection EGI en vitrine',
     'default_bio' => 'Collectionneur EGI et passionné d\'art numérique sur :name.',

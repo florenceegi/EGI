@@ -11,6 +11,7 @@ return [
     'notifications' => 'Notifiche',
     'notes_optional' => 'Note (opzionale)',
     'back' => 'Indietro',
+    'back_to_egi' => 'Torna all\'EGI',
     'description' => 'Descrizione',
     'quantity' => 'Quantità',
     'unit_price' => 'Prezzo Unitario',

@@ -158,6 +158,8 @@ return [
         'mint_direct' => 'Mintear Instantáneamente',
         // Acciones de subasta
         'make_offer' => 'Hacer una Oferta',
+        // Phase 3: Secondary market (Rebind)
+        'rebind' => 'Rebind',
     ],
 
     // Sistema de Historial de Reservas

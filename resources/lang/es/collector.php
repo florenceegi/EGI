@@ -2,6 +2,7 @@
 
 return [
     // Page Titles & Meta
+    'role' => 'Coleccionista',
     'title_suffix' => 'Perfil del Coleccionista',
     'meta_description' => 'Perfil del coleccionista :name - Portafolio y colección de EGI',
     'default_bio' => 'Coleccionista de EGI y entusiasta del arte digital en :name.',
@@ -89,6 +90,27 @@ return [
         'empty_portfolio_title' => 'Sin EGIs Poseídos',
         'empty_portfolio_description' => 'Este coleccionista aún no ha adquirido ningún EGI. Explora el mercado para descubrir arte digital extraordinario.',
         'discover_egis_button' => 'Descubrir EGIs',
+    ],
+
+    // Stats
+    'stats' => [
+        'owned_egis' => 'EGIs Poseídos',
+        'collections' => 'Colecciones',
+        'creators' => 'Creadores',
+    ],
+
+    // Collections Page
+    'collections' => [
+        'title_suffix' => 'Colecciones',
+        'meta_description' => 'Colecciones EGI de :name - Explora las obras de arte digitales adquiridas',
+        'page_title' => 'Mis Colecciones',
+        'page_description' => ':count colecciones en las que has adquirido EGIs',
+        'empty_title' => 'Sin Colecciones',
+        'empty_description' => 'Aún no has adquirido ningún EGI de ninguna colección. Explora el mercado para descubrir obras de arte digitales extraordinarias.',
+        'explore_button' => 'Explorar Mercado',
+        'egis_owned' => 'EGIs poseídos',
+        'total_value' => 'Valor total',
+        'badge_label' => 'Colecciones',
     ],
 
     // Portfolio Page

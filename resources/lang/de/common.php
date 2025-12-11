@@ -18,4 +18,6 @@ return [
     'delete' => 'Löschen',
     'created_at' => 'Erstellt am',
     'updated_at' => 'Aktualisiert am',
+    'back' => 'Zurück',
+    'back_to_egi' => 'Zurück zum EGI',
 ];

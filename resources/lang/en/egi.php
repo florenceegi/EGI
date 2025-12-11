@@ -159,6 +159,8 @@ return [
         'mint_direct' => 'Mint Instantly',
         // Auction actions
         'make_offer' => 'Make an Offer',
+        // Phase 3: Secondary market (Rebind)
+        'rebind' => 'Rebind',
     ],
 
     // Reservation History System

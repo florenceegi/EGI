@@ -158,6 +158,8 @@ return [
         'mint_direct' => 'Sofort Minten',
         // Auktionsaktionen
         'make_offer' => 'Ein Angebot Machen',
+        // Phase 3: Secondary market (Rebind)
+        'rebind' => 'Rebind',
     ],
 
     // System für Reservierungsverlauf
