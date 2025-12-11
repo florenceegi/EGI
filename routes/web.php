@@ -125,6 +125,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'processDirectMint'])
         ->name('egi.mint-direct.process');
 
+    // Phase 3: Rebind route (secondary market - purchase from owner)
+    Route::get('/egi/{id}/rebind', [App\Http\Controllers\RebindController::class, 'show'])
+        ->name('egi.rebind');
+
+    Route::post('/egi/{id}/rebind', [App\Http\Controllers\RebindController::class, 'process'])
+        ->name('egi.rebind.process');
+
     // Dual Architecture: Auto-Mint & Pre-Mint actions
     Route::prefix('egi/{egi}/dual-arch')->name('egi.dual-arch.')->group(function () {
         Route::post('/auto-mint/enable', [App\Http\Controllers\EgiDualArchitectureController::class, 'enableAutoMint'])

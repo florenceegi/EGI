@@ -88,15 +88,18 @@ class EgiAvailabilityService {
      * [
      *     'can_mint' => bool,
      *     'can_reserve' => bool,
+     *     'can_rebind' => bool,           // 🆕 Secondary market
+     *     'is_rebind' => bool,            // 🆕 Is this a rebind (secondary sale)?
      *     'mint_reason' => string|null,
      *     'reserve_reason' => string|null,
      *     'is_creator' => bool,
+     *     'is_owner' => bool,             // 🆕 Is user the current owner?
      *     'is_reserved_by_user' => bool,
      *     'has_pending_reservation' => bool,
      *     'winning_reservation' => Reservation|null,
      *     'user_reservation' => Reservation|null,
-     *     'available_actions' => ['mint', 'reserve'],
-     *     'recommended_action' => 'mint'|'reserve'|null
+     *     'available_actions' => ['mint', 'reserve', 'rebind'],
+     *     'recommended_action' => 'mint'|'reserve'|'rebind'|null
      * ]
      */
     public function checkAvailability(Egi $egi, ?User $user = null): array {
@@ -113,9 +116,12 @@ class EgiAvailabilityService {
             $result = [
                 'can_mint' => false,
                 'can_reserve' => false,
+                'can_rebind' => false,      // 🆕 Secondary market
+                'is_rebind' => false,       // 🆕 Is this a rebind?
                 'mint_reason' => null,
                 'reserve_reason' => null,
                 'is_creator' => false,
+                'is_owner' => false,        // 🆕 Is user the current owner?
                 'is_reserved_by_user' => false,
                 'has_pending_reservation' => false,
                 'winning_reservation' => null,
@@ -140,6 +146,9 @@ class EgiAvailabilityService {
             // Check if user is the creator
             $result['is_creator'] = $egi->user_id === $user->id;
 
+            // 🆕 Check if user is the current owner (for rebind - cannot buy own EGI)
+            $result['is_owner'] = $egi->owner_id === $user->id;
+
             if ($result['is_creator']) {
                 $result['mint_reason'] = 'own_egi_cannot_mint';
                 $result['reserve_reason'] = 'own_egi_cannot_reserve';
@@ -153,23 +162,52 @@ class EgiAvailabilityService {
                 return $result;
             }
 
+            // 🆕 Check if user is the current owner (cannot rebind own EGI)
+            if ($result['is_owner']) {
+                $result['mint_reason'] = 'own_egi_cannot_rebind';
+                $result['reserve_reason'] = 'own_egi_cannot_rebind';
+
+                $this->logger->info('EGI_AVAILABILITY_CHECK_OWNER', [
+                    'egi_id' => $egi->id,
+                    'user_id' => $user->id,
+                    'result' => 'owner_no_actions'
+                ]);
+
+                return $result;
+            }
+
+            // 🆕 Check if this is a REBIND scenario (EGI minted and for sale)
+            $result['is_rebind'] = $egi->canBeRebind();
+
             // Get reservation status
             $result['has_pending_reservation'] = $egi->hasPendingReservation();
             $result['is_reserved_by_user'] = $egi->isReservedByUser($user);
             $result['winning_reservation'] = $egi->getWinningReservation();
             $result['user_reservation'] = $egi->getUserReservation($user);
 
-            // Check MINT availability
-            $mintCheck = $this->checkMintAvailability($egi, $user, $result);
-            $result['can_mint'] = $mintCheck['can_mint'];
-            $result['mint_reason'] = $mintCheck['reason'];
+            // 🆕 Check REBIND availability (secondary market)
+            if ($result['is_rebind']) {
+                $rebindCheck = $this->checkRebindAvailability($egi, $user, $result);
+                $result['can_rebind'] = $rebindCheck['can_rebind'];
+                // For rebind, we don't check mint/reserve (different flow)
+                $result['mint_reason'] = 'egi_is_rebind';
+                $result['reserve_reason'] = 'egi_is_rebind';
+            } else {
+                // Check MINT availability (primary market)
+                $mintCheck = $this->checkMintAvailability($egi, $user, $result);
+                $result['can_mint'] = $mintCheck['can_mint'];
+                $result['mint_reason'] = $mintCheck['reason'];
 
-            // Check RESERVE availability
-            $reserveCheck = $this->checkReserveAvailability($egi, $user, $result);
-            $result['can_reserve'] = $reserveCheck['can_reserve'];
-            $result['reserve_reason'] = $reserveCheck['reason'];
+                // Check RESERVE availability (primary market)
+                $reserveCheck = $this->checkReserveAvailability($egi, $user, $result);
+                $result['can_reserve'] = $reserveCheck['can_reserve'];
+                $result['reserve_reason'] = $reserveCheck['reason'];
+            }
 
             // Build available actions list
+            if ($result['can_rebind']) {
+                $result['available_actions'][] = 'rebind';
+            }
             if ($result['can_mint']) {
                 $result['available_actions'][] = 'mint';
             }
@@ -186,6 +224,8 @@ class EgiAvailabilityService {
                 'user_id' => $user->id,
                 'can_mint' => $result['can_mint'],
                 'can_reserve' => $result['can_reserve'],
+                'can_rebind' => $result['can_rebind'],
+                'is_rebind' => $result['is_rebind'],
                 'available_actions' => $result['available_actions']
             ]);
 
@@ -202,9 +242,12 @@ class EgiAvailabilityService {
             return [
                 'can_mint' => false,
                 'can_reserve' => false,
+                'can_rebind' => false,
+                'is_rebind' => false,
                 'mint_reason' => 'check_error',
                 'reserve_reason' => 'check_error',
                 'is_creator' => false,
+                'is_owner' => false,
                 'is_reserved_by_user' => false,
                 'has_pending_reservation' => false,
                 'winning_reservation' => null,
@@ -222,11 +265,59 @@ class EgiAvailabilityService {
      *
      * @param Egi $egi The EGI to check
      * @param User|null $user The user checking availability
-     * @return array Array of available action strings ['mint', 'reserve']
+     * @return array Array of available action strings ['mint', 'reserve', 'rebind']
      */
     public function getAvailableActions(Egi $egi, ?User $user = null): array {
         $availability = $this->checkAvailability($egi, $user);
         return $availability['available_actions'];
+    }
+
+    /**
+     * Check if user can rebind this EGI (secondary market purchase).
+     *
+     * @param Egi $egi The EGI to check
+     * @param User $user The user
+     * @param array $context Context data from main availability check
+     * @return array ['can_rebind' => bool, 'reason' => string|null]
+     */
+    private function checkRebindAvailability(Egi $egi, User $user, array $context): array {
+        // Check basic EGI rebindability
+        if (!$egi->canBeRebind()) {
+            $this->logger->warning('EGI_REBIND_CHECK_FAILED_NOT_REBINDABLE', [
+                'egi_id' => $egi->id,
+                'is_minted' => $egi->isMinted(),
+                'is_published' => $egi->is_published,
+                'price' => $egi->price
+            ]);
+            return ['can_rebind' => false, 'reason' => 'egi_not_rebindable'];
+        }
+
+        // User cannot rebind their own EGI (they are the seller, not buyer)
+        if ($egi->owner_id === $user->id) {
+            $this->logger->info('EGI_REBIND_CHECK_SKIPPED_IS_OWNER', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id,
+                'reason' => 'user_is_owner'
+            ]);
+            return ['can_rebind' => false, 'reason' => 'user_is_owner'];
+        }
+
+        // Check user has accepted platform services
+        if (!$this->consentService->hasConsent($user, 'platform-services')) {
+            $this->logger->warning('EGI_REBIND_CHECK_FAILED_CONSENT', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id,
+                'reason' => 'platform_services_consent_missing'
+            ]);
+            return ['can_rebind' => false, 'reason' => 'missing_consent'];
+        }
+
+        // All checks passed
+        $this->logger->info('EGI_REBIND_CHECK_PASSED', [
+            'egi_id' => $egi->id,
+            'user_id' => $user->id
+        ]);
+        return ['can_rebind' => true, 'reason' => null];
     }
 
     /**
@@ -341,6 +432,11 @@ class EgiAvailabilityService {
      * @return string|null 'mint', 'reserve', or null
      */
     private function determineRecommendedAction(array $availability): ?string {
+        // Rebind available (secondary market) → recommend rebind
+        if ($availability['can_rebind']) {
+            return 'rebind';
+        }
+
         // User has reservation → recommend mint to complete purchase
         if ($availability['is_reserved_by_user'] && $availability['can_mint']) {
             return 'mint';
@@ -385,6 +481,7 @@ class EgiAvailabilityService {
                     'egi_title' => $egi->title,
                     'can_mint' => $result['can_mint'],
                     'can_reserve' => $result['can_reserve'],
+                    'can_rebind' => $result['can_rebind'],
                     'available_actions' => $result['available_actions'],
                     'recommended_action' => $result['recommended_action']
                 ],

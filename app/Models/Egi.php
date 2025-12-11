@@ -998,6 +998,51 @@ class Egi extends Model {
     }
 
     /**
+     * Check if this EGI can be rebind (secondary market sale).
+     *
+     * Business rules:
+     * - EGI must be published (is_published = true)
+     * - EGI must be already minted (has an owner)
+     * - EGI must have a price > 0
+     * - EGI must be in sale mode (fixed_price or auction, NOT not_for_sale)
+     *
+     * @return bool
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     * @version 1.0.0 (FlorenceEGI - Secondary Market Rebind)
+     * @date 2025-12-11
+     */
+    public function canBeRebind(): bool {
+        // Check if rebind is enabled for this EGI
+        // The 'rebind' field defaults to true, so null means rebind is allowed
+        if ($this->rebind === false) {
+            return false;
+        }
+
+        // Must be published
+        if (!$this->is_published) {
+            return false;
+        }
+
+        // Must be minted (has an owner)
+        if (!$this->isMinted()) {
+            return false;
+        }
+
+        // Must have a price > 0
+        if (!$this->price || $this->price <= 0) {
+            return false;
+        }
+
+        // Must be in sale mode (not "not_for_sale")
+        $saleMode = $this->sale_mode ?? 'not_for_sale';
+        if ($saleMode === 'not_for_sale') {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Check if this EGI can be reserved.
      *
      * Business rules:
