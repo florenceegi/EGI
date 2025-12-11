@@ -880,7 +880,7 @@
             if (auth()->check()) {
                 $user = auth()->user();
                 $wallet = $user->primaryWallet;
-                $hasSkippedOrAddedIban = $user->preferences['hide_wallet_welcome'] ?? false;
+                $hasSkippedOrAddedIban = ($user->privacy_settings['hide_wallet_welcome'] ?? false);
                 $hasIban = $wallet && $wallet->hasIban();
                 $minutesSinceCreation = $user->created_at->diffInMinutes(now());
 
@@ -898,7 +898,7 @@
             @if (auth()->check())
                 userCreatedAt: '{{ auth()->user()->created_at }}',
                 minutesAgo: {{ auth()->user()->created_at->diffInMinutes(now()) }},
-                hasSkippedOrAddedIban: {{ auth()->user()->preferences['hide_wallet_welcome'] ?? false ? 'true' : 'false' }},
+                hasSkippedOrAddedIban: {{ (auth()->user()->privacy_settings['hide_wallet_welcome'] ?? false) ? 'true' : 'false' }},
                 hasIban: {{ auth()->user()->primaryWallet && auth()->user()->primaryWallet->hasIban() ? 'true' : 'false' }}
             @endif
         });
@@ -1007,8 +1007,13 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    // Success - close modal and stay on current page
+                    // Success - close modal and redirect to Stripe Connect onboarding (if available)
                     closeWalletModal();
+                    
+                    if (data.redirect_url) {
+                        // Redirect to Stripe Connect onboarding or appropriate page
+                        window.location.href = data.redirect_url;
+                    }
                 } else {
                     hideLoading();
                     alert(data.error || 'Errore durante il salvataggio');

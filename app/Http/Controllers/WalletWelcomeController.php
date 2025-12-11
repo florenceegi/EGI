@@ -149,8 +149,8 @@ class WalletWelcomeController extends Controller {
             $dashboardUrl = null;
             $redirectUrl = route($this->resolvePostIbanRedirectRoute($user));
 
-            // Stripe Connect setup for users that need payment processing (creator, epp)
-            $userTypesNeedingStripe = ['creator', 'epp'];
+            // Stripe Connect setup for users that need payment processing (creator, epp, company)
+            $userTypesNeedingStripe = ['creator', 'epp', 'company'];
 
             if (in_array($user->usertype ?? null, $userTypesNeedingStripe) && $this->stripeConnectService !== null) {
                 try {
@@ -163,9 +163,11 @@ class WalletWelcomeController extends Controller {
                             || !($accountArray['charges_enabled'] ?? false);
 
                         // Determine redirect route based on user type
-                        $onboardingRedirectRoute = $user->usertype === 'creator'
-                            ? route('creator.onboarding.summary')
-                            : route('dashboard');
+                        $onboardingRedirectRoute = match($user->usertype) {
+                            'creator' => route('creator.onboarding.summary'),
+                            'company' => route('company.dashboard'),
+                            default => route('dashboard'),
+                        };
 
                         if ($needsOnboarding) {
                             $onboardingUrl = $this->stripeConnectService->createAccountLink(
@@ -178,10 +180,12 @@ class WalletWelcomeController extends Controller {
                         $dashboardUrl = $this->stripeConnectService->createExpressDashboardLoginLink($accountId);
                     }
 
-                    // Set redirect URL based on user type
-                    $redirectUrl = $user->usertype === 'creator'
-                        ? route('creator.onboarding.summary')
-                        : route('dashboard');
+                    // Set redirect URL based on user type (use onboarding URL if available)
+                    $redirectUrl = $onboardingUrl ?? match($user->usertype) {
+                        'creator' => route('creator.onboarding.summary'),
+                        'company' => route('company.dashboard'),
+                        default => route('dashboard'),
+                    };
                 } catch (\Exception $e) {
                     $this->logger->error('Stripe Connect account creation failed during IBAN setup', [
                         'user_id' => $user->id,
@@ -202,7 +206,9 @@ class WalletWelcomeController extends Controller {
 
             // Save preference if requested
             if ($request->input('dont_show_again', false)) {
-                $user->update(['preferences->hide_wallet_welcome' => true]);
+                $privacySettings = $user->privacy_settings ?? [];
+                $privacySettings['hide_wallet_welcome'] = true;
+                $user->update(['privacy_settings' => $privacySettings]);
             }
 
             // Clear session flag
@@ -265,6 +271,7 @@ class WalletWelcomeController extends Controller {
     /**
      * Skip IBAN and close modal
      * When user clicks "Skip", we always save the preference - they made a conscious decision
+     * For creator/epp/company users, still trigger Stripe Connect onboarding
      */
     public function skipIban(Request $request): JsonResponse {
         try {
@@ -276,21 +283,78 @@ class WalletWelcomeController extends Controller {
             }
 
             $user = Auth::user();
+            $wallet = $user->primaryWallet;
 
             // Always save preference - user made a conscious decision to skip IBAN
             // They can always add it later from the "Conto PSP" menu
-            $user->update(['preferences->hide_wallet_welcome' => true]);
+            $privacySettings = $user->privacy_settings ?? [];
+            $privacySettings['hide_wallet_welcome'] = true;
+            $user->update(['privacy_settings' => $privacySettings]);
 
             // Clear session flag
             session()->forget('show_wallet_welcome');
 
             $this->logger->info('User skipped IBAN setup in welcome modal', [
                 'user_id' => $user->id,
+                'user_type' => $user->usertype,
             ]);
+
+            // Stripe Connect setup for users that need payment processing
+            $userTypesNeedingStripe = ['creator', 'epp', 'company'];
+            $onboardingUrl = null;
+            $redirectUrl = route($this->resolvePostIbanRedirectRoute($user));
+
+            if (in_array($user->usertype ?? null, $userTypesNeedingStripe) 
+                && $this->stripeConnectService !== null 
+                && $wallet) {
+                try {
+                    $stripeAccountData = $this->stripeConnectService->ensureExpressAccount($wallet, $user);
+                    $accountArray = $stripeAccountData['account'] ?? [];
+                    $accountId = $accountArray['id'] ?? null;
+
+                    if ($accountId) {
+                        $needsOnboarding = !($accountArray['details_submitted'] ?? false)
+                            || !($accountArray['charges_enabled'] ?? false);
+
+                        // Determine redirect route based on user type
+                        $onboardingRedirectRoute = match($user->usertype) {
+                            'creator' => route('creator.onboarding.summary'),
+                            'company' => route('company.dashboard'),
+                            default => route('dashboard'),
+                        };
+
+                        if ($needsOnboarding) {
+                            $onboardingUrl = $this->stripeConnectService->createAccountLink(
+                                $accountId,
+                                $onboardingRedirectRoute,
+                                $onboardingRedirectRoute
+                            );
+                            // Use Stripe onboarding URL as redirect
+                            $redirectUrl = $onboardingUrl;
+                        } else {
+                            $redirectUrl = $onboardingRedirectRoute;
+                        }
+                    }
+
+                    $this->logger->info('Stripe Connect setup during skip IBAN', [
+                        'user_id' => $user->id,
+                        'user_type' => $user->usertype,
+                        'has_onboarding_url' => !empty($onboardingUrl),
+                    ]);
+                } catch (\Exception $e) {
+                    $this->logger->error('Stripe Connect account creation failed during skip IBAN', [
+                        'user_id' => $user->id,
+                        'user_type' => $user->usertype,
+                        'error' => $e->getMessage(),
+                    ]);
+                    // Continue without Stripe - user can set it up later
+                }
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => __('register.wallet_welcome_completed')
+                'message' => __('register.wallet_welcome_completed'),
+                'redirect_url' => $redirectUrl,
             ]);
         } catch (\Exception $e) {
             $this->logger->error('Failed to skip IBAN setup', [
