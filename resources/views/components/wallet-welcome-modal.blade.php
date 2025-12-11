@@ -36,13 +36,6 @@
                                 placeholder="IT00 A000 0000 0000 0000 0000 000" maxlength="34" autocomplete="off">
                             <span id="ibanError" class="wallet-form-error hidden"></span>
                         </div>
-
-                        <div class="wallet-form-checkbox">
-                            <input type="checkbox" id="dontShowAgain" name="dont_show_again" class="wallet-checkbox">
-                            <label for="dontShowAgain" class="wallet-checkbox-label">
-                                {{ __('wallet_welcome.dont_show_again') }}
-                            </label>
-                        </div>
                     </form>
                 </div>
 
@@ -880,14 +873,22 @@
         });
 
         // Check if modal should be shown
-        // Priority 1: Check if user was created in the last 5 minutes (just registered)
+        // Show only for newly registered users who haven't skipped the IBAN setup yet
+        // Once user clicks "Skip" or adds IBAN, hide_wallet_welcome is set to true
         @php
             $shouldShow = false;
             if (auth()->check()) {
                 $user = auth()->user();
+                $wallet = $user->primaryWallet;
+                $hasSkippedOrAddedIban = $user->preferences['hide_wallet_welcome'] ?? false;
+                $hasIban = $wallet && $wallet->hasIban();
                 $minutesSinceCreation = $user->created_at->diffInMinutes(now());
-                $hasSeenModal = $user->preferences['hide_wallet_welcome'] ?? false;
-                $shouldShow = $minutesSinceCreation < 5 && !$hasSeenModal;
+
+                // Show modal only if:
+                // 1. User hasn't skipped or added IBAN yet
+    // 2. User doesn't have an IBAN
+                // 3. User was created in the last 10 minutes (first session after registration)
+                $shouldShow = !$hasSkippedOrAddedIban && !$hasIban && $minutesSinceCreation < 10;
             }
         @endphp
 
@@ -897,15 +898,16 @@
             @if (auth()->check())
                 userCreatedAt: '{{ auth()->user()->created_at }}',
                 minutesAgo: {{ auth()->user()->created_at->diffInMinutes(now()) }},
-                hasSeenModal: {{ auth()->user()->preferences['hide_wallet_welcome'] ?? false ? 'true' : 'false' }}
+                hasSkippedOrAddedIban: {{ auth()->user()->preferences['hide_wallet_welcome'] ?? false ? 'true' : 'false' }},
+                hasIban: {{ auth()->user()->primaryWallet && auth()->user()->primaryWallet->hasIban() ? 'true' : 'false' }}
             @endif
         });
 
         @if ($shouldShow)
-            console.log('[WalletWelcome] Opening modal - user registered recently');
+            console.log('[WalletWelcome] Opening modal - new user without IBAN');
             openWalletModal();
         @else
-            console.log('[WalletWelcome] Modal will not open');
+            console.log('[WalletWelcome] Modal will not open - user has skipped or already has IBAN');
         @endif
 
         // Collapsible sections
@@ -986,10 +988,8 @@
             modalFooter.classList.remove('hidden');
         });
 
-        // Confirm no IBAN
+        // Confirm no IBAN - user made a conscious decision to skip
         confirmNoIbanBtn.addEventListener('click', async function() {
-            const dontShowAgain = document.getElementById('dontShowAgain').checked;
-
             showLoading();
 
             try {
@@ -1001,16 +1001,14 @@
                             .content,
                         'Accept': 'application/json',
                     },
-                    body: JSON.stringify({
-                        dont_show_again: dontShowAgain
-                    })
+                    body: JSON.stringify({})
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    // Success - redirect to dashboard
-                    window.location.href = '/dashboard';
+                    // Success - close modal and stay on current page
+                    closeWalletModal();
                 } else {
                     hideLoading();
                     alert(data.error || 'Errore durante il salvataggio');

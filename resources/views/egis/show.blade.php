@@ -199,13 +199,23 @@ $canBeReserved =
             // ============================================
             // CHECK COLLECTION MONETIZATION REQUIREMENTS
             // ============================================
+            // Per la PRIMA VENDITA (Mint - Creator non mintato):
             // La collection deve avere:
             // 1. Un abbonamento attivo (subscription_status = 'active'), OPPURE
             // 2. Un EPP collegato con royalty >= 20%
-            $canSellEgis = false;
-            $monetizationType = $collection->monetization_type ?? null;
+            //
+            // Per il MERCATO SECONDARIO (Rebind - Owner di EGI mintato):
+            // L'Owner può SEMPRE mettere in vendita il proprio EGI
+// (ha già pagato, è suo diritto rivenderlo)
+$canSellEgis = false;
+$monetizationType = $collection->monetization_type ?? null;
 
-            if ($monetizationType === 'subscription') {
+// Se è l'Owner di un EGI già mintato → può sempre vendere (Rebind)
+            if ($isOwner && $isMinted) {
+                $canSellEgis = true;
+            }
+            // Altrimenti, per la prima vendita (Creator), serve monetizzazione collection
+            elseif ($monetizationType === 'subscription') {
                 $canSellEgis = $collection->subscription_status === 'active';
             } elseif ($monetizationType === 'epp') {
                 $hasEpp = $collection->epp_project_id !== null || $collection->epp_id !== null;

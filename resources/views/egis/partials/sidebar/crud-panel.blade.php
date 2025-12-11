@@ -614,33 +614,27 @@ $isSmartContract = $egi->egi_type === 'SmartContract';
                             </div>
                         </div>
 
-                        {{-- Published Toggle - Parte dei metadati --}}
-                        <div class="{{ $metadataLocked ? 'opacity-50 pointer-events-none' : '' }}">
+                        {{-- Published Toggle - NON è un metadato blockchain, è gestione commerciale --}}
+                        {{-- L'Owner può sempre modificarlo per mettere/togliere dalla vendita --}}
+                        @php
+                            // is_published può essere modificato da:
+                            // - Creator su EGI non mintato (canEditMetadata)
+                            // - Owner su EGI mintato (canManagePrice per mercato secondario)
+                            $canEditPublished = ($canEditMetadata ?? false) || ($canManagePrice ?? false);
+                        @endphp
+                        <div>
                             <label class="flex items-center">
                                 <input type="hidden" name="is_published" value="0">
                                 <input type="checkbox" id="is_published" name="is_published" value="1"
                                     {{ old('is_published', $egi->is_published) ? 'checked' : '' }}
-                                    {{ $metadataLocked ? 'disabled' : '' }}
-                                    class="{{ $metadataLocked ? 'bg-black/10 border-gray-600 cursor-not-allowed' : 'bg-black/30 border-emerald-700/50 focus:ring-emerald-500 focus:ring-2' }} h-4 w-4 rounded text-emerald-600">
+                                    {{ !$canEditPublished ? 'disabled' : '' }}
+                                    class="{{ !$canEditPublished ? 'bg-black/10 border-gray-600 cursor-not-allowed' : 'bg-black/30 border-emerald-700/50 focus:ring-emerald-500 focus:ring-2' }} h-4 w-4 rounded text-emerald-600">
                                 <span class="ml-3 text-sm font-medium text-emerald-300">
                                     {{ __('egi.crud.is_published') }}
-                                    @if ($metadataLocked)
-                                        <svg class="ml-1 inline h-4 w-4 text-amber-400" fill="currentColor"
-                                            viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    @endif
                                 </span>
                             </label>
-                            <div
-                                class="{{ $metadataLocked ? 'text-amber-400' : 'text-gray-400' }} ml-7 mt-1 text-xs">
-                                @if ($metadataLocked)
-                                    🔒 {{ __('egi.crud.field_immutable_hint') }}
-                                @else
-                                    {{ __('egi.crud.is_published_hint') }}
-                                @endif
+                            <div class="ml-7 mt-1 text-xs text-gray-400">
+                                {{ __('egi.crud.is_published_hint') }}
                             </div>
                         </div>
 

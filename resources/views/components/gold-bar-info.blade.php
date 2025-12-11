@@ -360,7 +360,11 @@
                                 })
                                 .then(function(response) {
                                     return response.json().then(function(data) {
-                                        return { ok: response.ok, status: response.status, data: data };
+                                        return {
+                                            ok: response.ok,
+                                            status: response.status,
+                                            data: data
+                                        };
                                     });
                                 })
                                 .then(function(result) {
@@ -380,10 +384,10 @@
                                     } else {
                                         // Handle specific errors
                                         const errorIcon = result.status === 429 ? 'warning' : 'error';
-                                        const errorTitle = result.status === 429 
-                                            ? LANG.throttle_exceeded_title 
-                                            : LANG.refresh_error_title;
-                                        
+                                        const errorTitle = result.status === 429 ?
+                                            LANG.throttle_exceeded_title :
+                                            LANG.refresh_error_title;
+
                                         Swal.fire({
                                             icon: errorIcon,
                                             title: errorTitle,
