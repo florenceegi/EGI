@@ -495,9 +495,23 @@ class EgiController extends Controller {
 
             // 🔒 BLOCKCHAIN IMMUTABILITY: Check if EGI is minted (BLOCKING)
             if ($egi->token_EGI) {
-                // Se EGI è mintato, SOLO price, sale_mode, is_published e auction fields possono essere modificati
+                // Se EGI è mintato, SOLO questi campi possono essere modificati:
+                // - price, sale_mode, is_published, payment_by_egili: gestione vendita/mercato secondario
+                // - auction_*: configurazione aste
+                // - gold_margin_*: margine Gold Bar (non è un metadato blockchain, è configurazione commerciale)
                 // Metadata (title, description, traits) sono immutabili su blockchain
-                $allowedFields = ['price', 'sale_mode', 'is_published', 'payment_by_egili', 'auction_minimum_price', 'auction_start', 'auction_end', 'auto_mint_highest'];
+                $allowedFields = [
+                    'price',
+                    'sale_mode',
+                    'is_published',
+                    'payment_by_egili',
+                    'auction_minimum_price',
+                    'auction_start',
+                    'auction_end',
+                    'auto_mint_highest',
+                    'gold_margin_percent',
+                    'gold_margin_fixed' // Gold Bar margin - commercial config, not blockchain metadata
+                ];
                 $attemptedFields = array_keys($validated);
                 $blockedFields = array_diff($attemptedFields, $allowedFields);
 

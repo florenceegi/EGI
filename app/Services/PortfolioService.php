@@ -40,14 +40,16 @@ class PortfolioService {
      * Get collector's active portfolio (winning reservations + owned EGIs)
      * Criteria:
      * - EGIs con almeno una reservation del collector (attive o storiche)
-     * - EGIs dove il collector è owner attuale (mint/rebind) e l'opera è pubblicata
+     * - EGIs dove il collector è owner attuale (mint/rebind)
+     * - Se isOwnerViewing=true, include anche EGI non pubblicati (l'Owner deve poterli gestire)
      *
      * @param User $collector The collector
+     * @param bool $isOwnerViewing True se l'utente loggato sta visualizzando il proprio portfolio
      * @return EloquentCollection Collection of EGIs associated with the collector
      */
-    public function getCollectorActivePortfolio(User $collector): EloquentCollection {
+    public function getCollectorActivePortfolio(User $collector, bool $isOwnerViewing = false): EloquentCollection {
         $reservedEgis = $this->getReservedEgisForCollector($collector);
-        $ownedEgis = $this->getOwnedEgisForCollector($collector);
+        $ownedEgis = $this->getOwnedEgisForCollector($collector, $isOwnerViewing);
 
         return $reservedEgis
             ->concat($ownedEgis)
@@ -238,15 +240,22 @@ class PortfolioService {
 
     /**
      * Recupera gli EGIs posseduti attualmente dal collector (mint/rebind)
+     * L'Owner vede TUTTI i suoi EGI (anche non pubblicati) per poterli gestire
      *
      * @param User $collector
+     * @param bool $includeUnpublished Se true, include anche EGI non pubblicati (per l'Owner stesso)
      * @return EloquentCollection
      */
-    private function getOwnedEgisForCollector(User $collector): EloquentCollection {
-        return Egi::where('owner_id', $collector->id)
-            ->where('is_published', true)
-            ->with($this->defaultPortfolioRelations($collector))
-            ->get();
+    private function getOwnedEgisForCollector(User $collector, bool $includeUnpublished = false): EloquentCollection {
+        $query = Egi::where('owner_id', $collector->id)
+            ->with($this->defaultPortfolioRelations($collector));
+
+        // Se non stiamo includendo gli EGI non pubblicati, filtra per is_published
+        if (!$includeUnpublished) {
+            $query->where('is_published', true);
+        }
+
+        return $query->get();
     }
 
     /**

@@ -106,7 +106,6 @@ class CollectorHomeController extends Controller {
             ->when($sort === 'latest', function ($q) {
                 $q->latest();
             })
-            ->distinct()
             ->paginate(20);
 
         return view('collector.index', compact(
@@ -123,6 +122,7 @@ class CollectorHomeController extends Controller {
      * 🎯 Purpose: Show detailed portfolio with all purchased EGIs, filters and search
      * 📤 Output: Portfolio view with purchased EGIs grid/list and filtering options
      * 🚀 Enhancement: Uses PortfolioService for accurate ownership tracking
+     * 🔒 Privacy: Owner viewing own portfolio sees all EGIs (including unpublished)
      */
     public function portfolio(int $id, Request $request): View {
         $collector = User::findOrFail($id);
@@ -137,8 +137,12 @@ class CollectorHomeController extends Controller {
         $sort = $request->input('sort', 'latest');
         $view = $request->input('view', 'grid'); // 'grid' or 'list'
 
+        // Check if logged-in user is viewing their own portfolio
+        $isOwnerViewing = auth()->check() && auth()->id() === $collector->id;
+
         // 🚀 FIX: Usa PortfolioService per ottenere tutti gli EGI su cui il collector ha fatto offerte (vincente o superato)
-        $activePortfolio = $this->portfolioService->getCollectorActivePortfolio($collector);
+        // Se l'Owner sta visualizzando il proprio portfolio, include anche EGI non pubblicati
+        $activePortfolio = $this->portfolioService->getCollectorActivePortfolio($collector, $isOwnerViewing);
 
         // Applica filtri e ordinamento alla collection
         $filteredEgis = $activePortfolio

@@ -93,10 +93,17 @@ class CompanyHomeController extends Controller {
         $createdEgis = $createdQuery->get();
 
         // EGIs posseduti dalla company (acquistati da altri)
+        // 🔒 Privacy: Owner viewing own portfolio sees all EGIs (including unpublished)
+        $isOwnerViewing = auth()->check() && auth()->id() === $company->id;
+
         $ownedQuery = Egi::with($baseWith)
             ->where('owner_id', $company->id)
             ->whereDoesntHave('collection', function ($q) use ($company) {
                 $q->where('creator_id', $company->id);
+            })
+            ->when(!$isOwnerViewing, function ($q) {
+                // Se non è l'owner che visualizza, mostra solo gli EGI pubblicati
+                $q->where('is_published', true);
             })
             ->when($query, function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%");
