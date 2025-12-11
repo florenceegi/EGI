@@ -248,9 +248,10 @@ class RebindController extends Controller {
                     $paymentProvider = 'egili_internal';
                     $paymentReference = $egiliPayment['reference'];
                     $paidCurrency = 'EGL';
-                    $paidAmountRecorded = $egiliPayment['amount_egili'];
+                    $paidAmountRecorded = $egiliPayment['amount_eur'];
                     $egiliMetadata = [
                         'egili_transaction_id' => $egiliPayment['transaction_id'] ?? null,
+                        'amount_egili' => $egiliPayment['amount_egili'] // Store actual tokens paid in metadata
                     ];
                 } catch (\RuntimeException $egiliException) {
                     $reason = $egiliException->getMessage();
@@ -373,6 +374,7 @@ class RebindController extends Controller {
                 'sale_price' => $paymentAmountEur,
                 'amount_eur' => $paidAmountRecorded,
                 'percentage' => 100.00, // Full amount to seller (royalties will be separate distributions)
+                'exchange_rate' => 1.0, // Default to 1.0 as base is EUR
                 'distribution_status' => DistributionStatusEnum::CONFIRMED,
                 'metadata' => [
                     'payment_method' => $paymentMethod,
@@ -421,7 +423,109 @@ class RebindController extends Controller {
             // TODO: Future enhancements:
             // 1. Blockchain ownership transfer via Algorand atomic transfer
             // 2. Notification to seller and buyer
-            // 3. Calculate and transfer creator royalty (wallets.royalty_rebind)
+            // 3. Calculate and Distribute Royalties (Creator, EPP, Natan, Frangette)
+            // Logic:
+            // - Creator: Wallet->royalty_rebind OR config('egi.default_wallets.Creator.rebind_royalty')
+            // - EPP: config('egi.default_wallets.EPP.rebind_royalty')
+            // - Natan: config('egi.default_wallets.Natan.rebind_royalty')
+            // - Frangette: config('egi.default_wallets.Ass_Frangette.rebind_royalty')
+
+            $beneficiaries = ['Creator', 'EPP', 'Natan', 'Ass_Frangette'];
+
+            $totalRoyaltyPercentage = 0.0;
+            $royaltyDistributions = [];
+            
+            // Pre-fetch wallets for this collection
+            $collectionWallets = $egi->collection->wallets->keyBy('platform_role');
+
+            foreach ($beneficiaries as $role) {
+                // Determine Percentage
+                $configKey = "egi.default_wallets.{$role}.rebind_royalty";
+                $defaultRoyalty = config($configKey, 0.0);
+                
+                // For Creator, prefer wallet setting if available
+                $wallet = $collectionWallets->get($role === 'Ass_Frangette' ? 'Natan' : $role); // Frangette might share Natan wallet or have none?
+                // Actually Frangette usually uses Natan wallet or distinct. 
+                // Let's assume for now Frangette is a separate logical entity but might not have a wallet in the DB yet if not created.
+                // If it's pure platform fee, we might not need a wallet record if we pay to User directly, BUT PaymentDistribution requires wallet_id usually?
+                // Nullable wallet_id is allowed in migration? Let's check. 
+                // Migration `2025_12_11_100000` didn't touch wallet_id nullability.
+                // Assuming wallet is required or preferred.
+                
+                $percentage = $defaultRoyalty;
+                if ($role === 'Creator' && $wallet && $wallet->royalty_rebind > 0) {
+                     $percentage = (float) $wallet->royalty_rebind;
+                }
+                
+                if ($percentage <= 0) continue;
+                
+                $amount = round($paymentAmountEur * ($percentage / 100), 2);
+                if ($amount <= 0) continue;
+
+                // Determine Payee User ID
+                $userId = null;
+                if ($role === 'Creator') {
+                    $userId = $wallet->user_id ?? $egi->collection->creator_id;
+                } elseif ($role === 'EPP') {
+                    $userId = config('egi.default_ids.epp_user_id');
+                } elseif ($role === 'Natan') {
+                    $userId = config('egi.default_ids.natan_user_id');
+                } elseif ($role === 'Ass_Frangette') {
+                    $userId = config('egi.default_ids.natan_user_id'); // Using Natan ID as placeholder/dest
+                }
+
+                if (!$userId) continue;
+
+                $royaltyDistributions[] = [
+                    'role' => $role,
+                    'user_id' => $userId,
+                    'wallet_id' => $wallet->id ?? null, // Best effort wallet link
+                    'amount' => $amount,
+                    'percentage' => $percentage
+                ];
+                
+                $totalRoyaltyPercentage += $percentage;
+            }
+
+            // Deduct total royalties from seller share
+            // Ensure seller doesn't go negative (edge case protection)
+            $totalRoyaltyAmount = collect($royaltyDistributions)->sum('amount');
+            
+            if ($totalRoyaltyAmount > 0 && $totalRoyaltyAmount < $paidAmountRecorded) {
+                // Update Seller Distribution
+                $rebindDistribution->amount_eur -= $totalRoyaltyAmount;
+                $rebindDistribution->percentage = 100.0 - $totalRoyaltyPercentage;
+                $rebindDistribution->save();
+                
+                // Create Royalty Distributions
+                foreach ($royaltyDistributions as $dist) {
+                    PaymentDistribution::create([
+                        'source_type' => 'rebind',
+                        'egi_id' => $egi->id,
+                        'collection_id' => $egi->collection_id,
+                        'seller_user_id' => $previousOwnerId,
+                        'buyer_user_id' => $newOwnerId,
+                        'user_id' => $dist['user_id'],
+                        'wallet_id' => $dist['wallet_id'],
+                        'user_type' => match($dist['role']) { // Map roles to UserTypeEnum
+                            'Creator' => UserTypeEnum::CREATOR,
+                            'EPP' => UserTypeEnum::EPP,
+                            default => UserTypeEnum::FRANGETTE // Natan/Frangette are platform
+                        },
+                        'sale_price' => $paymentAmountEur,
+                        'amount_eur' => $dist['amount'],
+                        'percentage' => $dist['percentage'],
+                        'exchange_rate' => 1.0,
+                        'distribution_status' => DistributionStatusEnum::CONFIRMED,
+                        'metadata' => [
+                            'royalty_type' => strtolower($dist['role']) . '_rebind',
+                            'origin_distribution_id' => $rebindDistribution->id,
+                            'payment_method' => $paymentMethod,
+                            'paid_currency' => $paidCurrency,
+                        ],
+                    ]);
+                }
+            }
 
             if ($request->expectsJson()) {
                 return response()->json([

@@ -146,17 +146,17 @@ return [
         'Natan' => [ // Assumes Natan represents the platform share (using FRANGETTE keys from ENV)
             /**
              * Default royalty percentage for the Platform (Natan) on the first sale (Mint).
-             * @env FRANGETTE_ROYALTY_MINT
+             * @env NATAN_ROYALTY_MINT
              * @type float
              */
-            'mint_royalty'   => (float) env('FRANGETTE_ROYALTY_MINT', 10.0),
+            'mint_royalty'   => (float) env('NATAN_ROYALTY_MINT', 10.0),
 
             /**
              * Default royalty percentage for the Platform (Natan) on secondary market sales (Rebind).
-             * @env FRANGETTE_ROYALTY_REBIND
+             * @env NATAN_ROYALTY_REBIND
              * @type float
              */
-            'rebind_royalty' => (float) env('FRANGETTE_ROYALTY_REBIND', 0.7),
+            'rebind_royalty' => (float) env('NATAN_ROYALTY_REBIND', 0.7),
 
             /**
              * Indicates if the Platform wallet entry should be marked as anonymous. (Confirm?)
