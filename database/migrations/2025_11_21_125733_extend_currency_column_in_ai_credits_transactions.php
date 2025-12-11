@@ -22,30 +22,39 @@ return new class extends Migration {
      * per supportare 'EGILI' e altre valute future
      */
     public function up(): void {
-        // Only MySQL/MariaDB support MODIFY COLUMN syntax
-        // PostgreSQL uses ALTER COLUMN ... TYPE
-        if (!DatabaseHelper::isMysql()) {
-            return;
-        }
+        $driver = DB::getDriverName();
 
-        DB::statement("
-            ALTER TABLE ai_credits_transactions 
-            MODIFY COLUMN currency VARCHAR(10) DEFAULT 'EUR' COMMENT 'Valuta pagamento'
-        ");
+        if ($driver === 'mysql' || $driver === 'mariadb') {
+            DB::statement("
+                ALTER TABLE ai_credits_transactions 
+                MODIFY COLUMN currency VARCHAR(10) DEFAULT 'EUR' COMMENT 'Valuta pagamento'
+            ");
+        } elseif ($driver === 'pgsql') {
+            DB::statement("
+                ALTER TABLE ai_credits_transactions 
+                ALTER COLUMN currency TYPE VARCHAR(10),
+                ALTER COLUMN currency SET DEFAULT 'EUR'
+            ");
+        }
     }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void {
-        if (!DatabaseHelper::isMysql()) {
-            return;
-        }
+        $driver = DB::getDriverName();
 
-        // Rollback: Torna a VARCHAR(3)
-        DB::statement("
-            ALTER TABLE ai_credits_transactions 
-            MODIFY COLUMN currency VARCHAR(3) DEFAULT 'EUR' COMMENT 'Valuta pagamento'
-        ");
+        if ($driver === 'mysql' || $driver === 'mariadb') {
+            DB::statement("
+                ALTER TABLE ai_credits_transactions 
+                MODIFY COLUMN currency VARCHAR(3) DEFAULT 'EUR' COMMENT 'Valuta pagamento'
+            ");
+        } elseif ($driver === 'pgsql') {
+            DB::statement("
+                ALTER TABLE ai_credits_transactions 
+                ALTER COLUMN currency TYPE VARCHAR(3),
+                ALTER COLUMN currency SET DEFAULT 'EUR'
+            ");
+        }
     }
 };
