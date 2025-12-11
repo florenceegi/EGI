@@ -49,13 +49,16 @@ class PaymentDistribution extends Model {
      * @var array<string>
      */
     protected $fillable = [
-        'source_type',           // Phase 2: mint/reservation/transfer tracking
+        'source_type',           // Phase 2: mint/reservation/transfer/rebind tracking
         'egi_id',                // Direct EGI reference (always set)
         'reservation_id',
         'egi_blockchain_id',     // Phase 2: Link to blockchain record (mint tracking)
         'blockchain_tx_id',      // Phase 2: Algorand transaction ID (mint tracking)
         'collection_id',
         'user_id',
+        'seller_user_id',        // Rebind: User selling the EGI (NULL for primary mint)
+        'buyer_user_id',         // Rebind: User purchasing the EGI
+        'sale_price',            // Rebind: Total sale price for ownership history
         'wallet_id',             // Reference to wallet (SOURCE OF TRUTH for platform_role)
         'user_type',             // Account type (weak, creator, etc.) - backward compat
         'platform_role',         // Wallet role (Natan, EPP, Frangette, Creator) - NEW SOURCE OF TRUTH
@@ -76,6 +79,7 @@ class PaymentDistribution extends Model {
         'distribution_status' => DistributionStatusEnum::class,
         'percentage' => 'decimal:2',
         'amount_eur' => 'decimal:2',
+        'sale_price' => 'decimal:2',
         'exchange_rate' => 'decimal:10',
         'is_epp' => 'boolean',
         'metadata' => 'array',
@@ -125,6 +129,22 @@ class PaymentDistribution extends Model {
         return $this->belongsTo(Wallet::class);
     }
 
+    /**
+     * Get the seller user for rebind transactions
+     * @return BelongsTo
+     */
+    public function seller(): BelongsTo {
+        return $this->belongsTo(User::class, 'seller_user_id');
+    }
+
+    /**
+     * Get the buyer user for rebind transactions
+     * @return BelongsTo
+     */
+    public function buyer(): BelongsTo {
+        return $this->belongsTo(User::class, 'buyer_user_id');
+    }
+
     // ===== SCOPES FOR ANALYTICS =====
 
     /**
@@ -143,6 +163,15 @@ class PaymentDistribution extends Model {
      */
     public function scopeMintSource(Builder $query): Builder {
         return $query->where('source_type', 'mint');
+    }
+
+    /**
+     * Scope for rebind-based distributions (Secondary Market)
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeRebindSource(Builder $query): Builder {
+        return $query->where('source_type', 'rebind');
     }
 
     /**
