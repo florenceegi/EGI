@@ -427,6 +427,10 @@ Route::prefix('home')->name('home.')->group(function () {
         ->name('collections.subscription.activate')
         ->middleware('auth');
 
+    Route::post('/collections/{id}/monetization/toggle-auto-renew', [CollectionsController::class, 'toggleAutoRenew'])
+        ->name('collections.subscription.toggle-auto-renew')
+        ->middleware('auth');
+
     // Collection management (restricted to creators)
     // Route::middleware(['can:manage-collections'])->group(function () {
     //     Route::get('/collections/create', [CollectionsController::class, 'create'])->name('collections.create');

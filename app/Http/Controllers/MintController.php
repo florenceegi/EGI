@@ -104,6 +104,21 @@ class MintController extends Controller {
                 return redirect()->route('mint.show', $egi->blockchain->id);
             }
 
+            // POLICY CHECK: Check if Collection can sell EGIs (Subscription/EPP valid)
+            $subscriptionService = app(\App\Services\CollectionSubscriptionService::class);
+            if (!$subscriptionService->canSellEgis($egi->collection)) {
+                 $this->errorManager->handle('MINT_BLOCKED_SUBSCRIPTION_EXPIRED', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $egiId,
+                    'collection_id' => $egi->collection_id
+                ]);
+                
+                // Redirect with specific error message
+                return redirect()->back()->withErrors([
+                    'error' => 'La vendita di questo EGI è attualmente sospesa perché l\'abbonamento della collezione è scaduto.'
+                ]);
+            }
+
             // ✅ Se il pagamento è stato completato con successo (redirect da Stripe)
             if ($paymentSuccess == '1') {
                 $sessionId = request()->query('session_id');

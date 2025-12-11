@@ -190,6 +190,7 @@ class CollectionSubscriptionService {
                 'days_remaining' => (int) $daysRemaining,
                 'last_payment_date' => $lastSubscription->created_at,
                 'last_payment_amount' => $lastSubscription->amount,
+                'transaction' => $lastSubscription,
             ];
         } catch (\Exception $e) {
             $this->logger->error('[CollectionSubscription] Get status failed', [
@@ -214,7 +215,7 @@ class CollectionSubscriptionService {
      * @param Collection $collection Collection to subscribe
      * @return array Result with success status and data
      */
-    public function processSubscription(User $user, Collection $collection): array {
+    public function processSubscription(User $user, Collection $collection, bool $autoRenew = true): array {
         DB::beginTransaction();
 
         try {
@@ -300,6 +301,30 @@ class CollectionSubscriptionService {
             // Clear cache for collection rights
             Cache::forget("collection_has_rights_{$collection->id}");
 
+            // Register Recurring Subscription if requested
+            if ($autoRenew) {
+                try {
+                    $recurringService = app(RecurringPaymentService::class);
+                    $recurringService->registerSubscription(
+                        $user, 
+                        $collection, 
+                        'collection_subscription', 
+                        $expiresAt,
+                        [
+                            'cost_egili' => self::SUBSCRIPTION_COST_EGILI,
+                            'duration_days' => self::SUBSCRIPTION_DURATION_DAYS
+                        ]
+                    );
+                } catch (\Exception $e) {
+                    // Log error but don't fail the main subscription
+                    $this->logger->error('[CollectionSubscription] Failed to register auto-renew', [
+                        'user_id' => $user->id,
+                        'collection_id' => $collection->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
             return [
                 'success' => true,
                 'message' => 'Subscription activated successfully',
@@ -337,5 +362,77 @@ class CollectionSubscriptionService {
             'duration_days' => self::SUBSCRIPTION_DURATION_DAYS,
             'cost_eur_equivalent' => self::SUBSCRIPTION_COST_EGILI * 0.01, // 1 Egili = €0.01
         ];
+    }
+        /**
+     * Record a renewal transaction (called by RecurringPaymentService)
+     */
+    public function recordRenewalTransaction(User $user, Collection $collection, int $amount, int $durationDays)
+    {
+        $expiresAt = now()->addDays($durationDays);
+        
+        // Retrieve the EgiliTransaction that was just created (hacky but effective for MVP)
+        // Or better: Pass the EgiliTransaction object if refactored.
+        // For MVP, we'll just create the AiCredits record.
+        
+        $egiliTransaction = \App\Models\EgiliTransaction::where('user_id', $user->id)
+            ->where('amount', $amount)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        AiCreditsTransaction::create([
+            'user_id' => $user->id,
+            'transaction_type' => 'subscription',
+            'operation' => 'subtract',
+            'amount' => $amount,
+            'balance_before' => $egiliTransaction?->balance_before ?? 0,
+            'balance_after' => $egiliTransaction?->balance_after ?? 0,
+            'source_type' => 'collection_subscription',
+            'source_id' => $collection->id,
+            'source_model' => 'App\\Models\\Collection',
+            'feature_used' => 'collection_subscription_renewal',
+            'feature_parameters' => json_encode([
+                'collection_id' => $collection->id,
+                'collection_name' => $collection->collection_name ?? $collection->name,
+                'duration_days' => $durationDays,
+                'auto_renewal' => true,
+            ]),
+            'subscription_tier' => 'collection_basic',
+            'currency' => 'EGILI',
+            'expires_at' => $expiresAt,
+            'is_expired' => false,
+            'status' => 'completed',
+            'ip_address' => '127.0.0.1', // System (Null IP)
+            'user_agent' => 'System/AutoRenewal',
+            'metadata' => json_encode([
+                'renewal' => true,
+                'egili_transaction_id' => $egiliTransaction?->id,
+            ]),
+        ]);
+        
+        // Clear cache
+        Cache::forget("collection_has_rights_{$collection->id}");
+        
+        $this->logger->info('[CollectionSubscription] Renewal recorded', [
+            'collection_id' => $collection->id,
+            'user_id' => $user->id,
+            'expires_at' => $expiresAt
+        ]);
+    }
+    /**
+     * Check if collection can sell EGIs (Policy Rule #1)
+     * If subscription expired or invalid -> NO SALES
+     */
+    public function canSellEgis(Collection $collection): bool
+    {
+        return $this->collectionHasRights($collection);
+    }
+
+    /**
+     * Check if a plan is eligible for the collection (Downgrade Protection Policy)
+     * Cannot subscribe to plan < existing EGI count
+     */
+    public function isPlanEligible(Collection $collection, int $planSize): bool
+    {
+        return $collection->egis()->count() <= $planSize;
     }
 }

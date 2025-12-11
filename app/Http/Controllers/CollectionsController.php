@@ -727,4 +727,49 @@ class CollectionsController extends Controller {
             ], 500);
         }
     }
+    /**
+     * Toggle auto-renew status
+     */
+    public function toggleAutoRenew(Request $request, int $id): JsonResponse {
+        try {
+            $user = FegiAuth::user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
+
+            $collection = Collection::findOrFail($id);
+            
+            // Authorization check (creator or admin?)
+            if ((int) $collection->creator_id !== (int) $user->id) {
+                return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+            }
+
+            $active = $request->boolean('active');
+            $service = app(\App\Services\RecurringPaymentService::class);
+            
+            $status = $service->toggleSubscriptionStatus(
+                $user, 
+                $collection, 
+                'collection_subscription', 
+                $active
+            );
+
+            if ($status === 'not_found') {
+                return response()->json(['success' => false, 'message' => 'Subscription not found'], 404);
+            }
+
+            return response()->json([
+                'success' => true, 
+                'status' => $status,
+                'message' => $status === 'active' ? __('collection.show.dashboard.enabled') : __('collection.show.dashboard.disabled')
+            ]);
+            
+        } catch (\Throwable $e) {
+            app(\Ultra\UltraLogManager\UltraLogManager::class)->error('[CollectionsController] toggleAutoRenew failed', [
+                'collection_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json(['success' => false, 'message' => 'Server error'], 500);
+        }
+    }
 }

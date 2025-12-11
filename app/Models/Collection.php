@@ -408,4 +408,160 @@ class Collection extends Model implements HasMedia {
             ->orderByRaw('CASE WHEN featured_position IS NOT NULL THEN featured_position ELSE 999 END ASC')
             ->take($limit);
     }
+
+    /**
+     * Accessor for Monetization Type
+     * Determine if collection requires 'subscription' or 'epp' based on user type
+     *
+     * @return string|null 'subscription', 'epp', or null
+     */
+    public function getMonetizationTypeAttribute(): ?string {
+        // If monetization_type is explicitly set in DB (future-proof), use it
+        if (array_key_exists('monetization_type', $this->attributes) && $this->attributes['monetization_type']) {
+            return $this->attributes['monetization_type'];
+        }
+
+        // Otherwise, derive from business rules (Transactional Truth)
+        if ($this->isCreatorCompany()) {
+            return 'subscription';
+        }
+
+        return 'epp';
+    }
+
+    /**
+     * Accessor for Subscription Status
+     * Queries the Ledger via Service to determine active status
+     *
+     * @return string 'active', 'inactive', 'expired'
+     */
+    public function getSubscriptionStatusAttribute(): string {
+        // If subscription_status is explicitly set in DB (future-proof), use it
+        if (array_key_exists('subscription_status', $this->attributes) && $this->attributes['subscription_status']) {
+            return $this->attributes['subscription_status'];
+        }
+
+        // Derive from Transaction Ledger using Service
+        try {
+            /** @var \App\Services\CollectionSubscriptionService $service */
+            $service = app(\App\Services\CollectionSubscriptionService::class);
+            $statusData = $service->getSubscriptionStatus($this);
+            
+            if ($statusData['is_active']) {
+                return 'active';
+            }
+            
+            // If has subscription but expired
+            if ($statusData['has_subscription'] && !$statusData['is_active']) {
+                return 'expired';
+            }
+            
+            return 'inactive';
+        } catch (\Throwable $e) {
+            // Service might not be available in all contexts (e.g. tests)
+            return 'inactive';
+        }
+    }
+
+    /**
+     * Accessor for Subscription Tier
+     *
+     * @return string|null
+     */
+    public function getSubscriptionTierAttribute(): ?string {
+        if (array_key_exists('subscription_tier', $this->attributes) && $this->attributes['subscription_tier']) {
+            return $this->attributes['subscription_tier'];
+        }
+
+        try {
+            /** @var \App\Services\CollectionSubscriptionService $service */
+            $service = app(\App\Services\CollectionSubscriptionService::class);
+            $statusData = $service->getSubscriptionStatus($this);
+            
+            return $statusData['transaction']?->subscription_tier ?? null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Accessor for Subscription Expiration Date
+     *
+     * @return string|null
+     */
+    public function getSubscriptionExpiresAtAttribute(): ?string {
+        if (array_key_exists('subscription_expires_at', $this->attributes) && $this->attributes['subscription_expires_at']) {
+            return $this->attributes['subscription_expires_at'];
+        }
+
+        try {
+            /** @var \App\Services\CollectionSubscriptionService $service */
+            $service = app(\App\Services\CollectionSubscriptionService::class);
+            $statusData = $service->getSubscriptionStatus($this);
+            
+            return $statusData['expires_at'] ? $statusData['expires_at']->toDateTimeString() : null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Accessor for Subscription Start Date
+     *
+     * @return string|null
+     */
+    public function getSubscriptionStartedAtAttribute(): ?string {
+        if (array_key_exists('subscription_started_at', $this->attributes) && $this->attributes['subscription_started_at']) {
+            return $this->attributes['subscription_started_at'];
+        }
+
+        try {
+            /** @var \App\Services\CollectionSubscriptionService $service */
+            $service = app(\App\Services\CollectionSubscriptionService::class);
+            $statusData = $service->getSubscriptionStatus($this);
+            
+            return $statusData['transaction']?->created_at?->toDateTimeString() ?? null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Accessor for Subscription Stripe ID (Payment Method)
+     *
+     * @return string|null
+     */
+    public function getSubscriptionStripeIdAttribute(): ?string {
+        try {
+            /** @var \App\Services\CollectionSubscriptionService $service */
+            $service = app(\App\Services\CollectionSubscriptionService::class);
+            $statusData = $service->getSubscriptionStatus($this);
+            
+            // Assuming payment_transaction_id might store this, or we verify payment_method
+            if ($statusData['transaction'] && $statusData['transaction']->payment_method === 'stripe') {
+                return $statusData['transaction']->payment_transaction_id;
+            }
+            return null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+    /**
+     * Accessor for Auto-Renew Status
+     *
+     * @return bool
+     */
+    public function getIsAutoRenewActiveAttribute(): bool {
+        try {
+            /** @var \App\Services\RecurringPaymentService $service */
+            $service = app(\App\Services\RecurringPaymentService::class);
+            return $service->hasActiveSubscription(
+                auth()->user() ?? $this->creator, // Use auth user or creator as fallback
+                $this,
+                'collection_subscription'
+            );
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
 }

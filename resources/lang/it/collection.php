@@ -668,6 +668,9 @@ return [
             'cancel_subscription' => 'Cancella Abbonamento',
             'no_active_subscription' => 'Nessun abbonamento attivo',
             'using_epp_mode' => 'Questa collezione utilizza la modalità EPP',
+            'auto_renew' => 'Rinnovo Automatico',
+            'enabled' => 'Abilitato',
+            'disabled' => 'Disabilitato',
             'close' => 'Chiudi',
         ],
 

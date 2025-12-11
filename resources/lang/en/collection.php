@@ -615,6 +615,9 @@ return [
             'cancel_subscription' => 'Cancel Subscription',
             'no_active_subscription' => 'No active subscription',
             'using_epp_mode' => 'This collection is using EPP mode',
+            'auto_renew' => 'Auto Renew',
+            'enabled' => 'Enabled',
+            'disabled' => 'Disabled',
             'close' => 'Close',
         ],
 
