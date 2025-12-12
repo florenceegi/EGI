@@ -440,6 +440,8 @@ class MintController extends Controller {
             ]);
 
             $egi = Egi::findOrFail($validated['egi_id']);
+            // ✅ FIX: Capture ID before potential cloning swap because Cache uses the original ID
+            $originalEgiId = $egi->id;
             
             // MASTER CLONABLE LOGIC: If buying a Master, clone it first
             if ($egi->is_template) {
@@ -566,13 +568,15 @@ class MintController extends Controller {
             $goldBarMintData = null;
             if ($egi->isGoldBar()) {
                 // STAGING FIX: Use Cache instead of Session
-                $cacheKey = 'gold_bar_mint_' . Auth::id() . '_' . $egi->id;
+                // Use ORIGINAL ID for lookup because that's what was used in the form/refresh
+                $cacheKey = 'gold_bar_mint_' . Auth::id() . '_' . $originalEgiId;
                 $goldBarMintData = Cache::get($cacheKey);
 
                 if (!$goldBarMintData) {
                     $this->logger->error('Gold Bar mint attempted without price CACHE data', [
                         'user_id' => Auth::id(),
                         'egi_id' => $egi->id,
+                        'original_egi_id' => $originalEgiId, // Log extra context
                         'cache_key' => $cacheKey
                     ]);
                     return redirect()->back()->withErrors([
