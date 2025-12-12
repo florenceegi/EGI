@@ -277,13 +277,7 @@ class CookieConsentController extends Controller {
                 'error_line' => $e->getLine()
             ];
 
-            // Log directly to Laravel log to avoid UEM issues
-            \Log::error('COOKIE_CONSENT_SAVE_ERROR', $errorData);
-
-            return response()->json([
-                'success' => false,
-                'error' => __('cookie.consent_save_error')
-            ], 500);
+            return $this->errorManager->handle('COOKIE_CONSENT_SAVE_ERROR', $errorData, $e);
         }
     }
 

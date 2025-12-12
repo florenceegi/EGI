@@ -8,7 +8,8 @@ use App\Services\Wallet\WalletProvisioningService;
 use App\Services\Wallet\WalletRedemptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * WalletController
@@ -30,13 +31,19 @@ use Illuminate\Support\Facades\Log;
 class WalletController extends Controller {
     protected WalletProvisioningService $walletService;
     protected WalletRedemptionService $redemptionService;
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
 
     public function __construct(
         WalletProvisioningService $walletService,
-        WalletRedemptionService $redemptionService
+        WalletRedemptionService $redemptionService,
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
     ) {
         $this->walletService = $walletService;
         $this->redemptionService = $redemptionService;
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
     }
     /**
      * Mostra la pagina di riscatto wallet
@@ -58,8 +65,9 @@ class WalletController extends Controller {
 
         // If no wallet, redirect
         if (!$status['has_wallet']) {
-            Log::warning('No wallet found for redemption', [
+            $this->logger->warning('No wallet found for redemption', [
                 'user_id' => $user->id,
+                'log_category' => 'SECURITY_AUDIT'
             ]);
 
             return redirect()
@@ -71,10 +79,11 @@ class WalletController extends Controller {
         $walletRecord = Wallet::where('user_id', $user->id)->first();
 
         // Debug log
-        Log::info('Wallet redemption page accessed', [
+        $this->logger->info('Wallet redemption page accessed', [
             'user_id' => $user->id,
             'wallet_address' => $status['wallet_address'],
             'is_redeemed' => $status['redeemed'],
+            'log_category' => 'SECURITY_AUDIT'
         ]);
 
         // If already redeemed, show redeemed state
@@ -143,9 +152,10 @@ class WalletController extends Controller {
             'wallet_redemption_user_id' => $user->id,
         ]);
 
-        Log::channel('security')->info('Wallet redemption confirmed', [
+        $this->logger->info('Wallet redemption confirmed', [
             'user_id' => $user->id,
             'wallet' => substr($user->wallet, 0, 6) . '...',
+            'log_category' => 'SECURITY_AUDIT'
         ]);
 
         return response()->json([
@@ -191,9 +201,10 @@ class WalletController extends Controller {
         // 2. Validate redemption is possible
         $validation = $this->redemptionService->validateRedemption($user);
         if (!$validation['valid']) {
-            Log::channel('security')->warning('Wallet redemption validation failed', [
+            $this->logger->warning('Wallet redemption validation failed', [
                 'user_id' => $user->id,
                 'errors' => $validation['errors'],
+                'log_category' => 'SECURITY_AUDIT'
             ]);
 
             return response()->json([
@@ -204,19 +215,21 @@ class WalletController extends Controller {
         }
 
         // 3. Execute redemption (this is irreversible after mnemonic deletion!)
-        Log::channel('security')->warning('Starting wallet redemption execution', [
+        $this->logger->warning('Starting wallet redemption execution', [
             'user_id' => $user->id,
             'wallet_address' => $validation['wallet_address'],
             'cost_egili' => $validation['cost']['egili'],
             'asa_count' => $validation['cost']['breakdown']['asa_count'] ?? 0,
+            'log_category' => 'SECURITY_AUDIT'
         ]);
 
         $result = $this->redemptionService->executeRedemption($user);
 
         if (!$result['success']) {
-            Log::channel('security')->error('Wallet redemption failed', [
+            $this->logger->error('Wallet redemption failed', [
                 'user_id' => $user->id,
                 'error' => $result['error'],
+                'log_category' => 'SECURITY_AUDIT'
             ]);
 
             return response()->json([
@@ -231,12 +244,13 @@ class WalletController extends Controller {
         $document = $this->generateSeedPhraseDocument($user, $wallet, $result['mnemonic']);
 
         // 5. Log successful redemption
-        Log::channel('security')->critical('Wallet redemption completed successfully', [
+        $this->logger->critical('Wallet redemption completed successfully', [
             'user_id' => $user->id,
             'wallet_address' => $validation['wallet_address'],
             'cost_egili' => $validation['cost']['egili'],
             'asa_count' => $result['details']['asa_count'] ?? 0,
             'ip' => $request->ip(),
+            'log_category' => 'SECURITY_AUDIT'
         ]);
 
         return response()->json([
@@ -338,9 +352,10 @@ class WalletController extends Controller {
         try {
             $seedPhrase = $this->decryptSeedPhrase($wallet);
         } catch (\Exception $e) {
-            Log::channel('security')->error('Failed to decrypt seed phrase', [
+            $this->logger->error('Failed to decrypt seed phrase', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
+                'log_category' => 'SECURITY_AUDIT'
             ]);
             abort(500, __('wallet.redemption.decryption_failed'));
         }
@@ -349,11 +364,12 @@ class WalletController extends Controller {
         $content = $this->generateSeedPhraseDocument($user, $wallet, $seedPhrase);
 
         // Log dell'evento
-        Log::channel('security')->warning('Seed phrase downloaded - wallet redemption', [
+        $this->logger->warning('Seed phrase downloaded - wallet redemption', [
             'user_id' => $user->id,
             'wallet' => substr($user->wallet, 0, 6) . '...',
             'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
+            'log_category' => 'SECURITY_AUDIT'
         ]);
 
         // Pulisci la sessione
@@ -398,10 +414,11 @@ class WalletController extends Controller {
             'dek_encrypted' => null,
         ]);
 
-        Log::channel('security')->critical('Wallet fully redeemed - seed phrase deleted', [
+        $this->logger->critical('Wallet fully redeemed - seed phrase deleted', [
             'user_id' => $user->id,
             'wallet' => substr($user->wallet, 0, 6) . '...',
             'ip' => $request->ip(),
+            'log_category' => 'SECURITY_AUDIT'
         ]);
 
         return response()->json([

@@ -7,8 +7,20 @@ use App\Models\PaymentDistribution;
 use App\Models\Egi;
 use App\Models\Collection;
 use Illuminate\Http\Request;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 class PaymentDistributionStatsController extends Controller {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
     /**
      * Ottieni le statistiche globali di Payment Distribution
      * Utilizzato per aggiornare dinamicamente le statistiche sulla homepage
@@ -56,9 +68,10 @@ class PaymentDistributionStatsController extends Controller {
                 ]
             ]);
         } catch (\Exception $e) {
-            \Log::error('Errore nel recupero delle statistiche globali di PaymentDistribution', [
+            $this->logger->error('Errore nel recupero delle statistiche globali di PaymentDistribution', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'log_category' => 'SYSTEM_MAINTENANCE'
             ]);
 
             return response()->json([
@@ -87,10 +100,11 @@ class PaymentDistributionStatsController extends Controller {
                 'data' => $distributionStats
             ]);
         } catch (\Exception $e) {
-            \Log::error('Errore nel recupero delle statistiche della collezione', [
+            $this->logger->error('Errore nel recupero delle statistiche della collezione', [
                 'collection_id' => $collectionId,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'log_category' => 'SYSTEM_MAINTENANCE'
             ]);
 
             return response()->json([

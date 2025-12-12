@@ -9,12 +9,24 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * @Oracode API Controller: SuperAdmin AI Management
  * 🎯 Purpose: API per gestione AI consultations, credits, features, statistics
  */
 class AiApiController extends Controller {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
     /**
      * Check if a table exists and has a specific column
      */

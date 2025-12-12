@@ -3,8 +3,19 @@
 namespace App\Http\Controllers\Info;
 
 use App\Http\Controllers\Controller;
-
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 class FlorenceEgiController extends Controller {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
 
     /**
      * Versione completa della pagina informativa

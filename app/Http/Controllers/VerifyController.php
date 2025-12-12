@@ -1872,11 +1872,7 @@ class VerifyController extends Controller
                 ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"')
                 ->header('Content-Length', strlen($pdfResult['pdf_content']));
         } catch (\Exception $e) {
-            // Temporarily show the actual error for debugging
-            \Log::error('[Verify Controller] PDF generation error: ' . $e->getMessage());
-            \Log::error('[Verify Controller] PDF generation stack: ' . $e->getTraceAsString());
 
-            throw $e; // Re-throw to see the actual error
 
             $this->errorManager->handle('CERTIFICATE_PDF_DOWNLOAD_ERROR', [
                 'serial' => $serial,

@@ -6,10 +6,19 @@ use App\Models\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 class CollectionBannerController extends Controller {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(UltraLogManager $logger, ErrorManagerInterface $errorManager) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
+
     /**
      * Upload/replace banner image for a Collection using Spatie Media.
      */
@@ -47,14 +56,11 @@ class CollectionBannerController extends Controller {
                 'thumb_url' => $media->getUrl('thumb'),
             ]);
         } catch (\Throwable $e) {
-            Log::error('Collection banner upload failed', [
+            return $this->errorManager->handle('COLLECTION_BANNER_UPLOAD_ERROR', [
                 'collection_id' => $collection->id,
+                'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
-            ]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Upload failed',
-            ], 500);
+            ], $e);
         }
     }
 }

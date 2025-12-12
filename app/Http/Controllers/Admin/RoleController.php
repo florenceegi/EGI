@@ -13,11 +13,20 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 class RoleController extends Controller
 {
-    public function __construct()
-    {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
         // Sposta il middleware nella definizione delle rotte
     }
 

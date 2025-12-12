@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * @Oracode Controller: PA Batch Source Management
@@ -23,6 +25,16 @@ use Illuminate\Http\RedirectResponse;
  */
 class PaBatchSourceController extends Controller
 {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
     /**
      * Display a listing of batch sources with stats
      */

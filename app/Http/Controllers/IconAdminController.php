@@ -5,12 +5,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Icon;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 class IconAdminController extends Controller
 {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
 
-    public function __construct()
-    {
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
         $this->middleware('can:manage_icons');
     }
 

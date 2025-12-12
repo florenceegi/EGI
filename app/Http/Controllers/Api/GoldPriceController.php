@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\GoldPriceService;
 use Illuminate\Http\JsonResponse;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Illuminate\Http\Request;
 
 /**
@@ -13,9 +15,16 @@ use Illuminate\Http\Request;
  * Handles gold price quotation requests and paid refreshes
  */
 class GoldPriceController extends Controller {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
     public function __construct(
-        protected GoldPriceService $goldPriceService
+        protected GoldPriceService $goldPriceService,
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
     ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
     }
 
     /**

@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\EgiTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * Trait Image Controller
@@ -19,6 +20,14 @@ use Exception;
  * @date 2025-09-01
  */
 class TraitImageController extends Controller {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(UltraLogManager $logger, ErrorManagerInterface $errorManager) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
+
     /**
      * Upload image for a trait
      */
@@ -77,16 +86,11 @@ class TraitImageController extends Controller {
                 ]
             ]);
         } catch (Exception $e) {
-            Log::error('Trait image upload error: ' . $e->getMessage(), [
+            return $this->errorManager->handle('TRAIT_IMAGE_UPLOAD_ERROR', [
                 'trait_id' => $request->trait_id,
                 'user_id' => auth()->id(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => __('traits.upload_error')
-            ], 500);
+                'error' => $e->getMessage()
+            ], $e);
         }
     }
 
@@ -118,16 +122,11 @@ class TraitImageController extends Controller {
                 'message' => __('traits.delete_success')
             ]);
         } catch (Exception $e) {
-            Log::error('Trait image deletion error: ' . $e->getMessage(), [
+            return $this->errorManager->handle('TRAIT_IMAGE_DELETE_ERROR', [
                 'trait_id' => $trait->id,
                 'user_id' => auth()->id(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => __('traits.delete_error')
-            ], 500);
+                'error' => $e->getMessage()
+            ], $e);
         }
     }
 
@@ -157,15 +156,10 @@ class TraitImageController extends Controller {
                 ]
             ]);
         } catch (Exception $e) {
-            Log::error('Trait image info error: ' . $e->getMessage(), [
+            return $this->errorManager->handle('TRAIT_IMAGE_INFO_ERROR', [
                 'trait_id' => $trait->id,
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => __('traits.info_error')
-            ], 500);
+                'error' => $e->getMessage()
+            ], $e);
         }
     }
 }

@@ -8,6 +8,8 @@ use App\Models\Egi;
 use App\Models\EgiTrait;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * @Oracode API Controller: SuperAdmin Dashboard
@@ -16,6 +18,16 @@ use Illuminate\Http\JsonResponse;
  */
 class DashboardApiController extends Controller
 {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
     /**
      * Get dashboard statistics
      */

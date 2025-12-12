@@ -12,6 +12,9 @@ use Illuminate\View\View;
 use Symfony\Component\Process\Process;
 use App\Models\AutomaticBackupConfig;
 
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+
 /**
  * @package App\Http\Controllers\Superadmin
  * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
@@ -24,6 +27,16 @@ use App\Models\AutomaticBackupConfig;
  */
 class MigrationOrchestratorController extends Controller
 {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
     private const ORCHESTRATOR_PATH = '/home/fabio/migration_orchestrator/migrate_shared.php';
     private const BACKUPS_PATH = '/home/fabio/migration_orchestrator/backups';
     private const PROJECTS = [
@@ -71,7 +84,10 @@ class MigrationOrchestratorController extends Controller
     public function status(string $project): JsonResponse
     {
         if (!isset(self::PROJECTS[$project])) {
-            return response()->json(['error' => 'Progetto non valido'], 400);
+            return $this->errorManager->handle('MIGRATION_PROJECT_INVALID', [
+                'project' => $project,
+                'user_id' => \Illuminate\Support\Facades\Auth::id()
+            ]);
         }
 
         $status = $this->getMigrationStatus($project);
@@ -115,7 +131,10 @@ class MigrationOrchestratorController extends Controller
         }
 
         if (!file_exists(self::ORCHESTRATOR_PATH)) {
-            return response()->json(['error' => 'Orchestrator non trovato'], 500);
+            return $this->errorManager->handle('MIGRATION_ORCHESTRATOR_MISSING', [
+                'path' => self::ORCHESTRATOR_PATH,
+                'user_id' => \Illuminate\Support\Facades\Auth::id()
+            ]);
         }
 
         // Build command
@@ -162,10 +181,10 @@ class MigrationOrchestratorController extends Controller
         $backupFile = $this->createDatabaseBackup($request->input('label'));
 
         if (!$backupFile) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Impossibile creare backup',
-            ], 500);
+            return $this->errorManager->handle('BACKUP_CREATION_FAILED', [
+                'label' => $request->input('label'),
+                'user_id' => \Illuminate\Support\Facades\Auth::id()
+            ]);
         }
 
         return response()->json([
@@ -192,25 +211,28 @@ class MigrationOrchestratorController extends Controller
         ]);
 
         if (!$request->input('confirmed')) {
-            return response()->json([
-                'error' => 'Conferma richiesta per ripristinare backup',
-            ], 400);
+            return $this->errorManager->handle('BACKUP_RESTORE_UNCONFIRMED', [
+                'path' => $request->input('backup_path'),
+                'user_id' => \Illuminate\Support\Facades\Auth::id()
+            ]);
         }
 
         $backupPath = $request->input('backup_path');
 
         if (!file_exists($backupPath)) {
-            return response()->json([
-                'error' => 'File backup non trovato',
-            ], 404);
+            return $this->errorManager->handle('BACKUP_FILE_NOT_FOUND', [
+                'path' => $backupPath,
+                'user_id' => \Illuminate\Support\Facades\Auth::id()
+            ]);
         }
 
         // Get database config from EGI (they share the same DB)
         $envFile = self::PROJECTS['EGI']['path'] . '/.env';
         if (!file_exists($envFile)) {
-            return response()->json([
-                'error' => 'File .env non trovato',
-            ], 500);
+            return $this->errorManager->handle('ENV_FILE_NOT_FOUND', [
+                'path' => $envFile,
+                'user_id' => \Illuminate\Support\Facades\Auth::id()
+            ]);
         }
 
         $env = $this->parseEnvFile($envFile);
@@ -237,11 +259,11 @@ class MigrationOrchestratorController extends Controller
         exec($command, $output, $returnCode);
 
         if ($returnCode !== 0) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Errore durante ripristino backup',
+            return $this->errorManager->handle('BACKUP_RESTORE_EXEC_FAILED', [
+                'command' => $command,
                 'output' => implode("\n", $output),
-            ], 500);
+                'user_id' => \Illuminate\Support\Facades\Auth::id()
+            ]);
         }
 
         return response()->json([
@@ -264,21 +286,24 @@ class MigrationOrchestratorController extends Controller
 
         // Security: only allow deletion from backups directory
         if (strpos($backupPath, self::BACKUPS_PATH) !== 0) {
-            return response()->json([
-                'error' => 'Percorso non valido',
-            ], 403);
+            return $this->errorManager->handle('BACKUP_PATH_INVALID', [
+                'path' => $backupPath,
+                'user_id' => \Illuminate\Support\Facades\Auth::id()
+            ]);
         }
 
         if (!file_exists($backupPath)) {
-            return response()->json([
-                'error' => 'File backup non trovato',
-            ], 404);
+            return $this->errorManager->handle('BACKUP_FILE_NOT_FOUND', [
+                'path' => $backupPath,
+                'user_id' => \Illuminate\Support\Facades\Auth::id()
+            ]);
         }
 
         if (!File::delete($backupPath)) {
-            return response()->json([
-                'error' => 'Impossibile eliminare backup',
-            ], 500);
+            return $this->errorManager->handle('BACKUP_DELETION_FAILED', [
+                'path' => $backupPath,
+                'user_id' => \Illuminate\Support\Facades\Auth::id()
+            ]);
         }
 
         return response()->json([
@@ -357,10 +382,11 @@ class MigrationOrchestratorController extends Controller
         exec($command, $output, $returnCode);
 
         if ($returnCode !== 0) {
-            \Log::error('Backup creation failed', [
+            $this->logger->error('Backup creation failed', [
                 'command' => $command,
                 'output' => implode("\n", $output),
                 'return_code' => $returnCode,
+                'log_category' => 'SYSTEM_MAINTENANCE'
             ]);
             return null;
         }

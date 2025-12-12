@@ -105,8 +105,9 @@ class ReservationController extends Controller
 
             return [];
         } catch (\Exception $e) {
-            \Log::error('Errore nel prepareGlobalStats per broadcast', [
-                'error' => $e->getMessage()
+            $this->logger->error('Errore nel prepareGlobalStats per broadcast', [
+                'error' => $e->getMessage(),
+                'log_category' => 'BROADCAST_STATS_ERROR'
             ]);
             return [];
         }
@@ -173,9 +174,10 @@ class ReservationController extends Controller
                 'formatted' => $formatted
             ];
         } catch (\Exception $e) {
-            \Log::error('Errore nel prepareCollectionStats per broadcast', [
+            $this->logger->error('Errore nel prepareCollectionStats per broadcast', [
                 'collection_id' => $collectionId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'log_category' => 'BROADCAST_STATS_ERROR'
             ]);
             return [];
         }

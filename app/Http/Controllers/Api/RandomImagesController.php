@@ -6,11 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\Egi;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * API Controller per ottenere immagini random per l'animazione splash
  */
 class RandomImagesController extends Controller {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
     /**
      * Ottiene immagini random da EGI pubblicati
      *
@@ -45,7 +57,7 @@ class RandomImagesController extends Controller {
                 'images' => array_values($images),
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error fetching random EGI images: ' . $e->getMessage());
+            $this->logger->error('Error fetching random EGI images: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'images' => [],

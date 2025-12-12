@@ -7,6 +7,8 @@ use App\Models\Collection;
 use App\Models\EppMilestone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * Controller for managing EPP (Environment Protection Programs) display and interaction.
@@ -29,6 +31,16 @@ use Illuminate\Support\Facades\DB;
  * @since 1.0.0
  */
 class EPPController extends Controller {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
     /**
      * Display a listing of the EPPs.
      *

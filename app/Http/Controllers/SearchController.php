@@ -4,9 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Services\UniversalSearchService;
 use Illuminate\Http\Request;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 class SearchController extends Controller {
-    public function __construct(protected UniversalSearchService $service) {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        protected UniversalSearchService $service,
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
     }
 
     public function panel(Request $request) {
@@ -61,15 +72,20 @@ class SearchController extends Controller {
                     $global = method_exists($paginator, 'total') ? $paginator->total() : null;
                     $page = $paginator->count();
                     if ($global !== null && $global < $page) {
-                        \Log::warning('Search paginator mismatch', [
+                        $this->logger->warning('Search paginator mismatch', [
                             'type' => $k,
                             'global_total' => $global,
                             'page_count' => $page,
                             'ids' => $paginator->pluck('id'),
+                            'log_category' => 'SEARCH_DEBUG'
                         ]);
                     }
                 } catch (\Throwable $e) {
-                    \Log::error('Search paginator diagnostics failed', ['type' => $k, 'error' => $e->getMessage()]);
+                    $this->logger->error('Search paginator diagnostics failed', [
+                        'type' => $k, 
+                        'error' => $e->getMessage(),
+                        'log_category' => 'SEARCH_ERROR'
+                    ]);
                 }
             }
         }

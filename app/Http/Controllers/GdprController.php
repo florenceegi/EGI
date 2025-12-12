@@ -32,7 +32,6 @@ use App\Services\Fiscal\FiscalValidatorFactory;
 use App\Services\Gdpr\ProcessingRestrictionService;
 use Carbon\Carbon;
 use TCPDF;
-use Illuminate\Support\Facades\Log;
 
 /**
  * @Oracode Controller: GDPR Compliance Management
@@ -2437,11 +2436,12 @@ class GdprController extends Controller {
                 ->header('Pragma', 'no-cache')
                 ->header('Expires', '0');
         } catch (\Exception $e) {
-            Log::error('Privacy Policy PDF Download Error', [
+            $this->logger->error('Privacy Policy PDF Download Error', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 'user_agent' => request()->userAgent(),
-                'ip' => request()->ip()
+                'ip' => request()->ip(),
+                'log_category' => 'GDPR_PDF_ERROR'
             ]);
 
             abort(500, 'Errore nella generazione del PDF');
@@ -2524,11 +2524,12 @@ class GdprController extends Controller {
                 ->header('Pragma', 'no-cache')
                 ->header('Expires', '0');
         } catch (\Exception $e) {
-            Log::error('Policy PDF Download Error', [
+            $this->logger->error('Policy PDF Download Error', [
                 'document_type' => $documentType,
                 'error' => $e->getMessage(),
                 'user_agent' => request()->userAgent(),
-                'ip' => request()->ip()
+                'ip' => request()->ip(),
+                'log_category' => 'GDPR_PDF_ERROR'
             ]);
 
             abort(500, 'Errore nella generazione del PDF');

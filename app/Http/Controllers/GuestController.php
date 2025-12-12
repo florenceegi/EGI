@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Services\CollectorCarouselService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * @Oracode Controller: Guest Homepage with Top Collectors Carousel
@@ -25,9 +27,17 @@ use Illuminate\View\View;
  */
 class GuestController extends Controller {
     protected CollectorCarouselService $collectorCarouselService;
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
 
-    public function __construct(CollectorCarouselService $collectorCarouselService) {
+    public function __construct(
+        CollectorCarouselService $collectorCarouselService,
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
         $this->collectorCarouselService = $collectorCarouselService;
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
     }
 
     /**

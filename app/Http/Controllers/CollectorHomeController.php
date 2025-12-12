@@ -29,14 +29,24 @@ class CollectorHomeController extends Controller {
      * @var PortfolioService
      */
     protected PortfolioService $portfolioService;
+    protected \Ultra\UltraLogManager\UltraLogManager $logger;
+    protected \Ultra\ErrorManager\Interfaces\ErrorManagerInterface $errorManager;
 
     /**
      * Constructor with dependency injection
      *
      * @param PortfolioService $portfolioService
+     * @param \Ultra\UltraLogManager\UltraLogManager $logger
+     * @param \Ultra\ErrorManager\Interfaces\ErrorManagerInterface $errorManager
      */
-    public function __construct(PortfolioService $portfolioService) {
+    public function __construct(
+        PortfolioService $portfolioService,
+        \Ultra\UltraLogManager\UltraLogManager $logger,
+        \Ultra\ErrorManager\Interfaces\ErrorManagerInterface $errorManager
+    ) {
         $this->portfolioService = $portfolioService;
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
     }
     /**
      * @Oracode Method: Display Collector Home Page
@@ -279,7 +289,10 @@ class CollectorHomeController extends Controller {
         $collector = User::findOrFail($id);
 
         if (!$collector->isCollector()) {
-            return response()->json(['error' => 'User is not a collector'], 404);
+            return $this->errorManager->handle('USER_NOT_COLLECTOR', [
+                'user_id' => $id,
+                'action' => 'get_stats'
+            ]);
         }
 
         $stats = $collector->getCollectorStats();

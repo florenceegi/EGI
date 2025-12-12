@@ -399,9 +399,12 @@ class PaWebScraperController extends Controller {
      */
     public function progress(PaWebScraper $scraper) {
         try {
-            // Authorization
             if ($scraper->user_id !== Auth::id()) {
-                return response()->json(['error' => 'Unauthorized'], 403);
+                return $this->errorManager->handle('PA_SCRAPER_UNAUTHORIZED', [
+                    'user_id' => Auth::id(),
+                    'scraper_id' => $scraper->id,
+                    'action' => 'progress'
+                ]);
             }
 
             $progressKey = "scraper_progress_{$scraper->id}_" . Auth::id();
@@ -416,7 +419,11 @@ class PaWebScraperController extends Controller {
 
             return response()->json($progress);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return $this->errorManager->handle('PA_SCRAPER_PROGRESS_ERROR', [
+                'user_id' => Auth::id(),
+                'scraper_id' => $scraper->id,
+                'error' => $e->getMessage()
+            ], $e);
         }
     }
 
@@ -428,7 +435,11 @@ class PaWebScraperController extends Controller {
         try {
             // Authorization
             if ($scraper->user_id !== Auth::id()) {
-                return response()->json(['error' => 'Unauthorized'], 403);
+                return $this->errorManager->handle('PA_SCRAPER_UNAUTHORIZED', [
+                    'user_id' => Auth::id(),
+                    'scraper_id' => $scraper->id,
+                    'action' => 'preview'
+                ]);
             }
 
             $this->logger->info('[PaWebScraperController] Preview scraper', [
@@ -452,14 +463,11 @@ class PaWebScraperController extends Controller {
                 'message' => "Trovati {$result['count']} atti per l'anno " . $request->input('year')
             ]);
         } catch (\Exception $e) {
-            $this->logger->error('[PaWebScraperController] Preview error', [
+            return $this->errorManager->handle('PA_SCRAPER_PREVIEW_ERROR', [
+                'user_id' => Auth::id(),
                 'scraper_id' => $scraper->id,
                 'error' => $e->getMessage()
-            ]);
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], 500);
+            ], $e);
         }
     }
 

@@ -385,19 +385,19 @@ class InvoiceController extends Controller {
                 return response()->json(['buyers' => $buyers]);
             }
             
-            return response()->json(['error' => 'Invalid type'], 400);
+            return $this->errorManager->handle('INVOICE_AGGREGATION_INVALID_TYPE', [
+                'type' => $type,
+                'aggregation_id' => $aggregationId,
+                'user_id' => Auth::id()
+            ]);
             
         } catch (\Exception $e) {
-            $this->logger->error('InvoiceController: Failed to load aggregation details', [
+            return $this->errorManager->handle('INVOICE_AGGREGATION_DETAILS_ERROR', [
                 'user_id' => Auth::id(),
                 'aggregation_id' => $aggregationId,
                 'type' => $type,
                 'error_message' => $e->getMessage(),
-            ]);
-            
-            return response()->json([
-                'error' => __('invoices.errors.export_error')
-            ], 500);
+            ], $e);
         }
     }
 }

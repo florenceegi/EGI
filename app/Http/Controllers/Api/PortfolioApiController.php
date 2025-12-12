@@ -7,6 +7,8 @@ use App\Services\PortfolioService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\FegiAuth;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * @Oracode Controller: Portfolio API Controller
@@ -24,14 +26,24 @@ class PortfolioApiController extends Controller {
      * @var PortfolioService
      */
     protected PortfolioService $portfolioService;
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
 
     /**
      * Constructor with dependency injection
      *
      * @param PortfolioService $portfolioService
+     * @param UltraLogManager $logger
+     * @param ErrorManagerInterface $errorManager
      */
-    public function __construct(PortfolioService $portfolioService) {
+    public function __construct(
+        PortfolioService $portfolioService,
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
         $this->portfolioService = $portfolioService;
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
     }
 
     /**

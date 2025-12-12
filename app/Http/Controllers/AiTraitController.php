@@ -8,6 +8,8 @@ use App\Models\AiTraitGeneration;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\FegiAuth;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * AiTraitController
@@ -27,9 +29,17 @@ use App\Helpers\FegiAuth;
  */
 class AiTraitController extends Controller
 {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
     public function __construct(
-        private AiTraitGenerationService $aiTraitService
-    ) {}
+        private AiTraitGenerationService $aiTraitService,
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
 
     /**
      * POST /egis/{egi}/traits/generate

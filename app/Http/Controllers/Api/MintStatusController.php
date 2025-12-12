@@ -49,11 +49,10 @@ class MintStatusController extends Controller {
                     ->exists();
 
                 if (!$isBuyer) {
-                    $this->errorManager->handle('MINT_STATUS_UNAUTHORIZED', [
+                    return $this->errorManager->handle('MINT_STATUS_UNAUTHORIZED', [
                         'user_id' => Auth::id(),
                         'egi_id' => $egiId,
                     ]);
-                    return response()->json(['error' => 'Unauthorized'], 403);
                 }
             }
 
@@ -101,18 +100,16 @@ class MintStatusController extends Controller {
 
             return response()->json($response);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            $this->errorManager->handle('MINT_STATUS_EGI_NOT_FOUND', [
+            return $this->errorManager->handle('MINT_STATUS_EGI_NOT_FOUND', [
                 'user_id' => Auth::id(),
                 'egi_id' => $egiId,
             ], $e);
-            return response()->json(['error' => 'EGI not found'], 404);
         } catch (\Exception $e) {
-            $this->errorManager->handle('MINT_STATUS_CHECK_ERROR', [
+            return $this->errorManager->handle('MINT_STATUS_CHECK_ERROR', [
                 'user_id' => Auth::id(),
                 'egi_id' => $egiId,
                 'error' => $e->getMessage(),
             ], $e);
-            return response()->json(['error' => 'Status check failed'], 500);
         }
     }
 }

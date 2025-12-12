@@ -10,6 +10,8 @@ use Illuminate\View\View;
 use Illuminate\Http\Response;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * @package App\Http\Controllers
@@ -22,14 +24,20 @@ class AccountStatementsController extends Controller
 {
     protected EgiliService $egiliService;
     protected EurTransactionService $eurService;
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
 
     public function __construct(
         EgiliService $egiliService,
-        EurTransactionService $eurService
+        EurTransactionService $eurService,
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
     ) {
         $this->middleware('auth');
         $this->egiliService = $egiliService;
         $this->eurService = $eurService;
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
     }
 
     /**

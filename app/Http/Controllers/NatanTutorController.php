@@ -7,6 +7,8 @@ use App\Services\EgiliService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * 📜 Oracode Controller: NatanTutorController
@@ -37,16 +39,22 @@ class NatanTutorController extends Controller {
      * @var EgiliService
      */
     protected EgiliService $egiliService;
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
 
     /**
      * Constructor
      */
     public function __construct(
         NatanTutorService $tutorService,
-        EgiliService $egiliService
+        EgiliService $egiliService,
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
     ) {
         $this->tutorService = $tutorService;
         $this->egiliService = $egiliService;
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
     }
 
     /**
