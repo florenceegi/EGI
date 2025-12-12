@@ -16,16 +16,35 @@ return new class extends Migration
         // La rinomina della tabella epp_milestones -> epp_projects non ha cancellato la vecchia FK su postgres
         // Questo è necessario per sbloccare le migrazioni successive
         $zombieConstraint = 'epp_milestones_epp_id_foreign';
-        $tableConstraints = DB::select("
-            SELECT conname 
-            FROM pg_constraint 
-            WHERE conname = ?
-        ", [$zombieConstraint]);
+        
+        // This fix is specific to PostgreSQL environments where zombie constraints might exist
+        if (DB::getDriverName() === 'pgsql') {
+            $tableConstraints = DB::select("
+                SELECT conname 
+                FROM pg_constraint 
+                WHERE conname = ?
+            ", [$zombieConstraint]);
 
-        if (count($tableConstraints) > 0) {
-            Schema::table('epp_projects', function (Blueprint $table) use ($zombieConstraint) {
-                $table->dropForeign($zombieConstraint);
-            });
+            if (count($tableConstraints) > 0) {
+                Schema::table('epp_projects', function (Blueprint $table) use ($zombieConstraint) {
+                    $table->dropForeign($zombieConstraint);
+                });
+            }
+        } elseif (DB::getDriverName() === 'mysql' || DB::getDriverName() === 'mariadb') {
+            // Fix for MariaDB/MySQL zombie constraint
+            $tableConstraints = DB::select("
+                SELECT CONSTRAINT_NAME
+                FROM information_schema.KEY_COLUMN_USAGE
+                WHERE TABLE_SCHEMA = DATABASE()
+                AND TABLE_NAME = 'epp_projects'
+                AND CONSTRAINT_NAME = ?
+            ", [$zombieConstraint]);
+
+            if (count($tableConstraints) > 0) {
+                Schema::table('epp_projects', function (Blueprint $table) use ($zombieConstraint) {
+                    $table->dropForeign($zombieConstraint);
+                });
+            }
         }
 
         // Trova la collezione di Frangette (user_id 3)

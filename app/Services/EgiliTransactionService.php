@@ -74,6 +74,7 @@ class EgiliTransactionService {
 
                 $transaction = EgiliTransaction::create([
                     'user_id' => $user->id,
+                    'wallet_id' => $wallet->id,
                     'amount' => $amount,
                     'type' => 'debit',
                     'reason' => 'ai_feature',

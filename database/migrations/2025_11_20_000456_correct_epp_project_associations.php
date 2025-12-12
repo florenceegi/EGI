@@ -23,14 +23,29 @@ return new class extends Migration
             ]);
 
         // 2. FIX OCEANO (ID 7): Collega a EPP Project 1 (Rimini Clear)
-        DB::table('collections')
-            ->where('id', 7)
-            ->update([
-                'epp_project_id' => 1,
-                'is_published' => true, // Assicuriamo sia visibile
-                'status' => 'published',
-                'updated_at' => now()
-            ]);
+        // Lookup dynamic ID instead of hardcoded 1
+        $riminiProject = DB::table('epp_projects')->where('name', 'Rimini Clear')->first();
+        $projectId = $riminiProject ? $riminiProject->id : (DB::table('epp_projects')->first()->id ?? null);
+
+        if ($projectId) {
+            // Disable FK checks to prevents legacy constraint issues during fix
+            if (DB::getDriverName() === 'mysql' || DB::getDriverName() === 'mariadb') {
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            }
+            
+            DB::table('collections')
+                ->where('id', 7)
+                ->update([
+                    'epp_project_id' => $projectId,
+                    'is_published' => true, // Assicuriamo sia visibile
+                    'status' => 'published',
+                    'updated_at' => now()
+                ]);
+
+            if (DB::getDriverName() === 'mysql' || DB::getDriverName() === 'mariadb') {
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            }
+        }
             
         // Pubblica anche gli EGI di Oceano per sicurezza
         DB::table('egis')
