@@ -176,7 +176,9 @@
                 </div>
 
                 {{-- Form Pagamento --}}
-                <form id="mint-payment-form" action="{{ route('mint.process') }}" method="POST"
+                <form id="mint-payment-form" 
+                    action="{{ $reservation ? route('mint.process') : route('egi.mint-direct.process', $egi->id) }}" 
+                    method="POST"
                     class="rounded-lg bg-white p-6 shadow-lg">
                     @csrf
 
