@@ -215,11 +215,14 @@ class PaymentDistributionService {
             // Determine user type from wallet platform_role and user data
             $userType = $this->determineUserType($wallet);
 
+            // 🛡️ User ID Resolution with Fallback
+            $userId = $this->resolveUserId($wallet);
+
             $distributions[] = [
                 'egi_id' => $reservation->egi_id, // Direct EGI reference
                 'reservation_id' => $reservation->id,
                 'collection_id' => $reservation->egi->collection_id,
-                'user_id' => $wallet->user_id,
+                'user_id' => $userId,
                 'wallet_id' => $wallet->id, // 🎯 NEW: Reference to wallet (SOURCE OF TRUTH)
                 'user_type' => $userType, // Backward compat
                 'platform_role' => $wallet->platform_role, // 🎯 NEW: Wallet role (Natan, EPP, Frangette, Creator) - SOURCE OF TRUTH
@@ -593,6 +596,9 @@ class PaymentDistributionService {
             // Determine user type from wallet platform_role and user data
             $userType = $this->determineUserType($wallet);
 
+            // 🛡️ User ID Resolution with Fallback
+            $userId = $this->resolveUserId($wallet);
+
             $distributions[] = [
                 'source_type' => 'mint', // NEW: Phase 2 source type
                 'egi_id' => $egiBlockchain->egi_id, // Direct EGI reference
@@ -600,7 +606,7 @@ class PaymentDistributionService {
                 'egi_blockchain_id' => $egiBlockchain->id, // NEW: Link to blockchain record
                 'blockchain_tx_id' => $egiBlockchain->algorand_tx_id, // NEW: Algorand TXID
                 'collection_id' => $egiBlockchain->egi->collection_id,
-                'user_id' => $wallet->user_id,
+                'user_id' => $userId,
                 'wallet_id' => $wallet->id, // 🎯 NEW: Reference to wallet (SOURCE OF TRUTH)
                 'user_type' => $userType, // Backward compat
                 'platform_role' => $wallet->platform_role, // 🎯 NEW: Wallet role (Natan, EPP, Frangette, Creator) - SOURCE OF TRUTH
@@ -693,6 +699,51 @@ class PaymentDistributionService {
             })
             ->with(['user', 'egiBlockchain'])
             ->get();
+    }
+
+    /**
+     * 🛡️ Resolve User ID with fallback strategies
+     * Prevents DB crashes when wallet.user_id is missing (e.g. legacy data or migration issues)
+     *
+     * @param Wallet $wallet
+     * @return int
+     * @throws \Exception If user ID cannot be resolved
+     */
+    private function resolveUserId(Wallet $wallet): int {
+        // Priority 1: User ID from wallet (Source of Truth)
+        if ($wallet->user_id) {
+            return $wallet->user_id;
+        }
+
+        // Priority 2: Fallback to platform roles configuration
+        // This handles cases where system wallets were created without user links
+        $resolvedId = match ($wallet->platform_role) {
+            'Natan' => config('app.natan_id', 1),
+            'EPP' => config('app.epp_id', 2),
+            'Frangette' => config('app.frangette_id', 3),
+            default => null
+        };
+
+        if ($resolvedId) {
+            // Log this fallback usage as it indicates a data integrity issue
+            if ($this->logger) {
+                $this->logger->warning('[PaymentDistribution] Resolved missing user_id via Platform Role', [
+                    'wallet_id' => $wallet->id,
+                    'platform_role' => $wallet->platform_role,
+                    'resolved_id' => $resolvedId
+                ]);
+            }
+            return $resolvedId;
+        }
+
+        // Critical Failure: Cannot resolve user for distribution
+        $this->errorManager->handle('UNRESOLVABLE_USER_FOR_DISTRIBUTION', [
+            'wallet_id' => $wallet->id,
+            'platform_role' => $wallet->platform_role,
+            'wallet_address' => $wallet->wallet
+        ]);
+
+        throw new \Exception("Cannot resolve User ID for wallet {$wallet->id} (Role: {$wallet->platform_role})");
     }
 
     /**
