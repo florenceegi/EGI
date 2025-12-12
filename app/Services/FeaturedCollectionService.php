@@ -7,7 +7,8 @@ use App\Models\Reservation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection as IlluminateCollection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * FeaturedCollectionService
@@ -19,6 +20,16 @@ use Illuminate\Support\Facades\Log;
  * @package App\Services
  */
 class FeaturedCollectionService {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
     /**
      * EPP ID da considerare per il calcolo dell'impatto (MVP: solo EPP id=2)
      */
@@ -65,7 +76,7 @@ class FeaturedCollectionService {
                 }
             ]);            // Log per debugging in ambiente di sviluppo
             if (config('app.debug')) {
-                Log::info('Featured Collections retrieved', [
+                $this->logger->info('Featured Collections retrieved', [
                     'count' => $collections->count(),
                     'collections' => $collections->map(function ($collection) {
                         return [
@@ -80,7 +91,7 @@ class FeaturedCollectionService {
 
             return $collections;
         } catch (\Exception $e) {
-            Log::error('Error retrieving featured collections', [
+            $this->logger->error('Error retrieving featured collections', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -112,7 +123,7 @@ class FeaturedCollectionService {
 
             // Log per debugging in ambiente di sviluppo
             if (config('app.debug')) {
-                Log::info('Random Collections retrieved', [
+                $this->logger->info('Random Collections retrieved', [
                     'count' => $collections->count(),
                     'collections' => $collections->map(function ($collection) {
                         return [
@@ -128,7 +139,7 @@ class FeaturedCollectionService {
 
             return $collections;
         } catch (\Exception $e) {
-            Log::error('Error retrieving random collections', [
+            $this->logger->error('Error retrieving random collections', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -172,7 +183,7 @@ class FeaturedCollectionService {
 
             return round($impact, 2);
         } catch (\Exception $e) {
-            Log::error('Error calculating estimated impact', [
+            $this->logger->error('Error calculating estimated impact', [
                 'collection_id' => $collection->id,
                 'error' => $e->getMessage()
             ]);
@@ -222,7 +233,7 @@ class FeaturedCollectionService {
                 'featured_position' => $position
             ]);
         } catch (\Exception $e) {
-            Log::error('Error setting collection as featured', [
+            $this->logger->error('Error setting collection as featured', [
                 'collection_id' => $collection->id,
                 'position' => $position,
                 'error' => $e->getMessage()
@@ -245,7 +256,7 @@ class FeaturedCollectionService {
                 'featured_position' => null
             ]);
         } catch (\Exception $e) {
-            Log::error('Error removing collection from featured', [
+            $this->logger->error('Error removing collection from featured', [
                 'collection_id' => $collection->id,
                 'error' => $e->getMessage()
             ]);
@@ -305,7 +316,7 @@ class FeaturedCollectionService {
                 'max_allowed' => self::MAX_CAROUSEL_ITEMS
             ];
         } catch (\Exception $e) {
-            Log::error('Error getting featured collections stats', [
+            $this->logger->error('Error getting featured collections stats', [
                 'error' => $e->getMessage()
             ]);
 

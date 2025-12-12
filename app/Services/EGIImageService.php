@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Ultra\UltraLogManager\UltraLogManager;
 
 class EGIImageService
 {
@@ -29,12 +29,12 @@ class EGIImageService
                     }
                 }
             } catch (\Exception $e) {
-                Log::channel('florenceegi')->error('Errore durante la rimozione del vecchio file', [
+                app(UltraLogManager::class)->error('Errore durante la rimozione del vecchio file', [
                     'error'        => $e->getMessage(),
                     'prefix'       => $prefix,
                     'collectionId' => $collectionId,
                     'pathKey'      => $pathKey,
-                ]);
+                ], 'florenceegi');
                 return false;
             }
         }
@@ -66,12 +66,12 @@ class EGIImageService
 
                 $atLeastOneSuccess = true;
             } catch (\Exception $e) {
-                Log::channel('florenceegi')->error('Errore salvataggio immagine EGI', [
+                app(UltraLogManager::class)->error('Errore salvataggio immagine EGI', [
                     'error'        => $e->getMessage(),
                     'filename'     => $filename,
                     'collectionId' => $collectionId,
                     'hosting'      => $hostingName,
-                ]);
+                ], 'florenceegi');
             }
         }
 

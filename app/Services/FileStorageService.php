@@ -7,10 +7,22 @@ use Livewire\WithFileUploads;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Collection;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 class FileStorageService
 {
     use WithFileUploads; // Necessario per sfruttare le funzionalità di Livewire
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
 
     /**
      * Salva un file Livewire in una posizione specifica e aggiorna il percorso nel database.
@@ -34,11 +46,11 @@ class FileStorageService
                 $savedPath = $file->store($path, $disk);
             }
 
-            Log::channel('florenceegi')->info('File salvato:', ['path' => $savedPath]);
+            $this->logger->info('File salvato:', ['path' => $savedPath], 'florenceegi');
 
             // Verifica se il file esiste usando il disco passato
             if (!Storage::disk($disk)->exists($savedPath)) {
-                Log::channel('florenceegi')->error('File non trovato dopo storeAs.', ['path' => $savedPath]);
+                $this->logger->error('File non trovato dopo storeAs.', ['path' => $savedPath], 'florenceegi');
                 throw new Exception('Errore durante il salvataggio del file.');
             }
 
@@ -47,7 +59,7 @@ class FileStorageService
 
             return $savedPath; // Restituisce il percorso relativo
         } catch (Exception $e) {
-            Log::channel('florenceegi')->error('Errore nel salvataggio del file:', ['message' => $e->getMessage()]);
+            $this->logger->error('Errore nel salvataggio del file:', ['message' => $e->getMessage()], 'florenceegi');
             throw $e;
         }
     }
@@ -83,11 +95,11 @@ class FileStorageService
 
         $collection->save();
 
-        Log::channel('florenceegi')->info('Percorso immagine aggiornato nel database.', [
+        $this->logger->info('Percorso immagine aggiornato nel database.', [
             'collection_id' => $collectionId,
             'image_type' => $imageType,
             'path' => $savedPath,
-        ]);
+        ], 'florenceegi');
     }
 }
 

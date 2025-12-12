@@ -481,7 +481,7 @@ class EgiService {
             return false;
         } catch (\Exception $e) {
             // Log error and deny access on exception
-            \Log::error('EgiService::canManageEgi error', [
+            $this->logger->error('EGI_SERVICE_CAN_MANAGE_ERROR', [
                 'user_id' => $user->id,
                 'egi_id' => $egi->id,
                 'error' => $e->getMessage(),

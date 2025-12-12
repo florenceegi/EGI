@@ -510,7 +510,7 @@ class NatanChatService {
             $retryAttempt = 0;
             $maxRetries = 10; // Safety: prevent infinite loop
 
-            \Log::info('🚀🚀🚀 ADAPTIVE RETRY STARTING', [
+            $this->logger->info('🚀🚀🚀 ADAPTIVE RETRY STARTING', [
                 'total_acts_found' => $originalActsCount,
                 'first_attempt_will_send' => $claudeContextLimit,
                 'strategy' => 'SMART_LIMIT_20',
@@ -522,13 +522,13 @@ class NatanChatService {
                 'strategy' => 'MAX_20_ACTS_PER_REQUEST',
             ]);
 
-            \Log::info('🔄 ENTERING WHILE LOOP', ['retry_attempt' => $retryAttempt, 'maxRetries' => $maxRetries]);
+            $this->logger->info('🔄 ENTERING WHILE LOOP', ['retry_attempt' => $retryAttempt, 'maxRetries' => $maxRetries]);
 
             while ($retryAttempt < $maxRetries) {
-                \Log::info('🔁 WHILE ITERATION START', ['retry_attempt' => $retryAttempt]);
+                $this->logger->info('🔁 WHILE ITERATION START', ['retry_attempt' => $retryAttempt]);
 
                 try {
-                    \Log::info('✅ INSIDE TRY BLOCK', ['claudeContextLimit' => $claudeContextLimit]);
+                    $this->logger->info('✅ INSIDE TRY BLOCK', ['claudeContextLimit' => $claudeContextLimit]);
                     // Apply current limit to context
                     $limitedContext = $context;
                     if ($claudeContextLimit < $originalActsCount) {
@@ -562,7 +562,7 @@ class NatanChatService {
                     ]);
                     break;
                 } catch (\Exception $e) {
-                    \Log::error('❌ EXCEPTION CAUGHT IN RETRY LOOP!', [
+                    $this->logger->error('❌ EXCEPTION CAUGHT IN RETRY LOOP!', [
                         'exception' => get_class($e),
                         'message' => substr($e->getMessage(), 0, 200),
                         'retry_attempt' => $retryAttempt,
@@ -600,7 +600,7 @@ class NatanChatService {
                             'reason' => 'Anthropic acceleration limit - scaling gradually',
                         ]);
 
-                        \Log::info('💤 SLEEPING BEFORE RETRY', [
+                        $this->logger->info('💤 SLEEPING BEFORE RETRY', [
                             'delay_seconds' => $delaySec,
                             'retry_attempt' => $retryAttempt,
                         ]);

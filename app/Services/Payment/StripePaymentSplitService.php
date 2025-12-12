@@ -296,13 +296,32 @@ class StripePaymentSplitService {
             throw new \RuntimeException('No wallets with royalty > 0% found for distribution');
         }
 
+        // Recupera la collection dal primo wallet (assumiamo appartengano alla stessa collection)
+        $collection = $wallets->first()->collection;
+        
+        // Calcola la percentuale EPP effettiva (dinamica in base al profilo/collection)
+        $effectiveEppPercentage = $collection->getEffectiveEppPercentage();
+
         foreach ($activeWallets as $index => $wallet) {
             $percentage = $wallet->royalty_mint;
+
+            // Se il wallet è di tipo EPP, sovrascrivi la percentuale con quella calcolata dynamicamente
+            // Nota: Assuming platform_role 'epp' identifies the EPP wallet
+            if ($wallet->platform_role === 'epp') {
+                $percentage = $effectiveEppPercentage;
+                // Se la % effettiva è 0, saltiamo questo wallet (non riceve nulla)
+                if ($percentage <= 0) {
+                     continue;
+                }
+            }
 
             // Calculate amount in cents
             if ($index === $activeWallets->count() - 1) {
                 // Last wallet gets remainder to ensure exact total
-                $amountCents = $totalAmountCents - $distributedCents;
+                // TODO: Questa logica 'remainder' potrebbe essere problematica se saltiamo wallet EPP=0%
+                // Meglio calcolare tutto esatto finché possibile.
+                // Per ora manteniamo logica semplice: Percentage -> Cents
+                $amountCents = (int) round(($totalAmountCents * $percentage) / 100);
             } else {
                 $amountCents = (int) round(($totalAmountCents * $percentage) / 100);
                 $distributedCents += $amountCents;

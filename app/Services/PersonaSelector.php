@@ -3,7 +3,8 @@
 namespace App\Services;
 
 use App\Config\NatanPersonas;
-use Illuminate\Support\Facades\Log;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * PersonaSelector Service
@@ -25,6 +26,17 @@ class PersonaSelector
 {
     private const MIN_CONFIDENCE_THRESHOLD = 0.3;
     private const DEFAULT_PERSONA = 'strategic';
+
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
 
     /**
      * Select the best persona for a given query
@@ -63,7 +75,7 @@ class PersonaSelector
 
         // Fallback to default if confidence too low
         if ($result['confidence'] < self::MIN_CONFIDENCE_THRESHOLD) {
-            Log::info('[PersonaSelector] Low confidence, using default persona', [
+            $this->logger->info('[PersonaSelector] Low confidence, using default persona', [
                 'query' => substr($query, 0, 100),
                 'detected' => $result['persona_id'],
                 'confidence' => $result['confidence']
@@ -78,7 +90,7 @@ class PersonaSelector
             ];
         }
 
-        Log::info('[PersonaSelector] Persona selected', [
+        $this->logger->info('[PersonaSelector] Persona selected', [
             'persona' => $result['persona_id'],
             'confidence' => $result['confidence'],
             'method' => $result['method'],

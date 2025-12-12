@@ -7,7 +7,8 @@ use App\Services\EmbeddingService;
 use App\Services\WebSearch\WebSearchService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * Unified Knowledge Service
@@ -18,6 +19,8 @@ use Illuminate\Support\Facades\Log;
 class UnifiedKnowledgeService {
     protected EmbeddingService $embeddingService;
     protected WebSearchService $webSearchService;
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
 
     // TTL differenziati per tipo di fonte (strategia ibrida)
     protected array $ttlMap = [
@@ -33,10 +36,14 @@ class UnifiedKnowledgeService {
 
     public function __construct(
         EmbeddingService $embeddingService,
-        WebSearchService $webSearchService
+        WebSearchService $webSearchService,
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
     ) {
         $this->embeddingService = $embeddingService;
         $this->webSearchService = $webSearchService;
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
     }
 
     /**
@@ -49,7 +56,7 @@ class UnifiedKnowledgeService {
     public function search(string $query, array $options = []): Collection {
         $sessionId = Str::uuid()->toString();
 
-        Log::info('[UnifiedKnowledgeService] Starting unified search', [
+        $this->logger->info('[UnifiedKnowledgeService] Starting unified search', [
             'query_length' => strlen($query),
             'session_id' => $sessionId,
             'options' => $options,
@@ -58,7 +65,7 @@ class UnifiedKnowledgeService {
         // STEP 1: Cerca se esiste già context cachato per query simili
         $cachedContext = $this->searchCachedContext($query, $options);
         if ($cachedContext->isNotEmpty()) {
-            Log::info('[UnifiedKnowledgeService] Using cached context', [
+            $this->logger->info('[UnifiedKnowledgeService] Using cached context', [
                 'cached_chunks' => $cachedContext->count(),
             ]);
             return $cachedContext;
@@ -70,7 +77,7 @@ class UnifiedKnowledgeService {
         // STEP 3: Normalizza e chunka i dati
         $chunks = $this->normalizeAndChunk($sources);
 
-        Log::info('[UnifiedKnowledgeService] Sources chunked', [
+        $this->logger->info('[UnifiedKnowledgeService] Sources chunked', [
             'total_chunks' => count($chunks),
             'by_type' => collect($chunks)->countBy('source_type')->toArray(),
         ]);
@@ -82,12 +89,12 @@ class UnifiedKnowledgeService {
         $this->storeUnifiedContext($sessionId, $chunksWithEmbeddings);
 
         // STEP 6: Semantic search su unified table
-        Log::info('[UnifiedKnowledgeService] Generating query embedding for semantic search');
+        $this->logger->info('[UnifiedKnowledgeService] Generating query embedding for semantic search');
         $queryEmbedding = $this->embeddingService->callOpenAIEmbedding($query);
-        Log::info('[UnifiedKnowledgeService] Query embedding generated, performing semantic search');
+        $this->logger->info('[UnifiedKnowledgeService] Query embedding generated, performing semantic search');
         $results = $this->semanticSearchUnified($sessionId, $queryEmbedding, $options['limit'] ?? 50);
 
-        Log::info('[UnifiedKnowledgeService] Unified search completed', [
+        $this->logger->info('[UnifiedKnowledgeService] Unified search completed', [
             'results_count' => $results->count(),
             'top_similarity' => $results->first()?->similarity_score,
             'avg_similarity' => $results->avg('similarity_score'),
@@ -114,7 +121,7 @@ class UnifiedKnowledgeService {
         // Source 1: Acts (RAG esistente)
         if ($options['search_acts'] ?? true) {
             $sources['acts'] = $options['acts'] ?? [];
-            Log::info('[UnifiedKnowledgeService] Acts provided', [
+            $this->logger->info('[UnifiedKnowledgeService] Acts provided', [
                 'count' => count($sources['acts']),
             ]);
         }
@@ -124,26 +131,26 @@ class UnifiedKnowledgeService {
             try {
                 // Se non abbiamo già web_results, chiamiamo Perplexity
                 if (empty($options['web_results'])) {
-                    Log::info('[UnifiedKnowledgeService] Calling Perplexity for web search', [
+                    $this->logger->info('[UnifiedKnowledgeService] Calling Perplexity for web search', [
                         'query' => substr($query, 0, 100),
                     ]);
                     
                     $webSearchService = app(\App\Services\WebSearch\WebSearchService::class);
                     $webResults = $webSearchService->search($query);
                     
-                    Log::info('[UnifiedKnowledgeService] Perplexity results received', [
+                    $this->logger->info('[UnifiedKnowledgeService] Perplexity results received', [
                         'count' => count($webResults),
                     ]);
                 } else {
                     $webResults = $options['web_results'];
-                    Log::info('[UnifiedKnowledgeService] Web results provided externally', [
+                    $this->logger->info('[UnifiedKnowledgeService] Web results provided externally', [
                         'count' => count($webResults),
                     ]);
                 }
                 
                 $sources['web'] = $webResults;
             } catch (\Exception $e) {
-                Log::error('[UnifiedKnowledgeService] Web search failed', [
+                $this->logger->error('[UnifiedKnowledgeService] Web search failed', [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
                 ]);
@@ -310,7 +317,7 @@ class UnifiedKnowledgeService {
      * Genera embeddings per tutti i chunks
      */
     protected function generateEmbeddings(array $chunks, string $query): array {
-        Log::info('[UnifiedKnowledgeService] Generating embeddings', [
+        $this->logger->info('[UnifiedKnowledgeService] Generating embeddings', [
             'chunks_count' => count($chunks),
         ]);
 
@@ -328,20 +335,20 @@ class UnifiedKnowledgeService {
 
                     // Log ogni 50 chunks
                     if (($index + 1) % 50 === 0) {
-                        Log::info('[UnifiedKnowledgeService] Embeddings progress', [
+                        $this->logger->info('[UnifiedKnowledgeService] Embeddings progress', [
                             'processed' => $index + 1,
                             'total' => count($chunks),
                             'percentage' => round((($index + 1) / count($chunks)) * 100, 1),
                         ]);
                     }
                 } else {
-                    Log::warning('[UnifiedKnowledgeService] Empty embedding returned', [
+                    $this->logger->warning('[UnifiedKnowledgeService] Empty embedding returned', [
                         'chunk_index' => $index,
                         'content_preview' => substr($chunk['content'], 0, 100),
                     ]);
                 }
             } catch (\Exception $e) {
-                Log::error('[UnifiedKnowledgeService] Embedding generation failed', [
+                $this->logger->error('[UnifiedKnowledgeService] Embedding generation failed', [
                     'chunk_index' => $index,
                     'error' => $e->getMessage(),
                 ]);
@@ -350,7 +357,7 @@ class UnifiedKnowledgeService {
 
         $duration = round((microtime(true) - $startTime) * 1000);
 
-        Log::info('[UnifiedKnowledgeService] All embeddings generated', [
+        $this->logger->info('[UnifiedKnowledgeService] All embeddings generated', [
             'total_chunks' => count($chunksWithEmbeddings),
             'duration_ms' => $duration,
         ]);
@@ -410,7 +417,7 @@ class UnifiedKnowledgeService {
             }
         }
 
-        Log::info('[UnifiedKnowledgeService] Chunks processed in unified_context', [
+        $this->logger->info('[UnifiedKnowledgeService] Chunks processed in unified_context', [
             'session_id' => $sessionId,
             'total_chunks' => count($chunks),
             'stored_new' => $stored,
