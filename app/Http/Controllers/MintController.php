@@ -1196,21 +1196,28 @@ class MintController extends Controller {
                         // Update payment amount with fresh gold price
                         $paymentAmountEur = (float) $goldBarValue['final_value'];
 
-                        // Store refresh timestamp in session for validation during mint
-                        session([
-                            'gold_bar_mint_' . $egi->id => [
-                                'refreshed_at' => now()->timestamp,
-                                'valid_until' => now()->addMinutes(10)->timestamp,
-                                'price' => $paymentAmountEur,
-                                'gold_data' => $goldBarValue,
-                            ]
+                        // STAGING FIX: Use Cache instead of Session for robustness
+                        // Key MUST match processMint expectation: gold_bar_mint_{userId}_{egiId}
+                        $cacheKey = 'gold_bar_mint_' . Auth::id() . '_' . $egi->id;
+                        
+                        Cache::put($cacheKey, [
+                            'refreshed_at' => now()->timestamp,
+                            'valid_until' => now()->addMinutes(10)->timestamp,
+                            'price' => $paymentAmountEur,
+                            'gold_data' => $goldBarValue,
+                        ], 600); // 10 minutes TTL
+
+                        $this->logger->info('Gold Bar price CACHED for direct mint form (Page Load)', [
+                            'egi_id' => $egi->id,
+                            'cache_key' => $cacheKey,
+                            'final_value' => $paymentAmountEur
                         ]);
 
-                        $this->logger->info('Gold Bar price refreshed for direct mint form', [
+                        /* $this->logger->info('Gold Bar price refreshed for direct mint form', [
                             'egi_id' => $egi->id,
                             'final_value' => $paymentAmountEur,
                             'gold_price_per_gram' => $goldBarValue['gold_price_per_gram'],
-                        ]);
+                        ]); */
                     }
                 }
             }
