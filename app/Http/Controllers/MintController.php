@@ -279,15 +279,15 @@ class MintController extends Controller {
                         // Update payment amount with fresh gold price
                         $paymentAmountEur = (float) $goldBarValue['final_value'];
 
-                        // Store refresh timestamp in session for validation during mint
-                        session([
-                            'gold_bar_mint_' . $egi->id => [
-                                'refreshed_at' => now()->timestamp,
-                                'valid_until' => now()->addMinutes(10)->timestamp,
-                                'price' => $paymentAmountEur,
-                                'gold_data' => $goldBarValue,
-                            ]
-                        ]);
+                        // Store refresh timestamp in CACHE for validation during mint
+                        // FIX: Use Cache instead of Session to match processMint logic
+                        $cacheKey = 'gold_bar_mint_' . Auth::id() . '_' . $egi->id;
+                        Cache::put($cacheKey, [
+                            'refreshed_at' => now()->timestamp,
+                            'valid_until' => now()->addMinutes(10)->timestamp,
+                            'price' => $paymentAmountEur,
+                            'gold_data' => $goldBarValue,
+                        ], 600);
 
                         $this->logger->info('Gold Bar price refreshed for mint form', [
                             'egi_id' => $egi->id,
