@@ -253,6 +253,44 @@ class AlgorandService
         }
     }
 
+    /**
+     * Check if Treasury has sufficient funds for minting
+     * 
+     * @param \App\Models\User|null $user Context user (optional)
+     * @return array ['has_sufficient_funds' => bool, 'balance_algo' => float, 'required_algo' => float, 'treasury_address' => string]
+     */
+    public function checkTreasuryFunds($user = null): array
+    {
+        try {
+            $status = $this->getTreasuryStatus();
+            $balanceMicroAlgo = $status['amount'] ?? 0;
+            $balanceAlgo = $balanceMicroAlgo / 1000000;
+            
+            // Validation Threshold: 5 ALGO (Safe buffer for minting + storage)
+            // Configurable via 'algorand.min_treasury_balance' if needed
+            $requiredAlgo = config('algorand.min_treasury_balance', 5.0);
+            
+            return [
+                'has_sufficient_funds' => $balanceAlgo >= $requiredAlgo,
+                'balance_algo' => $balanceAlgo,
+                'required_algo' => $requiredAlgo,
+                'treasury_address' => $status['address'] ?? 'unknown',
+                'raw_balance_microalgo' => $balanceMicroAlgo
+            ];
+        } catch (\Exception $e) {
+            $this->logger->error('TREASURY_FUNDS_CHECK_FAILED', ['error' => $e->getMessage()]);
+            
+            // Fail safe: return false to prevent stuck mints if critical check fails
+            return [
+                'has_sufficient_funds' => false,
+                'balance_algo' => 0,
+                'required_algo' => 0,
+                'treasury_address' => 'error',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
     // ========================================
     // PRIVATE HELPER METHODS
     // ========================================
