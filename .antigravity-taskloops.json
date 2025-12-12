@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "taskloops": {
+    "OS3_Compliance_Agent": {
+      "description": "Verifica e corregge violazioni OS3 nei file indicati. Applica regola zero, struttura, ordine e sicurezza.",
+      "loop": [
+        "Analizza i file indicati.",
+        "Identifica violazioni OS3, errori strutturali, deduzioni o ambiguità.",
+        "Genera patch OS3-compliant.",
+        "Esegui i test forniti nel task.",
+        "Se un test fallisce: correggi e ripeti.",
+        "Continua il ciclo finché tutti i test passano.",
+        "Genera report finale + patch consolidate."
+      ],
+      "rules": {
+        "autoExecution": true,
+        "requireConfirmation": false,
+        "os3": true,
+        "os4": true,
+        "ultra": false,
+        "gdpr": false
+      }
+    },
+
+    "Ultra_GDPR_Enforcement_Agent": {
+      "description": "Analizza controller, service e moduli che trattano PII. Applica UltraLog, ErrorManager, AuditTrail, minimizzazione dati e conformità GDPR.",
+      "loop": [
+        "Analizza i file indicati per violazioni UltraLog, ErrorManager e GDPR.",
+        "Correggi: aggiungi ULM, UEM, AuditLog, categorizzazioni GDPR, minimizzazione dati.",
+        "Esegui test funzionali per i moduli modificati.",
+        "Se emergono errori: correggi e ripeti.",
+        "Applica refactoring se necessario (OS3).",
+        "Genera report finale con elenco violazioni risolte."
+      ],
+      "rules": {
+        "autoExecution": true,
+        "requireConfirmation": false,
+        "os3": true,
+        "os4": true,
+        "ultra": true,
+        "gdpr": true
+      }
+    },
+
+    "TestLoop_Agent": {
+      "description": "Agente principale per sviluppare, testare, correggere e ritestare fino a stabilità completa.",
+      "loop": [
+        "Analizza il contesto del task.",
+        "Genera o modifica codice necessario.",
+        "Esegui il comando di test definito nel task.",
+        "Se un test fallisce: analizza, correggi e ripeti dal punto test.",
+        "Continua in autonomia finché tutti i test passano.",
+        "Genera report finale e patch consolidate.",
+        "Concludi con 'Task Completed — All tests passed'."
+      ],
+      "rules": {
+        "autoExecution": true,
+        "requireConfirmation": false,
+        "os3": true,
+        "os4": true,
+        "ultra": false,
+        "gdpr": false
+      }
+    }
+  }
+}
