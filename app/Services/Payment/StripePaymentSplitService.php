@@ -368,12 +368,17 @@ class StripePaymentSplitService {
         $insufficientCapabilities = [];
 
         foreach ($distributions as $distribution) {
-            // Skip wallets with 0% royalty - they won't receive any payment
-            if (($distribution['amount_cents'] ?? 0) <= 0) {
-                $this->logger->debug('Skipping Stripe validation for 0% royalty wallet', [
+            // STRICT LOGIC: Skip wallets with 0% royalty or 0 amount - they won't receive any payment
+            // User Feedback: "Se un Wallet ha 0 come royalty va saltato... nessun controllo sul id di stripe"
+            $percentage = $distribution['percentage'] ?? 0;
+            $amountCents = $distribution['amount_cents'] ?? 0;
+
+            if ($percentage <= 0 || $amountCents <= 0) {
+                $this->logger->info('Strictly skipping Stripe validation for Zero-Royalty/Zero-Amount wallet', [
                     'wallet_id' => $distribution['wallet_id'],
                     'platform_role' => $distribution['platform_role'],
-                    'percentage' => $distribution['percentage'] ?? 0,
+                    'percentage' => $percentage,
+                    'amount_cents' => $amountCents
                 ]);
                 continue;
             }
