@@ -219,11 +219,11 @@ class AlgorandService
             $response = $this->callMicroservice('GET', '/health');
 
             return [
-                'success' => $response['success'],
+                'success' => ($response['status'] ?? '') === 'healthy' || ($response['status'] ?? '') === 'active',
                 'microservice' => $response['service'] ?? 'AlgoKit Microservice',
                 'version' => $response['version'] ?? 'Unknown',
                 'algorand' => $response['algorand'] ?? [],
-                'timestamp' => $response['timestamp'] ?? now()->toISOString()
+                'timestamp' => $response['timestamp'] ?? now()->toIsoString()
             ];
         } catch (\Exception $e) {
             $this->logger->error('NETWORK_STATUS_FAILED', ['error' => $e->getMessage()]);
