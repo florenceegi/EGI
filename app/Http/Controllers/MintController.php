@@ -1267,6 +1267,8 @@ class MintController extends Controller {
             $validated = $request->validated();
 
             $egi = Egi::findOrFail($id);
+            // ✅ FIX: Capture ID before potential cloning logic (though consistent here, good practice)
+            $originalEgiId = $egi->id;
 
             // dd($validated);
 
@@ -1363,12 +1365,17 @@ class MintController extends Controller {
             // Gold Bar specific: Check 10-minute price validity timeout
             $goldBarMintData = null;
             if ($egi->isGoldBar()) {
-                $goldBarMintData = session('gold_bar_mint_' . $egi->id);
+            if ($egi->isGoldBar()) {
+                // STAGING FIX: Use Cache instead of Session
+                $cacheKey = 'gold_bar_mint_' . Auth::id() . '_' . $originalEgiId;
+                $goldBarMintData = Cache::get($cacheKey);
 
                 if (!$goldBarMintData) {
-                    $this->logger->error('Gold Bar direct mint attempted without price session', [
+                    $this->logger->error('Gold Bar direct mint attempted without price CACHE data', [
                         'user_id' => Auth::id(),
                         'egi_id' => $egi->id,
+                        'original_egi_id' => $originalEgiId,
+                        'cache_key' => $cacheKey
                     ]);
                     return response()->json([
                         'success' => false,
@@ -1386,8 +1393,8 @@ class MintController extends Controller {
                         'now' => now()->timestamp,
                     ]);
 
-                    // Clear expired session
-                    session()->forget('gold_bar_mint_' . $egi->id);
+                    // Clear expired cache
+                    Cache::forget($cacheKey);
 
                     return response()->json([
                         'success' => false,
