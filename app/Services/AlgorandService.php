@@ -223,6 +223,7 @@ class AlgorandService
                 'microservice' => $response['service'] ?? 'AlgoKit Microservice',
                 'version' => $response['version'] ?? 'Unknown',
                 'algorand' => $response['algorand'] ?? [],
+                'treasury' => $response['treasury'] ?? [],
                 'timestamp' => $response['timestamp'] ?? now()->toIsoString()
             ];
         } catch (\Exception $e) {
@@ -240,7 +241,11 @@ class AlgorandService
     {
         try {
             $healthStatus = $this->getNetworkStatus();
-            $treasuryAddress = $healthStatus['algorand']['treasury_address'] ?? null;
+            
+            // Support V3 structure (treasury.address) and fallback to V2 (algorand.treasury_address)
+            $treasuryAddress = $healthStatus['treasury']['address'] 
+                ?? $healthStatus['algorand']['treasury_address'] 
+                ?? null;
 
             if (!$treasuryAddress) {
                 throw new \Exception('Treasury address not available from microservice');
