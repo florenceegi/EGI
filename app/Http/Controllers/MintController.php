@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use App\DataTransferObjects\Payment\PaymentRequest;
 use App\Exceptions\Payment\MerchantAccountNotConfiguredException;
 use App\Services\Payment\PaymentServiceFactory;
@@ -564,12 +565,15 @@ class MintController extends Controller {
             // Gold Bar specific: Check 10-minute price validity timeout
             $goldBarMintData = null;
             if ($egi->isGoldBar()) {
-                $goldBarMintData = session('gold_bar_mint_' . $egi->id);
+                // STAGING FIX: Use Cache instead of Session
+                $cacheKey = 'gold_bar_mint_' . Auth::id() . '_' . $egi->id;
+                $goldBarMintData = Cache::get($cacheKey);
 
                 if (!$goldBarMintData) {
-                    $this->logger->error('Gold Bar mint attempted without price session', [
+                    $this->logger->error('Gold Bar mint attempted without price CACHE data', [
                         'user_id' => Auth::id(),
                         'egi_id' => $egi->id,
+                        'cache_key' => $cacheKey
                     ]);
                     return redirect()->back()->withErrors([
                         'error' => __('gold_bar.mint_price_expired'),
@@ -586,8 +590,8 @@ class MintController extends Controller {
                         'now' => now()->timestamp,
                     ]);
 
-                    // Clear expired session
-                    session()->forget('gold_bar_mint_' . $egi->id);
+                    // Clear expired cache
+                    Cache::forget($cacheKey);
 
                     return redirect()->back()->withErrors([
                         'error' => __('gold_bar.mint_price_expired'),
@@ -751,8 +755,8 @@ class MintController extends Controller {
                     'gold_data' => $goldBarMintData['gold_data'] ?? null,
                 ]);
 
-                // Clear the session data
-                session()->forget('gold_bar_mint_' . $egi->id);
+                // Clear the cache data
+                Cache::forget('gold_bar_mint_' . Auth::id() . '_' . $egi->id);
             }
 
             // Create blockchain record

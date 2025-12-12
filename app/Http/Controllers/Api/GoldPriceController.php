@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Gold Price API Controller
@@ -250,19 +251,22 @@ class GoldPriceController extends Controller {
         // Return fresh price with 10-minute validity timestamp
         $validUntil = now()->addMinutes(10);
 
-        // STAGING FIX: Persist session for MintController
-        session([
-            'gold_bar_mint_' . $egi->id => [
-                'refreshed_at' => now()->timestamp,
-                'valid_until' => $validUntil->timestamp,
-                'price' => (float) $goldValue['final_value'],
-                'gold_data' => $goldValue,
-            ]
-        ]);
-        $this->logger->info('Gold Bar price session updated by API', [
+
+        // STAGING FIX: Persist Cache (Robustness over Session)
+        // Key: gold_bar_mint_{userId}_{egiId}
+        $cacheKey = 'gold_bar_mint_' . $user->id . '_' . $egi->id;
+        
+        Cache::put($cacheKey, [
+            'refreshed_at' => now()->timestamp,
+            'valid_until' => $validUntil->timestamp,
+            'price' => (float) $goldValue['final_value'],
+            'gold_data' => $goldValue,
+        ], 600); // 10 minutes TTL
+
+        $this->logger->info('Gold Bar price CACHED by API', [
             'egi_id' => $egi->id,
             'price' => $goldValue['final_value'],
-            'session_key' => 'gold_bar_mint_' . $egi->id
+            'cache_key' => $cacheKey
         ]);
 
         return response()->json([
