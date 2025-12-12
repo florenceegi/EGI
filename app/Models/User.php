@@ -256,6 +256,15 @@ class User extends Authenticatable implements HasMedia {
         return $this->hasMany(\App\Models\EppProject::class, 'epp_user_id');
     }
 
+    /**
+     * Check if the user is a Company.
+     *
+     * @return bool
+     */
+    public function isCompany(): bool {
+        return $this->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value;
+    }
+
     // In app/Models/User.php
     public function getCurrentCollectionDetails() {
         if (!$this->current_collection_id) {

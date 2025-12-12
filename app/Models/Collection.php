@@ -34,6 +34,8 @@ class Collection extends Model implements HasMedia {
         'description',
         'type',
         'status',
+        'profile_type',    // NEW: 'contributor' or 'normal'
+        'royalty_mode',    // NEW: 'standard' or 'subscriber'
         'is_published',
         'featured_in_guest',
         'featured_position',
@@ -222,12 +224,32 @@ class Collection extends Model implements HasMedia {
      * @return float
      */
     public function getEffectiveEppPercentage(): float {
+        // Logica basata sui NUOVI Profili Collection (Contributor vs Normal)
+        $profile = $this->profile_type ?? 'contributor'; // Default per retrocompatibilità
+        $mode = $this->royalty_mode ?? 'standard';
+
+        // 1. Profilo NORMAL (Solo Company) -> EPP = Voluntary % (di solito 0)
+        if ($profile === 'normal') {
+            return (float) ($this->epp_donation_percentage ?? 0);
+        }
+
+        // 2. Profilo CONTRIBUTOR
+        // Se modalità 'subscriber' -> EPP Esente (0%)
+        if ($mode === 'subscriber') {
+            return 0.0;
+        }
+
+        // Se modalità 'standard' -> EPP 20% Obbligatorio
+        return 20.0;
+
+        /* OLD LOGIC DEPRECATED
         if ($this->is_epp_voluntary) {
             // Company: use voluntary percentage or 0
             return (float) ($this->epp_donation_percentage ?? 0);
         }
         // Others: standard EPP percentage (configured globally)
         return $this->epp_project_id !== null ? (float) config('epp.default_percentage', 5.0) : 0;
+        */
     }
 
     /**

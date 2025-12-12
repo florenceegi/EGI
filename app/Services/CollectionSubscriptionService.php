@@ -435,4 +435,113 @@ class CollectionSubscriptionService {
     {
         return $collection->egis()->count() <= $planSize;
     }
+    /**
+     * Cancel subscription and process refund
+     *
+     * @param User $user User requesting cancellation
+     * @param Collection $collection Collection to cancel subscription for
+     * @return array Result data
+     */
+    public function cancelSubscription(User $user, Collection $collection): array
+    {
+        // 1. Get active subscription transaction
+        $lastSubscription = AiCreditsTransaction::where('source_model', 'App\\Models\\Collection')
+            ->where('source_id', $collection->id)
+            ->where('source_type', 'collection_subscription')
+            ->where('transaction_type', 'subscription')
+            ->where('status', 'completed')
+            ->where('expires_at', '>', now())
+            ->where('is_expired', false)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$lastSubscription) {
+            return [
+                'success' => false,
+                'message' => 'No active subscription found to cancel.',
+            ];
+        }
+
+        // 2. Determine Refund Logic
+        // Rule A: Full Refund if < 24h OR No published EGIs ever
+        $hoursSinceStart = $lastSubscription->created_at->diffInHours(now());
+        $publishedEgisCount = $collection->egis()->where('status', 'published')->count();
+        
+        $isFullRefund = ($hoursSinceStart < 24) || ($publishedEgisCount === 0);
+        
+        $refundAmount = 0;
+        
+        if ($isFullRefund) {
+            $refundAmount = $lastSubscription->amount;
+        } else {
+            // Rule B: Prorated Refund (Days Remaining)
+            // Refund = Cost - (DailyCost * DaysUsed)
+            // Effective Days Used = TotalDays - DaysRemaining
+            $totalDays = self::SUBSCRIPTION_DURATION_DAYS;
+            $daysRemaining = now()->diffInDays($lastSubscription->expires_at, false);
+            
+            if ($daysRemaining > 0) {
+                $dailyCost = $lastSubscription->amount / $totalDays;
+                $refundAmount = (int) round($daysRemaining * $dailyCost);
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            // 3. Mark subscription as expired/cancelled
+            $lastSubscription->is_expired = true;
+            $lastSubscription->save(); // Or update status to 'cancelled' if field existed, but schema uses is_expired logic
+            
+            // Also cancel Recurring Subscription if exists
+            $recurringService = app(RecurringPaymentService::class);
+            $recurringService->cancelSubscription($user, $collection, 'collection_subscription');
+
+            // 4. Process Refund if applicable
+            if ($refundAmount > 0) {
+                 $this->egiliService->earn(
+                    $user,
+                    $refundAmount,
+                    'subscription_refund',
+                    'refund',
+                    [
+                        'collection_id' => $collection->id,
+                        'original_transaction_id' => $lastSubscription->id,
+                        'refund_type' => $isFullRefund ? 'full' : 'prorated',
+                        'egis_published_count' => $publishedEgisCount,
+                        'description' => 'Refund for Collection Subscription Cancellation'
+                    ],
+                    $lastSubscription
+                );
+            }
+
+            // 5. Clear Cache & Commit
+            Cache::forget("collection_has_rights_{$collection->id}");
+            DB::commit();
+
+            $this->logger->info('[CollectionSubscription] Subscription cancelled', [
+                'collection_id' => $collection->id,
+                'user_id' => $user->id,
+                'refund_amount' => $refundAmount,
+                'refund_type' => $isFullRefund ? 'full' : 'prorated'
+            ]);
+
+            return [
+                'success' => true,
+                'message' => 'Subscription cancelled successfully.',
+                'refund_amount' => $refundAmount,
+                'refund_type' => $isFullRefund ? 'full' : 'prorated'
+            ];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->logger->error('[CollectionSubscription] Cancellation failed', [
+                'error' => $e->getMessage()
+            ]);
+            
+            return [
+                'success' => false,
+                'message' => 'Error processing cancellation: ' . $e->getMessage()
+            ];
+        }
+    }
 }
