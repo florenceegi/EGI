@@ -421,6 +421,9 @@ $monetizationType = $collection->monetization_type ?? null;
                                 {{-- Badge mint SPOSTATO nel box "EGI Certificato su Blockchain" in crud-panel (Col 2)
                                 --}}
 
+                                {{-- Master Clonable Tools Section (Only for Creator/Master) --}}
+                                @include('egis.partials.sidebar.master-tools-section', compact('egi', 'isCreator'))
+
                                 {{-- Price & Purchase Section --}}
                                 @include(
                                     'egis.partials.sidebar.price-purchase-section',

@@ -210,6 +210,21 @@ $currentOwnerDisplay = $currentOwnerUser ? formatActivatorDisplay($currentOwnerU
                 </span>
             </div>
 
+            {{-- Badge Master / Serial --}}
+            @if ($egi->is_template)
+                 <div class="absolute right-2 top-2 z-10">
+                    <span class="inline-flex items-center rounded-md border border-purple-400/50 bg-purple-900/80 px-1.5 py-0.5 text-[10px] font-bold text-purple-100 shadow-sm backdrop-blur-sm">
+                        MASTER
+                    </span>
+                </div>
+            @elseif ($egi->serial_number)
+                 <div class="absolute right-2 top-2 z-10">
+                    <span class="inline-flex items-center rounded-md border border-cyan-400/50 bg-cyan-900/80 px-1.5 py-0.5 text-[10px] font-bold text-cyan-100 shadow-sm backdrop-blur-sm">
+                        #{{ $egi->serial_number }}
+                    </span>
+                </div>
+            @endif
+
             {{-- 🎯 Badge Asta (bottom-left) --}}
             @if (!$egi->isMinted() && $egi->sale_mode === 'auction')
                 <div class="absolute bottom-2 left-2">
