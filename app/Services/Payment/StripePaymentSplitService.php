@@ -332,7 +332,7 @@ class StripePaymentSplitService {
             $distributions[] = [
                 'wallet_id' => $wallet->id,
                 'wallet_address' => $wallet->wallet,
-                'stripe_account_id' => $wallet->stripe_account_id,
+                'stripe_account_id' => $wallet->user?->stripe_account_id ?? $wallet->stripe_account_id,
                 'user_id' => $wallet->user_id,
                 'platform_role' => $wallet->platform_role,
                 'percentage' => $percentage,

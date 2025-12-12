@@ -50,7 +50,7 @@ class MerchantAccountResolver {
 
         $wallet = match ($provider) {
             'stripe' => $wallets->first(function (Wallet $wallet) {
-                return filled($wallet->stripe_account_id);
+                return filled($wallet->user?->stripe_account_id) || filled($wallet->stripe_account_id);
             }),
             'paypal' => $wallets->first(function (Wallet $wallet) {
                 return filled($wallet->paypal_merchant_id);
@@ -83,7 +83,7 @@ class MerchantAccountResolver {
             'provider' => $provider,
             'collection_id' => $collection->id,
             'wallet_id' => $wallet->id,
-            'stripe_account_id' => $wallet->stripe_account_id,
+            'stripe_account_id' => $wallet->user?->stripe_account_id ?? $wallet->stripe_account_id,
             'paypal_merchant_id' => $wallet->paypal_merchant_id,
         ], static fn($value) => $value !== null && $value !== '');
     }
@@ -156,7 +156,7 @@ class MerchantAccountResolver {
         // Filter wallets with this provider's account
         $providerWallets = $wallets->filter(function (Wallet $wallet) use ($provider) {
             return match ($provider) {
-                'stripe' => filled($wallet->stripe_account_id),
+                'stripe' => filled($wallet->user?->stripe_account_id) || filled($wallet->stripe_account_id),
                 'paypal' => filled($wallet->paypal_merchant_id),
                 default => false,
             };
@@ -240,7 +240,7 @@ class MerchantAccountResolver {
     private function validateSingleWallet(Wallet $wallet, string $provider): array {
         try {
             if ($provider === 'stripe') {
-                $accountId = $wallet->stripe_account_id;
+                $accountId = $wallet->user?->stripe_account_id ?? $wallet->stripe_account_id;
 
                 if (empty($accountId)) {
                     return ['valid' => false, 'account_id' => null, 'error' => 'missing_account_id'];

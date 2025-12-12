@@ -44,8 +44,9 @@ class StripeConnectService
     public function ensureExpressAccount(Wallet $wallet, User $user): array
     {
         try {
-            if ($wallet->stripe_account_id) {
-                $account = $this->client->accounts->retrieve($wallet->stripe_account_id, []);
+            $existingAccountId = $user->stripe_account_id ?? $wallet->stripe_account_id;
+            if ($existingAccountId) {
+                $account = $this->client->accounts->retrieve($existingAccountId, []);
 
                 return [
                     'account' => $account->toArray(),
@@ -74,6 +75,12 @@ class StripeConnectService
                 ],
             ]);
 
+            // PRIMARY: Save to User
+            $user->update([
+                'stripe_account_id' => $account->id,
+            ]);
+
+            // LEGACY SYNC: Save to Wallet (for compatibility)
             $wallet->update([
                 'stripe_account_id' => $account->id,
             ]);

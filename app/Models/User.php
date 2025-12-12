@@ -85,6 +85,7 @@ class User extends Authenticatable implements HasMedia {
         'ai_credits_lifetime_used',
         'ai_subscription_tier',
         'ai_subscription_ends_at',
+        'stripe_account_id',
     ];
 
     protected $casts = [
@@ -117,6 +118,7 @@ class User extends Authenticatable implements HasMedia {
         'remember_token',
         'two_factor_recovery_codes',
         'two_factor_secret',
+        'stripe_account_id',
     ];
 
     /**

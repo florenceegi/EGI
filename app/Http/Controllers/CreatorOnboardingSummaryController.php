@@ -49,14 +49,17 @@ class CreatorOnboardingSummaryController extends Controller {
         $dashboardUrl = null;
 
         if ($this->stripeConnectService !== null) {
-            if ($wallet->stripe_account_id) {
+            $stripeAccountId = $user->stripe_account_id ?? $wallet->stripe_account_id;
+
+            if ($stripeAccountId) {
                 try {
-                    $stripeAccount = $this->stripeConnectService->retrieveAccount($wallet->stripe_account_id);
+                    $stripeAccount = $this->stripeConnectService->retrieveAccount($stripeAccountId);
 
                     if (!$stripeAccount) {
                         $accountData = $this->stripeConnectService->ensureExpressAccount($wallet, $user);
                         $stripeAccount = $accountData['account'] ?? null;
                         $wallet->refresh();
+                        $user->refresh(); // Sync new ID to user model
                     }
                 } catch (\Exception $e) {
                     $this->logger->error('Failed to retrieve Stripe account', [
@@ -70,6 +73,7 @@ class CreatorOnboardingSummaryController extends Controller {
                     $accountData = $this->stripeConnectService->ensureExpressAccount($wallet, $user);
                     $stripeAccount = $accountData['account'] ?? null;
                     $wallet->refresh();
+                    $user->refresh();
                 } catch (\Exception $e) {
                     $this->logger->error('Failed to create Stripe account', [
                         'user_id' => $user->id,
@@ -79,14 +83,15 @@ class CreatorOnboardingSummaryController extends Controller {
                 }
             }
 
-            if ($stripeAccount && $wallet->stripe_account_id) {
+            if ($stripeAccount && ($user->stripe_account_id ?? $wallet->stripe_account_id)) {
+                $currentStripeId = $user->stripe_account_id ?? $wallet->stripe_account_id;
                 $requiresOnboarding = !($stripeAccount['details_submitted'] ?? false)
                     || !($stripeAccount['charges_enabled'] ?? false);
 
                 if ($requiresOnboarding) {
                     try {
                         $onboardingUrl = $this->stripeConnectService->createAccountLink(
-                            $wallet->stripe_account_id,
+                            $currentStripeId,
                             route('creator.onboarding.summary'),
                             route('creator.onboarding.summary')
                         );
@@ -101,7 +106,7 @@ class CreatorOnboardingSummaryController extends Controller {
 
                 try {
                     $dashboardUrl = $this->stripeConnectService->createExpressDashboardLoginLink(
-                        $wallet->stripe_account_id
+                        $currentStripeId
                     );
                 } catch (\Exception $e) {
                     $this->logger->error('Failed to create Stripe dashboard link', [
@@ -116,7 +121,7 @@ class CreatorOnboardingSummaryController extends Controller {
         $this->logger->info('Creator onboarding summary viewed', [
             'user_id' => $user->id,
             'wallet_id' => $wallet->id,
-            'stripe_account_id' => $wallet->stripe_account_id,
+            'stripe_account_id' => $user->stripe_account_id ?? $wallet->stripe_account_id,
         ]);
 
         return view('creator.onboarding-summary', [
