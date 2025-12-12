@@ -8,87 +8,72 @@ Il sistema è progettato per **tutti**: dal neofita che usa solo euro al crypto-
 
 ---
 
-## Tokenomics e Distribuzione Royalty
+## Tokenomics e Distribuzione Royalty: I Profili Collection
 
-### Due Tipologie di Merchant: Creator vs Company
+Il sistema di pagamenti non distingue più rigidamente tra Ruoli Utente, ma permette di scegliere il **Profilo della Collection** più adatto al proprio modello.
 
-FlorenceEGI distingue due tipologie di merchant con regole diverse:
+### Chi può scegliere cosa?
+*   **Creator (Utenti Base):** Operano nativamente nel profilo **Contributor**.
+*   **Company (Aziende):** Possono **scegliere** tra profilo **Contributor** (per benefici etici) o profilo **Normal** (business puro).
 
-#### **CREATOR** (Artista/Individuo)
+### 1. Profilo CONTRIBUTOR (Modello Etico)
+*Accessibile a Creator e Company. Sblocca benefici ecosistema e visibilità.*
 
-Il Creator è un artista, artigiano o individuo che crea e vende opere digitali.
-
-**Distribuzione Royalty (Primary Market - Mint)**:
+**Struttura Base:**
 | Destinatario | Percentuale | Note |
 |--------------|-------------|------|
-| Creator | 68% | Royalty artista |
-| EPP | 0-20% | Volontario, per collection |
+| Owner | 68% (o 88%) | Royalty netta venditore |
+| EPP | 20% o 0% | Vedi opzioni sotto |
 | Natan (Piattaforma) | 10% | Infrastruttura tecnologica |
-| Frangette | 2% | Sviluppo ecosistema |
+| Frangette | 2% | Sviluppo ecosistema (Obbligatorio) |
 
-**Opzioni per Collection**:
-Il Creator deve scegliere **una** delle seguenti opzioni per ogni collection:
+**Sotto-Opzioni (Scelta Owner):**
+1.  **Opzione Contributor (No Canone):**
+    *   **EPP:** 20%
+    *   **Abbonamento:** Nessuno (Gratis)
+    *   *Netto Owner:* 68%
+2.  **Opzione Subscriber (Con Canone):**
+    *   **EPP:** 0%
+    *   **Abbonamento:** Obbligatorio (Attivo)
+    *   *Netto Owner:* 88%
 
--   **Opzione A - EPP Volontario**: Assegna una percentuale (es. 20%) all'EPP per quella collection
--   **Opzione B - Abbonamento**: Sottoscrive un abbonamento per mantenere la collection (senza obbligo EPP)
+### 2. Profilo NORMAL (Modello Business)
+*Esclusivo per Company. Nessun beneficio etico aggiuntivo.*
 
-**Una delle due opzioni è obbligatoria per creare/mantenere una collection.**
-
-#### **COMPANY** (Azienda/Ente Business)
-
-La Company è un'entità business (azienda, ente, istituzione) che utilizza la piattaforma.
-
-**Distribuzione Royalty (Primary Market - Mint)**:
+**Struttura Unica:**
 | Destinatario | Percentuale | Note |
 |--------------|-------------|------|
 | Company | 90% | Esente da EPP e Frangette |
-| EPP | 0% | Volontario (può aggiungere se vuole) |
+| EPP | 0% | Esente |
 | Natan (Piattaforma) | 10% | Infrastruttura tecnologica |
-| Frangette | 0% | Esente (entità business) |
-| **Totale** | 100% (o meno se aggiunge EPP) | |
+| Frangette | 0% | Esente |
+| **Abbonamento** | **OBBLIGATORIO** | Richiesto per mantenere la collection |
 
-**Note**: La Company riceve 90% perché non è obbligata a EPP né a Frangette. Se sceglie di aggiungere EPP (es. 10%), la sua quota scende a 80%.
-
-**Requisiti Collection**:
-
--   **Abbonamento obbligatorio**: Ogni collection richiede abbonamento attivo
--   **EPP facoltativo**: Può volontariamente assegnare una percentuale a EPP
-
-### EPP: Modello Per Collection (Non Più Per Utente)
-
-**Cambiamento importante**: L'associazione EPP non avviene più alla registrazione utente, ma **collection per collection**.
-
-#### Come Funziona
-
-1. **Alla creazione collection**: Il merchant sceglie se assegnare % a EPP
-2. **Per ogni collection**: L'EPP può essere diverso (associazione diversa, % diversa)
-3. **Modificabile**: La % EPP può essere modificata (con limitazioni temporali)
-
-#### Vantaggi
-
--   Flessibilità: Diverse collection possono avere diversi EPP
--   Scelta consapevole: Il merchant decide per ogni progetto
--   Trasparenza: L'acquirente sa esattamente dove va la % EPP
+---
 
 ### Rebind (Secondary Market)
 
-**Distribuzione Royalty Secondarie** (vendita tra utenti):
-| Destinatario | Creator | Company |
-|--------------|---------|---------|
-| Proprietario originale | 4.5% | 4.5% |
-| EPP | 0.8% (se assegnato) | 0% (opzionale) |
-| Natan | 0.7% | 0.7% |
-| Frangette | 0.1% | 0% |
-| **Totale** | 6.1% | 5.2% + EPP opz. |
+Le fee di rivendita seguono il profilo della Collection originale.
+
+| Destinatario | Profilo CONTRIBUTOR | Profilo NORMAL |
+| :--- | :--- | :--- |
+| **Creator Royalty** | 4.5% | 4.5% |
+| **Natan (Piattaforma)** | 0.7% | 0.7% |
+| **Frangette** | 0.1% | 0% |
+| **EPP** | 0.8% | 0% |
+| **TOTALE FEES** | **6.1%** | **5.2%** |
+
+*(Il venditore incassa il residuo: 93.9% nel Contributor, 94.8% nel Normal)*
 
 ### Riepilogo Differenze
 
-| Aspetto                    | Creator                        | Company      |
-| -------------------------- | ------------------------------ | ------------ |
-| **Frangette (2%)**         | ✅ Obbligatorio                | ❌ Esente    |
-| **EPP**                    | Obbligatorio (% o abbonamento) | Facoltativo  |
-| **Abbonamento Collection** | Opzionale (alternativa a EPP)  | Obbligatorio |
-| **Royalty Base**           | 68%                            | 90%          |
+| Aspetto | Profilo CONTRIBUTOR | Profilo NORMAL |
+| :--- | :--- | :--- |
+| **Target Utente** | Creator & Company (Etiche) | Solo Company |
+| **Frangette (2%)** | ✅ Obbligatorio | ❌ Esente |
+| **EPP Royalty** | 20% (o 0% se abbonato) | 0% (Esente) |
+| **Abbonamento** | Opzionale (alternativa a EPP) | **Obbligatorio** |
+| **Royalty Netta Base** | 68% (o 88%) | 90% |
 
 ---
 
@@ -112,7 +97,7 @@ La Company è un'entità business (azienda, ente, istituzione) che utilizza la p
 2. Cliente paga → PSP incassa
 3. **PSP esegue split payment** (vedi sezione Tokenomics sopra):
     - **Creator**: 68% (se Creator) o 88% (se Company)
-    - **EPP**: 0-20% (volontario, configurato per collection)
+    - **EPP**: 20% (Opzione A) o 0% (Opzione B/Company/Livello 4)
     - **Piattaforma (Natan)**: 10%
     - **Associazione (Frangette)**: 2% (solo Creator, Company esente)
 4. **Payout FIAT** sul conto bancario merchant (timing: T+2/T+7 secondo PSP)
