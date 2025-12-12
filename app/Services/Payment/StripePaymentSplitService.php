@@ -924,6 +924,17 @@ class StripePaymentSplitService {
     ): array {
         $paymentIntents = [];
         $currency = strtolower($request->currency);
+        
+        // Dynamically retrieve Platform Stripe Account ID to prevent "Source matches Destination" error
+        // This handles cases where a wallet (e.g., Natan/Company) has the same Stripe ID as the Platform
+        try {
+            $platformAccount = $this->stripeClient->accounts->retrieve();
+            $platformAccountId = $platformAccount->id;
+        } catch(\Exception $e) {
+            $this->logger->error('STRIPE_PLATFORM_ID_FETCH_FAILED', ['error' => $e->getMessage()]);
+            // Fallback: Proceed without filter, relying on Stripe validation (risk of error remains but logged)
+            $platformAccountId = null; 
+        }
 
         foreach ($distributions as $distribution) {
             $amountCents = $distribution['amount_cents'];
@@ -932,6 +943,9 @@ class StripePaymentSplitService {
 
             // Platform fee: 2% SOLO sul pagamento a Natan
             $applicationFeeCents = $isNatan ? (int)round($amountCents * 0.02) : 0;
+            
+            // CRITICAL FIX: IF DESTINATION IS PLATFORM, DO NOT TRANSFER (Money stays in platform)
+            $isPlatformSelfTransfer = ($platformAccountId && $destinationAccount === $platformAccountId);
 
             $intentParams = [
                 'amount' => $amountCents,
@@ -952,13 +966,23 @@ class StripePaymentSplitService {
                 ]),
                 'receipt_email' => $request->customerEmail,
                 'confirmation_method' => 'automatic',
-                'transfer_data' => [
-                    'destination' => $destinationAccount,
-                ],
             ];
+            
+            // Only add transfer_data if NOT transferring to self
+            if (!$isPlatformSelfTransfer) {
+                $intentParams['transfer_data'] = [
+                    'destination' => $destinationAccount,
+                ];
+            } else {
+                $this->logger->info('Skipping transfer_data for Platform Self-Transfer', [
+                    'account_id' => $destinationAccount,
+                    'role' => $distribution['platform_role']
+                ]);
+            }
 
-            // Aggiungi platform fee SOLO per pagamento a Natan
-            if ($applicationFeeCents > 0) {
+            // Aggiungi platform fee SOLO per pagamento a Natan AND NOT Self-Transfer
+            // (You can't take a fee from yourself effectively in this flow, or semantics differ)
+            if ($applicationFeeCents > 0 && !$isPlatformSelfTransfer) {
                 $intentParams['application_fee_amount'] = $applicationFeeCents;
                 $intentParams['metadata']['application_fee_cents'] = $applicationFeeCents;
                 $intentParams['metadata']['application_fee_percentage'] = '2';
@@ -991,6 +1015,7 @@ class StripePaymentSplitService {
                 'application_fee_cents' => $applicationFeeCents,
                 'wallet_id' => $distribution['wallet_id'],
                 'platform_role' => $distribution['platform_role'],
+                'is_self_transfer' => $isPlatformSelfTransfer
             ]);
         }
 
