@@ -201,6 +201,10 @@ class CollectionsController extends Controller {
             'creator',
             'epp',
             'egis' => function ($query) use ($isCreator) {
+                // EXCLUDE CLONES from the main collection list
+                // Clones should only be visible in the Buyer's Portfolio
+                $query->whereNull('parent_id');
+
                 if (!$isCreator) {
                     // Non è il creatore: mostra solo EGI pubblicati
                     $query->where('is_published', true);
@@ -766,6 +770,40 @@ class CollectionsController extends Controller {
             
         } catch (\Throwable $e) {
             app(\Ultra\UltraLogManager\UltraLogManager::class)->error('[CollectionsController] toggleAutoRenew failed', [
+                'collection_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json(['success' => false, 'message' => 'Server error'], 500);
+        }
+    }
+    /**
+     * Cancel active subscription for collection
+     */
+    public function cancelSubscription(Request $request, int $id): JsonResponse {
+        try {
+            $user = FegiAuth::user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
+
+            $collection = Collection::findOrFail($id);
+            
+            // Authorization check
+            if ((int) $collection->creator_id !== (int) $user->id) {
+                return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+            }
+
+            $subscriptionService = app(\App\Services\CollectionSubscriptionService::class);
+            $result = $subscriptionService->cancelSubscription($user, $collection);
+
+            if (!$result['success']) {
+                return response()->json($result, 400);
+            }
+
+            return response()->json($result);
+            
+        } catch (\Throwable $e) {
+            app(\Ultra\UltraLogManager\UltraLogManager::class)->error('[CollectionsController] cancelSubscription failed', [
                 'collection_id' => $id,
                 'error' => $e->getMessage()
             ]);

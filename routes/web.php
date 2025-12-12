@@ -431,6 +431,10 @@ Route::prefix('home')->name('home.')->group(function () {
         ->name('collections.subscription.toggle-auto-renew')
         ->middleware('auth');
 
+    Route::post('/collections/{id}/monetization/cancel-subscription', [CollectionsController::class, 'cancelSubscription'])
+        ->name('collections.subscription.cancel')
+        ->middleware('auth');
+
     // Collection management (restricted to creators)
     // Route::middleware(['can:manage-collections'])->group(function () {
     //     Route::get('/collections/create', [CollectionsController::class, 'create'])->name('collections.create');
@@ -502,6 +506,15 @@ Route::group(['prefix' => 'egis'], function () {
             ->name('egis.traits.add-single');
         Route::delete('/{egi}/traits/{trait}', [TraitsApiController::class, 'deleteTrait'])
             ->name('egis.traits.delete');
+
+        // Master Clonable System Routes
+        Route::post('/{egi}/master/toggle', [\App\Http\Controllers\EgiMasterController::class, 'toggleMaster'])
+            ->name('egis.master.toggle');
+        Route::post('/{egi}/master/toggle-buyer', [\App\Http\Controllers\EgiMasterController::class, 'toggleBuyerCloning'])
+            ->name('egis.master.toggle-buyer');
+        
+        Route::post('/{egi}/master/clone', [\App\Http\Controllers\EgiMasterController::class, 'clone'])
+            ->name('egis.master.clone');
     });
 });
 

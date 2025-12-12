@@ -177,6 +177,12 @@ class Egi extends Model {
         'smart_contract_app_id',
         // IPFS Storage for original images
         'ipfs_cid',
+        // Master Clonable System
+        'parent_id',
+        'is_template',
+        'is_sellable',
+        'serial_number',
+        'allow_buyer_clone',
         // Note: 'id', 'created_at', 'updated_at', 'deleted_at' are typically not fillable
     ];
 
@@ -220,11 +226,47 @@ class Egi extends Model {
         'featured_until'        => 'datetime',
         'hyper_until'           => 'datetime',
         'hyper_activated_at'    => 'datetime',
+        // Master Clonable System
+        'is_template' => 'boolean',
+        'is_sellable' => 'boolean',
+        'allow_buyer_clone' => 'boolean',
     ];
 
     //--------------------------------------------------------------------------
     // Relationships
     //--------------------------------------------------------------------------
+
+    /**
+     * Master Clonable: Parent EGI (Template)
+     */
+    public function parent(): BelongsTo {
+        return $this->belongsTo(Egi::class, 'parent_id');
+    }
+
+    /**
+     * Master Clonable: Child EGIs (Clones)
+     */
+    public function children(): HasMany {
+        return $this->hasMany(Egi::class, 'parent_id');
+    }
+
+    //--------------------------------------------------------------------------
+    // Scopes
+    //--------------------------------------------------------------------------
+
+    /**
+     * Scope integers to only include Master Templates
+     */
+    public function scopeMasters($query) {
+        return $query->where('is_template', true);
+    }
+
+    /**
+     * Scope integers to only include Sellable items (excludes Masters)
+     */
+    public function scopeSellable($query) {
+        return $query->where('is_sellable', true);
+    }
 
     /**
      * Get the traits for this EGI

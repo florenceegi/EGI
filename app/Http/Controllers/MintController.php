@@ -99,8 +99,8 @@ class MintController extends Controller {
                 }
             }
 
-            // Check if already minted
-            if ($egi->blockchain && $egi->blockchain->isMinted()) {
+            // Check if already minted (Masters are usually not minted, or if they are, we ignore it for cloning)
+            if ($egi->blockchain && $egi->blockchain->isMinted() && !$egi->is_template) {
                 return redirect()->route('mint.show', $egi->blockchain->id);
             }
 
@@ -439,6 +439,32 @@ class MintController extends Controller {
             ]);
 
             $egi = Egi::findOrFail($validated['egi_id']);
+            
+            // MASTER CLONABLE LOGIC: If buying a Master, clone it first
+            if ($egi->is_template) {
+                if (!$egi->allow_buyer_clone) {
+                     abort(403, 'This Master Template is not available for buyer cloning.');
+                }
+                
+                $this->logger->info('Processing Purchase for Master EGI - Cloning...', [
+                    'master_id' => $egi->id,
+                    'buyer_id' => Auth::id()
+                ]);
+                
+                $cloneAction = app(\App\Actions\Egi\CloneEgiFromMasterAction::class);
+                // Execute cloning WITHOUT immediate minting (controller handles minting queue)
+                $clone = $cloneAction->execute($egi, Auth::user(), false);
+                
+                // Swap EGI for the new Child
+                $egi = $clone;
+                $validated['egi_id'] = $egi->id; // Update validation array just in case
+                
+                $this->logger->info('Master cloned successfully. Proceeding with Mint for Child.', [
+                    'master_id' => $egi->parent_id,
+                    'child_id' => $egi->id,
+                    'serial' => $egi->serial_number
+                ]);
+            }
 
             // ✅ DUAL PATH: Mint con reservation VS Mint diretto
             $reservation = null;
@@ -1779,7 +1805,7 @@ class MintController extends Controller {
      * @param int $egiBlockchainId EgiBlockchain record ID
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function showMintResult(int $egiBlockchainId) {
+    public function showMintResult(int|string $egiBlockchainId) {
         try {
             // NESSUN CHECK RESTRITTIVO - Solo fetch dati e mostra
             $blockchain = EgiBlockchain::with(['egi.utility.media', 'egi.user', 'egi.reservations', 'buyer'])->findOrFail($egiBlockchainId);

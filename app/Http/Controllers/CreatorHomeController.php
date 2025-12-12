@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * @Oracode Controller: Creator Home Page Management
@@ -27,6 +29,16 @@ use Illuminate\View\View;
  * @date 2025-08-10
  */
 class CreatorHomeController extends Controller {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
 
     /**
      * Risolve un creator da ID numerico o nick_name
@@ -93,7 +105,10 @@ class CreatorHomeController extends Controller {
             })
             ->when($collection_filter, function ($q) use ($collection_filter) {
                 $q->where('collection_id', $collection_filter);
-            });
+            })
+            // EXCLUDE CLONES from the "Created" tab
+            // Clones appear in "Owned" if the creator owns them, otherwise they are Buyer's property
+            ->whereNull('parent_id');
 
         $createdQuery = $this->applyPortfolioSorting($createdQuery, $sort);
         $createdEgis = $createdQuery->get();

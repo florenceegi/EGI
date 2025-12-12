@@ -9,6 +9,8 @@ use App\Enums\User\MerchantUserTypeEnum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\View\View;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * @Oracode Controller: Company Home Page Management
@@ -29,6 +31,16 @@ use Illuminate\View\View;
  * @date 2025-12-05
  */
 class CompanyHomeController extends Controller {
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
     /**
      * Risolve una company da ID numerico o nick_name
      */
@@ -87,7 +99,10 @@ class CompanyHomeController extends Controller {
             })
             ->when($collection_filter, function ($q) use ($collection_filter) {
                 $q->where('collection_id', $collection_filter);
-            });
+            })
+            // EXCLUDE CLONES from the "Created" tab
+            // Clones appear in "Owned" if the company owns them, otherwise they are Buyer's property
+            ->whereNull('parent_id');
 
         $createdQuery = $this->applyPortfolioSorting($createdQuery, $sort);
         $createdEgis = $createdQuery->get();
