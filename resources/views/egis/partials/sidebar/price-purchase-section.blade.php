@@ -19,7 +19,7 @@
 {{-- Price & Purchase Section - Nascosta se EGI già mintato O collection senza diritti --}}
 @if (($collectionHasRights) && (!$egi->isMinted() || !$egi->token_EGI))
 <div class="p-6 border rounded-xl border-gray-700/30 bg-gradient-to-br from-gray-800/50 to-gray-900/50">
-    @if ($isForSale)
+    @if ($isForSale || ($egi->is_template && $egi->price > 0))
         <div class="mb-6 text-center">
             <p class="mb-2 text-sm text-gray-400">{{ $priceLabel }}</p>
             <div class="flex items-baseline justify-center">
@@ -27,6 +27,17 @@
                     class="text-4xl font-bold text-white" :show-algo-conversion="true" />
                 <span class="ml-2 text-lg font-medium text-gray-400">EUR</span>
             </div>
+            
+            @if ($egi->is_template)
+                <div class="mt-2 flex items-center justify-center gap-2">
+                    <span class="inline-flex items-center rounded-md bg-purple-500/10 px-2 py-1 text-xs font-medium text-purple-400 ring-1 ring-inset ring-purple-500/20">
+                        <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5" />
+                        </svg>
+                        {{ __('egi.master.purchase_clone_info', ['default' => 'Price for Serialized Copy']) }}
+                    </span>
+                </div>
+            @endif
 
             {{-- Miglior offerente (STRONG vs WEAK) --}}
             @if ($displayUser || $highestPriorityReservation)
@@ -81,7 +92,7 @@
         </div>
     @else
         <div class="mb-6 text-center">
-            @if ($egi->price && $egi->price > 0)
+            @if (($egi->price && $egi->price > 0) && !$egi->is_template)
                 <p class="text-lg font-semibold text-gray-300">{{ __('egi.not_currently_listed') }}</p>
                 <p class="mt-1 text-sm text-gray-500">{{ __('egi.contact_owner_availability') }}</p>
             @else

@@ -509,115 +509,165 @@
                 {{-- Tab: Subscription --}}
                 <div id="tab-subscription" class="dashboard-tab-content hidden">
                     @if ($collection->monetization_type === 'subscription')
-                        <div class="space-y-6">
-                            {{-- Subscription Details --}}
-                            <div class="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
-                                <h4 class="mb-6 flex items-center gap-2 text-lg font-semibold text-white">
-                                    <span class="material-symbols-outlined text-indigo-400">badge</span>
-                                    {{ __('collection.show.dashboard.subscription_details') }}
-                                </h4>
-                                
-                                <div class="grid gap-y-4 md:grid-cols-2 lg:grid-cols-2">
-                                    {{-- Plan Name --}}
-                                    <div class="flex flex-col gap-1">
-                                        <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.plan') }}</span>
-                                        <span class="text-lg font-bold text-white">
-                                            @php
-                                                $tierLabels = [
-                                                    'tier_1_19' => ['name' => 'Starter (1-19 EGIs)', 'price' => '€4.90'],
-                                                    'tier_20_49' => ['name' => 'Growth (20-49 EGIs)', 'price' => '€7.90'],
-                                                    'tier_50_99' => ['name' => 'Pro (50-99 EGIs)', 'price' => '€9.90'],
-                                                    'tier_100_plus' => ['name' => 'Unlimited (100+ EGIs)', 'price' => '€19.90'],
-                                                ];
-                                                // Handle legacy/service default 'collection_basic' by mapping to Unlimited
-                                                $displayTier = $collection->subscription_tier === 'collection_basic' ? 'tier_100_plus' : ($collection->subscription_tier ?? 'tier_1_19');
-                                            @endphp
-                                            {{ $tierLabels[$displayTier]['name'] ?? $tierLabels['tier_100_plus']['name'] }}
-                                        </span>
-                                    </div>
-
-                                    {{-- Status --}}
-                                    <div class="flex flex-col gap-1">
-                                        <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.status') }}</span>
-                                        <div>
-                                            <span class="{{ $collection->subscription_status === 'active' ? 'bg-green-500/10 text-green-400 ring-green-500/20' : 'bg-yellow-500/10 text-yellow-400 ring-yellow-500/20' }} inline-flex items-center rounded-md px-2 py-1 text-sm font-medium ring-1 ring-inset">
-                                                <span class="mr-1.5 h-1.5 w-1.5 rounded-full {{ $collection->subscription_status === 'active' ? 'bg-green-400' : 'bg-yellow-400' }}"></span>
-                                                {{ ucfirst($collection->subscription_status) }}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {{-- Price --}}
-                                    <div class="flex flex-col gap-1">
-                                        <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.price') }}</span>
-                                        <span class="font-medium text-white">
-                                            {{ $tierLabels[$displayTier]['price'] ?? '€19.90' }}/{{ __('collection.show.dashboard.month') }}
-                                        </span>
-                                    </div>
-
-                                    {{-- Started At --}}
-                                    @if ($collection->subscription_started_at)
+                        {{-- Logic: If Active -> Show Details. If Not Active -> Show Selection --}}
+                        @if ($collection->subscription_status === 'active')
+                            <div class="space-y-6">
+                                {{-- Subscription Details --}}
+                                <div class="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
+                                    <h4 class="mb-6 flex items-center gap-2 text-lg font-semibold text-white">
+                                        <span class="material-symbols-outlined text-indigo-400">badge</span>
+                                        {{ __('collection.show.dashboard.subscription_details') }}
+                                    </h4>
+                                    
+                                    <div class="grid gap-y-4 md:grid-cols-2 lg:grid-cols-2">
+                                        {{-- Plan Name --}}
                                         <div class="flex flex-col gap-1">
-                                            <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.started') }}</span>
-                                            <span class="font-medium text-white">
-                                                {{ \Carbon\Carbon::parse($collection->subscription_started_at)->format('d M Y, H:i') }}
-                                            </span>
-                                        </div>
-                                    @endif
-
-                                    {{-- Expires At --}}
-                                    @if ($collection->subscription_expires_at)
-                                        <div class="flex flex-col gap-1">
-                                            <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.expires') }}</span>
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-medium text-white">
-                                                    {{ \Carbon\Carbon::parse($collection->subscription_expires_at)->format('d M Y') }}
-                                                </span>
+                                            <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.plan') }}</span>
+                                            <span class="text-lg font-bold text-white">
                                                 @php
-                                                    $daysLeft = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($collection->subscription_expires_at), false);
+                                                    $tierLabels = [
+                                                        'tier_1_19' => ['name' => 'Starter (1-19 EGIs)', 'price' => '€4.90'],
+                                                        'tier_20_49' => ['name' => 'Growth (20-49 EGIs)', 'price' => '€7.90'],
+                                                        'tier_50_99' => ['name' => 'Pro (50-99 EGIs)', 'price' => '€9.90'],
+                                                        'tier_100_plus' => ['name' => 'Unlimited (100+ EGIs)', 'price' => '€19.90'],
+                                                    ];
+                                                    // Handle legacy/service default 'collection_basic' by mapping to Unlimited
+                                                    $displayTier = $collection->subscription_tier === 'collection_basic' ? 'tier_100_plus' : ($collection->subscription_tier ?? 'tier_1_19');
                                                 @endphp
-                                                @if ($daysLeft > 0 && $daysLeft < 7)
-                                                    <span class="text-xs font-medium text-yellow-500">({{ ceil($daysLeft) }} days left)</span>
-                                                @endif
+                                                {{ $tierLabels[$displayTier]['name'] ?? $tierLabels['tier_100_plus']['name'] }}
+                                            </span>
+                                        </div>
+
+                                        {{-- Status --}}
+                                        <div class="flex flex-col gap-1">
+                                            <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.status') }}</span>
+                                            <div>
+                                                <span class="bg-green-500/10 text-green-400 ring-green-500/20 inline-flex items-center rounded-md px-2 py-1 text-sm font-medium ring-1 ring-inset">
+                                                    <span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-green-400"></span>
+                                                    {{ ucfirst($collection->subscription_status) }}
+                                                </span>
                                             </div>
                                         </div>
-                                    @endif
-                                    
-                                    {{-- Auto-Renewal Toggle --}}
-                                    <div class="flex flex-col gap-1">
-                                        <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.auto_renew') }}</span>
-                                        <div class="flex items-center gap-2">
-                                            <label class="relative inline-flex cursor-pointer items-center">
-                                                <input type="checkbox" value="" class="peer sr-only" {{ $collection->is_auto_renew_active ? 'checked' : '' }} onchange="toggleAutoRenew(this.checked)">
-                                                <div class="peer h-6 w-11 rounded-full bg-gray-700 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-indigo-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300/30 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-indigo-800"></div>
-                                            </label>
-                                            <span class="text-sm font-medium text-white" id="auto-renew-label">
-                                                {{ $collection->is_auto_renew_active ? __('collection.show.dashboard.enabled') : __('collection.show.dashboard.disabled') }}
+
+                                        {{-- Price --}}
+                                        <div class="flex flex-col gap-1">
+                                            <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.price') }}</span>
+                                            <span class="font-medium text-white">
+                                                {{ $tierLabels[$displayTier]['price'] ?? '€19.90' }}/{{ __('collection.show.dashboard.month') }}
                                             </span>
+                                        </div>
+
+                                        {{-- Started At --}}
+                                        @if ($collection->subscription_started_at)
+                                            <div class="flex flex-col gap-1">
+                                                <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.started') }}</span>
+                                                <span class="font-medium text-white">
+                                                    {{ \Carbon\Carbon::parse($collection->subscription_started_at)->format('d M Y, H:i') }}
+                                                </span>
+                                            </div>
+                                        @endif
+
+                                        {{-- Expires At --}}
+                                        @if ($collection->subscription_expires_at)
+                                            <div class="flex flex-col gap-1">
+                                                <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.expires') }}</span>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-medium text-white">
+                                                        {{ \Carbon\Carbon::parse($collection->subscription_expires_at)->format('d M Y') }}
+                                                    </span>
+                                                    @php
+                                                        $daysLeft = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($collection->subscription_expires_at), false);
+                                                    @endphp
+                                                    @if ($daysLeft > 0 && $daysLeft < 7)
+                                                        <span class="text-xs font-medium text-yellow-500">({{ ceil($daysLeft) }} days left)</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endif
+                                        
+                                        {{-- Auto-Renewal Toggle --}}
+                                        <div class="flex flex-col gap-1">
+                                            <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.auto_renew') }}</span>
+                                            <div class="flex items-center gap-2">
+                                                <label class="relative inline-flex cursor-pointer items-center">
+                                                    <input type="checkbox" value="" class="peer sr-only" {{ $collection->is_auto_renew_active ? 'checked' : '' }} onchange="toggleAutoRenew(this.checked)">
+                                                    <div class="peer h-6 w-11 rounded-full bg-gray-700 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-indigo-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300/30 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-indigo-800"></div>
+                                                </label>
+                                                <span class="text-sm font-medium text-white" id="auto-renew-label">
+                                                    {{ $collection->is_auto_renew_active ? __('collection.show.dashboard.enabled') : __('collection.show.dashboard.disabled') }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            {{-- Actions --}}
-                            <div class="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
-                                <h4 class="mb-4 text-lg font-semibold text-white">
-                                    {{ __('collection.show.dashboard.manage_subscription') }}
-                                </h4>
-                                <div class="grid gap-3 sm:grid-cols-2">
-                                    @if ($collection->subscription_stripe_id)
-                                        <a href="#" class="flex items-center justify-center gap-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-4 py-3 text-white transition-all hover:bg-indigo-500/20">
-                                            <span class="material-symbols-outlined">credit_card</span>
-                                            {{ __('collection.show.dashboard.manage_payment_methods') }}
-                                        </a>
-                                    @endif
-                                    <button onclick="cancelSubscription()" class="flex items-center justify-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-400 transition-all hover:bg-red-500/20 hover:text-red-300">
-                                        <span class="material-symbols-outlined">cancel</span>
-                                        {{ __('collection.show.dashboard.cancel_subscription') }}
-                                    </button>
+                                {{-- Actions --}}
+                                <div class="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
+                                    <h4 class="mb-4 text-lg font-semibold text-white">
+                                        {{ __('collection.show.dashboard.manage_subscription') }}
+                                    </h4>
+                                    <div class="grid gap-3 sm:grid-cols-2">
+                                        @if ($collection->subscription_stripe_id)
+                                            <a href="#" class="flex items-center justify-center gap-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-4 py-3 text-white transition-all hover:bg-indigo-500/20">
+                                                <span class="material-symbols-outlined">credit_card</span>
+                                                {{ __('collection.show.dashboard.manage_payment_methods') }}
+                                            </a>
+                                        @endif
+                                        <button onclick="cancelSubscription()" class="flex items-center justify-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-400 transition-all hover:bg-red-500/20 hover:text-red-300">
+                                            <span class="material-symbols-outlined">cancel</span>
+                                            {{ __('collection.show.dashboard.cancel_subscription') }}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @else
+                            {{-- Not Active: Show PLAN SELECTION --}}
+                            <div class="space-y-6">
+                                <div class="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-6 text-center">
+                                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-600/20">
+                                        <span class="material-symbols-outlined text-3xl text-indigo-400">subscriptions</span>
+                                    </div>
+                                    <h2 class="mb-2 text-2xl font-bold text-white">{{ __('collection.show.dashboard.choose_your_plan') }}</h2>
+                                    <p class="mx-auto max-w-lg text-gray-300">{{ __('collection.show.dashboard.choose_plan_desc') }}</p>
+                                </div>
+
+                                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                                    @foreach ([
+                                        'tier_1_19' => ['name' => __('collection.show.dashboard.tier_starter'), 'price' => '€4.90', 'egis' => '1-19', 'color' => 'gray'],
+                                        'tier_20_49' => ['name' => __('collection.show.dashboard.tier_basic'), 'price' => '€7.90', 'egis' => '20-49', 'color' => 'blue'],
+                                        'tier_50_99' => ['name' => __('collection.show.dashboard.tier_professional'), 'price' => '€9.90', 'egis' => '50-99', 'color' => 'indigo'],
+                                        'tier_100_plus' => ['name' => __('collection.show.dashboard.tier_unlimited'), 'price' => '€19.90', 'egis' => '100+', 'color' => 'purple']
+                                    ] as $tierCode => $tierData)
+                                        <div class="relative flex flex-col rounded-xl border border-gray-700 bg-gray-800 p-6 transition-all hover:-translate-y-1 hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10">
+                                            <div class="mb-4">
+                                                <h3 class="text-lg font-bold text-white">{{ $tierData['name'] }}</h3>
+                                                <div class="mt-2 text-3xl font-bold text-white">{{ $tierData['price'] }}<span class="text-sm font-normal text-gray-400">/mo</span></div>
+                                            </div>
+                                            
+                                            <ul class="mb-6 flex-1 space-y-3 text-sm text-gray-300">
+                                                <li class="flex items-center gap-2">
+                                                    <span class="material-symbols-outlined text-green-400" style="font-size: 18px">check</span>
+                                                    {{ $tierData['egis'] }} EGIs
+                                                </li>
+                                                <li class="flex items-center gap-2">
+                                                    <span class="material-symbols-outlined text-green-400" style="font-size: 18px">check</span>
+                                                    Full Analytics
+                                                </li>
+                                                <li class="flex items-center gap-2">
+                                                    <span class="material-symbols-outlined text-green-400" style="font-size: 18px">check</span>
+                                                    Priority Support
+                                                </li>
+                                            </ul>
+                                            
+                                            <button onclick="selectSubscriptionTier('{{ $tierCode }}')" 
+                                                class="mt-auto w-full rounded-lg bg-indigo-600 py-2.5 font-semibold text-white transition-colors hover:bg-indigo-700">
+                                                Select Plan
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     @else
                         <div class="rounded-xl border border-gray-700 bg-gray-800/30 p-12 text-center">
                             <span class="material-symbols-outlined text-4xl text-gray-600">subscriptions</span>
@@ -671,5 +721,56 @@
             console.error('Error:', error);
             alert('Si è verificato un errore di rete.');
         });
+    }
+
+    function cancelSubscription() {
+        Swal.fire({
+            title: '{{ __("collection.show.dashboard.cancel_confirm_title") }}',
+            text: '{{ __("collection.show.dashboard.cancel_confirm_text") }}',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: '{{ __("collection.show.dashboard.cancel_confirm_btn") }}',
+            cancelButtonText: '{{ __("collection.show.dashboard.cancel_cancel_btn") }}'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const url = "{{ route('home.collections.subscription.cancel', $collection->id) }}";
+                
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        Swal.fire(
+                            '{{ __("collection.show.dashboard.cancelled") }}',
+                            data.message + (data.refund_amount > 0 ? '\nRefund: ' + data.refund_amount + ' Egili' : ''),
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire(
+                            'Error',
+                            data.message,
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire(
+                        'Error',
+                        'Network error occurred.',
+                        'error'
+                    );
+                });
+            }
+        })
     }
 </script>

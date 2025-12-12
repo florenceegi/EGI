@@ -671,7 +671,14 @@ return [
             'auto_renew' => 'Rinnovo Automatico',
             'enabled' => 'Abilitato',
             'disabled' => 'Disabilitato',
+            'choose_your_plan' => 'Scegli il tuo Piano',
+            'choose_plan_desc' => 'Seleziona il piano più adatto alle tue esigenze per iniziare a pubblicare le tue opere.',
             'close' => 'Chiudi',
+            'cancel_confirm_title' => 'Sei sicuro di voler cancellare?',
+            'cancel_confirm_text' => 'La cancellazione dell\'abbonamento comporterà la perdita dei benefici alla scadenza del periodo o un rimborso parziale se applicabile.',
+            'cancel_confirm_btn' => 'Sì, Cancella Abbonamento',
+            'cancel_cancel_btn' => 'Annulla',
+            'cancelled' => 'Abbonamento Cancellato',
         ],
 
         // Collection items

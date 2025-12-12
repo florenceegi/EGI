@@ -279,8 +279,18 @@ $isCreator = FegiAuth::check() && FegiAuth::id() === $creatorId;
             loading="lazy" decoding="async" aria-hidden="true" role="img"
             title="{{ __('egi.platform.powered_by', ['platform' => 'Frangette']) }}">
 
-        {{-- Badge del numero EGI --}}
-        @if ($egi->position)
+        {{-- Badge Master / Serial / Position --}}
+        @if ($egi->is_template)
+            <span
+                class="absolute left-10 top-2 rounded-full border border-purple-400 bg-purple-900/80 px-2 py-0.5 text-xs font-bold text-purple-100 backdrop-blur-sm shadow-sm shadow-purple-500/50">
+                MASTER
+            </span>
+        @elseif ($egi->serial_number)
+            <span
+                class="absolute left-10 top-2 rounded-full border border-cyan-400 bg-cyan-900/80 px-2 py-0.5 text-xs font-bold text-cyan-100 backdrop-blur-sm shadow-sm shadow-cyan-500/50">
+                #{{ $egi->serial_number }}
+            </span>
+        @elseif ($egi->position)
             <span
                 class="position-badge absolute left-10 top-2 rounded-full bg-black/50 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
                 #{{ $egi->position }}

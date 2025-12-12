@@ -147,6 +147,106 @@
                     </span>
                 </div>
 
+                <!-- Profile Selection Section (New) -->
+                @php
+                    $isCompany = auth()->user()?->isCompany() ?? false;
+                @endphp
+
+                <div class="space-y-6" x-data="{ profile: 'contributor' }">
+                    <!-- Profile Type Selection (Only for Company) -->
+                    @if($isCompany)
+                        <div class="space-y-3">
+                            <label class="block text-sm font-medium text-gray-300 font-source-sans">
+                                {{ __('collection.profile_type_label') }}
+                            </label>
+                            
+                            <!-- Binary Choice Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Contributor Option (Ethical / Standard) -->
+                                <label class="relative flex flex-col p-5 border rounded-xl cursor-pointer transition-all duration-200 group"
+                                    :class="profile === 'contributor' 
+                                        ? 'border-yellow-500 bg-yellow-500/10 shadow-[0_0_15px_rgba(234,179,8,0.1)]' 
+                                        : 'border-gray-700 bg-gray-900/50 hover:bg-gray-800 hover:border-gray-500'">
+                                    
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center space-x-2">
+                                            <input type="radio" name="profile_type" value="contributor" x-model="profile" class="text-yellow-500 focus:ring-yellow-500 bg-gray-900 border-gray-600">
+                                            <span class="font-bold text-white text-lg">Contributor</span>
+                                        </div>
+                                        <span class="material-symbols-outlined text-yellow-500" x-show="profile === 'contributor'">check_circle</span>
+                                    </div>
+                                    
+                                    <div class="space-y-2 text-sm text-gray-400">
+                                        <p class="leading-relaxed">Accetto il modello etico completo:</p>
+                                        <ul class="space-y-1 ml-1">
+                                            <li class="flex items-center text-green-400">
+                                                <span class="material-symbols-outlined text-sm mr-2">Volunteer_activism</span>
+                                                20% EPP Royalty
+                                            </li>
+                                            <li class="flex items-center text-yellow-500">
+                                                <span class="material-symbols-outlined text-sm mr-2">handshake</span>
+                                                2% Frangette
+                                            </li>
+                                            <li class="flex items-center text-white font-medium">
+                                                <span class="material-symbols-outlined text-sm mr-2">savings</span>
+                                                Nessun Abbonamento
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </label>
+
+                                <!-- Normal Option (Business / Subscription) -->
+                                <label class="relative flex flex-col p-5 border rounded-xl cursor-pointer transition-all duration-200 group"
+                                    :class="profile === 'normal' 
+                                        ? 'border-blue-500 bg-blue-500/10 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 
+                                        : 'border-gray-700 bg-gray-900/50 hover:bg-gray-800 hover:border-gray-500'">
+                                    
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center space-x-2">
+                                            <input type="radio" name="profile_type" value="normal" x-model="profile" class="text-blue-500 focus:ring-blue-500 bg-gray-900 border-gray-600">
+                                            <span class="font-bold text-white text-lg">Normal</span>
+                                        </div>
+                                        <span class="material-symbols-outlined text-blue-500" x-show="profile === 'normal'">check_circle</span>
+                                    </div>
+
+                                    <div class="space-y-2 text-sm text-gray-400">
+                                        <p class="leading-relaxed">Opt-out dal modello etico standard:</p>
+                                        <ul class="space-y-1 ml-1">
+                                            <li class="flex items-center">
+                                                <span class="material-symbols-outlined text-sm mr-2">money_off</span>
+                                                0% EPP Royalty
+                                            </li>
+                                            <li class="flex items-center">
+                                                <span class="material-symbols-outlined text-sm mr-2">money_off</span>
+                                                0% Frangette
+                                            </li>
+                                            <li class="flex items-center text-blue-400 font-medium">
+                                                <span class="material-symbols-outlined text-sm mr-2">subscriptions</span>
+                                                Abbonamento Obbligatorio
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Info Box Dynamic -->
+                        <div x-show="profile === 'normal'" 
+                             x-transition:enter="transition ease-out duration-300"
+                             class="flex p-4 text-sm text-blue-200 bg-gradient-to-r from-blue-900/40 to-blue-900/20 border border-blue-800/50 rounded-xl shadow-inner mt-4">
+                            <span class="material-symbols-outlined text-xl mr-3 text-blue-400 mt-0.5">info</span>
+                            <div>
+                                <span class="block font-semibold text-blue-300 mb-1">Nota sul Profilo Normal</span>
+                                Scegliendo Normal, la collection sarà soggetta ai costi di abbonamento mensile previsti dal piano Business. 
+                                Potrai comunque effettuare donazioni EPP volontarie dalla dashboard, ma non saranno vincolate al minting.
+                            </div>
+                        </div>
+                    @else
+                        <!-- Hidden input for Creator (Force Contributor) -->
+                        <input type="hidden" name="profile_type" value="contributor">
+                    @endif
+                </div>
+
                 <!-- Global Error Message -->
                 <div id="global-error-message"
                      class="hidden p-4 border border-red-700 rounded-lg bg-red-900/50"

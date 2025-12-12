@@ -618,7 +618,14 @@ return [
             'auto_renew' => 'Auto Renew',
             'enabled' => 'Enabled',
             'disabled' => 'Disabled',
+            'choose_your_plan' => 'Choose your Plan',
+            'choose_plan_desc' => 'Select the plan that best suits your needs to start publishing your digital assets.',
             'close' => 'Close',
+            'cancel_confirm_title' => 'Are you sure you want to cancel?',
+            'cancel_confirm_text' => 'Cancelling your subscription will result in losing benefits at the end of the billing period or a prorated refund if applicable.',
+            'cancel_confirm_btn' => 'Yes, Cancel Subscription',
+            'cancel_cancel_btn' => 'Cancel',
+            'cancelled' => 'Subscription Cancelled',
         ],
 
         // Collection items
