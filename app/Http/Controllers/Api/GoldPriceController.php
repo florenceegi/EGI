@@ -250,6 +250,21 @@ class GoldPriceController extends Controller {
         // Return fresh price with 10-minute validity timestamp
         $validUntil = now()->addMinutes(10);
 
+        // STAGING FIX: Persist session for MintController
+        session([
+            'gold_bar_mint_' . $egi->id => [
+                'refreshed_at' => now()->timestamp,
+                'valid_until' => $validUntil->timestamp,
+                'price' => (float) $goldValue['final_value'],
+                'gold_data' => $goldValue,
+            ]
+        ]);
+        $this->logger->info('Gold Bar price session updated by API', [
+            'egi_id' => $egi->id,
+            'price' => $goldValue['final_value'],
+            'session_key' => 'gold_bar_mint_' . $egi->id
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => __('gold_bar.refresh_success'),
