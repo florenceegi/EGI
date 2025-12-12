@@ -1365,7 +1365,6 @@ class MintController extends Controller {
             // Gold Bar specific: Check 10-minute price validity timeout
             $goldBarMintData = null;
             if ($egi->isGoldBar()) {
-            if ($egi->isGoldBar()) {
                 // STAGING FIX: Use Cache instead of Session
                 $cacheKey = 'gold_bar_mint_' . Auth::id() . '_' . $originalEgiId;
                 $goldBarMintData = Cache::get($cacheKey);
