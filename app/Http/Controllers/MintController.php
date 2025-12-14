@@ -1260,9 +1260,9 @@ class MintController extends Controller {
      *
      * @param int $id EGI ID
      * @param \App\Http\Requests\MintDirectRequest $request
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function processDirectMint(int $id, \App\Http\Requests\MintDirectRequest $request): JsonResponse {
+    public function processDirectMint(int $id, \App\Http\Requests\MintDirectRequest $request) {
         try {
             $validated = $request->validated();
 
@@ -1283,7 +1283,11 @@ class MintController extends Controller {
                     'reason' => $availability['mint_reason'],
                     'availability' => $availability,
                 ]);
-                return response()->json([], 400);
+                
+                if ($request->wantsJson()) {
+                    return response()->json([], 400);
+                }
+                return redirect()->back()->withErrors(['error' => __('mint.errors.direct_mint_not_available')]);
             }
 
             // Check if EGI already minted (race condition protection)
@@ -1293,7 +1297,11 @@ class MintController extends Controller {
                     'egi_id' => $id,
                     'blockchain_id' => $egi->blockchain->id,
                 ]);
-                return response()->json([], 400);
+                
+                if ($request->wantsJson()) {
+                    return response()->json([], 400);
+                }
+                return redirect()->route('mint.show', $egi->blockchain->id)->with('info', __('mint.errors.already_minted'));
             }
 
             // CRITICAL: Check microservice availability BEFORE processing payment
@@ -1315,8 +1323,11 @@ class MintController extends Controller {
                     'error' => $e->getMessage()
                 ], $e);
 
-                // UEM già gestisce tutto - ritorno solo status code
-                return response()->json([], 503);
+                // UEM già gestisce tutto
+                if ($request->wantsJson()) {
+                    return response()->json([], 503);
+                }
+                return redirect()->back()->withErrors(['error' => __('mint.errors.service_unavailable')]);
             }
 
             // CRITICAL: Check treasury funds BEFORE payment processing
@@ -1340,10 +1351,13 @@ class MintController extends Controller {
                         'treasury_address' => $fundsCheck['treasury_address']
                     ]);
 
-                    return response()->json([
-                        'error' => 'insufficient_funds',
-                        'message' => __('mint.errors.insufficient_treasury_funds')
-                    ], 503);
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'error' => 'insufficient_funds',
+                            'message' => __('mint.errors.insufficient_treasury_funds')
+                        ], 503);
+                    }
+                    return redirect()->back()->withErrors(['error' => __('mint.errors.insufficient_treasury_funds')]);
                 }
 
                 $this->logger->info('Treasury funds check passed (direct mint)', [
@@ -1376,11 +1390,15 @@ class MintController extends Controller {
                         'original_egi_id' => $originalEgiId,
                         'cache_key' => $cacheKey
                     ]);
-                    return response()->json([
-                        'success' => false,
-                        'error' => 'gold_bar_price_expired',
-                        'message' => __('gold_bar.mint_price_expired'),
-                    ], 422);
+                    
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'error' => 'gold_bar_price_expired',
+                            'message' => __('gold_bar.mint_price_expired'),
+                        ], 422);
+                    }
+                    return redirect()->back()->withErrors(['error' => __('gold_bar.mint_price_expired')]);
                 }
 
                 // Check if price is still valid (10-minute timeout)
@@ -1395,11 +1413,14 @@ class MintController extends Controller {
                     // Clear expired cache
                     Cache::forget($cacheKey);
 
-                    return response()->json([
-                        'success' => false,
-                        'error' => 'gold_bar_price_expired',
-                        'message' => __('gold_bar.mint_price_expired'),
-                    ], 422);
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'error' => 'gold_bar_price_expired',
+                            'message' => __('gold_bar.mint_price_expired'),
+                        ], 422);
+                    }
+                    return redirect()->back()->withErrors(['error' => __('gold_bar.mint_price_expired')]);
                 }
             }
 
@@ -1412,11 +1433,14 @@ class MintController extends Controller {
                     'calculated_amount' => $paymentAmountEur,
                 ]);
 
-                return response()->json([
-                    'success' => false,
-                    'error' => 'invalid_amount',
-                    'message' => __('mint.errors.invalid_amount'),
-                ], 422);
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'invalid_amount',
+                        'message' => __('mint.errors.invalid_amount'),
+                    ], 422);
+                }
+                return redirect()->back()->withErrors(['error' => __('mint.errors.invalid_amount')]);
             }
 
             $paymentMethod = $validated['payment_method'];
@@ -1462,11 +1486,14 @@ class MintController extends Controller {
                         default => 'mint.errors.payment_failed',
                     };
 
-                    return response()->json([
-                        'success' => false,
-                        'error' => $reason,
-                        'message' => __($messageKey),
-                    ], $reason === 'insufficient_egili' ? 422 : 500);
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'error' => $reason,
+                            'message' => __($messageKey),
+                        ], $reason === 'insufficient_egili' ? 422 : 500);
+                    }
+                    return redirect()->back()->withErrors(['error' => __($messageKey)]);
                 }
             } else {
                 try {
@@ -1480,10 +1507,13 @@ class MintController extends Controller {
                         'error' => $factoryException->getMessage(),
                     ], $factoryException);
 
-                    return response()->json([
-                        'success' => false,
-                        'error' => 'provider_unavailable',
-                    ], 500);
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'error' => 'provider_unavailable',
+                        ], 500);
+                    }
+                    return redirect()->back()->withErrors(['error' => __('mint.errors.payment_failed')]);
                 }
 
                 // Resolve merchant context for EGI minting (Stripe Connect)
@@ -1541,11 +1571,14 @@ class MintController extends Controller {
                         'payment_id' => $paymentResultObject->paymentId,
                     ]);
 
-                    return response()->json([
-                        'success' => false,
-                        'error' => 'requires_action',
-                        'redirect_url' => $paymentResultObject->redirectUrl,
-                    ], 202);
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'error' => 'requires_action',
+                            'redirect_url' => $paymentResultObject->redirectUrl,
+                        ], 202);
+                    }
+                    return redirect()->away($paymentResultObject->redirectUrl);
                 }
 
                 if (!$paymentResultObject->success) {
@@ -1558,11 +1591,16 @@ class MintController extends Controller {
                         'error_code' => $paymentResultObject->errorCode,
                     ]);
 
-                    return response()->json([
-                        'success' => false,
-                        'error' => 'payment_failed',
-                        'message' => $paymentResultObject->errorMessage ?? __('mint.errors.payment_failed'),
-                    ], 500);
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'error' => 'payment_failed',
+                            'message' => $paymentResultObject->errorMessage ?? __('mint.errors.payment_failed'),
+                        ], 500);
+                    }
+                    return redirect()->back()->withErrors([
+                         'error' => $paymentResultObject->errorMessage ?? __('mint.errors.payment_failed')
+                    ]);
                 }
 
                 $paymentProvider = $paymentService->getProviderName();
@@ -1724,20 +1762,31 @@ class MintController extends Controller {
                 'flow' => 'direct_mint'
             ]);
 
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'blockchain_record_id' => $blockchainRecord->id,
-                    'mint_status' => 'minting_queued',
-                    'flow_type' => 'direct_mint'
-                ]
-            ]);
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'blockchain_record_id' => $blockchainRecord->id,
+                        'mint_status' => 'minting_queued',
+                        'flow_type' => 'direct_mint'
+                    ]
+                ]);
+            }
+
+            return redirect()->route('mint.show', $blockchainRecord->id)
+                ->with('success', __('mint.notification.processing_message'));
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->errorManager->handle('DIRECT_MINT_VALIDATION_ERROR', [
                 'user_id' => Auth::id(),
                 'errors' => $e->errors(),
             ], $e);
-            return response()->json([], 422);
+
+            if ($request->wantsJson()) {
+                return response()->json([], 422);
+            }
+            return redirect()->back()->withErrors(['error' => __('mint.errors.validation_failed')]);
+
         } catch (\Exception $e) {
             $this->errorManager->handle('DIRECT_MINT_PROCESS_ERROR', [
                 'user_id' => Auth::id(),
@@ -1746,7 +1795,10 @@ class MintController extends Controller {
                 'error' => $e->getMessage()
             ], $e);
 
-            return response()->json([], 500);
+            if ($request->wantsJson()) {
+                return response()->json([], 500);
+            }
+            return redirect()->back()->withErrors(['error' => __('mint.errors.mint_failed')]);
         }
     }
 

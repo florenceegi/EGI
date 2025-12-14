@@ -78,6 +78,19 @@ ERROR_EMAIL_RECIPIENT=[ADMIN-EMAIL]
 ERROR_SLACK_NOTIFICATIONS_ENABLED=false  # Configura se usi Slack
 ```
 
+### **2.1.1 - Microservice Environment (.env)**
+⚠️ **CRITICO**: Il microservizio Node.js ha bisogno del SUO file `.env` specifico!
+Crea il file in: `/home/forge/[site-path]/current/algokit-microservice/.env`
+
+```bash
+PORT=3001
+ALGORAND_NETWORK=testnet  # o 'mainnet'
+ALGORAND_API_URL=https://testnet-api.algonode.cloud
+ALGORAND_INDEXER_URL=https://testnet-idx.algonode.cloud
+# Mnemonic del wallet che funge da Treasury (Natan su TestNet)
+TREASURY_MNEMONIC="...tua mnemonic..."
+```
+
 ### **2.2 - Configurazione Database**
 - [ ] **Crea database** via Forge (Database tab)
 - [ ] **User e password** strong per production
