@@ -1273,6 +1273,7 @@ class MintController extends Controller {
             // dd($validated);
 
             // MASTER CLONABLE LOGIC: If buying a Master, clone it first
+            $wasCloned = false;
             if ($egi->is_template) {
                 if (!$egi->allow_buyer_clone) {
                      $this->errorManager->handle('DIRECT_MINT_MASTER_NOT_CLONABLE', [
@@ -1297,6 +1298,7 @@ class MintController extends Controller {
                 
                 // Swap EGI for the new Child
                 $egi = $clone;
+                $wasCloned = true;
                 // Note: We leave $id as original ID for some error logs, but main flows use $egi->id
                 
                 $this->logger->info('Master cloned successfully (Direct Mint). Proceeding with Mint for Child.', [
@@ -1307,21 +1309,25 @@ class MintController extends Controller {
             }
 
             // Double-check availability (prevent race conditions)
-            $availabilityService = app(\App\Services\EgiAvailabilityService::class);
-            $availability = $availabilityService->checkAvailability($egi, Auth::user());
+            // SKIP for clones: We just created it for this user, so we know it's available.
+            // (Standard check fails with 'own_egi_cannot_mint' because user is owner)
+            if (!$wasCloned) {
+                $availabilityService = app(\App\Services\EgiAvailabilityService::class);
+                $availability = $availabilityService->checkAvailability($egi, Auth::user());
 
-            if (!$availability['can_mint']) {
-                $this->errorManager->handle('DIRECT_MINT_NOT_AVAILABLE_RACE', [
-                    'user_id' => Auth::id(),
-                    'egi_id' => $id,
-                    'reason' => $availability['mint_reason'],
-                    'availability' => $availability,
-                ]);
-                
-                if ($request->wantsJson()) {
-                    return response()->json([], 400);
+                if (!$availability['can_mint']) {
+                    $this->errorManager->handle('DIRECT_MINT_NOT_AVAILABLE_RACE', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $id,
+                        'reason' => $availability['mint_reason'],
+                        'availability' => json_encode($availability),
+                    ]);
+                    
+                    if ($request->wantsJson()) {
+                        return response()->json([], 400);
+                    }
+                    return redirect()->back()->withErrors(['error' => __('mint.errors.direct_mint_not_available')]);
                 }
-                return redirect()->back()->withErrors(['error' => __('mint.errors.direct_mint_not_available')]);
             }
 
             // Check if EGI already minted (race condition protection)
