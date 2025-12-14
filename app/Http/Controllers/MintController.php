@@ -1272,6 +1272,40 @@ class MintController extends Controller {
 
             // dd($validated);
 
+            // MASTER CLONABLE LOGIC: If buying a Master, clone it first
+            if ($egi->is_template) {
+                if (!$egi->allow_buyer_clone) {
+                     $this->errorManager->handle('DIRECT_MINT_MASTER_NOT_CLONABLE', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id
+                     ]);
+                     
+                     if ($request->wantsJson()) {
+                         return response()->json(['error' => 'not_clonable'], 403);
+                     }
+                     return redirect()->back()->withErrors(['error' => 'This Master Template is not available for buyer cloning.']);
+                }
+                
+                $this->logger->info('Processing Direct Mint for Master EGI - Cloning...', [
+                    'master_id' => $egi->id,
+                    'buyer_id' => Auth::id()
+                ]);
+                
+                $cloneAction = app(\App\Actions\Egi\CloneEgiFromMasterAction::class);
+                // Execute cloning WITHOUT immediate minting (controller handles minting queue)
+                $clone = $cloneAction->execute($egi, Auth::user(), false);
+                
+                // Swap EGI for the new Child
+                $egi = $clone;
+                // Note: We leave $id as original ID for some error logs, but main flows use $egi->id
+                
+                $this->logger->info('Master cloned successfully (Direct Mint). Proceeding with Mint for Child.', [
+                    'master_id' => $egi->parent_id,
+                    'child_id' => $egi->id,
+                    'serial' => $egi->serial_number
+                ]);
+            }
+
             // Double-check availability (prevent race conditions)
             $availabilityService = app(\App\Services\EgiAvailabilityService::class);
             $availability = $availabilityService->checkAvailability($egi, Auth::user());
