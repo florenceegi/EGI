@@ -74,6 +74,7 @@ class CloneEgiFromMasterAction
             $child->collection_id = $master->collection_id; // Same collection
             $child->user_id = $owner->id; // Creator of the copy
             $child->owner_id = $owner->id; // Owner of the copy
+            $child->rebind = true; // Ensure clones are rebindable (allow secondary sales)
             
             // Generate Serial Number
             $child->serial_number = $this->serialService->nextFor($master);

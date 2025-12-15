@@ -151,6 +151,7 @@ public function execute(Egi $master, User $owner): Egi
     $child->parent_id = $master->id;
     $child->is_template = false;
     $child->is_sellable = true;
+    $child->rebind = true; // Abilitato per Rebind (Secondary Market)
 
     // Serial number
     $child->serial_number = SerialService::nextFor($master);
@@ -252,6 +253,7 @@ e AuditTrail se richiesto dalla policy.
 | Copia CoA + traits | IMPLEMENTATO |
 | Copia Utility + immagini | IMPLEMENTATO |
 | Logging OS3 | IMPLEMENTATO |
+| Abilitazione Rebind (Sales) | IMPLEMENTATO |
 
 ---
 

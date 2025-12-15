@@ -37,6 +37,13 @@ Standard EGIs perform an availability check (`EgiAvailabilityService`).
 **Conflict**: When a Master is cloned, the Child is *immediately* assigned to the Buyer.
 **Fix**: If `$wasCloned` is true, the availability check is **SKIPPED** (logic: we just created it for you, it is by definition available).
 
+
+### 1.3 Secondary Market Enablement (Rebind)
+By default, Master Templates might have `rebind = false` (to prevent selling the Template itself).
+When a **Clone** is created, it represents a user-owned asset.
+**System Action**: The `CloneEgiFromMasterAction` explicitly sets `$child->rebind = true`.
+**Result**: The Buyer can immediately list the EGI on the Secondary Market (Rebind) if desired, without admin intervention.
+
 ---
 
 ## 2. Response Handling (Browser vs API)

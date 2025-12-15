@@ -244,7 +244,8 @@ class ConsentHistory extends Model
             'ip_address' => $this->ip_address,
         ];
 
-        return hash('sha256', json_encode($data, \JSON_SORT_KEYS));
+        ksort($data);
+        return hash('sha256', json_encode($data));
     }
 
     /**
