@@ -50,8 +50,16 @@ Il sistema calcola matematicamente l'address pubblico a partire dalla `TREASURY_
 // Esempio logica server.js
 const account = algosdk.mnemonicToSecretKey(process.env.TREASURY_MNEMONIC);
 const address = account.addr; // TF67P6...
+// TF67P6...
 ```
 Questo garantisce che l'address usato per firmare sia matematicamente corrispondente alla chiave privata fornita.
+
+### 2.3 Autenticazione API (Sicurezza)
+Per proteggere le rotte sensibili (es. minting, transfer), il microservizio richiede un **Bearer Token**.
+
+1.  **Configurazione**: Aggiungere `ALGOKIT_API_TOKEN` nel `.env` del microservizio.
+2.  **Configurazione Laravel**: Aggiungere lo stesso `ALGOKIT_API_TOKEN` nel `.env` principale.
+3.  **Utilizzo**: Tutte le chiamate HTTP devono includere l'header `Authorization: Bearer <TOKEN>`.
 
 ---
 

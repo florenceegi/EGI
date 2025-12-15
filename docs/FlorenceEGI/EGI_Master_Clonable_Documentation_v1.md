@@ -1,7 +1,7 @@
 # FlorenceEGI – EGI Master Clonable System  
 ### Documentazione Tecnica Ufficiale  
-### Versione: 1.0  
-### Stato: APPROVATO (Step 1 – Clonazione Master → Child)
+### Versione: 2.0  
+### Stato: IMPLEMENTATO (Step 1 – Clonazione Master → Child)
 
 ---
 
@@ -9,8 +9,7 @@
 
 Questo documento definisce in modo ufficiale la funzionalità **EGI Master Clonable**, che consente la creazione di EGI figli partendo da un EGI configurato come *Master/Template*.
 
-**Non** include la vendita del Master né la parte economica dell’Economia Granulare.  
-Quella verrà trattata in uno step successivo.
+**Aggiornamento v2.0**: Include il flusso di **Direct Mint**, dove l'acquisto di un Master EGI (tramite "Paga Ora") innesca automaticamente la clonazione e il minting del figlio, preservando il Master originale come template.
 
 ---
 
@@ -20,13 +19,17 @@ La funzionalità permette a un Creator di:
 
 1. Creare un EGI normale.  
 2. Contrassegnarlo come **Master clonabile** tramite l’interfaccia amministrativa.  
-3. Usare tale Master per generare una quantità indefinita di EGI figli, ognuno dei quali:  
-   - è indipendente,  
-   - possiede ASA ID proprio,  
-   - possiede serial number unico,  
-   - replica tutti gli attributi, i traits, il CoA e le utility del Master.
+3. Mettere in "vendita" il Master (simbolicamente).
+4. Quando un utente acquista il Master:
+   - Il sistema **CLONA** istantaneamente il Master in un nuovo Child EGI (assegnato all'acquirente).
+   - Il processo di pagamento e minting prosegue sul **Child**.
+   - Il Master rimane intatto e disponibile per future clonazioni.
 
-Il Master non è vendibile in questa fase.
+Ogni figlio:
+- è indipendente,  
+- possiede ASA ID proprio,  
+- possiede serial number unico,  
+- replica tutti gli attributi, i traits, il CoA e le utility del Master.
 
 ---
 
@@ -242,13 +245,13 @@ e AuditTrail se richiesto dalla policy.
 
 | Componente | Stato |
 |------------|--------|
-| Campi DB | Da implementare |
-| UI toggle Master | Da implementare |
-| CloneEgiFromMasterAction | Da implementare |
-| Mint ASA su clone | Da implementare |
-| Copia CoA + traits | Da implementare |
-| Copia Utility + immagini | Da implementare |
-| Logging OS3 | Da integrare |
+| Campi DB | IMPLEMENTATO |
+| UI toggle Master | IMPLEMENTATO |
+| CloneEgiFromMasterAction | IMPLEMENTATO |
+| Mint ASA su clone | IMPLEMENTATO |
+| Copia CoA + traits | IMPLEMENTATO |
+| Copia Utility + immagini | IMPLEMENTATO |
+| Logging OS3 | IMPLEMENTATO |
 
 ---
 
