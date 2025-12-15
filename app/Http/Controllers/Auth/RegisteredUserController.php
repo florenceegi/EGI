@@ -292,8 +292,8 @@ class RegisteredUserController extends Controller {
             // 1. Determine platform_role based on user_type
             $platformRole = $this->determinePlatformRole($validated['user_type']);
 
-            // 2. Create user without wallet first
-            $user = User::create([
+            // 2. Create user without wallet first (Using forceCreate to bypass Mass Assignment protection for usertype)
+            $user = User::forceCreate([
                 // ═══ MULTI-TENANT ═══
                 'tenant_id' => $florenceEgiTenant->id, // Assign to Florence EGI tenant
 

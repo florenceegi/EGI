@@ -39,7 +39,7 @@ trait HasWalletManagement
      */
     public function updateWalletBalance(float $balance): bool
     {
-        return $this->update(['wallet_balance' => $balance]);
+        return $this->forceFill(['wallet_balance' => $balance])->save();
     }
 
     /**
@@ -47,7 +47,7 @@ trait HasWalletManagement
      */
     public function connectWallet(string $address): bool
     {
-        return $this->update(['wallet' => $address]);
+        return $this->forceFill(['wallet' => $address])->save();
     }
 
     /**
@@ -55,11 +55,11 @@ trait HasWalletManagement
      */
     public function disconnectWallet(): bool
     {
-        return $this->update([
+        return $this->forceFill([
             'wallet' => null,
             'personal_secret' => null,
             'wallet_balance' => 0
-        ]);
+        ])->save();
     }
 
     /**

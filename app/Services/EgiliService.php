@@ -165,10 +165,10 @@ class EgiliService {
             ]);
 
             // Update wallet balance (atomic)
-            $wallet->update([
+            $wallet->forceFill([
                 'egili_balance' => $balanceAfter,
                 'egili_lifetime_earned' => $wallet->egili_lifetime_earned + $amount,
-            ]);
+            ])->save();
 
             // Create transaction record (audit trail)
             $transaction = EgiliTransaction::create([
@@ -299,10 +299,10 @@ class EgiliService {
             ]);
 
             // Update wallet balance (atomic)
-            $wallet->update([
+            $wallet->forceFill([
                 'egili_balance' => $balanceAfter,
                 'egili_lifetime_spent' => $wallet->egili_lifetime_spent + $amount,
-            ]);
+            ])->save();
 
             // Create transaction record (audit trail)
             $transaction = EgiliTransaction::create([
@@ -399,10 +399,10 @@ class EgiliService {
             $balanceBefore = $wallet->egili_balance;
             $balanceAfter = $balanceBefore + $amount;
 
-            $wallet->update([
+            $wallet->forceFill([
                 'egili_balance' => $balanceAfter,
                 'egili_lifetime_earned' => $wallet->egili_lifetime_earned + $amount,
-            ]);
+            ])->save();
 
             $transaction = EgiliTransaction::create([
                 'wallet_id' => $wallet->id,
@@ -502,10 +502,10 @@ class EgiliService {
             ]);
 
             // Update wallet balance
-            $wallet->update([
+            $wallet->forceFill([
                 'egili_balance' => $balanceAfter,
                 'egili_lifetime_earned' => $wallet->egili_lifetime_earned + $amount,
-            ]);
+            ])->save();
 
             // Create transaction record with gift fields
             $transaction = EgiliTransaction::create([
@@ -617,10 +617,10 @@ class EgiliService {
             ]);
 
             // Update wallet balance
-            $wallet->update([
+            $wallet->forceFill([
                 'egili_balance' => $balanceAfter,
                 'egili_lifetime_earned' => $wallet->egili_lifetime_earned + $amount,
-            ]);
+            ])->save();
 
             // Create transaction record with initial_bonus type
             $transaction = EgiliTransaction::create([
@@ -726,10 +726,10 @@ class EgiliService {
             ]);
 
             // Update wallet balance
-            $wallet->update([
+            $wallet->forceFill([
                 'egili_balance' => $balanceAfter,
                 'egili_lifetime_earned' => $wallet->egili_lifetime_earned + $amount,
-            ]);
+            ])->save();
 
             // Create transaction record with system_grant type (uses admin_grant enum)
             $transaction = EgiliTransaction::create([
@@ -901,10 +901,10 @@ class EgiliService {
                 ]);
 
                 // Update wallet balance
-                $wallet->update([
+                $wallet->forceFill([
                     'egili_balance' => $wallet->egili_balance - $toConsume,
                     'egili_lifetime_spent' => $wallet->egili_lifetime_spent + $toConsume,
-                ]);
+                ])->save();
 
                 $transactions[] = $spendTransaction;
                 $remaining -= $toConsume;

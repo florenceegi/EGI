@@ -2,8 +2,8 @@
 // mint_loop_test.php
 
 // Params
-$masterId = 2;
-$userId = 34;
+$masterId = 11;
+$userId = 13;
 
 echo "--- STARTING MINT LOOP TEST ---\n";
 echo "User: $userId | Master: $masterId\n";
@@ -65,9 +65,16 @@ if ($validator->fails()) {
 // Headers to simulate AJAX vs Browser
 // Test 1: Browser Request (wantsJson = false by default for Request::create unless Accept header set)
 
+
+// Helper to mock services
+$mockWorker = \Mockery::mock(\App\Services\QueueWorkerService::class);
+$mockWorker->shouldReceive('ensureWorkerRunning')->andReturn(true);
+app()->instance(\App\Services\QueueWorkerService::class, $mockWorker);
+
 echo "\n--- TEST 1: Browser Request (Expect Redirect) ---\n";
 try {
     $controller = app(\App\Http\Controllers\MintController::class);
+
     // Bind request to container
     app()->instance('request', $request);
 

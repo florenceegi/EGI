@@ -328,7 +328,8 @@ class AlgorandService
                     ->acceptJson()
                     ->withHeaders([
                         'Content-Type' => 'application/json',
-                        'User-Agent' => 'FlorenceEGI-Laravel/3.0'
+                        'User-Agent' => 'FlorenceEGI-Laravel/3.0',
+                        'Authorization' => 'Bearer ' . config('algorand.algokit_microservice.api_token')
                     ]);
 
                 // Esegui la chiamata HTTP

@@ -245,7 +245,7 @@ class CreateNewUser implements CreatesNewUsers {
     private function handleUserCreation(array $input, string $wallet_address, float $wallet_balance): User {
         return DB::transaction(function () use ($input, $wallet_address, $wallet_balance) {
             // Create the user
-            $user = User::create([
+            $user = User::forceCreate([
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'wallet' => $wallet_address,

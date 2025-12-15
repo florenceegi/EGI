@@ -52,7 +52,7 @@ class User extends Authenticatable implements HasMedia {
         'preferred_currency',
         'avatar_url',
         'password',
-        'usertype',
+        // 'usertype', // SECURITY: Removed to prevent Mass Assignment
         'current_collection_id',
         'consent_summary',
         'consents_updated_at',
@@ -72,15 +72,15 @@ class User extends Authenticatable implements HasMedia {
         'created_via',
         'language',
         'wallet',
-        'wallet_balance',
+        // 'wallet_balance', // SECURITY: Removed
         'personal_secret',
-        'is_weak_auth',
+        // 'is_weak_auth', // SECURITY: Removed
         'icon_style',
-        'natan_api_key',
+        /*'natan_api_key', // SECURITY: Removed
         'natan_api_key_generated_at',
-        'natan_api_key_last_used_at',
+        'natan_api_key_last_used_at',*/
         // AI Credits (Task 5)
-        'ai_credits_balance',
+        // 'ai_credits_balance', // SECURITY: Removed
         'ai_credits_lifetime_earned',
         'ai_credits_lifetime_used',
         'ai_subscription_tier',

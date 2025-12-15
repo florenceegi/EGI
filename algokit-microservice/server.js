@@ -10,6 +10,28 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
+// SECURITY: Authentication Middleware
+// Protects all routes except health checks
+const apiToken = process.env.ALGOKIT_API_TOKEN;
+const authMiddleware = (req, res, next) => {
+    // Skip auth for health/root
+    if (req.path === '/' || req.path === '/health') return next();
+
+    const authHeader = req.headers['authorization'];
+    
+    // Strict token check
+    if (!apiToken || !authHeader || authHeader !== `Bearer ${apiToken}`) {
+        console.warn(`[SECURITY] Unauthorized access attempt from ${req.ip} to ${req.path}`);
+        return res.status(401).json({ 
+            success: false, 
+            error: 'Unauthorized: Invalid or missing API Token' 
+        });
+    }
+    next();
+};
+
+app.use(authMiddleware);
+
 // ========================================
 // DUAL MODE CONFIGURATION
 // ========================================
@@ -42,9 +64,14 @@ const algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
 
 // Treasury account - REAL generated mnemonic
 // IMPORTANT: In production, store mnemonic in secure vault (AWS Secrets Manager, HashiCorp Vault)
-const treasuryMnemonic =
-    process.env.TREASURY_MNEMONIC ||
-    "misery earn nose palace make together enhance february parade agent oxygen farm ghost canoe forum robot cube office ball energy split annual buddy above absent";
+// IMPORTANT: In production, store mnemonic in secure vault (AWS Secrets Manager, HashiCorp Vault)
+const treasuryMnemonic = process.env.TREASURY_MNEMONIC;
+
+if (!treasuryMnemonic) {
+    console.error("❌ CRITICAL ERROR: TREASURY_MNEMONIC environment variable is missing!");
+    process.exit(1);
+}
+
 const treasuryAccount = algosdk.mnemonicToSecretKey(treasuryMnemonic);
 
 console.log("🚀 REAL BLOCKCHAIN MICROSERVICE STARTING...");

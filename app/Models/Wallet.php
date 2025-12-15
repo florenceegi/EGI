@@ -47,9 +47,10 @@ class Wallet extends Model
         'iban_last4',
 
         // ═══ EGILI TOKEN BALANCE ═══
-        'egili_balance',
-        'egili_lifetime_earned',
-        'egili_lifetime_spent',
+        // 'egili_balance', // SECURITY: Managed via EgiliService only
+        // 'egili_lifetime_earned',
+        // 'egili_lifetime_spent',
+
 
         // ═══ VERSIONING ═══
         'version',

@@ -103,6 +103,20 @@ Integrare blockchain Algorand in FlorenceEGI mantenendo:
     -   [x] Setup Algorand Sandbox locale ✅ COMPLETATO
     -   [x] Test connectivity ✅ COMPLETATO
 
+#### **2.1.3 - Wallet Architecture Strategy (Updated Dec 2025)**
+
+-   **Sandbox Environment (Local)**:
+    -   **Treasury**: Uses `Y2IGWQ...` (AlgoKit Default KMD Wallet) for development simplicity.
+    -   **Config**: `fund-treasury.js` and `server.js` configured to use this by default IF env vars are missing.
+-   **TestNet/Staging Environment**:
+    -   **Treasury**: Uses `TF67...` (Natan Wallet).
+    -   **Role**: Dual Role -> Acts as both **Revenue Wallet** (Platform Fees) and **Custodial Treasury** (Minting Authority).
+    -   **Rationale**: Simplified bootstrap configuration for Phase 1.
+    -   **Config**: `algokit-microservice/.env` MUST be present with `TREASURY_MNEMONIC` of Natan's wallet.
+-   **Microservice Logic**:
+    -   Address is **derived dynamically** from `TREASURY_MNEMONIC` at runtime.
+    -   `fund-treasury.js` updated to respect `.env` for consistency.
+
 #### **2.2 Blockchain Configuration**
 
 -   [x] **2.2.1** - Config file `config/algorand.php` ✅ COMPLETATO

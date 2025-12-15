@@ -272,10 +272,10 @@ class AiCreditsService {
             ]);
 
             // 4. Update user balance
-            $user->update([
+            $user->forceFill([
                 'ai_credits_balance' => $balanceAfter,
                 'ai_credits_lifetime_used' => ($user->ai_credits_lifetime_used ?? 0) + $credits,
-            ]);
+            ])->save();
 
             // 5. GDPR: Audit trail per modifica dato finanziario personale
             $this->auditService->logUserAction(
@@ -363,10 +363,10 @@ class AiCreditsService {
             ]);
 
             // 3. Update user balance
-            $user->update([
+            $user->forceFill([
                 'ai_credits_balance' => $balanceAfter,
                 'ai_credits_lifetime_used' => max(0, ($user->ai_credits_lifetime_used ?? 0) - $credits),
-            ]);
+            ])->save();
 
             // 4. GDPR: Audit trail per rimborso crediti
             $this->auditService->logUserAction(

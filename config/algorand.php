@@ -35,6 +35,7 @@ return [
         'timeout' => env('ALGOKIT_MICROSERVICE_TIMEOUT', 30),
         'retries' => env('ALGOKIT_MICROSERVICE_RETRIES', 3),
         'retry_delay' => env('ALGOKIT_MICROSERVICE_RETRY_DELAY', 1000), // milliseconds
+        'api_token' => env('ALGOKIT_API_TOKEN'), // Secret token for authentication
     ],
 
     // ========================================

@@ -64,30 +64,33 @@ use App\Http\Controllers\Web\BiographyWebController;
 Broadcast::routes(['middleware' => ['web', 'auth']]);
 
 
-Route::get('/test-loadstats', function () {
-    Log::channel('florenceegi')->info('Direct auth test', [
-        'auth_check' => Auth::check(),
-        'auth_id' => Auth::id(),
-        'auth_user' => Auth::user()?->name,
-        'session_auth_status' => session('auth_status'),
-        'session_user_id' => session('connected_user_id'),
-    ]);
+// SECURITY: Debug routes available only when APP_DEBUG is true
+if (config('app.debug')) {
+    Route::get('/test-loadstats', function () {
+        Log::channel('florenceegi')->info('Direct auth test', [
+            'auth_check' => Auth::check(),
+            'auth_id' => Auth::id(),
+            'auth_user' => Auth::user()?->name,
+            'session_auth_status' => session('auth_status'),
+            'session_user_id' => session('connected_user_id'),
+        ]);
 
-    return 'Check the logs!';
-});
+        return 'Check the logs!';
+    });
 
-Route::get('/test-create-fegi', function () {
-    $request = request();
-    $request->merge(['create_new' => true]);
+    Route::get('/test-create-fegi', function () {
+        $request = request();
+        $request->merge(['create_new' => true]);
 
-    $controller = new \App\Http\Controllers\WalletConnectController(
-        app(\Ultra\UltraLogManager\UltraLogManager::class),
-        app(\Ultra\ErrorManager\Interfaces\ErrorManagerInterface::class),
-        app(\App\Services\CollectionService::class)
-    );
+        $controller = new \App\Http\Controllers\WalletConnectController(
+            app(\Ultra\UltraLogManager\UltraLogManager::class),
+            app(\Ultra\ErrorManager\Interfaces\ErrorManagerInterface::class),
+            app(\App\Services\CollectionService::class)
+        );
 
-    return $controller->connect($request);
-});
+        return $controller->connect($request);
+    });
+}
 
 // 📄 PUBLIC CERTIFICATE ENDPOINT (No auth required - blockchain transparency)
 Route::post('/mint/{egiId}/certificate/pdf/check', [App\Http\Controllers\EgiReservationCertificateController::class, 'checkMintCertificatePdf'])
@@ -197,49 +200,51 @@ Route::prefix('art-advisor')->name('art-advisor.')->middleware('auth')->group(fu
         ->name('test');
 });
 
-// Aggiungi questa route in web.php per debug
-Route::get('/debug-user-lookup', function () {
-    $userId = session('connected_user_id');
+// SECURITY: Debug routes available only when APP_DEBUG is true
+if (config('app.debug')) {
+    Route::get('/debug-user-lookup', function () {
+        $userId = session('connected_user_id');
 
-    if (!$userId) {
-        return ['error' => 'No user ID in session'];
-    }
+        if (!$userId) {
+            return ['error' => 'No user ID in session'];
+        }
 
-    $user = \App\Models\User::find($userId);
+        $user = \App\Models\User::find($userId);
 
-    return [
-        'session_user_id' => $userId,
-        'user_found' => $user ? true : false,
-        'user_data' => $user ? [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'is_weak_auth' => $user->is_weak_auth,
-            'wallet' => $user->wallet,
-            'created_at' => $user->created_at
-        ] : null,
-        'users_count' => \App\Models\User::count(),
-        'weak_auth_users' => \App\Models\User::where('is_weak_auth', true)->get(['id', 'name', 'email'])
-    ];
-});
+        return [
+            'session_user_id' => $userId,
+            'user_found' => $user ? true : false,
+            'user_data' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'is_weak_auth' => $user->is_weak_auth,
+                'wallet' => $user->wallet,
+                'created_at' => $user->created_at
+            ] : null,
+            'users_count' => \App\Models\User::count(),
+            'weak_auth_users' => \App\Models\User::where('is_weak_auth', true)->get(['id', 'name', 'email'])
+        ];
+    });
 
-// Route di test per il carousel delle collection
-Route::get('/test-carousel', function () {
-    return view('test-carousel');
-})->name('test.carousel');
+    // Route di test per il carousel delle collection
+    Route::get('/test-carousel', function () {
+        return view('test-carousel');
+    })->name('test.carousel');
 
-Route::get('/debug-session-direct', function () {
-    return [
-        'session_direct' => [
-            'auth_status' => session('auth_status'),
-            'user_id' => session('connected_user_id'),
-        ],
-        'fegi_guard_debug' => [
-            'user_resolved' => Auth::guard('fegi')->user(),
-            'check' => Auth::guard('fegi')->check(),
-        ]
-    ];
-});
+    Route::get('/debug-session-direct', function () {
+        return [
+            'session_direct' => [
+                'auth_status' => session('auth_status'),
+                'user_id' => session('connected_user_id'),
+            ],
+            'fegi_guard_debug' => [
+                'user_resolved' => Auth::guard('fegi')->user(),
+                'check' => Auth::guard('fegi')->check(),
+            ]
+        ];
+    });
+}
 
 // Route::get('/test-upload-dir', function() {
 //     return response()->json([
