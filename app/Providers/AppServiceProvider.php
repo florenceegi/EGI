@@ -141,6 +141,9 @@ class AppServiceProvider extends ServiceProvider {
         //    una catena di ottimizzatori VUOTA, bypassando la logica della Factory.
         // $this->app->bind(OptimizerChain::class, fn () => new OptimizerChain()); // <-- 2. AGGIUNGI QUESTA RIGA
 
+        // Register Egi Commodity Observer
+        \App\Models\Egi::observe(\App\Observers\EgiCommodityObserver::class);
+
 
         // 🎯 2. AGGIUNGI QUESTO BLOCCO DI CODICE QUI
         Event::listen(JobFailed::class, function (JobFailed $event) {

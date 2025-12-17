@@ -19,6 +19,7 @@ Implementazione completa del sistema di wallet sicuro con:
 ### 2. **AlgorandClient** (`app/Services/Blockchain/AlgorandClient.php`)
 
 -   ✅ Comunicazione HTTP con il microservice Node.js
+-   ✅ Autenticazione Bearer Token per sicurezza
 -   ✅ Metodi: `createAccount()`, `getAccountInfo()`, `healthCheck()`
 -   ✅ ULM logging + UEM error handling
 -   ✅ Validazione formato address (58 chars, Base32)
@@ -148,6 +149,7 @@ AWS_KMS_KEK_ARN=arn:aws:kms:eu-west-1:123456789:key/your-key-id
 ALGORAND_MICROSERVICE_URL=http://localhost:3000
 ALGORAND_NETWORK=sandbox  # sandbox|testnet|mainnet
 ALGORAND_TIMEOUT=10
+ALGOKIT_API_TOKEN=your-secure-api-token # Required for microservice auth
 
 # IBAN Security
 APP_IBAN_PEPPER=your-random-pepper-string-here

@@ -326,76 +326,22 @@ $isSmartContract = $egi->egi_type === 'SmartContract';
                             </div>
                         </div>
 
-                        {{-- Gold Bar Margin Fields - Solo per EGI con categoria Lingotto d'Oro --}}
-                        @if ($egi->isGoldBar())
-                            <div
-                                class="space-y-4 rounded-lg border border-yellow-600/40 bg-gradient-to-br from-yellow-900/20 to-amber-900/20 p-4">
-                                <div class="mb-3 flex items-center gap-2">
-                                    <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                                    </svg>
-                                    <h4 class="text-sm font-semibold text-yellow-300">
-                                        {{ __('gold_bar.margin.title') }}</h4>
-                                </div>
-
-                                <p class="mb-3 text-xs text-gray-400">{{ __('gold_bar.margin.description') }}</p>
-
-                                {{-- Margin Percentage --}}
-                                <div>
-                                    <label for="gold_margin_percent"
-                                        class="mb-2 block text-sm font-medium text-yellow-200">
-                                        {{ __('gold_bar.margin.percent_label') }}
-                                    </label>
-                                    <div class="relative">
-                                        <input type="number" id="gold_margin_percent" name="gold_margin_percent"
-                                            value="{{ old('gold_margin_percent', $egi->getGoldMarginPercent()) }}"
-                                            step="0.1" min="0" max="100"
-                                            class="w-full rounded-lg border border-yellow-700/50 bg-black/30 px-3 py-2 text-white placeholder-gray-400 focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                                            placeholder="0">
-                                        <span class="absolute right-3 top-2 text-sm text-gray-400">%</span>
-                                    </div>
-                                    <div class="mt-1 text-xs text-gray-400">
-                                        {{ __('gold_bar.margin.percent_hint') }}
-                                    </div>
-                                </div>
-
-                                {{-- Margin Fixed --}}
-                                <div>
-                                    <label for="gold_margin_fixed"
-                                        class="mb-2 block text-sm font-medium text-yellow-200">
-                                        {{ __('gold_bar.margin.fixed_label') }}
-                                    </label>
-                                    <div class="relative">
-                                        <input type="number" id="gold_margin_fixed" name="gold_margin_fixed"
-                                            value="{{ old('gold_margin_fixed', $egi->getGoldMarginFixed()) }}"
-                                            step="0.01" min="0"
-                                            class="w-full rounded-lg border border-yellow-700/50 bg-black/30 px-3 py-2 text-white placeholder-gray-400 focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                                            placeholder="0.00">
-                                        <span class="absolute right-3 top-2 text-sm text-gray-400">€</span>
-                                    </div>
-                                    <div class="mt-1 text-xs text-gray-400">
-                                        {{ __('gold_bar.margin.fixed_hint') }}
-                                    </div>
-                                </div>
-
-                                {{-- Current Gold Value Preview --}}
-                                @php
-                                    $goldValueData = $egi->getGoldBarValue();
-                                    $goldValue = $goldValueData['total_value'] ?? null;
-                                @endphp
-                                @if ($goldValue)
-                                    <div class="rounded-lg border border-yellow-800/40 bg-black/30 p-3">
-                                        <div class="flex items-center justify-between">
-                                            <span
-                                                class="text-xs text-gray-400">{{ __('gold_bar.margin.current_value') }}</span>
-                                            <span
-                                                class="text-lg font-bold text-yellow-400">€{{ number_format($goldValue, 2, ',', '.') }}</span>
-                                        </div>
-                                        <p class="mt-1 text-xs text-gray-500">{{ __('gold_bar.margin.value_note') }}
-                                        </p>
-                                    </div>
-                                @endif
-                            </div>
+                        {{-- 🥇 COMMODITY FIELDS (Dynamic Partial) --}}
+                        @if($egi->isGoldBar() || $egi->commodity_type)
+                            @php
+                                $cType = $egi->commodity_type;
+                                if (!$cType && $egi->isGoldBar()) {
+                                     $cType = 'goldbar';
+                                }
+                                if ($cType) {
+                                    $cType = str_replace('-', '', $cType);
+                                }
+                                $commData = $egi->commodity_metadata ?? [];
+                            @endphp
+                            
+                            @if($cType)
+                                @includeIf("egis.commodity.{$cType}", ['data' => $commData])
+                            @endif
                         @endif
 
                         {{-- Sale Mode Selector - Controllato da canManagePrice E canSellEgis --}}
@@ -781,10 +727,22 @@ $isSmartContract = $egi->egi_type === 'SmartContract';
                 const formData = new FormData(form);
                 const submitButton = form.querySelector('button[type="submit"]');
 
-                // Convert FormData to object for JSON
+                // Convert FormData to object for JSON with support for nested keys like commodity_data[weight]
                 const formObject = {};
                 formData.forEach((value, key) => {
-                    formObject[key] = value;
+                    // Check if key matches array notation: name[key]
+                    if (key.includes('[') && key.includes(']')) {
+                        const parts = key.split('[');
+                        const mainKey = parts[0];
+                        const subKey = parts[1].replace(']', '');
+                        
+                        if (!formObject[mainKey]) {
+                            formObject[mainKey] = {};
+                        }
+                        formObject[mainKey][subKey] = value;
+                    } else {
+                        formObject[key] = value;
+                    }
                 });
 
                 if (submitButton) {

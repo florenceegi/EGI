@@ -138,6 +138,8 @@ class Egi extends Model {
         'paired',
         'price',
         'payment_by_egili',
+        'commodity_type',
+        'commodity_metadata',
         'floorDropPrice',
         'position',
         'creation_date',
@@ -194,6 +196,7 @@ class Egi extends Model {
      */
     protected $casts = [
         'jsonMetadata'   => 'array',        // Cast JSON string to PHP array
+        'commodity_metadata' => 'array',    // Cast JSON string to PHP array
         'media'          => 'boolean',      // Cast 'media' to boolean
         'bind'           => 'integer',      // Cast 'bind' to integer (as per migration)
         'paired'         => 'integer',      // Cast 'paired' to integer (as per migration)
@@ -1446,6 +1449,18 @@ class Egi extends Model {
      * @return bool
      */
     public function isGoldBar(): bool {
+        // OS3 Strict: Check DB column first
+        if ($this->commodity_type === 'goldbar' || $this->commodity_type === 'gold-bar') {
+            return true;
+        }
+
+        // Fallback: Check for commodity-type trait (for migrated/old records)
+        $typeTrait = $this->getTraitByTypeSlug('commodity-type');
+        if ($typeTrait && in_array($typeTrait->value, ['goldbar', 'gold-bar'])) {
+            return true;
+        }
+
+        // Legacy Fallback (completeness check)
         return $this->getGoldWeight() !== null
             && $this->getGoldWeightUnit() !== null
             && $this->getGoldPurity() !== null;
@@ -1457,6 +1472,12 @@ class Egi extends Model {
      * @return float|null
      */
     public function getGoldWeight(): ?float {
+        // OS3: Prefer JSON metadata
+        if (isset($this->commodity_metadata['weight'])) {
+            return (float) $this->commodity_metadata['weight'];
+        }
+        
+        // Legacy Fallback: Check traits
         $trait = $this->getTraitByTypeSlug('gold-weight');
         return $trait ? (float) $trait->value : null;
     }
@@ -1467,6 +1488,11 @@ class Egi extends Model {
      * @return string|null (Grams, Ounces, Troy Ounces)
      */
     public function getGoldWeightUnit(): ?string {
+        if (isset($this->commodity_metadata['unit'])) {
+            return $this->commodity_metadata['unit'];
+        }
+
+        // Legacy Fallback
         $trait = $this->getTraitByTypeSlug('gold-weight-unit');
         return $trait ? $trait->value : null;
     }
@@ -1477,6 +1503,11 @@ class Egi extends Model {
      * @return string|null (999, 995, 990, 916, 750)
      */
     public function getGoldPurity(): ?string {
+        if (isset($this->commodity_metadata['purity'])) {
+            return $this->commodity_metadata['purity'];
+        }
+
+        // Legacy Fallback
         $trait = $this->getTraitByTypeSlug('gold-purity');
         return $trait ? $trait->value : null;
     }
@@ -1487,6 +1518,15 @@ class Egi extends Model {
      * @return float|null
      */
     public function getGoldMarginPercent(): ?float {
+        // OS3: Prefer 'margin_percent' (standard), fallback to 'markup' (legacy/partial)
+        if (isset($this->commodity_metadata['margin_percent'])) {
+            return (float) $this->commodity_metadata['margin_percent'];
+        }
+        if (isset($this->commodity_metadata['markup'])) {
+            return (float) $this->commodity_metadata['markup'];
+        }
+
+        // Legacy Fallback
         $trait = $this->getTraitByTypeSlug('gold-margin-percent');
         return $trait ? (float) $trait->value : null;
     }
@@ -1497,6 +1537,11 @@ class Egi extends Model {
      * @return float|null
      */
     public function getGoldMarginFixed(): ?float {
+        if (isset($this->commodity_metadata['margin_fixed'])) {
+            return (float) $this->commodity_metadata['margin_fixed'];
+        }
+
+        // Legacy Fallback
         $trait = $this->getTraitByTypeSlug('gold-margin-fixed');
         return $trait ? (float) $trait->value : null;
     }

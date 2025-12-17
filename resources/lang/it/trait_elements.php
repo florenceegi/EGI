@@ -18,6 +18,7 @@ return [
         'Cultural' => 'Culturale',
         'Accessories' => 'Accessori',
         'Categories' => 'Categorie',
+        'Commodity' => 'Commodity',
         'Gold Bar' => 'Lingotto d\'Oro',
     ],
 
@@ -62,6 +63,7 @@ return [
         'Water Protection' => 'Protezione Acqua',
         'Personalization' => 'Personalizzazione',
         'Structure' => 'Struttura',
+        'Commodity Type' => 'Tipo Commodity',
 
         // Gold Bar types
         'Gold Weight' => 'Peso Oro',
@@ -508,6 +510,11 @@ return [
         '990' => '990 (99.0%)',
         '916' => '916 (22k - 91.6%)',
         '750' => '750 (18k - 75.0%)',
+        
+        // Commodity Types
+        'goldbar' => 'Lingotto d\'Oro',
+        'silverbar' => 'Lingotto d\'Argento',
+        'platinumbar' => 'Lingotto di Platino',
     ],
 
 ];

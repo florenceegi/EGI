@@ -588,6 +588,82 @@ class PaymentDistributionService {
         $distributions = [];
         $totalAmount = $paymentData['paid_amount'];
         $currency = $paymentData['paid_currency'] ?? 'EUR';
+        
+        // --- GOLD BAR LOGIC: Check for Gold Base Value (Cost Reimbursement) ---
+        // Stored in metadata by MintController
+        $metadata = $egiBlockchain->metadata ?? [];
+        $goldBaseValue = isset($metadata['gold_base_value']) ? (float)$metadata['gold_base_value'] : 0.0;
+        
+        // If gold base value exists, verify it doesn't exceed total amount
+        if ($goldBaseValue > 0) {
+            if ($goldBaseValue > $totalAmount) {
+                // Safety check: Cost cannot exceed Price (shouldn't happen with correct logic)
+                // Log warning and cap base value at total amount (0 margin)
+                if ($this->logger) {
+                    $this->logger->warning('[Payment Distribution] Gold Base Value exceeds Total Amount', [
+                        'egi_blockchain_id' => $egiBlockchain->id,
+                        'total_amount' => $totalAmount,
+                        'gold_base_value' => $goldBaseValue
+                    ]);
+                }
+                $goldBaseValue = $totalAmount;
+            }
+
+            // 1. Create Reimbursement Distribution (100% to Creator/Seller)
+            // This amount is EXEMPT from platform fees
+            
+            // Resolve Creator ID (Seller)
+            // Use egi->user_id (original creator) or explicit seller ID if available
+            $creatorId = $egiBlockchain->egi->user_id; 
+            
+            // Try to resolve Creator wallet
+            $creatorWallet = $wallets->firstWhere('user_id', $creatorId);
+            // If no specific wallet linked to user found in collection wallets, 
+            // fallback to the first 'Creator' role wallet or just the user_id with null wallet for now
+            // But strict system requires a wallet.
+            if (!$creatorWallet) {
+                // Try platform role 'Creator'
+                $creatorWallet = $wallets->firstWhere('platform_role', 'Creator');
+            }
+            
+            if ($creatorWallet) {
+                $distributions[] = [
+                    'source_type' => 'mint',
+                    'egi_id' => $egiBlockchain->egi_id,
+                    'reservation_id' => null,
+                    'egi_blockchain_id' => $egiBlockchain->id,
+                    'blockchain_tx_id' => $egiBlockchain->algorand_tx_id,
+                    'collection_id' => $egiBlockchain->egi->collection_id,
+                    'user_id' => $this->resolveUserId($creatorWallet),
+                    'wallet_id' => $creatorWallet->id,
+                    'user_type' => $this->determineUserType($creatorWallet),
+                    'platform_role' => $creatorWallet->platform_role,
+                    'percentage' => 0, // Special case: Flat amount, not percentage of total
+                    'amount_eur' => $goldBaseValue,
+                    'exchange_rate' => 1.0,
+                    'is_epp' => $this->isEppWallet($creatorWallet),
+                    'distribution_status' => DistributionStatusEnum::CONFIRMED,
+                    'metadata' => [
+                        'type' => 'gold_cost_reimbursement', // Mark as reimbursement
+                        'base_value' => $goldBaseValue,
+                        'calculation_timestamp' => now()->toISOString(),
+                    ]
+                ];
+            } else {
+                 // Log eror: cannot reimburse creator
+                 if ($this->logger) {
+                    $this->logger->error('[Payment Distribution] Cannot find Creator wallet for Gold Reimbursement', [
+                        'egi_blockchain_id' => $egiBlockchain->id,
+                        'creator_id' => $creatorId
+                    ]);
+                }
+            }
+
+            // 2. Adjust Total Amount for Royalty Calculation
+            // Royalties are calculated ONLY on the MARGIN (Value Added)
+            $totalAmount = $totalAmount - $goldBaseValue; // Proceed with remaining margin
+        }
+        // ------------------------------------------------------------------
 
         foreach ($wallets as $wallet) {
             $percentage = $wallet->royalty_mint;
@@ -625,6 +701,7 @@ class PaymentDistributionService {
                     'buyer_wallet' => $egiBlockchain->buyer_wallet,
                     'buyer_user_id' => $egiBlockchain->buyer_user_id,
                     'ownership_type' => $egiBlockchain->ownership_type,
+                    'is_margin_calulation' => ($goldBaseValue > 0), // Flag if calculated on margin
                 ]
             ];
         }

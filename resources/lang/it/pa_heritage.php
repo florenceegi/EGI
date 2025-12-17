@@ -208,4 +208,15 @@ return [
     'card_created_date_title' => 'Data creazione',
     'card_collection_title' => 'Collezione',
     'card_published_title' => 'Pubblicato',
+
+    // Commodity Fields
+    'field_asset_type' => 'Tipo Asset',
+    'asset_type_optional' => '(Opzionale)',
+    'asset_type_standard' => 'Bene Culturale Standard',
+    'asset_type_goldbar' => 'Lingotto Oro',
+    'commodity_help' => 'Seleziona "Lingotto Oro" per attivare le funzionalità commodity dedicate.',
+    'goldbar_details' => 'Dettagli Lingotto Oro',
+    'field_weight' => 'Peso',
+    'field_purity' => 'Purezza',
+    'field_markup' => 'Markup (%)',
 ];

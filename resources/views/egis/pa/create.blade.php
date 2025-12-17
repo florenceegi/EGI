@@ -67,22 +67,8 @@
 
     {{-- Upload Form --}}
     <div class="mx-auto max-w-4xl">
-        <form action="{{ route('egis.store') }}" method="POST" enctype="multipart/form-data"
-            class="rounded-xl bg-white p-8 shadow-lg" x-data="{
-                imagePreview: null,
-                fileName: '',
-                handleFileSelect(event) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        this.fileName = file.name;
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            this.imagePreview = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                }
-            }">
+        <form action="{{ route('egis.store') }}" method="POST" enctype="multipart/form-data" id="egi-create-form"
+            class="rounded-xl bg-white p-8 shadow-lg">
             @csrf
 
             {{-- Form Grid --}}
@@ -108,6 +94,57 @@
                     <p class="mt-1 text-xs text-gray-500">
                         {{ __('pa_heritage.field_collection_help') }}
                     </p>
+                </div>
+
+                {{-- Trait System (including Commodity Trigger) --}}
+                <div class="space-y-6">
+                    @foreach($traitCategories as $category)
+                        <div class="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+                            {{-- Translated Category Name --}}
+                            <h3 class="mb-4 text-sm font-semibold text-[#1B365D]">
+                                {{ __('trait_elements.categories.' . $category->name) }}
+                            </h3>
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                @foreach($category->traitTypes as $traitType)
+                                    <div>
+                                        {{-- Translated Trait Type Name --}}
+                                        <label for="trait_{{ $traitType->id }}" class="mb-2 block text-sm font-medium text-gray-700">
+                                            {{ __('trait_elements.types.' . $traitType->name) }}
+                                        </label>
+                                        
+                                        @if($traitType->display_type == 'select')
+                                            @php
+                                                $allowedValues = json_decode($traitType->allowed_values ?? '[]', true);
+                                                // Specific ID for Commodity Type to target with JS
+                                                $selectId = ($traitType->slug === 'commodity-type') ? 'commodity_type_trigger' : 'trait_' . $traitType->id;
+                                            @endphp
+                                            <select id="{{ $selectId }}" name="traits[{{ $traitType->id }}]"
+                                                class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">
+                                                <option value="">{{ __('pa_heritage.field_select_option') ?? 'Seleziona...' }}</option>
+                                                @foreach($allowedValues as $value)
+                                                    {{-- Translated Value --}}
+                                                    <option value="{{ $value }}">
+                                                        {{ __('trait_elements.values.' . $value) }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @if($traitType->slug === 'commodity-type')
+                                                <input type="hidden" name="commodity_type" id="hidden_commodity_type" value="">
+                                            @endif
+                                        @else
+                                            <input type="text" id="trait_{{ $traitType->id }}" name="traits[{{ $traitType->id }}]"
+                                                class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- OS3: Modular Partial Inclusion (Vanilla JS controlled) --}}
+                <div id="gold-bar-fields-container" class="hidden">
+                    @include('components.commodities.gold-bar-fields', ['data' => old('commodity_data', [])])
                 </div>
 
                 {{-- Title --}}
@@ -177,7 +214,7 @@
                     {{-- Upload Area --}}
                     <div class="relative">
                         <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp"
-                            required @change="handleFileSelect($event)" class="hidden">
+                            required class="hidden">
 
                         <label for="image"
                             class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 transition-colors hover:border-[#1B365D] hover:bg-gray-100">
@@ -189,11 +226,11 @@
                                 </path>
                             </svg>
 
-                            {{-- Upload Text --}}
-                            <p class="mb-1 text-sm font-medium text-gray-700" x-show="!fileName">
+                            {{-- Upload Text (Vanilla JS controlled) --}}
+                            <p id="upload-placeholder-text" class="mb-1 text-sm font-medium text-gray-700">
                                 {{ __('pa_heritage.field_image_click') }}
                             </p>
-                            <p class="mb-1 text-sm font-medium text-[#1B365D]" x-show="fileName" x-text="fileName">
+                            <p id="upload-filename-text" class="mb-1 hidden text-sm font-medium text-[#1B365D]">
                             </p>
                             <p class="text-xs text-gray-500">
                                 {{ __('pa_heritage.image_format') }}
@@ -201,11 +238,11 @@
                         </label>
                     </div>
 
-                    {{-- Image Preview --}}
-                    <div x-show="imagePreview" class="mt-4">
+                    {{-- Image Preview (Vanilla JS controlled) --}}
+                    <div id="image-preview-container" class="mt-4 hidden">
                         <p class="mb-2 text-sm font-medium text-gray-700">{{ __('pa_heritage.image_preview') }}</p>
                         <div class="overflow-hidden rounded-lg border-2 border-gray-200">
-                            <img :src="imagePreview" alt="Preview" class="h-auto w-full max-w-md object-cover">
+                            <img id="image-preview" src="#" alt="Preview" class="h-auto w-full max-w-md object-cover">
                         </div>
                     </div>
 
@@ -277,8 +314,71 @@
         </div>
     </div>
 
-    {{-- Alpine.js CDN (if not already included in layout) --}}
+    {{-- Vanilla JS for Interactivity --}}
     @push('scripts')
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const commodityTypeSelect = document.getElementById('commodity_type');
+            const goldBarFields = document.getElementById('gold-bar-fields-container');
+            const imageInput = document.getElementById('image');
+            const placeholderText = document.getElementById('upload-placeholder-text');
+            const filenameText = document.getElementById('upload-filename-text');
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewImage = document.getElementById('image-preview');
+
+            // 1. Handle Commodity Type Change (Trigger via Trait)
+            const commodityTrigger = document.getElementById('commodity_type_trigger');
+            const hiddenCommodityType = document.getElementById('hidden_commodity_type');
+            
+            if (commodityTrigger && goldBarFields) {
+                // Initialize checks
+                function checkCommodityType() {
+                    const selectedValue = commodityTrigger.value;
+                    
+                    // Update hidden input for Controller
+                    if (hiddenCommodityType) {
+                        hiddenCommodityType.value = selectedValue === 'goldbar' ? 'GoldBar' : '';
+                    }
+
+                    if (selectedValue === 'goldbar') {
+                        goldBarFields.classList.remove('hidden');
+                    } else {
+                        goldBarFields.classList.add('hidden');
+                    }
+                }
+
+                commodityTrigger.addEventListener('change', checkCommodityType);
+                
+                // Run on load in case of old input re-population (need to handle 'selected' logic in view ideally, but basic JS check works)
+                checkCommodityType(); 
+            }
+
+            // 2. Handle Image Upload Preview
+            if (imageInput) {
+                imageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Update filename text
+                        if (filenameText && placeholderText) {
+                            filenameText.textContent = file.name;
+                            filenameText.classList.remove('hidden');
+                            placeholderText.classList.add('hidden');
+                        }
+
+                        // Update preview
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            if (previewImage && previewContainer) {
+                                previewImage.src = e.target.result;
+                                previewContainer.classList.remove('hidden');
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+    </script>
     @endpush
 </x-pa-layout>

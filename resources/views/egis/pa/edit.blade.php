@@ -99,21 +99,7 @@
     {{-- Edit Form --}}
     <div class="mx-auto max-w-4xl">
         <form action="{{ route('egis.update', $egi) }}" method="POST" enctype="multipart/form-data"
-            class="rounded-xl bg-white p-8 shadow-lg" x-data="{
-                imagePreview: '{{ $egi->getFirstMediaUrl('default', 'medium') }}',
-                fileName: '',
-                handleFileSelect(event) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        this.fileName = file.name;
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            this.imagePreview = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                }
-            }">
+            class="rounded-xl bg-white p-8 shadow-lg">
             @csrf
             @method('PUT')
 
@@ -177,6 +163,9 @@
                     @enderror
                 </div>
 
+                {{-- 🥇 COMMODITY FIELDS (Legacy/Removed) --}}
+                {{-- User instruction: This view is not for Commodity Editing. See crud-panel.blade.php --}}
+
                 {{-- Creation Date --}}
                 <div>
                     <label for="creation_date" class="mb-2 block text-sm font-medium text-gray-700">
@@ -201,17 +190,17 @@
                     <div class="mb-4">
                         <p class="mb-2 text-sm text-gray-600">{{ __('pa_heritage.field_image_current') }}</p>
                         <div class="overflow-hidden rounded-lg border-2 border-gray-200">
-                            <img :src="imagePreview" alt="{{ $egi->title }}"
+                            <img id="imagePreview" src="{{ $egi->getFirstMediaUrl('default', 'medium') ?: asset('images/placeholder-egi.jpg') }}" alt="{{ $egi->title }}"
                                 class="h-auto w-full max-w-md object-cover">
                         </div>
                     </div>
 
                     {{-- Upload New Image (Optional) --}}
                     <div class="relative">
-                        <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp"
-                            @change="handleFileSelect($event)" class="hidden">
+                        <input type="file" id="imageInput" name="image" accept="image/jpeg,image/png,image/webp"
+                            class="hidden">
 
-                        <label for="image"
+                        <label for="imageInput"
                             class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 transition-colors hover:border-[#1B365D] hover:bg-gray-100">
                             <svg class="mb-2 h-10 w-10 text-gray-400" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -219,10 +208,10 @@
                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                             </svg>
 
-                            <p class="mb-1 text-sm font-medium text-gray-700" x-show="!fileName">
+                            <p id="uploadPrompt" class="mb-1 text-sm font-medium text-gray-700">
                                 {{ __('pa_heritage.field_upload_new_optional') }}
                             </p>
-                            <p class="mb-1 text-sm font-medium text-[#1B365D]" x-show="fileName" x-text="fileName">
+                            <p id="fileNameDisplay" class="mb-1 text-sm font-medium text-[#1B365D] hidden">
                             </p>
                             <p class="text-xs text-gray-500">
                                 {{ __('pa_heritage.image_format') }}
@@ -304,8 +293,34 @@
         </form>
     </div>
 
-    {{-- Alpine.js CDN (if not already included in layout) --}}
+    {{-- Vanilla JS scripts for image preview --}}
     @push('scripts')
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const imageInput = document.getElementById('imageInput');
+                const imagePreview = document.getElementById('imagePreview');
+                const fileNameDisplay = document.getElementById('fileNameDisplay');
+                const uploadPrompt = document.getElementById('uploadPrompt');
+
+                if (imageInput) {
+                    imageInput.addEventListener('change', function(event) {
+                        const file = event.target.files[0];
+                        if (file) {
+                            // Show filename
+                            fileNameDisplay.textContent = file.name;
+                            fileNameDisplay.classList.remove('hidden');
+                            if (uploadPrompt) uploadPrompt.classList.add('hidden');
+
+                            // Preview image
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                imagePreview.src = e.target.result;
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                }
+            });
+        </script>
     @endpush
 </x-pa-layout>

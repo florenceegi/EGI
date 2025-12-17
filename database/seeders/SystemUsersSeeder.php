@@ -55,13 +55,6 @@ class SystemUsersSeeder extends Seeder {
         ],
         [
             'id' => 2,
-            'name' => 'epp',
-            'email' => 'epp@gmail.com',
-            'usertype' => 'epp',
-            'role' => 'epp_entity'
-        ],
-        [
-            'id' => 3,
             'name' => 'frangette',
             'email' => 'frangette@gmail.com',
             'usertype' => 'frangette',
@@ -174,21 +167,11 @@ class SystemUsersSeeder extends Seeder {
             $canCreateEcosystem = $this->assignRoleAndCheckPermissions($user, $userData);
             $logContext['can_create_ecosystem'] = $canCreateEcosystem;
 
-            // 3. CONDITIONAL ECOSYSTEM SETUP - Only for user ID 3 (Fabio)
+            // 3. CONDITIONAL ECOSYSTEM SETUP - DISABLED for System Users (Natan/Frangette)
             $collection = null;
-            if ($canCreateEcosystem && $userData['id'] === 3) {
-                $collection = $this->createFullEcosystem($user, $userData, $logContext);
-                $logContext['collection_id'] = $collection->id;
-                $logContext['ecosystem_created'] = true;
-                $this->command->info("   💼 Ecosystem: ✅ Created (Full setup)");
-            } else {
-                $logContext['ecosystem_created'] = false;
-                if ($userData['id'] === 1 || $userData['id'] === 2) {
-                    $this->command->info("   💼 Ecosystem: ❌ Skipped (User {$userData['id']} - no collection needed)");
-                } else {
-                    $this->command->info("   💼 Ecosystem: ❌ None (No permissions)");
-                }
-            }
+            // if ($canCreateEcosystem && $userData['id'] === 3) { ... }
+            $logContext['ecosystem_created'] = false;
+            $this->command->info("   💼 Ecosystem: ❌ Skipped (System User - no collection needed)");
 
             // 4. INITIALIZE USER DOMAINS (always)
             $this->initializeUserDomains($user, $userData, $logContext);
@@ -330,8 +313,8 @@ class SystemUsersSeeder extends Seeder {
             // Refresh user to load role permissions
             $user->refresh();
 
-            // Only user ID 3 (Fabio) should have ecosystem creation capability
-            $canCreateEcosystem = ($userData['id'] === 3);
+            // Only user ID 3 (Fabio) should have ecosystem creation capability -> DISABLED
+            $canCreateEcosystem = false; 
 
             $this->safeLog('info', '[Seeder] Role assigned and permissions checked', [
                 'user_id' => $user->id,
@@ -339,7 +322,7 @@ class SystemUsersSeeder extends Seeder {
                 'assigned_role' => $assignedRole,
                 'can_create_ecosystem' => $canCreateEcosystem,
                 'system_user' => true,
-                'ecosystem_policy' => 'only_user_id_3_gets_full_ecosystem'
+                'ecosystem_policy' => 'no_ecosystem_for_system_users'
             ]);
 
             return $canCreateEcosystem;
@@ -659,7 +642,7 @@ class SystemUsersSeeder extends Seeder {
      * Log creation summary
      */
     protected function logCreationSummary(): void {
-        $users = User::whereIn('id', [1, 2, 3])->with('roles', 'collections')->get();
+        $users = User::whereIn('id', [1, 2])->with('roles', 'collections')->get();
 
         $this->command->info("\n📊 SYSTEM USERS CREATION SUMMARY:");
         $this->command->info("═══════════════════════════════════");
@@ -672,19 +655,11 @@ class SystemUsersSeeder extends Seeder {
             $this->command->info("   📧 Email: {$user->email}");
             $this->command->info("   🏷️  Type: {$user->usertype} → Role: {$role}");
 
-            // Different ecosystem message based on user policy
-            if ($user->id === 3) {
-                $this->command->info("   💼 Ecosystem: " . ($hasCollection ? "✅ Created" : "❌ Failed"));
-                if ($hasCollection) {
-                    $this->command->info("   🏦 Wallet: {$user->wallet}");
-                }
-            } else {
-                $this->command->info("   💼 Ecosystem: ❌ Skipped (Policy: no collection for user {$user->id})");
-                $this->command->info("   🏦 Wallet: {$user->wallet}");
-            }
+            $this->command->info("   💼 Ecosystem: ❌ Skipped (Policy: no collection for system users)");
+            $this->command->info("   🏦 Wallet: {$user->wallet}");
             $this->command->info("");
         }
 
-        $this->command->info("🎯 System users ready - Only Fabio (ID: 3) has full ecosystem!");
+        $this->command->info("🎯 System users ready (Natan & Frangette)");
     }
 }

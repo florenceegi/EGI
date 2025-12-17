@@ -23,6 +23,7 @@ class AlgorandClient {
     protected ErrorManagerInterface $errorManager;
     protected string $microserviceUrl;
     protected int $timeout;
+    protected string $apiToken;
 
     public function __construct(
         UltraLogManager $logger,
@@ -34,6 +35,7 @@ class AlgorandClient {
         // Configuration - use correct config key path
         $this->microserviceUrl = config('algorand.algokit_microservice.url', 'http://localhost:3001');
         $this->timeout = config('algorand.algokit_microservice.timeout', 30);
+        $this->apiToken = config('algorand.algokit_microservice.api_token', '');
     }
 
     /**
@@ -57,6 +59,7 @@ class AlgorandClient {
 
             // 2. Call microservice
             $response = Http::timeout($this->timeout)
+                ->withToken($this->apiToken)
                 ->post("{$this->microserviceUrl}/create-account");
 
             // 3. Check response
@@ -129,6 +132,7 @@ class AlgorandClient {
             ]);
 
             $response = Http::timeout($this->timeout)
+                ->withToken($this->apiToken)
                 ->get("{$this->microserviceUrl}/account/{$address}");
 
             if (!$response->successful()) {
@@ -360,6 +364,7 @@ class AlgorandClient {
 
             // 2. Call microservice
             $response = Http::timeout($this->timeout + 10) // Extra time for blockchain confirmation
+                ->withToken($this->apiToken)
                 ->post("{$this->microserviceUrl}/fund-wallet", [
                     'address' => $address,
                     'amount' => $amount
@@ -436,6 +441,7 @@ class AlgorandClient {
 
             // 2. Call microservice
             $response = Http::timeout($this->timeout + 10)
+                ->withToken($this->apiToken)
                 ->post("{$this->microserviceUrl}/opt-in-asa", [
                     'user_mnemonic' => $userMnemonic,
                     'asa_id' => $asaId
@@ -520,6 +526,7 @@ class AlgorandClient {
 
             // 2. Call microservice
             $response = Http::timeout($this->timeout + 20) // Extra time for batch
+                ->withToken($this->apiToken)
                 ->post("{$this->microserviceUrl}/batch-opt-in-asa", [
                     'user_mnemonic' => $userMnemonic,
                     'asa_ids' => $asaIds
@@ -597,6 +604,7 @@ class AlgorandClient {
 
             // 2. Call microservice
             $response = Http::timeout($this->timeout + 10)
+                ->withToken($this->apiToken)
                 ->post("{$this->microserviceUrl}/transfer-asa", [
                     'to_address' => $toAddress,
                     'asa_id' => $asaId,
@@ -689,6 +697,7 @@ class AlgorandClient {
 
             // 2. Call microservice
             $response = Http::timeout($this->timeout + 20) // Extra time for batch
+                ->withToken($this->apiToken)
                 ->post("{$this->microserviceUrl}/batch-transfer-asa", [
                     'to_address' => $toAddress,
                     'asa_ids' => $asaIds

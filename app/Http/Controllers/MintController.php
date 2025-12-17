@@ -764,6 +764,19 @@ class MintController extends Controller {
             }
 
             // Create blockchain record
+            $metadata = [
+                'merchant_psp' => $paymentMetadata['merchant_psp'] ?? null,
+            ];
+
+            // Gold Bar: Store base value for distribution logic (Cost Reimbursement)
+            if ($egi->isGoldBar() && isset($goldBarMintData['gold_data']['base_value'])) {
+                $metadata['gold_base_value'] = (float) $goldBarMintData['gold_data']['base_value'];
+                $this->logger->info('Gold Bar base value stored in metadata', [
+                    'egi_id' => $egi->id,
+                    'base_value' => $metadata['gold_base_value']
+                ]);
+            }
+
             $blockchainRecord = EgiBlockchain::create([
                 'egi_id' => $egi->id,
                 'reservation_id' => $reservation?->id, // ✅ NULLABLE per mint diretto
@@ -777,7 +790,7 @@ class MintController extends Controller {
                 'ownership_type' => $validated['buyer_wallet'] ? 'wallet' : 'treasury',
                 'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
                 'mint_status' => 'minting_queued',
-                'merchant_psp_config' => $paymentMetadata['merchant_psp'] ?? null,
+                'metadata' => $metadata, // Store metadata
                 // AREA 5.5.1: Store proposed co-creator name (will be frozen during mint)
                 'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
             ]);

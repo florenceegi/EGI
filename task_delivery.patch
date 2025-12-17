@@ -1,0 +1,438 @@
+diff --git a/app/Http/Controllers/EgiController.php b/app/Http/Controllers/EgiController.php
+index e674e773..47699188 100644
+--- a/app/Http/Controllers/EgiController.php
++++ b/app/Http/Controllers/EgiController.php
+@@ -197,7 +197,14 @@ public function create(): View | RedirectResponse {
+                 'collections_count' => $collections->count(),
+             ]);
+ 
+-            return view($view, compact('collections'));
++            // Fetch Trait Categories for the form (including Commodity trigger)
++            $traitCategories = \App\Models\TraitCategory::with(['traitTypes' => function($q) {
++                $q->orderBy('name');
++            }])
++            ->orderBy('order_column')
++            ->get();
++
++            return view($view, compact('collections', 'traitCategories'));
+         } catch (\Exception $e) {
+             return $this->errorManager->handle('EGI_CREATE_FORM_ERROR', [
+                 'user_id' => FegiAuth::id(),
+@@ -205,6 +212,66 @@ public function create(): View | RedirectResponse {
+         }
+     }
+ 
++    /**
++     * @Oracode Method: Store EGI (Service Layer)
++     * 🎯 Purpose: Handle EGI creation form submission
++     * 📥 Output: Redirect to show page or error
++     * 🧱 Core Logic: Uses CommodityFactory for validation/logic if commodity_type is set. Bypasses traits for commodities.
++     */
++    public function store(\Illuminate\Http\Request $request): RedirectResponse {
++        try {
++            // Authentication check
++            if (!FegiAuth::check()) {
++                return redirect()->route('login');
++            }
++            $user = FegiAuth::user();
++            if (!$user->can('create_EGI')) {
++                abort(403);
++            }
++
++            // 1. Basic Validation
++            $request->validate([
++                'title' => 'required|string|max:255',
++                'collection_id' => 'required|exists:collections,id',
++                'description' => 'nullable|string',
++                'commodity_type' => 'nullable|string',
++                'commodity_data' => 'nullable|array',
++            ]);
++
++            // 2. OS3 Commodity Handling (Factory + Contract)
++            if ($request->filled('commodity_type')) {
++                try {
++                    $commodityContract = \App\Egi\Commodity\CommodityFactory::make($request->commodity_type);
++                    // Validate commodity specific fields via Contract
++                    $commodityContract->validate($request->input('commodity_data', []));
++                } catch (\Exception $e) {
++                    return back()->withErrors($e->getMessage())->withInput();
++                }
++            }
++
++            // 3. Prepare Data
++            $data = $request->except(['_token']); 
++            
++            // Map 'commodity_data' to 'commodity_metadata' for DB if using that column name
++            if ($request->filled('commodity_data')) {
++                $data['commodity_metadata'] = $request->commodity_data;
++                unset($data['commodity_data']);
++            }
++
++            // 4. Delegate to Service
++            $egi = $this->egiService->store($data, $user);
++
++            return redirect()->route('egis.show', $egi)
++                ->with('success', __('EGI creato con successo!'));
++
++        } catch (\Exception $e) {
++            return $this->errorManager->handle('EGI_STORE_ERROR', [
++                'user_id' => FegiAuth::id(),
++                'data' => $request->except(['photo', 'password'])
++            ], $e);
++        }
++    }
++
+     /**
+      * @Oracode Method: Show EGI Edit Form (Service Layer)
+      * 🎯 Purpose: Display EGI edit form with pre-populated data
+diff --git a/database/seeders/TraitDefaultsSeeder.php b/database/seeders/TraitDefaultsSeeder.php
+index a0b5c5a1..f07c6817 100644
+--- a/database/seeders/TraitDefaultsSeeder.php
++++ b/database/seeders/TraitDefaultsSeeder.php
+@@ -42,14 +42,16 @@ public function run(): void {
+             ['name' => 'Sustainability', 'slug' => 'sustainability', 'icon' => '🌿', 'color' => '#2D5016', 'is_system' => true, 'sort_order' => 5],
+             ['name' => 'Cultural', 'slug' => 'cultural', 'icon' => '🏛️', 'color' => '#8B4513', 'is_system' => true, 'sort_order' => 6],
+             ['name' => 'Categories', 'slug' => 'categories', 'icon' => '📋', 'color' => '#6366F1', 'is_system' => true, 'sort_order' => 8],
+-            ['name' => 'Gold Bar', 'slug' => 'gold-bar', 'icon' => '🥇', 'color' => '#FFD700', 'is_system' => true, 'sort_order' => 9],
++            ['name' => 'Commodity', 'slug' => 'commodity', 'icon' => '�', 'color' => '#FFD700', 'is_system' => true, 'sort_order' => 9],
+         ];
+ 
+         foreach ($categories as $category) {
+-            // Insert category directly (since we truncated)
+-            $categoryId = DB::table('trait_categories')->insertGetId(
+-                array_merge($category, ['created_at' => now(), 'updated_at' => now()])
++            DB::table('trait_categories')->updateOrInsert(
++                ['slug' => $category['slug']],
++                array_merge($category, ['updated_at' => now()])
+             );
++            
++            $categoryId = DB::table('trait_categories')->where('slug', $category['slug'])->value('id');
+ 
+             // Add trait types for each category
+             $this->seedTraitTypes($categoryId, $category['slug']);
+@@ -861,59 +863,30 @@ private function seedTraitTypes(int $categoryId, string $categorySlug): void {
+                 ];
+                 break;
+ 
+-            case 'gold-bar':
++            case 'commodity':
+                 $traitTypes = [
+                     [
+-                        'name' => 'Gold Weight',
+-                        'slug' => 'gold-weight',
+-                        'display_type' => 'number',
+-                        'allowed_values' => null
+-                    ],
+-                    [
+-                        'name' => 'Gold Weight Unit',
+-                        'slug' => 'gold-weight-unit',
+-                        'display_type' => 'text',
+-                        'allowed_values' => json_encode([
+-                            'Grams',
+-                            'Ounces',
+-                            'Troy Ounces'
+-                        ])
+-                    ],
+-                    [
+-                        'name' => 'Gold Purity',
+-                        'slug' => 'gold-purity',
++                        'name' => 'Commodity Type',
++                        'slug' => 'commodity-type',
+                         'display_type' => 'text',
+                         'allowed_values' => json_encode([
+-                            '999',   // 24k - 99.9% pure
+-                            '995',   // 99.5% pure
+-                            '990',   // 99.0% pure
+-                            '916',   // 22k - 91.6% pure
+-                            '750'    // 18k - 75.0% pure
++                            'goldbar',
++                            'silverbar',
++                            'platinumbar'
+                         ])
+-                    ],
+-                    [
+-                        'name' => 'Gold Margin Percent',
+-                        'slug' => 'gold-margin-percent',
+-                        'display_type' => 'number',
+-                        'allowed_values' => null
+-                    ],
+-                    [
+-                        'name' => 'Gold Margin Fixed',
+-                        'slug' => 'gold-margin-fixed',
+-                        'display_type' => 'number',
+-                        'allowed_values' => null
+                     ]
+                 ];
+                 break;
+         }
+         foreach ($traitTypes as $type) {
+-            // Insert trait type directly (since we truncated)
+-            DB::table('trait_types')->insert(array_merge($type, [
+-                'category_id' => $categoryId,
+-                'is_system' => true,
+-                'created_at' => now(),
+-                'updated_at' => now()
+-            ]));
++            DB::table('trait_types')->updateOrInsert(
++                ['category_id' => $categoryId, 'slug' => $type['slug']],
++                array_merge($type, [
++                    'category_id' => $categoryId,
++                    'is_system' => true,
++                    'updated_at' => now()
++                ])
++            );
+         }
+     }
+ }
+diff --git a/resources/lang/it/pa_heritage.php b/resources/lang/it/pa_heritage.php
+index 1707363b..ff136ae0 100644
+--- a/resources/lang/it/pa_heritage.php
++++ b/resources/lang/it/pa_heritage.php
+@@ -208,4 +208,15 @@
+     'card_created_date_title' => 'Data creazione',
+     'card_collection_title' => 'Collezione',
+     'card_published_title' => 'Pubblicato',
++
++    // Commodity Fields
++    'field_asset_type' => 'Tipo Asset',
++    'asset_type_optional' => '(Opzionale)',
++    'asset_type_standard' => 'Bene Culturale Standard',
++    'asset_type_goldbar' => 'Lingotto Oro',
++    'commodity_help' => 'Seleziona "Lingotto Oro" per attivare le funzionalità commodity dedicate.',
++    'goldbar_details' => 'Dettagli Lingotto Oro',
++    'field_weight' => 'Peso',
++    'field_purity' => 'Purezza',
++    'field_markup' => 'Markup (%)',
+ ];
+diff --git a/resources/lang/it/trait_elements.php b/resources/lang/it/trait_elements.php
+index dbfbfe16..22d904f5 100644
+--- a/resources/lang/it/trait_elements.php
++++ b/resources/lang/it/trait_elements.php
+@@ -18,6 +18,7 @@
+         'Cultural' => 'Culturale',
+         'Accessories' => 'Accessori',
+         'Categories' => 'Categorie',
++        'Commodity' => 'Commodity',
+         'Gold Bar' => 'Lingotto d\'Oro',
+     ],
+ 
+@@ -62,6 +63,7 @@
+         'Water Protection' => 'Protezione Acqua',
+         'Personalization' => 'Personalizzazione',
+         'Structure' => 'Struttura',
++        'Commodity Type' => 'Tipo Commodity',
+ 
+         // Gold Bar types
+         'Gold Weight' => 'Peso Oro',
+@@ -508,6 +510,11 @@
+         '990' => '990 (99.0%)',
+         '916' => '916 (22k - 91.6%)',
+         '750' => '750 (18k - 75.0%)',
++        
++        // Commodity Types
++        'goldbar' => 'Lingotto d\'Oro',
++        'silverbar' => 'Lingotto d\'Argento',
++        'platinumbar' => 'Lingotto di Platino',
+     ],
+ 
+ ];
+diff --git a/resources/views/egis/pa/create.blade.php b/resources/views/egis/pa/create.blade.php
+index 5be1ec92..3b9cf18c 100644
+--- a/resources/views/egis/pa/create.blade.php
++++ b/resources/views/egis/pa/create.blade.php
+@@ -67,22 +67,8 @@
+ 
+     {{-- Upload Form --}}
+     <div class="mx-auto max-w-4xl">
+-        <form action="{{ route('egis.store') }}" method="POST" enctype="multipart/form-data"
+-            class="rounded-xl bg-white p-8 shadow-lg" x-data="{
+-                imagePreview: null,
+-                fileName: '',
+-                handleFileSelect(event) {
+-                    const file = event.target.files[0];
+-                    if (file) {
+-                        this.fileName = file.name;
+-                        const reader = new FileReader();
+-                        reader.onload = (e) => {
+-                            this.imagePreview = e.target.result;
+-                        };
+-                        reader.readAsDataURL(file);
+-                    }
+-                }
+-            }">
++        <form action="{{ route('egis.store') }}" method="POST" enctype="multipart/form-data" id="egi-create-form"
++            class="rounded-xl bg-white p-8 shadow-lg">
+             @csrf
+ 
+             {{-- Form Grid --}}
+@@ -110,6 +96,57 @@ class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900
+                     </p>
+                 </div>
+ 
++                {{-- Trait System (including Commodity Trigger) --}}
++                <div class="space-y-6">
++                    @foreach($traitCategories as $category)
++                        <div class="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
++                            {{-- Translated Category Name --}}
++                            <h3 class="mb-4 text-sm font-semibold text-[#1B365D]">
++                                {{ __('trait_elements.categories.' . $category->name) }}
++                            </h3>
++                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
++                                @foreach($category->traitTypes as $traitType)
++                                    <div>
++                                        {{-- Translated Trait Type Name --}}
++                                        <label for="trait_{{ $traitType->id }}" class="mb-2 block text-sm font-medium text-gray-700">
++                                            {{ __('trait_elements.types.' . $traitType->name) }}
++                                        </label>
++                                        
++                                        @if($traitType->display_type == 'select')
++                                            @php
++                                                $allowedValues = json_decode($traitType->allowed_values ?? '[]', true);
++                                                // Specific ID for Commodity Type to target with JS
++                                                $selectId = ($traitType->slug === 'commodity-type') ? 'commodity_type_trigger' : 'trait_' . $traitType->id;
++                                            @endphp
++                                            <select id="{{ $selectId }}" name="traits[{{ $traitType->id }}]"
++                                                class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">
++                                                <option value="">{{ __('pa_heritage.field_select_option') ?? 'Seleziona...' }}</option>
++                                                @foreach($allowedValues as $value)
++                                                    {{-- Translated Value --}}
++                                                    <option value="{{ $value }}">
++                                                        {{ __('trait_elements.values.' . $value) }}
++                                                    </option>
++                                                @endforeach
++                                            </select>
++                                            @if($traitType->slug === 'commodity-type')
++                                                <input type="hidden" name="commodity_type" id="hidden_commodity_type" value="">
++                                            @endif
++                                        @else
++                                            <input type="text" id="trait_{{ $traitType->id }}" name="traits[{{ $traitType->id }}]"
++                                                class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">
++                                        @endif
++                                    </div>
++                                @endforeach
++                            </div>
++                        </div>
++                    @endforeach
++                </div>
++
++                {{-- OS3: Modular Partial Inclusion (Vanilla JS controlled) --}}
++                <div id="gold-bar-fields-container" class="hidden">
++                    @include('components.commodities.gold-bar-fields', ['data' => old('commodity_data', [])])
++                </div>
++
+                 {{-- Title --}}
+                 <div>
+                     <label for="title" class="mb-2 block text-sm font-medium text-gray-700">
+@@ -177,7 +214,7 @@ class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900
+                     {{-- Upload Area --}}
+                     <div class="relative">
+                         <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp"
+-                            required @change="handleFileSelect($event)" class="hidden">
++                            required class="hidden">
+ 
+                         <label for="image"
+                             class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 transition-colors hover:border-[#1B365D] hover:bg-gray-100">
+@@ -189,11 +226,11 @@ class="flex cursor-pointer flex-col items-center justify-center rounded-lg borde
+                                 </path>
+                             </svg>
+ 
+-                            {{-- Upload Text --}}
+-                            <p class="mb-1 text-sm font-medium text-gray-700" x-show="!fileName">
++                            {{-- Upload Text (Vanilla JS controlled) --}}
++                            <p id="upload-placeholder-text" class="mb-1 text-sm font-medium text-gray-700">
+                                 {{ __('pa_heritage.field_image_click') }}
+                             </p>
+-                            <p class="mb-1 text-sm font-medium text-[#1B365D]" x-show="fileName" x-text="fileName">
++                            <p id="upload-filename-text" class="mb-1 hidden text-sm font-medium text-[#1B365D]">
+                             </p>
+                             <p class="text-xs text-gray-500">
+                                 {{ __('pa_heritage.image_format') }}
+@@ -201,11 +238,11 @@ class="flex cursor-pointer flex-col items-center justify-center rounded-lg borde
+                         </label>
+                     </div>
+ 
+-                    {{-- Image Preview --}}
+-                    <div x-show="imagePreview" class="mt-4">
++                    {{-- Image Preview (Vanilla JS controlled) --}}
++                    <div id="image-preview-container" class="mt-4 hidden">
+                         <p class="mb-2 text-sm font-medium text-gray-700">{{ __('pa_heritage.image_preview') }}</p>
+                         <div class="overflow-hidden rounded-lg border-2 border-gray-200">
+-                            <img :src="imagePreview" alt="Preview" class="h-auto w-full max-w-md object-cover">
++                            <img id="image-preview" src="#" alt="Preview" class="h-auto w-full max-w-md object-cover">
+                         </div>
+                     </div>
+ 
+@@ -277,8 +314,71 @@ class="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-
+         </div>
+     </div>
+ 
+-    {{-- Alpine.js CDN (if not already included in layout) --}}
++    {{-- Vanilla JS for Interactivity --}}
+     @push('scripts')
+-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
++    <script>
++        document.addEventListener('DOMContentLoaded', function() {
++            // DOM Elements
++            const commodityTypeSelect = document.getElementById('commodity_type');
++            const goldBarFields = document.getElementById('gold-bar-fields-container');
++            const imageInput = document.getElementById('image');
++            const placeholderText = document.getElementById('upload-placeholder-text');
++            const filenameText = document.getElementById('upload-filename-text');
++            const previewContainer = document.getElementById('image-preview-container');
++            const previewImage = document.getElementById('image-preview');
++
++            // 1. Handle Commodity Type Change (Trigger via Trait)
++            const commodityTrigger = document.getElementById('commodity_type_trigger');
++            const hiddenCommodityType = document.getElementById('hidden_commodity_type');
++            
++            if (commodityTrigger && goldBarFields) {
++                // Initialize checks
++                function checkCommodityType() {
++                    const selectedValue = commodityTrigger.value;
++                    
++                    // Update hidden input for Controller
++                    if (hiddenCommodityType) {
++                        hiddenCommodityType.value = selectedValue === 'goldbar' ? 'GoldBar' : '';
++                    }
++
++                    if (selectedValue === 'goldbar') {
++                        goldBarFields.classList.remove('hidden');
++                    } else {
++                        goldBarFields.classList.add('hidden');
++                    }
++                }
++
++                commodityTrigger.addEventListener('change', checkCommodityType);
++                
++                // Run on load in case of old input re-population (need to handle 'selected' logic in view ideally, but basic JS check works)
++                checkCommodityType(); 
++            }
++
++            // 2. Handle Image Upload Preview
++            if (imageInput) {
++                imageInput.addEventListener('change', function(e) {
++                    const file = e.target.files[0];
++                    if (file) {
++                        // Update filename text
++                        if (filenameText && placeholderText) {
++                            filenameText.textContent = file.name;
++                            filenameText.classList.remove('hidden');
++                            placeholderText.classList.add('hidden');
++                        }
++
++                        // Update preview
++                        const reader = new FileReader();
++                        reader.onload = function(e) {
++                            if (previewImage && previewContainer) {
++                                previewImage.src = e.target.result;
++                                previewContainer.classList.remove('hidden');
++                            }
++                        };
++                        reader.readAsDataURL(file);
++                    }
++                });
++            }
++        });
++    </script>
+     @endpush
+ </x-pa-layout>

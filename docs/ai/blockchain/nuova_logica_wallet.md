@@ -96,12 +96,12 @@ UltraLogManager, AuditLogService, ConsentService, ErrorManager
 AlgorandClient (adattatore per chiamare algosdk service o microservice Node)
 
 Esempio implementazione (Laravel service skeleton)
-1) Interfaccia per Algorand (Node microservice o comando)
+1) Microservizio Node.js (algokit-microservice)
 
-Consiglio: delega la generazione Algorand a un piccolo Node script che usa algosdk e ritorna:
+Il microservizio espone endpoint protetti per creazione account e firma transazioni.
+Richiede autenticazione tramite **Bearer Token**.
 
-{ "address": "XXXX", "mnemonic": "word1 ... word25", "privateKeyBase64": "..." }
-
+Header richiesto: `Authorization: Bearer <ALGOKIT_API_TOKEN>`
 2) WalletProvisioningService::provisionUserWallet(User $u, array $payload)
 
 (Estratto PHP — integra con il CustodialWalletService già definito)

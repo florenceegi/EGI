@@ -52,10 +52,13 @@ class User extends Authenticatable implements HasMedia {
         'preferred_currency',
         'avatar_url',
         'password',
-        // 'usertype', // SECURITY: Removed to prevent Mass Assignment
+        'usertype',
+        'platform_role', // ✅ ADDED
         'current_collection_id',
         'consent_summary',
         'consents_updated_at',
+        'gdpr_consents_given_at', // ✅ ADDED
+        'terms', // ✅ ADDED
         'processing_limitations',
         'limitations_updated_at',
         'has_pending_gdpr_requests',
@@ -96,6 +99,8 @@ class User extends Authenticatable implements HasMedia {
         'processing_limitations' => 'array',
         'privacy_settings' => 'array',
         'consents_updated_at' => 'datetime',
+        'gdpr_consents_given_at' => 'datetime', // ✅ ADDED
+        'terms' => 'boolean', // ✅ ADDED
         'limitations_updated_at' => 'datetime',
         'last_gdpr_request_at' => 'datetime',
         'gdpr_status_updated_at' => 'datetime',

@@ -42,14 +42,16 @@ class TraitDefaultsSeeder extends Seeder {
             ['name' => 'Sustainability', 'slug' => 'sustainability', 'icon' => '🌿', 'color' => '#2D5016', 'is_system' => true, 'sort_order' => 5],
             ['name' => 'Cultural', 'slug' => 'cultural', 'icon' => '🏛️', 'color' => '#8B4513', 'is_system' => true, 'sort_order' => 6],
             ['name' => 'Categories', 'slug' => 'categories', 'icon' => '📋', 'color' => '#6366F1', 'is_system' => true, 'sort_order' => 8],
-            ['name' => 'Gold Bar', 'slug' => 'gold-bar', 'icon' => '🥇', 'color' => '#FFD700', 'is_system' => true, 'sort_order' => 9],
+            ['name' => 'Commodity', 'slug' => 'commodity', 'icon' => '�', 'color' => '#FFD700', 'is_system' => true, 'sort_order' => 9],
         ];
 
         foreach ($categories as $category) {
-            // Insert category directly (since we truncated)
-            $categoryId = DB::table('trait_categories')->insertGetId(
-                array_merge($category, ['created_at' => now(), 'updated_at' => now()])
+            DB::table('trait_categories')->updateOrInsert(
+                ['slug' => $category['slug']],
+                array_merge($category, ['updated_at' => now()])
             );
+            
+            $categoryId = DB::table('trait_categories')->where('slug', $category['slug'])->value('id');
 
             // Add trait types for each category
             $this->seedTraitTypes($categoryId, $category['slug']);
@@ -861,59 +863,30 @@ class TraitDefaultsSeeder extends Seeder {
                 ];
                 break;
 
-            case 'gold-bar':
+            case 'commodity':
                 $traitTypes = [
                     [
-                        'name' => 'Gold Weight',
-                        'slug' => 'gold-weight',
-                        'display_type' => 'number',
-                        'allowed_values' => null
-                    ],
-                    [
-                        'name' => 'Gold Weight Unit',
-                        'slug' => 'gold-weight-unit',
+                        'name' => 'Commodity Type',
+                        'slug' => 'commodity-type',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'Grams',
-                            'Ounces',
-                            'Troy Ounces'
+                            'goldbar',
+                            'silverbar',
+                            'platinumbar'
                         ])
-                    ],
-                    [
-                        'name' => 'Gold Purity',
-                        'slug' => 'gold-purity',
-                        'display_type' => 'text',
-                        'allowed_values' => json_encode([
-                            '999',   // 24k - 99.9% pure
-                            '995',   // 99.5% pure
-                            '990',   // 99.0% pure
-                            '916',   // 22k - 91.6% pure
-                            '750'    // 18k - 75.0% pure
-                        ])
-                    ],
-                    [
-                        'name' => 'Gold Margin Percent',
-                        'slug' => 'gold-margin-percent',
-                        'display_type' => 'number',
-                        'allowed_values' => null
-                    ],
-                    [
-                        'name' => 'Gold Margin Fixed',
-                        'slug' => 'gold-margin-fixed',
-                        'display_type' => 'number',
-                        'allowed_values' => null
                     ]
                 ];
                 break;
         }
         foreach ($traitTypes as $type) {
-            // Insert trait type directly (since we truncated)
-            DB::table('trait_types')->insert(array_merge($type, [
-                'category_id' => $categoryId,
-                'is_system' => true,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]));
+            DB::table('trait_types')->updateOrInsert(
+                ['category_id' => $categoryId, 'slug' => $type['slug']],
+                array_merge($type, [
+                    'category_id' => $categoryId,
+                    'is_system' => true,
+                    'updated_at' => now()
+                ])
+            );
         }
     }
 }
