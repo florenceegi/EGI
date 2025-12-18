@@ -115,6 +115,12 @@ class RegisteredUserController extends Controller {
         try {
             // ═══ GET VALIDATED DATA ═══
             $validated = $request->validated();
+            
+            // Normalize 'epp_entity' to 'epp' for internal logic consistency
+            if (isset($validated['user_type']) && $validated['user_type'] === 'epp_entity') {
+                $validated['user_type'] = 'epp';
+            }
+
             $logContext['user_type'] = $validated['user_type'];
 
             $this->logger->info('[Registration] Starting permission-based registration', $logContext);
@@ -239,10 +245,16 @@ class RegisteredUserController extends Controller {
                 'creator',
                 'patron',
                 'epp',
+                'epp_entity',
                 'company',
                 'trader_pro',
                 'pa_entity'
             ];
+        }
+
+        // Add epp_entity to allowed types if not present (case where config is loaded but missing it)
+        if (!in_array('epp_entity', $allowedUserTypes)) {
+            $allowedUserTypes[] = 'epp_entity';
         }
 
         $userTypeRule = ['required', 'in:' . implode(',', $allowedUserTypes)];
