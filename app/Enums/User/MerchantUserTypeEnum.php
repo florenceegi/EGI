@@ -16,6 +16,9 @@ enum MerchantUserTypeEnum: string {
     case CREATOR = 'creator';
     case COMPANY = 'company';
     case PATRON = 'patron';
+    case EPP = 'epp';
+    case TRADER_PRO = 'trader_pro';
+    case PA_ENTITY = 'pa_entity';
 
     /**
      * Get all merchant user type values as array
@@ -50,6 +53,9 @@ enum MerchantUserTypeEnum: string {
             self::CREATOR => __('user_types.creator'),
             self::COMPANY => __('user_types.company'),
             self::PATRON => __('user_types.patron'),
+            self::EPP => __('user_types.epp'),
+            self::TRADER_PRO => __('user_types.trader_pro'),
+            self::PA_ENTITY => __('user_types.pa_entity'),
         };
     }
 
@@ -63,6 +69,8 @@ enum MerchantUserTypeEnum: string {
             self::CREATOR->value,
             self::COMPANY->value,
             self::PATRON->value,  // mecenate
+            self::EPP->value,     // EPP owns their specific ecosystem
+            self::PA_ENTITY->value,
         ];
     }
 
