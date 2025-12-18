@@ -4,7 +4,7 @@
  * Trait Elements Translations (Italian)
  *
  * This file is auto-updated by TraitTranslationService
- * Last updated: 2025-11-06 11:47:19
+ * Last updated: 2025-12-18 12:11:27
  */
 
 return [
@@ -64,8 +64,6 @@ return [
         'Personalization' => 'Personalizzazione',
         'Structure' => 'Struttura',
         'Commodity Type' => 'Tipo Commodity',
-
-        // Gold Bar types
         'Gold Weight' => 'Peso Oro',
         'Gold Weight Unit' => 'Unità Peso Oro',
         'Gold Purity' => 'Purezza Oro',
@@ -78,6 +76,11 @@ return [
         '1/1' => '1/1',
         '3D Modeling' => 'Modellazione 3D',
         '3D Printed' => 'Stampato 3D',
+        '750' => '750 (18k - 75.0%)',
+        '916' => '916 (22k - 91.6%)',
+        '990' => '990 (99.0%)',
+        '995' => '995 (99.5%)',
+        '999' => '999 (24k - 99.9%)',
         'AR/VR Artwork' => 'Opera AR/VR',
         'Abstract' => 'Astratto',
         'Acrylic' => 'Acrilico',
@@ -86,6 +89,7 @@ return [
         'Airbrush' => 'Aerografo',
         'Aluminum' => 'Alluminio',
         'Amethyst' => 'Ametista',
+        'Amorphous Biomechanical Entity' => 'Part of Amorphous Biomechanical Entity Series',
         'Antique' => 'Antico',
         'Appliqué' => 'Applicazione',
         'Aquamarine' => 'Acquamarina',
@@ -222,6 +226,7 @@ return [
         'Goldsmithing' => 'Oreficeria',
         'Good' => 'Buono',
         'Gouache' => 'Gouache',
+        'Grams' => 'Grammi',
         'Granite' => 'Granito',
         'Gray' => 'Grigio',
         'Green' => 'Verde',
@@ -261,10 +266,10 @@ return [
         'Labradorite' => 'Labradorite',
         'Lampworking' => 'Lavorazione a Lume',
         'Lapis Lazuli' => 'Lapislazzuli',
-        'Laptop 13\\\\\\\\\\\"' => 'Laptop 13\\\\\\\\\\\"',
-        'Laptop 14\\\\\\\\\\\"' => 'Laptop 14\\\\\\\\\\\"',
-        'Laptop 15\\\\\\\\\\\"' => 'Laptop 15\\\\\\\\\\\"',
-        'Laptop 16\\\\\\\\\\\"' => 'Laptop 16\\\\\\\\\\\"',
+        'Laptop 13\\\\\\\\\\\\\"' => 'Laptop 13\\\\\\\\\\\\\"',
+        'Laptop 14\\\\\\\\\\\\\"' => 'Laptop 14\\\\\\\\\\\\\"',
+        'Laptop 15\\\\\\\\\\\\\"' => 'Laptop 15\\\\\\\\\\\\\"',
+        'Laptop 16\\\\\\\\\\\\\"' => 'Laptop 16\\\\\\\\\\\\\"',
         'Laptop Sleeve' => 'Custodia Laptop',
         'Large' => 'Grande',
         'Laser Cut' => 'Taglio Laser',
@@ -335,6 +340,7 @@ return [
         'Organic' => 'Biologico',
         'Origami' => 'Origami',
         'Other' => 'Altro',
+        'Ounces' => 'Once',
         'Outdoor' => 'Outdoor',
         'Oversized' => 'Oversize',
         'Padded' => 'Imbottito',
@@ -464,6 +470,7 @@ return [
         'Topaz' => 'Topazio',
         'Tote' => 'Borsa Tote',
         'Travel' => 'Viaggio',
+        'Troy Ounces' => 'Once Troy',
         'Tufting' => 'Tufting',
         'Turquoise' => 'Turchese',
         'Tuscany' => 'Toscana',
@@ -498,23 +505,9 @@ return [
         'Yellow Gold' => 'Oro Giallo',
         'Zinc' => 'Zinco',
         'Zipper' => 'Cerniera',
-
-        // Gold Weight Unit values
-        'Grams' => 'Grammi',
-        'Ounces' => 'Once',
-        'Troy Ounces' => 'Once Troy',
-
-        // Gold Purity values
-        '999' => '999 (24k - 99.9%)',
-        '995' => '995 (99.5%)',
-        '990' => '990 (99.0%)',
-        '916' => '916 (22k - 91.6%)',
-        '750' => '750 (18k - 75.0%)',
-        
-        // Commodity Types
         'goldbar' => 'Lingotto d\'Oro',
-        'silverbar' => 'Lingotto d\'Argento',
         'platinumbar' => 'Lingotto di Platino',
+        'silverbar' => 'Lingotto d\'Argento',
     ],
 
 ];

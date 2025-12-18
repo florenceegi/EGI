@@ -738,6 +738,14 @@ class RolesAndPermissionsSeeder extends Seeder {
             'update_wallet',
             'view_wallet',
 
+            // Enterprise specific
+            'manage_corporate_data',
+            'issue_invoices',
+            'bulk_operations',
+            'corporate_analytics',
+            'manage_business_profile',
+
+
             // EPP specific (focus principale)
             'create_epp_projects',
             'manage_epp_projects',
