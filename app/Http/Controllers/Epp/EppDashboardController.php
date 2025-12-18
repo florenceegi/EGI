@@ -257,6 +257,9 @@ class EppDashboardController extends Controller {
                 ->withErrors($e->errors())
                 ->withInput();
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('REAL EPP ERROR: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('TRACE: ' . $e->getTraceAsString());
+            
             return $this->errorManager->handle('EPP_PROJECT_CREATE_FAILED', [
                 'user_id' => Auth::id(),
                 'error_message' => $e->getMessage(),
