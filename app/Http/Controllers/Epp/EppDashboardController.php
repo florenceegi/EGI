@@ -205,8 +205,8 @@ class EppDashboardController extends Controller {
                 'target_date' => 'nullable|date|after:today',
                 'status' => 'required|in:planned,in_progress,completed,cancelled',
                 'evidence_url' => 'nullable|url',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:20480',
+                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:20480',
             ]);
 
             // ULM: Log project creation start
@@ -319,8 +319,8 @@ class EppDashboardController extends Controller {
                 'target_date' => 'nullable|date',
                 'status' => 'required|in:planned,in_progress,completed,cancelled',
                 'evidence_url' => 'nullable|url',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:20480',
+                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:20480',
             ]);
 
             // ULM: Log update start
