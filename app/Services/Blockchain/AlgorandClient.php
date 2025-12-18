@@ -35,7 +35,7 @@ class AlgorandClient {
         // Configuration - use correct config key path
         $this->microserviceUrl = config('algorand.algokit_microservice.url', 'http://localhost:3001');
         $this->timeout = config('algorand.algokit_microservice.timeout', 30);
-        $this->apiToken = config('algorand.algokit_microservice.api_token', '');
+        $this->apiToken = (string) config('algorand.algokit_microservice.api_token', '');
     }
 
     /**
