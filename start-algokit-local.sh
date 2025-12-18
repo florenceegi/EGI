@@ -3,7 +3,7 @@
 ################################################################################
 # START ALGOKIT MICROSERVICE ON LOCAL (DEVELOPMENT)
 ################################################################################
-# Purpose: Avvia il microservice Algorand sulla porta 3000 locale
+# Purpose: Avvia il microservice Algorand sulla porta 3001 locale
 # Usage: bash start-algokit-local.sh
 ################################################################################
 
@@ -14,11 +14,11 @@ echo "🚀 Starting AlgoKit Microservice (LOCAL)..."
 # Go to microservice directory
 cd /home/fabio/EGI/algokit-microservice
 
-# Kill any existing process on port 3000
-echo "🔍 Checking for existing process on port 3000..."
-if lsof -Pi :3000 -sTCP:LISTEN -t >/dev/null 2>&1; then
-    echo "⚠️  Port 3000 occupied, killing existing process..."
-    lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+# Kill any existing process on port 3001
+echo "🔍 Checking for existing process on port 3001..."
+if lsof -Pi :3001 -sTCP:LISTEN -t >/dev/null 2>&1; then
+    echo "⚠️  Port 3001 occupied, killing existing process..."
+    lsof -ti:3001 | xargs kill -9 2>/dev/null || true
     sleep 1
 fi
 
@@ -33,12 +33,14 @@ if [ ! -f ".env" ]; then
     echo "⚠️  .env not found, creating from .env.example..."
     if [ -f ".env.example" ]; then
         cp .env.example .env
+        # Ensure PORT is 3001 in .env if copied
+        sed -i 's/PORT=3000/PORT=3001/g' .env
     else
         echo "❌ ERROR: No .env.example found!"
         echo "   Creating minimal .env..."
         cat > .env << EOF
 # Algorand Microservice Configuration
-PORT=3000
+PORT=3001
 ALGORAND_NETWORK=sandbox
 ALGOD_SERVER=http://localhost:4001
 ALGOD_TOKEN=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -47,10 +49,16 @@ TREASURY_MNEMONIC=
 EOF
         echo "✅ Created minimal .env - CONFIGURE IT BEFORE USE!"
     fi
+else
+    # Verify/Update PORT in existing .env
+    if grep -q "PORT=3000" .env; then
+         echo "⚠️  Updating PORT to 3001 in .env..."
+         sed -i 's/PORT=3000/PORT=3001/g' .env
+    fi
 fi
 
 # Start in background
-echo "▶️  Starting server on port 3000..."
+echo "▶️  Starting server on port 3001..."
 nohup node server.js > /tmp/algokit-local.log 2>&1 &
 PID=$!
 
@@ -60,14 +68,14 @@ echo "✅ Started with PID: $PID"
 sleep 3
 
 echo "🔍 Testing health endpoint..."
-if curl -s http://localhost:3000/health > /dev/null 2>&1; then
+if curl -s http://localhost:3001/health > /dev/null 2>&1; then
     echo "✅ Health check OK!"
     echo ""
     echo "📋 STATUS:"
     echo "   PID: $PID"
-    echo "   URL: http://localhost:3000"
+    echo "   URL: http://localhost:3001"
     echo "   Log: tail -f /tmp/algokit-local.log"
-    echo "   Test: curl http://localhost:3000/health"
+    echo "   Test: curl http://localhost:3001/health"
     echo ""
     echo "🛑 To stop: pkill -f 'node server.js'"
 else
