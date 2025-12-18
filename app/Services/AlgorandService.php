@@ -215,6 +215,9 @@ class AlgorandService
      */
     public function getNetworkStatus(): array
     {
+        // Try to ensure microservice is running (trigger autostart if needed)
+        $this->ensureMicroserviceRunning();
+
         try {
             $response = $this->callMicroservice('GET', '/health');
 

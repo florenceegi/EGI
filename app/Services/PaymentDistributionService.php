@@ -215,8 +215,14 @@ class PaymentDistributionService {
             // Determine user type from wallet platform_role and user data
             $userType = $this->determineUserType($wallet);
 
-            // 🛡️ User ID Resolution with Fallback
-            $userId = $this->resolveUserId($wallet);
+            // 🛡️ User ID Resolution
+            // FIX: For EPP Wallets, override with Project Owner ID
+            if ($this->isEppWallet($wallet)) {
+                $eppProject = $reservation->egi->collection->eppProject;
+                $userId = $eppProject ? $eppProject->epp_user_id : $this->resolveUserId($wallet);
+            } else {
+                $userId = $this->resolveUserId($wallet);
+            }
 
             $distributions[] = [
                 'egi_id' => $reservation->egi_id, // Direct EGI reference
@@ -261,6 +267,14 @@ class PaymentDistributionService {
 
         if ($wallet->platform_role === 'Creator') {
             return UserTypeEnum::CREATOR;
+        }
+
+        if ($wallet->platform_role === 'Natan') {
+            return UserTypeEnum::NATAN;
+        }
+
+        if ($wallet->platform_role === 'Frangette') {
+            return UserTypeEnum::FRANGETTE;
         }
 
         // Priority 2: User type from user model
@@ -309,7 +323,58 @@ class PaymentDistributionService {
             $createdDistributions->push($distribution);
         }
 
+
         return $createdDistributions;
+    }
+
+    /**
+     * Create OR Update distribution records in database
+     * Used for Mint flow where Stripe might have already created pending records
+     *
+     * @param array $distributions
+     * @param string|null $paymentReference (PaymentIntent ID)
+     * @return \Illuminate\Database\Eloquent\Collection<PaymentDistribution>
+     */
+    private function createOrUpdateDistributionRecords(array $distributions, ?string $paymentReference) {
+        $processedDistributions = collect();
+
+        foreach ($distributions as $distributionData) {
+            $existingRecord = null;
+            
+            // Improved Matching Logic:
+            // 1. Match by EGI ID (Strongest link for Mint deduplication)
+            // 2. Fallback to Payment Intent ID (for legacy or non-EGI payments)
+            $query = PaymentDistribution::where('wallet_id', $distributionData['wallet_id'])
+                ->where('distribution_status', 'pending');
+
+            if (!empty($distributionData['egi_id'])) {
+                $query->where('egi_id', $distributionData['egi_id']);
+            } elseif ($paymentReference) {
+                $query->where('payment_intent_id', $paymentReference);
+            } else {
+                // If neither EGI ID nor Payment Reference is available, cannot match safely
+                // This forces creation of a new record (fallback behavior)
+                $query->whereRaw('1 = 0');
+            }
+
+            $existingRecord = $query->first();
+
+            if ($existingRecord) {
+                // Update existing record
+                $existingRecord->update(array_merge($distributionData, [
+                    // Ensure status is updated to confirmed (already in distributionData, but explicit for clarity)
+                    'distribution_status' => $distributionData['distribution_status'],
+                    // Keep original created_at
+                ]));
+                $processedDistributions->push($existingRecord);
+            } else {
+                // Create new record
+                $distribution = PaymentDistribution::create($distributionData);
+                $processedDistributions->push($distribution);
+            }
+        }
+
+        return $processedDistributions;
     }
 
     /**
@@ -484,8 +549,9 @@ class PaymentDistributionService {
                 // Calculate distributions for all wallets (mint-based)
                 $distributionsData = $this->calculateMintDistributions($egiBlockchain, $paymentData, $wallets);
 
-                // Create distribution records in database
-                $distributions = $this->createDistributionRecords($distributionsData);
+                // Create OR Update distribution records in database
+                // FIX: Check for existing pending records (from StripePaymentSplitService) to avoid duplicates
+                $distributions = $this->createOrUpdateDistributionRecords($distributionsData, $egiBlockchain->payment_reference);
 
                 // Log GDPR-compliant user activities (mint-based)
                 $this->logMintUserActivities($egiBlockchain, $distributions);
@@ -680,7 +746,24 @@ class PaymentDistributionService {
             $userType = $this->determineUserType($wallet);
 
             // 🛡️ User ID Resolution with Fallback
-            $userId = $this->resolveUserId($wallet);
+            // FIX: For EPP Wallets, we MUST use the epp_user_id from the linked EppProject
+            // The wallet.user_id might point to the project ID itself (historical bug), so we override it here.
+            if ($this->isEppWallet($wallet)) {
+                $eppProject = $egiBlockchain->egi->collection->eppProject;
+                $userId = $eppProject ? $eppProject->epp_user_id : $this->resolveUserId($wallet);
+                
+                // Log if we are using the override
+                if ($this->logger && $eppProject) {
+                     $this->logger->debug('[PaymentDistribution] Using EPP Project User ID override', [
+                        'wallet_id' => $wallet->id,
+                        'original_wallet_user_id' => $wallet->user_id,
+                        'project_id' => $eppProject->id,
+                        'override_user_id' => $userId
+                    ]);
+                }
+            } else {
+                $userId = $this->resolveUserId($wallet);
+            }
 
             $distributions[] = [
                 'source_type' => 'mint', // NEW: Phase 2 source type

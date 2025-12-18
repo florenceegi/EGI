@@ -1553,7 +1553,7 @@ class Egi extends Model {
      * @param string $typeSlug
      * @return EgiTrait|null
      */
-    protected function getTraitByTypeSlug(string $typeSlug): ?EgiTrait {
+    public function getTraitByTypeSlug(string $typeSlug): ?EgiTrait {
         return $this->traits->first(function ($trait) use ($typeSlug) {
             return $trait->traitType && $trait->traitType->slug === $typeSlug;
         });

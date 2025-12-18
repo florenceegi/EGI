@@ -6,6 +6,8 @@ use App\Enums\Gdpr\GdprActivityCategory;
 use App\Models\Collection;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Enums\Wallet\WalletRoleEnum; // Added for Enum refactoring
+use App\Enums\PaymentDistribution\UserTypeEnum; // Added for Enum refactoring
 use App\Services\Gdpr\AuditLogService;
 use App\Services\Gdpr\ConsentService;
 use Illuminate\Support\Collection as LaravelCollection;
@@ -384,7 +386,7 @@ class StripePaymentSplitService {
             $amountEur = 0;
 
             // Se il wallet è di tipo EPP, sovrascrivi la percentuale con quella calcolata dynamicamente
-            if ($wallet->platform_role === 'epp') {
+            if ($wallet->platform_role === WalletRoleEnum::EPP->value) {
                 $percentage = $effectiveEppPercentage;
                 if ($percentage <= 0) {
                      continue;
@@ -403,11 +405,20 @@ class StripePaymentSplitService {
                 // Normalise role for comparison
                 $role = strtolower($wallet->platform_role ?? '');
                 
+                
                 // Platform Roles: Natan, Collector, App, Admin
-                $isPlatform = in_array($role, ['natan', 'collector', 'epp', 'admin']);
+                $isPlatform = in_array($role, [
+                    strtolower(WalletRoleEnum::NATAN->value), 
+                    'collector', 
+                    strtolower(WalletRoleEnum::EPP->value), 
+                    'admin'
+                ]);
                 
                 // Company Roles: Company, Creator (explicit ownership)
-                $isCompany = in_array($role, ['company', 'creator']) || $wallet->user_id === $collection->collection_owner_id;
+                $isCompany = in_array($role, [
+                    strtolower(WalletRoleEnum::COMPANY->value), 
+                    strtolower(WalletRoleEnum::CREATOR->value)
+                ]) || $wallet->user_id === $collection->collection_owner_id;
 
                 if ($isPlatform) { 
                     // Platform takes configured percentage (default 10%) of MARGIN only
@@ -511,7 +522,7 @@ class StripePaymentSplitService {
             // PLATFORM WALLET EXEMPTION:
             // 'Natan' is the Platform itself. Funds allocated to Natan should REMAIN in the Platform Account.
             // We do NOT create a Transfer for Natan, so we do NOT need a Stripe Connect ID.
-            if (($distribution['platform_role'] ?? '') === 'Natan') {
+            if (($distribution['platform_role'] ?? '') === WalletRoleEnum::NATAN->value) {
                  $this->logger->info('Skipping Stripe validation for Platform Wallet (Natan) - funds strictly retained', [
                     'wallet_id' => $distribution['wallet_id']
                 ]);
@@ -626,7 +637,7 @@ class StripePaymentSplitService {
             foreach ($distributions as $distribution) {
                 // PLATFORM WALLET EXEMPTION:
                 // Skip transfer for Natan (Platform receives funds by NOT transferring them)
-                if (($distribution['platform_role'] ?? '') === 'Natan') {
+                if (($distribution['platform_role'] ?? '') === WalletRoleEnum::NATAN->value) {
                     $this->logger->info('Skipping transfer creation for Natan (Platform Fee retained)', [
                         'wallet_id' => $distribution['wallet_id'],
                         'amount_eur' => $distribution['amount_eur']
@@ -1098,7 +1109,7 @@ class StripePaymentSplitService {
         foreach ($distributions as $distribution) {
             $amountCents = $distribution['amount_cents'];
             $destinationAccount = $distribution['stripe_account_id'];
-            $isNatan = $distribution['platform_role'] === 'Natan';
+            $isNatan = $distribution['platform_role'] === WalletRoleEnum::NATAN->value;
 
             // CORRECT COMPLIANCE: NO Application Fee applied by default logic.
             // Stripe Fees are handled by Stripe based on platform contract.
@@ -1113,7 +1124,7 @@ class StripePaymentSplitService {
                 'description' => sprintf(
                     'EGI Mint #%s - %s share (%s%%)',
                     $request->egiId ?? 'unknown',
-                    $distribution['platform_role'] ?? 'Creator',
+                    $distribution['platform_role'] ?? WalletRoleEnum::CREATOR->value,
                     $distribution['percentage']
                 ),
                 'metadata' => array_merge($metadata, [
@@ -1140,8 +1151,9 @@ class StripePaymentSplitService {
                 ]);
             }
 
-            // Aggiungi platform fee SOLO per pagamento a Natan AND NOT Self-Transfer
-            // (You can't take a fee from yourself effectively in this flow, or semantics differ)
+            // Stripe Constraint: Application Fees cannot be applied when the destination account
+            // is the Platform itself (Self-Transfer). This check prevents the "Source matches Destination" API error.
+            // Fees are only valid when transferring funds to third-party Connected Accounts (e.g. Creators/Merchants).
             if ($applicationFeeCents > 0 && !$isPlatformSelfTransfer) {
                 $intentParams['application_fee_amount'] = $applicationFeeCents;
                 $intentParams['metadata']['application_fee_cents'] = $applicationFeeCents;
@@ -1212,7 +1224,7 @@ class StripePaymentSplitService {
                 'transfer_status' => $intent->status,
                 'buyer_user_id' => $metadata['buyer_user_id'] ?? null,
                 'payment_method' => 'stripe_direct',
-                'status' => 'pending',
+                'distribution_status' => 'pending', // Correct column name
                 'processed_at' => now(),
                 'exchange_rate' => 1.0, // EUR → EUR (no conversion for split payments)
             ]);
@@ -1240,13 +1252,14 @@ class StripePaymentSplitService {
      */
     protected function mapPlatformRoleToUserType(?string $platformRole): \App\Enums\PaymentDistribution\UserTypeEnum {
         return match ($platformRole) {
-            'Natan' => \App\Enums\PaymentDistribution\UserTypeEnum::NATAN,
-            'Frangette' => \App\Enums\PaymentDistribution\UserTypeEnum::FRANGETTE,
-            'Creator' => \App\Enums\PaymentDistribution\UserTypeEnum::CREATOR,
-            'EPP' => \App\Enums\PaymentDistribution\UserTypeEnum::EPP,
-            'Commissioner' => \App\Enums\PaymentDistribution\UserTypeEnum::COMMISSIONER,
-            'Collector' => \App\Enums\PaymentDistribution\UserTypeEnum::COLLECTOR,
-            default => \App\Enums\PaymentDistribution\UserTypeEnum::COLLECTOR, // Safe fallback
+            WalletRoleEnum::NATAN->value => UserTypeEnum::NATAN,
+            WalletRoleEnum::FRANGETTE->value => UserTypeEnum::FRANGETTE,
+            WalletRoleEnum::CREATOR->value => UserTypeEnum::CREATOR,
+            WalletRoleEnum::EPP->value => UserTypeEnum::EPP,
+            'Commissioner' => UserTypeEnum::COMMISSIONER,
+            'Collector' => UserTypeEnum::COLLECTOR, // Not in WalletRoleEnum yet
+            WalletRoleEnum::COMPANY->value => UserTypeEnum::COMPANY,
+            default => UserTypeEnum::COLLECTOR, // Safe fallback
         };
     }
 

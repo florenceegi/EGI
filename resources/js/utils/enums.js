@@ -3,28 +3,52 @@ let enumPromise = null;
 export function loadEnums() {
     if (!enumPromise) {
         enumPromise = new Promise(async (resolve, reject) => {
-            try {
-                console.log("⏳ Caricamento ENUM...");
+            let attempts = 0;
+            const maxAttempts = 3;
+            
+            const tryFetch = async () => {
+                attempts++;
+                try {
+                    console.log(`⏳ Caricamento ENUM (Tentativo ${attempts}/${maxAttempts})...`);
 
-                const response = await fetch('/js/enums', {
-                    headers: {
-                      'Accept': 'application/json',
-                      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                    if (!csrfToken) {
+                         console.warn("⚠️ CSRF Token missing in meta tag, skipping request header injection.");
                     }
-                  })
 
-                console.log('ENUM response', response);
-                if (!response.ok) throw new Error(`Errore nel caricamento ENUM: ${response.status}`);
+                    const response = await fetch('/js/enums', {
+                        headers: {
+                          'Accept': 'application/json',
+                          ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                        }
+                    });
 
-                const data = await response.json();
-                window.enums = data;
-                console.log("✅ ENUM caricati:", window.enums);
-                resolve(data);
-            } catch (error) {
-                console.error("❌ Errore nel caricamento degli ENUM:", error);
-                window.enums = {}; // Preveniamo crash con un oggetto vuoto
-                reject(error);
-            }
+                    console.log('ENUM response status:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP Error: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    window.enums = data;
+                    console.log("✅ ENUM caricati:", window.enums);
+                    resolve(data);
+                } catch (error) {
+                    console.error(`❌ Errore caricamento ENUM (Tentativo ${attempts}):`, error);
+                    
+                    if (attempts < maxAttempts) {
+                        const delay = 1000 * attempts; // Exponential backoff-ish
+                        console.log(`🔄 Riprovo tra ${delay}ms...`);
+                        setTimeout(tryFetch, delay);
+                    } else {
+                        console.error("💀 Falliti tutti i tentativi di caricamento ENUM.");
+                        window.enums = {}; // Fallback sicuro
+                        reject(error);
+                    }
+                }
+            };
+            
+            tryFetch();
         });
     }
     return enumPromise;

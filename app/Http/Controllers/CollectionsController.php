@@ -515,7 +515,6 @@ class CollectionsController extends Controller {
                 // This ensures PaymentDistributionService uses the correct percentage
                 $this->updateEppWalletPercentage($collection, (float) ($validated['epp_donation_percentage'] ?? 0));
 
-                // If no EPP selected, return success with no EPP data
                 if (!$collection->epp_project_id) {
                     return response()->json([
                         'success' => true,
@@ -527,6 +526,9 @@ class CollectionsController extends Controller {
                         ]
                     ]);
                 }
+
+                // Sync EPP Wallet User details
+                $this->updateEppWalletUser($collection);
             } else {
                 // Other users: EPP is required
                 $validated = $request->validate([
@@ -538,6 +540,9 @@ class CollectionsController extends Controller {
                 $collection->is_epp_voluntary = false;
                 $collection->epp_donation_percentage = null; // Standard percentage from config
                 $collection->save();
+
+                // Sync EPP Wallet User details
+                $this->updateEppWalletUser($collection);
             }
 
             // Load the EppProject relationship with EPP User

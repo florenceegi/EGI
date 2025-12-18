@@ -145,7 +145,8 @@
                                 <dt class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-600">
                                     {{ __('mint.post_mint.minted_at') }}</dt>
                                 <dd class="text-sm font-semibold text-gray-900">
-                                    {{ $blockchain->minted_at->format('d/m/Y H:i:s') }}</dd>
+                                    {{ $blockchain->minted_at ? $blockchain->minted_at->format('d/m/Y H:i:s') : 'N/A' }}
+                                </dd>
                             </div>
                         </div>
 
@@ -227,11 +228,11 @@
                         {{-- FIX TEMPORANEO: Calcola isOwner nella view perché il controller passa FALSE --}}
                         @php
                             $debugBuyerId = $blockchain->buyer_user_id ?? $egi->user_id;
-                            $debugIsOwner = Auth::check() && (int)Auth::id() === (int)$debugBuyerId;
+                            $debugIsOwner = Auth::check() && (int) Auth::id() === (int) $debugBuyerId;
                             // Usa il valore calcolato correttamente
                             $isOwner = $debugIsOwner;
                         @endphp
-                        
+
                         {{-- DEBUG INFO (remove after testing) --}}
 
 
@@ -364,11 +365,15 @@
                             {{-- Certificato NON ancora creato - Mostra messaggio e bottone per generarlo --}}
                             <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-6">
                                 <div class="mb-4 flex items-start space-x-3">
-                                    <svg class="h-6 w-6 flex-shrink-0 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    <svg class="h-6 w-6 flex-shrink-0 text-amber-600" fill="currentColor"
+                                        viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                            clip-rule="evenodd" />
                                     </svg>
                                     <div>
-                                        <h4 class="font-semibold text-amber-900">{{ __('mint.post_mint.certificate_not_created_title') }}</h4>
+                                        <h4 class="font-semibold text-amber-900">
+                                            {{ __('mint.post_mint.certificate_not_created_title') }}</h4>
                                         <p class="mt-1 text-sm text-amber-700">
                                             {{ __('mint.post_mint.certificate_not_created_message') }}
                                         </p>
@@ -377,18 +382,23 @@
 
                                 @if ($isOwner)
                                     {{-- Bottone per generare il certificato - STESSO SISTEMA del regenerate --}}
-                                    <form id="generate-cert-form" action="{{ route('mint.regenerate-certificate', $blockchain->id) }}" method="POST" class="w-full">
+                                    <form id="generate-cert-form"
+                                        action="{{ route('mint.regenerate-certificate', $blockchain->id) }}"
+                                        method="POST" class="w-full">
                                         @csrf
                                         <button type="button" id="generate-cert-btn"
                                             class="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-amber-700 hover:to-orange-700 hover:shadow-xl">
-                                            <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                            <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4" />
                                             </svg>
-                                            <span id="generate-btn-text">{{ __('mint.post_mint.generate_certificate') }}</span>
+                                            <span
+                                                id="generate-btn-text">{{ __('mint.post_mint.generate_certificate') }}</span>
                                         </button>
                                     </form>
                                 @else
-                                    <p class="text-xs text-amber-600 mt-2">
+                                    <p class="mt-2 text-xs text-amber-600">
                                         {{ __('mint.post_mint.certificate_owner_only') }}
                                     </p>
                                 @endif
@@ -582,115 +592,117 @@
                 function setupCertificateHandler(btnId, formId, textId) {
                     const btn = document.getElementById(btnId);
                     if (!btn) return;
-                    
+
                     btn.addEventListener('click', async function(e) {
                         e.preventDefault();
 
                         const btnText = document.getElementById(textId);
                         const form = document.getElementById(formId);
 
-                    // Disable button during regeneration
-                    btn.disabled = true;
-                    btn.classList.add('opacity-50', 'cursor-not-allowed');
-                    btnText.textContent = 'Rigenerazione in corso...';
+                        // Disable button during regeneration
+                        btn.disabled = true;
+                        btn.classList.add('opacity-50', 'cursor-not-allowed');
+                        btnText.textContent = 'Rigenerazione in corso...';
 
-                    try {
-                        const response = await fetch(form.action, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                            }
-                        });
+                        try {
+                            const response = await fetch(form.action, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                }
+                            });
 
-                        const data = await response.json();
+                            const data = await response.json();
 
-                        if (data.success) {
-                            btnText.textContent = '✅ Completato!';
+                            if (data.success) {
+                                btnText.textContent = '✅ Completato!';
 
-                            // Se è prima generazione (generate-cert-btn), ricarica la pagina
-                            const isFirstGeneration = btnId === 'generate-cert-btn';
-                            
-                            if (isFirstGeneration) {
-                                console.log('🔄 Prima generazione certificato, reload pagina...');
+                                // Se è prima generazione (generate-cert-btn), ricarica la pagina
+                                const isFirstGeneration = btnId === 'generate-cert-btn';
+
+                                if (isFirstGeneration) {
+                                    console.log('🔄 Prima generazione certificato, reload pagina...');
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000);
+                                    return;
+                                }
+
+                                // Se è rigenerazione, aggiorna thumbnail
+                                const thumbnailContainer = document.querySelector(
+                                    '#coaPdfPreview-{{ $certificate->id ?? 'none' }}');
+                                if (thumbnailContainer) {
+                                    const egiId = data.egi_id;
+                                    console.log('🔄 Reloading thumbnail for EGI:', egiId);
+
+                                    // Add loading animation to thumbnail
+                                    thumbnailContainer.classList.add('opacity-50', 'scale-95', 'transition-all',
+                                        'duration-300');
+
+                                    await renderCoaPdfThumb(thumbnailContainer, egiId);
+
+                                    // Remove loading, add success flash
+                                    thumbnailContainer.classList.remove('opacity-50', 'scale-95');
+                                    thumbnailContainer.classList.add('scale-100');
+
+                                    // Green flash effect
+                                    const flash = document.createElement('div');
+                                    flash.className =
+                                        'absolute inset-0 bg-green-500 opacity-30 animate-pulse pointer-events-none z-50';
+                                    thumbnailContainer.style.position = 'relative';
+                                    thumbnailContainer.appendChild(flash);
+
+                                    // Remove flash after 1 second
+                                    setTimeout(() => {
+                                        flash.remove();
+                                    }, 1000);
+
+                                    console.log('✅ PDF thumbnail reloaded with flash effect');
+                                } else {
+                                    console.warn('❌ Thumbnail container not found');
+                                }
+
+                                // Update certificate action links to new regenerated URLs
+                                try {
+                                    // 1) Update Download button onclick to use new pdf_url
+                                    const downloadBtn = document.getElementById('download-cert-btn');
+                                    if (downloadBtn && data.pdf_url) {
+                                        downloadBtn.setAttribute('onclick',
+                                        `window.open('${data.pdf_url}', '_blank');`);
+                                    }
+
+                                    // 2) Update "View Certificate" link href to new public_url
+                                    const viewLink = document.getElementById('view-cert-link');
+                                    if (viewLink && data.public_url) {
+                                        viewLink.setAttribute('href', data.public_url);
+                                    }
+                                } catch (linkErr) {
+                                    console.warn('Link update after regeneration failed', linkErr);
+                                }
+
+                                // Reset button after 2 seconds
                                 setTimeout(() => {
-                                    window.location.reload();
-                                }, 1000);
-                                return;
-                            }
-
-                            // Se è rigenerazione, aggiorna thumbnail
-                            const thumbnailContainer = document.querySelector('#coaPdfPreview-{{ $certificate->id ?? 'none' }}');
-                            if (thumbnailContainer) {
-                                const egiId = data.egi_id;
-                                console.log('🔄 Reloading thumbnail for EGI:', egiId);
-
-                                // Add loading animation to thumbnail
-                                thumbnailContainer.classList.add('opacity-50', 'scale-95', 'transition-all',
-                                    'duration-300');
-
-                                await renderCoaPdfThumb(thumbnailContainer, egiId);
-
-                                // Remove loading, add success flash
-                                thumbnailContainer.classList.remove('opacity-50', 'scale-95');
-                                thumbnailContainer.classList.add('scale-100');
-
-                                // Green flash effect
-                                const flash = document.createElement('div');
-                                flash.className =
-                                    'absolute inset-0 bg-green-500 opacity-30 animate-pulse pointer-events-none z-50';
-                                thumbnailContainer.style.position = 'relative';
-                                thumbnailContainer.appendChild(flash);
-
-                                // Remove flash after 1 second
-                                setTimeout(() => {
-                                    flash.remove();
-                                }, 1000);
-
-                                console.log('✅ PDF thumbnail reloaded with flash effect');
+                                    btnText.textContent = '{{ __('mint.post_mint.regenerate_certificate') }}';
+                                    btn.disabled = false;
+                                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                                }, 2000);
                             } else {
-                                console.warn('❌ Thumbnail container not found');
+                                throw new Error(data.message || 'Generation/Regeneration failed');
                             }
-
-                            // Update certificate action links to new regenerated URLs
-                            try {
-                                // 1) Update Download button onclick to use new pdf_url
-                                const downloadBtn = document.getElementById('download-cert-btn');
-                                if (downloadBtn && data.pdf_url) {
-                                    downloadBtn.setAttribute('onclick', `window.open('${data.pdf_url}', '_blank');`);
-                                }
-
-                                // 2) Update "View Certificate" link href to new public_url
-                                const viewLink = document.getElementById('view-cert-link');
-                                if (viewLink && data.public_url) {
-                                    viewLink.setAttribute('href', data.public_url);
-                                }
-                            } catch (linkErr) {
-                                console.warn('Link update after regeneration failed', linkErr);
-                            }
-
-                            // Reset button after 2 seconds
+                        } catch (error) {
+                            console.error('Certificate generation/regeneration error:', error);
+                            btnText.textContent = '❌ Errore';
                             setTimeout(() => {
-                                btnText.textContent = '{{ __('mint.post_mint.regenerate_certificate') }}';
+                                btnText.textContent = 'Riprova';
                                 btn.disabled = false;
                                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
                             }, 2000);
-                        } else {
-                            throw new Error(data.message || 'Generation/Regeneration failed');
                         }
-                    } catch (error) {
-                        console.error('Certificate generation/regeneration error:', error);
-                        btnText.textContent = '❌ Errore';
-                        setTimeout(() => {
-                            btnText.textContent = 'Riprova';
-                            btn.disabled = false;
-                            btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                        }, 2000);
-                    }
                     });
                 }
-                
+
                 // Setup handlers per entrambi i bottoni (generate e regenerate)
                 setupCertificateHandler('regenerate-cert-btn', 'regenerate-cert-form', 'regenerate-btn-text');
                 setupCertificateHandler('generate-cert-btn', 'generate-cert-form', 'generate-btn-text');

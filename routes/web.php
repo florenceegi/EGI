@@ -1269,13 +1269,14 @@ Route::get('/translations.json', function () {
 
 // Enums constants endpoint
 Route::get('/js/enums', function (Request $request) {
-    // Log::channel('florenceegi')->info('Richiesta costanti enum', [
-    //     'notificationStatus' => collect(NotificationStatus::cases())->mapWithKeys(fn($enum) => [$enum->name => $enum->value])
-    // ]);
+    // Cache for 1 hour (3600 seconds) as Enums only change on deployment
+    $enums = Cache::remember('js_enums_json', 3600, function () {
+        return [
+            'NotificationStatus' => collect(NotificationStatus::cases())->mapWithKeys(fn($enum) => [$enum->name => $enum->value])
+        ];
+    });
 
-    return response()->json([
-        'NotificationStatus' => collect(NotificationStatus::cases())->mapWithKeys(fn($enum) => [$enum->name => $enum->value])
-    ]);
+    return response()->json($enums);
 });
 
 // External API proxy

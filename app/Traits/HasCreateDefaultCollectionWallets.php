@@ -54,6 +54,20 @@ trait HasCreateDefaultCollectionWallets
                     if ($roleEnum === \App\Enums\Wallet\WalletRoleEnum::CREATOR) {
                         $address = $wallet_creator;
                         $userId = $creator_id;
+                    } elseif ($roleEnum === \App\Enums\Wallet\WalletRoleEnum::EPP && $collection->epp_project_id) {
+                        // Intelligent EPP User fetching
+                        // Ensure relationship is loaded
+                        $collection->loadMissing('eppProject.eppUser');
+                        
+                        if ($collection->eppProject && $collection->eppProject->eppUser) {
+                            $eppUser = $collection->eppProject->eppUser;
+                            $address = $eppUser->wallet ?? '';
+                            $userId = $eppUser->id;
+                        } else {
+                            // Fallback to default if project/user not found
+                            $address = $roleEnum->getWalletAddress();
+                            $userId = $roleEnum->getUserId();
+                        }
                     } else {
                         $address = $roleEnum->getWalletAddress();
                         $userId = $roleEnum->getUserId();

@@ -55,6 +55,7 @@ class PaymentDistribution extends Model {
         'egi_blockchain_id',     // Phase 2: Link to blockchain record (mint tracking)
         'blockchain_tx_id',      // Phase 2: Algorand transaction ID (mint tracking)
         'collection_id',
+        'payment_intent_id',     // NEW: Stripe Payment Intent ID for de-duplication
         'user_id',
         'seller_user_id',        // Rebind: User selling the EGI (NULL for primary mint)
         'buyer_user_id',         // Rebind: User purchasing the EGI
