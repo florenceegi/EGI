@@ -121,6 +121,18 @@
                                 <span
                                     class="text-lg font-bold text-amber-900">€{{ number_format($goldBarData['final_value'] ?? 0, 2) }}</span>
                             </div>
+
+                            {{-- FEE BREAKDOWN (User Request) --}}
+                            <div class="mt-2 border-t border-dashed border-amber-300 pt-2 text-xs">
+                                <div class="flex justify-between text-amber-800/80">
+                                    <span>Platform (10% Margin):</span>
+                                    <span>€{{ number_format($goldBarData['platform_fee'] ?? 0, 2) }}</span>
+                                </div>
+                                <div class="flex justify-between text-amber-800/80">
+                                    <span>Company (Cost + 90%):</span>
+                                    <span>€{{ number_format($goldBarData['company_share'] ?? 0, 2) }}</span>
+                                </div>
+                            </div>
                         </div>
 
                         {{-- 10-minute timer --}}

@@ -259,42 +259,65 @@ class MintController extends Controller {
                 'paypal_valid' => $paypalValidation['valid_wallets'],
             ]);
 
-            // Gold Bar specific data
-            $isGoldBar = $egi->isGoldBar();
-            $goldBarData = null;
-            $goldPriceRefreshedAt = null;
-            $goldPriceValidUntil = null;
+            // COMMODITY STRATEGY: Detect & Execute
+            $commodityData = null;
+            $commodityRefreshedAt = null;
+            $commodityValidUntil = null;
+            $isCommodity = false;
 
-            if ($isGoldBar) {
-                // Get fresh gold price for Gold Bar EGIs
-                $goldPriceService = app(\App\Services\GoldPriceService::class);
-                $refreshResult = $goldPriceService->forceRefreshFree('EUR', $egi);
+            // Strategy Resolution Logic
+            // First check DB column, then traits.
+            $commodityType = $egi->commodity_type ?? ($egi->getTraitByTypeSlug('commodity-type')?->value);
 
-                if ($refreshResult['success']) {
-                    $goldBarValue = $goldPriceService->calculateFromEgi($egi, 'EUR');
-                    if ($goldBarValue) {
-                        $goldBarData = $goldBarValue;
-                        $goldPriceRefreshedAt = now()->toIso8601String();
-                        $goldPriceValidUntil = now()->addMinutes(10)->toIso8601String();
-                        // Update payment amount with fresh gold price
-                        $paymentAmountEur = (float) $goldBarValue['final_value'];
+            if ($commodityType) {
+                try {
+                    // Make Strategy
+                    $commodityStrategy = \App\Egi\Commodity\CommodityFactory::make($commodityType);
+                    $isCommodity = true;
 
-                        // Store refresh timestamp in CACHE for validation during mint
-                        // FIX: Use Cache instead of Session to match processMint logic
-                        $cacheKey = 'gold_bar_mint_' . Auth::id() . '_' . $egi->id;
-                        Cache::put($cacheKey, [
-                            'refreshed_at' => now()->timestamp,
-                            'valid_until' => now()->addMinutes(10)->timestamp,
-                            'price' => $paymentAmountEur,
-                            'gold_data' => $goldBarValue,
-                        ], 600);
+                    // Refresh Price (Generic)
+                    // forceRefresh in Contract returns array with 'success'
+                    $refreshResult = $commodityStrategy->forceRefresh('EUR', $egi);
 
-                        $this->logger->info('Gold Bar price refreshed for mint form', [
-                            'egi_id' => $egi->id,
-                            'final_value' => $paymentAmountEur,
-                            'gold_price_per_gram' => $goldBarValue['gold_price_per_gram'],
-                        ]);
+                    if ($refreshResult['success']) {
+                        // Calculate Value (Generic)
+                        $commodityValue = $commodityStrategy->calculateValue($egi, 'EUR');
+
+                        if ($commodityValue) {
+                            $commodityData = $commodityValue;
+                            $commodityRefreshedAt = now()->toIso8601String();
+                            $commodityValidUntil = now()->addMinutes(10)->toIso8601String();
+                            
+                            // Update payment amount
+                            $paymentAmountEur = (float) ($commodityValue['final_value'] ?? $commodityValue['price'] ?? 0);
+
+                            // Cache logic (Generic Key)
+                            // We stick to the existing key pattern for backward compat or genericize it
+                            // Key: commodity_mint_{userId}_{egiId}
+                            $cacheKey = 'commodity_mint_' . Auth::id() . '_' . $egi->id;
+                            
+                            Cache::put($cacheKey, [
+                                'refreshed_at' => now()->timestamp,
+                                'valid_until' => now()->addMinutes(10)->timestamp,
+                                'price' => $paymentAmountEur,
+                                'data' => $commodityData,
+                                'type' => $commodityType
+                            ], 600);
+
+                            $this->logger->info('Commodity price refreshed for mint form', [
+                                'egi_id' => $egi->id,
+                                'type' => $commodityType,
+                                'final_value' => $paymentAmountEur,
+                            ]);
+                        }
                     }
+                } catch (\Exception $e) {
+                    $this->logger->warning('Commodity Strategy Failed in Mint Form', [
+                        'egi_id' => $egi->id,
+                        'type' => $commodityType,
+                        'error' => $e->getMessage()
+                    ]);
+                    // Fallback or ignore - standard EGI flow continues if strict check not enforced here
                 }
             }
 
@@ -310,10 +333,10 @@ class MintController extends Controller {
                 'stripeMerchantError',
                 'paypalAvailable',
                 'paypalError',
-                'isGoldBar',
-                'goldBarData',
-                'goldPriceRefreshedAt',
-                'goldPriceValidUntil'
+                'isCommodity',
+                'commodityData',
+                'commodityRefreshedAt',
+                'commodityValidUntil'
             ));
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_CHECKOUT_ERROR', [
@@ -564,44 +587,71 @@ class MintController extends Controller {
                 ]);
             }
 
-            // Gold Bar specific: Check 10-minute price validity timeout
-            $goldBarMintData = null;
-            if ($egi->isGoldBar()) {
-                // STAGING FIX: Use Cache instead of Session
-                // Use ORIGINAL ID for lookup because that's what was used in the form/refresh
-                $cacheKey = 'gold_bar_mint_' . Auth::id() . '_' . $originalEgiId;
-                $goldBarMintData = Cache::get($cacheKey);
+            // COMMODITY STRATEGY: Validate Price Validity (Generic)
+            $commodityMintData = null;
+            $commodityType = $egi->commodity_type ?? ($egi->getTraitByTypeSlug('commodity-type')?->value);
 
-                if (!$goldBarMintData) {
-                    $this->logger->error('Gold Bar mint attempted without price CACHE data', [
+            if ($commodityType) {
+                 // Try generic key first
+                 $cacheKey = 'commodity_mint_' . Auth::id() . '_' . $originalEgiId;
+                 $commodityMintData = Cache::get($cacheKey);
+
+                 // Backward compatibility / Fallback for migration period (or if view used old key logic, though we updated it)
+                 if (!$commodityMintData && $commodityType === 'goldbar') {
+                     $cacheKeyOld = 'gold_bar_mint_' . Auth::id() . '_' . $originalEgiId;
+                     $commodityMintData = Cache::get($cacheKeyOld);
+                 }
+
+                 if (!$commodityMintData) {
+                    $this->logger->warning('Commodity mint attempted without price CACHE - attempting HOT REFRESH', [
                         'user_id' => Auth::id(),
                         'egi_id' => $egi->id,
-                        'original_egi_id' => $originalEgiId, // Log extra context
-                        'cache_key' => $cacheKey
+                        'type' => $commodityType
                     ]);
-                    return redirect()->back()->withErrors([
+
+                    try {
+                        $strategy = \App\Egi\Commodity\CommodityFactory::make($commodityType);
+                        $refreshResult = $strategy->calculateValue($egi, 'EUR');
+
+                        if ($refreshResult) {
+                             $price = (float) ($refreshResult['final_value'] ?? $refreshResult['price'] ?? 0);
+                             $commodityMintData = [
+                                 'refreshed_at' => now()->timestamp,
+                                 'valid_until' => now()->addMinutes(10)->timestamp,
+                                 'price' => $price,
+                                 'data' => $refreshResult,
+                                 'type' => $commodityType
+                             ];
+                             // Proceed with fresh data
+                             $this->logger->info('Commodity HOT REFRESH successful', ['price' => $price]);
+                        } else {
+                             throw new \Exception("Strategy calculation returned null");
+                        }
+                    } catch (\Exception $e) {
+                         $this->logger->error('Commodity HOT REFRESH failed - aborting mint', [
+                             'egi_id' => $egi->id,
+                             'error' => $e->getMessage()
+                        ]);
+                         return redirect()->back()->withErrors([
+                            'error' => __('gold_bar.mint_price_expired'), // We can genericize key later
+                            'gold_bar_price_expired' => true,
+                        ]);
+                    }
+                 }
+
+                 // Check validity
+                 if (now()->timestamp > $commodityMintData['valid_until']) {
+                     $this->logger->warning('Commodity mint price expired', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id
+                     ]);
+                     if (isset($cacheKey)) Cache::forget($cacheKey);
+                     
+                     return redirect()->back()->withErrors([
                         'error' => __('gold_bar.mint_price_expired'),
                         'gold_bar_price_expired' => true,
                     ]);
-                }
-
-                // Check if price is still valid (10-minute timeout)
-                if (now()->timestamp > $goldBarMintData['valid_until']) {
-                    $this->logger->warning('Gold Bar mint price expired', [
-                        'user_id' => Auth::id(),
-                        'egi_id' => $egi->id,
-                        'valid_until' => $goldBarMintData['valid_until'],
-                        'now' => now()->timestamp,
-                    ]);
-
-                    // Clear expired cache
-                    Cache::forget($cacheKey);
-
-                    return redirect()->back()->withErrors([
-                        'error' => __('gold_bar.mint_price_expired'),
-                        'gold_bar_price_expired' => true,
-                    ]);
-                }
+                 }
             }
 
             $paymentAmountEur = $this->resolvePaymentAmount($reservation, $egi);
@@ -747,20 +797,23 @@ class MintController extends Controller {
                 }
             }
 
-            // Gold Bar: Freeze the price at mint time by saving it to EGI
-            if ($egi->isGoldBar() && $goldBarMintData) {
+            // Commodity: Freeze the price at mint time by saving it to EGI
+            if ($commodityType && $commodityMintData) {
+                // Ensure price is saved to the EGI record so it's immutable for invoicing
                 $egi->update([
-                    'price' => $goldBarMintData['price'],
+                    'price' => $commodityMintData['price'],
                 ]);
-
-                $this->logger->info('Gold Bar price frozen at mint', [
+                
+                $this->logger->info('Commodity price frozen at mint', [
                     'egi_id' => $egi->id,
-                    'frozen_price' => $goldBarMintData['price'],
-                    'gold_data' => $goldBarMintData['gold_data'] ?? null,
+                    'type' => $commodityType,
+                    'frozen_price' => $commodityMintData['price'],
                 ]);
-
+                
                 // Clear the cache data
-                Cache::forget('gold_bar_mint_' . Auth::id() . '_' . $egi->id);
+                // Clear both new and old keys to be sure
+                Cache::forget('commodity_mint_' . Auth::id() . '_' . $originalEgiId);
+                Cache::forget('gold_bar_mint_' . Auth::id() . '_' . $originalEgiId);
             }
 
             // Create blockchain record
@@ -768,12 +821,20 @@ class MintController extends Controller {
                 'merchant_psp' => $paymentMetadata['merchant_psp'] ?? null,
             ];
 
-            // Gold Bar: Store base value for distribution logic (Cost Reimbursement)
-            if ($egi->isGoldBar() && isset($goldBarMintData['gold_data']['base_value'])) {
-                $metadata['gold_base_value'] = (float) $goldBarMintData['gold_data']['base_value'];
-                $this->logger->info('Gold Bar base value stored in metadata', [
+            // Commodity: Store base value for distribution logic (Cost Reimbursement)
+            // Strategy: We rely on the data structure returned by calculateValue
+            if ($commodityType && isset($commodityMintData['data']['base_value'])) {
+                $baseValue = (float) $commodityMintData['data']['base_value'];
+                $metadata['commodity_base_value'] = $baseValue;
+                // Backward compat for Gold Specific reports?
+                if ($commodityType === 'goldbar') {
+                     $metadata['gold_base_value'] = $baseValue;
+                }
+                
+                $this->logger->info('Commodity base value stored in metadata', [
                     'egi_id' => $egi->id,
-                    'base_value' => $metadata['gold_base_value']
+                    'type' => $commodityType,
+                    'base_value' => $baseValue
                 ]);
             }
 
@@ -1197,7 +1258,7 @@ class MintController extends Controller {
 
             if ($isGoldBar) {
                 // Get fresh gold price for Gold Bar EGIs
-                $goldPriceService = app(\App\Services\GoldPriceService::class);
+                $goldPriceService = app(\App\Contracts\GoldPriceServiceInterface::class);
                 $refreshResult = $goldPriceService->forceRefreshFree('EUR', $egi);
 
                 if ($refreshResult['success']) {
@@ -1209,6 +1270,18 @@ class MintController extends Controller {
                         // Update payment amount with fresh gold price
                         $paymentAmountEur = (float) $goldBarValue['final_value'];
 
+                        // CALCULATE SPLIT FOR UI PREVIEW (Transparency)
+                        $margin = (float) ($goldBarValue['margin_applied'] ?? 0);
+                        $baseValue = (float) ($goldBarValue['base_value'] ?? 0);
+                        
+                        $platformFee = $margin * 0.10;
+                        $companyShare = $baseValue + ($margin * 0.90);
+                        
+                        $goldBarValue['platform_fee'] = $platformFee;
+                        $goldBarValue['company_share'] = $companyShare;
+                        
+                        $goldBarData = $goldBarValue;
+
                         // STAGING FIX: Use Cache instead of Session for robustness
                         // Key MUST match processMint expectation: gold_bar_mint_{userId}_{egiId}
                         $cacheKey = 'gold_bar_mint_' . Auth::id() . '_' . $egi->id;
@@ -1217,7 +1290,7 @@ class MintController extends Controller {
                             'refreshed_at' => now()->timestamp,
                             'valid_until' => now()->addMinutes(10)->timestamp,
                             'price' => $paymentAmountEur,
-                            'gold_data' => $goldBarValue,
+                            'data' => $goldBarValue, // FIX: Standardize key to 'data' to match processDirectMint logic
                         ], 600); // 10 minutes TTL
 
                         $this->logger->info('Gold Bar price CACHED for direct mint form (Page Load)', [
@@ -1429,9 +1502,17 @@ class MintController extends Controller {
                 // ma logghiamo l'errore per monitoring
             }
 
+            // FIX: Re-fetch Master to check isGoldBar status safely (Clone might be unhydrated)
+            // We use originalEgiId which captures the ID passed to the controller (Master ID)
+            $masterCheck = Egi::find($originalEgiId);
+            $wasMasterGoldBar = $masterCheck ? $masterCheck->isGoldBar() : false;
+
+            // ...
+
             // Gold Bar specific: Check 10-minute price validity timeout
             $goldBarMintData = null;
-            if ($egi->isGoldBar()) {
+            // FIX: Check if ORIGINAL was a Gold Bar (Clone might not have traits hydrated yet)
+            if ($wasMasterGoldBar) { 
                 // STAGING FIX: Use Cache instead of Session
                 $cacheKey = 'gold_bar_mint_' . Auth::id() . '_' . $originalEgiId;
                 $goldBarMintData = Cache::get($cacheKey);
@@ -1502,7 +1583,10 @@ class MintController extends Controller {
             $paidCurrency = 'EUR';
             $paidAmountRecorded = $paymentAmountEur;
             $egiliMetadata = [];
+            $paidAmountRecorded = $paymentAmountEur;
+            $egiliMetadata = [];
             $paymentMetadata = [];
+            $blockchainRecord = null; // Initialize variable for scope access
 
             if ($paymentMethod === 'egili') {
                 try {
@@ -1575,6 +1659,24 @@ class MintController extends Controller {
                     $paymentMethod
                 );
 
+                // FIX: Create Blockchain Record BEFORE Payment to allow linking distributions
+                // This prevents "Double Record" creation by MintEgiJob (which checks for existing linked recs)
+                $blockchainRecord = EgiBlockchain::create([
+                    'egi_id' => $egi->id,
+                    'reservation_id' => null, // NULL = direct mint
+                    'payment_method' => $paymentMethod,
+                    'psp_provider' => $paymentService->getProviderName(),
+                    'payment_reference' => 'pending_' . uniqid(),
+                    'paid_amount' => $paymentAmountEur,
+                    'paid_currency' => 'EUR',
+                    'buyer_user_id' => Auth::id(),
+                    'buyer_wallet' => $validated['wallet_address'] ?? null,
+                    'ownership_type' => isset($validated['wallet_address']) ? 'wallet' : 'treasury',
+                    'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
+                    'mint_status' => 'pending_checkout',
+                    'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
+                ]);
+
                 $paymentRequest = new PaymentRequest(
                     amount: $paymentAmountEur,
                     currency: 'EUR',
@@ -1585,6 +1687,8 @@ class MintController extends Controller {
                     metadata: [
                         'flow' => 'direct_mint',
                         'initiated_at' => now()->toIso8601String(),
+                        'commodity_base_value' => $goldBarMintData['data']['base_value'] ?? null, // INJECT FROZEN COST
+                        'egi_blockchain_id' => $blockchainRecord->id, // LINK STRIPE TO BLOCKCHAIN RECORD
                     ],
                     // Use same pattern as reservation mint - redirect to payment-form with success flag
                     successUrl: route('mint.payment-form', ['egiId' => $egi->id]) . '?payment_success=1',
@@ -1600,23 +1704,14 @@ class MintController extends Controller {
                         'payment_id' => $paymentResultObject->paymentId,
                     ]);
 
-                    // Create blockchain record in pending_checkout status BEFORE redirect to Stripe
-                    // This ensures we can find the record when user returns from payment
-                    $blockchainRecord = EgiBlockchain::create([
-                        'egi_id' => $egi->id,
-                        'reservation_id' => null,
-                        'payment_method' => $paymentMethod,
-                        'psp_provider' => $paymentService->getProviderName(),
-                        'payment_reference' => $paymentResultObject->paymentId,
-                        'paid_amount' => $paymentAmountEur,
-                        'paid_currency' => 'EUR',
-                        'buyer_user_id' => Auth::id(),
-                        'buyer_wallet' => $validated['wallet_address'] ?? null,
-                        'ownership_type' => isset($validated['wallet_address']) ? 'wallet' : 'treasury',
-                        'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
-                        'mint_status' => 'pending_checkout',
-                        'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
-                    ]);
+                    // Update existing pending record instead of creating new one
+                    if ($blockchainRecord) {
+                        $blockchainRecord->update([
+                            'mint_status' => 'pending_checkout',
+                            'payment_reference' => $paymentResultObject->paymentId,
+                            'ownership_type' => isset($validated['wallet_address']) ? 'wallet' : 'treasury',
+                        ]);
+                    }
 
                     $this->logger->info('Created pending blockchain record for Stripe Checkout', [
                         'blockchain_record_id' => $blockchainRecord->id,
@@ -1635,6 +1730,9 @@ class MintController extends Controller {
                 }
 
                 if (!$paymentResultObject->success) {
+                    if ($blockchainRecord) {
+                        $blockchainRecord->update(['mint_status' => 'payment_failed']);
+                    }
                     $this->errorManager->handle('DIRECT_MINT_PAYMENT_FAILED', [
                         'user_id' => Auth::id(),
                         'egi_id' => $egi->id,
@@ -1679,23 +1777,36 @@ class MintController extends Controller {
                 session()->forget('gold_bar_mint_' . $egi->id);
             }
 
-            // Create blockchain record (NO reservation_id for direct mint)
-            $blockchainRecord = EgiBlockchain::create([
-                'egi_id' => $egi->id,
-                'reservation_id' => null, // NULL = direct mint without reservation
-                'payment_method' => $paymentMethod,
-                'psp_provider' => $paymentProvider,
-                'payment_reference' => $paymentReference,
-                'paid_amount' => $paidAmountRecorded,
-                'paid_currency' => $paidCurrency,
-                'buyer_user_id' => Auth::id(),
-                'buyer_wallet' => $validated['wallet_address'] ?? null,
-                'ownership_type' => isset($validated['wallet_address']) ? 'wallet' : 'treasury',
-                'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
-                'mint_status' => 'minting_queued',
-                // AREA 5.5.1: Store proposed co-creator name (will be frozen during mint)
-                'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
-            ]);
+            // Create or Update blockchain record
+            if ($blockchainRecord) {
+                 // Stripe Flow: Update existing record
+                 $blockchainRecord->update([
+                    'mint_status' => 'minting_queued', // Ready for processing
+                    'payment_reference' => $paymentReference,
+                    'paid_amount' => $paidAmountRecorded,
+                    'paid_currency' => $paidCurrency,
+                    // Ensure metadata from payment (e.g. fees) is merged
+                    'metadata' => array_merge($blockchainRecord->metadata ?? [], $paymentMetadata ?? []),
+                 ]);
+            } else {
+                // Egili Flow (or others): Create new record
+                $blockchainRecord = EgiBlockchain::create([
+                    'egi_id' => $egi->id,
+                    'reservation_id' => null, // NULL = direct mint without reservation
+                    'payment_method' => $paymentMethod,
+                    'psp_provider' => $paymentProvider,
+                    'payment_reference' => $paymentReference,
+                    'paid_amount' => $paidAmountRecorded,
+                    'paid_currency' => $paidCurrency,
+                    'buyer_user_id' => Auth::id(),
+                    'buyer_wallet' => $validated['wallet_address'] ?? null,
+                    'ownership_type' => isset($validated['wallet_address']) ? 'wallet' : 'treasury',
+                    'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
+                    'mint_status' => 'minting_queued',
+                    'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
+                    'metadata' => $egiliMetadata, // Egili metadata
+                ]);
+            }
 
             $this->logger->emergency('🚨 DIRECT MINT - BEFORE DISPATCH', [
                 'blockchain_record_id' => $blockchainRecord->id,

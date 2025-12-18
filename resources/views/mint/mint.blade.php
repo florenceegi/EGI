@@ -233,27 +233,7 @@
                         @endphp
                         
                         {{-- DEBUG INFO (remove after testing) --}}
-                        @if (config('app.debug'))
-                            <div class="mb-4 rounded bg-yellow-100 p-3 text-xs">
-                                <strong class="text-yellow-900">DEBUG CERTIFICATO:</strong><br>
-                                <span class="text-gray-700">
-                                    <strong>Controller Pass:</strong><br>
-                                    $isOwner (da controller) = <strong class="{{ $isOwner ? 'text-green-600' : 'text-red-600' }}">{{ $isOwner ? 'TRUE' : 'FALSE' }}</strong><br>
-                                    $buyerId (da controller) = {{ $buyerId ?? 'NOT PASSED' }}<br>
-                                    <br>
-                                    <strong>View Calculate:</strong><br>
-                                    $debugIsOwner (calcolato ora) = <strong class="{{ $debugIsOwner ? 'text-green-600' : 'text-red-600' }}">{{ $debugIsOwner ? 'TRUE' : 'FALSE' }}</strong><br>
-                                    $debugBuyerId = {{ $debugBuyerId }}<br>
-                                    <br>
-                                    <strong>Raw Data:</strong><br>
-                                    certificate = <strong>{{ $certificate ? 'EXISTS' : 'NULL' }}</strong><br>
-                                    blockchain.buyer_user_id = {{ $blockchain->buyer_user_id ?? 'NULL' }}<br>
-                                    egi.user_id (creator) = {{ $egi->user_id }}<br>
-                                    Auth::id() = {{ Auth::id() }}<br>
-                                    Auth::check() = {{ Auth::check() ? 'true' : 'false' }}
-                                </span>
-                            </div>
-                        @endif
+
 
                         <div class="mb-4 flex items-center">
                             <div
