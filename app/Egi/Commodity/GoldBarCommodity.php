@@ -42,4 +42,24 @@ class GoldBarCommodity implements CommodityContract
             'calculated_price_eur' => 0, // Placeholder for real logic
         ];
     }
+
+    /**
+     * Calculate value using GoldPriceService
+     */
+    public function calculateValue($egi, string $currency = 'EUR'): ?array
+    {
+        /** @var \App\Contracts\GoldPriceServiceInterface $service */
+        $service = app(\App\Contracts\GoldPriceServiceInterface::class);
+        return $service->calculateFromEgi($egi, $currency);
+    }
+
+    /**
+     * Force refresh using GoldPriceService
+     */
+    public function forceRefresh(string $currency = 'EUR', $egi = null): array
+    {
+        /** @var \App\Contracts\GoldPriceServiceInterface $service */
+        $service = app(\App\Contracts\GoldPriceServiceInterface::class);
+        return $service->forceRefreshFree($currency, $egi);
+    }
 }

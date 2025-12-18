@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\GoldPriceService;
+use App\Contracts\GoldPriceServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -20,7 +20,7 @@ class GoldPriceController extends Controller {
     protected ErrorManagerInterface $errorManager;
 
     public function __construct(
-        protected GoldPriceService $goldPriceService,
+        protected GoldPriceServiceInterface $goldPriceService,
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager
     ) {

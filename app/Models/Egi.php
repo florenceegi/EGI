@@ -1571,8 +1571,8 @@ class Egi extends Model {
             return null;
         }
 
-        /** @var \App\Services\GoldPriceService $goldService */
-        $goldService = app(\App\Services\GoldPriceService::class);
+        /** @var \App\Contracts\GoldPriceServiceInterface $goldService */
+        $goldService = app(\App\Contracts\GoldPriceServiceInterface::class);
 
         return $goldService->calculateFromEgi($this, $currency);
     }

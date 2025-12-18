@@ -19,7 +19,21 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @version 1.0.0
  * @date 2025-12-08
  */
-class GoldPriceService {
+use App\Contracts\GoldPriceServiceInterface;
+
+/**
+ * @Oracode Service: GoldPriceService
+ * 🎯 Purpose: Handles gold price quotations for Gold Bar EGIs
+ * 🧱 Core Logic: Fetches gold spot price, calculates indicative values based on weight/purity
+ * 🛡️ Error Management: Integrated UEM for robust error handling
+ * 💰 Multi-Currency: Supports EUR, USD, GBP for gold quotations
+ *
+ * @package App\Services
+ * @author Fabio Cherici
+ * @version 1.0.1
+ * @date 2025-12-17
+ */
+class GoldPriceService implements GoldPriceServiceInterface {
     private const CACHE_KEY_PREFIX = 'gold_price_';
     private const CACHE_TTL_SECONDS = 21600; // 6 hours - gold prices are stable, saves API calls (free tier: 300/month = ~120 calls with 6h cache)
 

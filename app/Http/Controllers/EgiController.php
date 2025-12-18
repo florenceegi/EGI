@@ -511,8 +511,8 @@ class EgiController extends Controller {
                 'sale_mode' => 'nullable|in:not_for_sale,fixed_price,auction',
                 'auction_minimum_price' => 'nullable|required_if:sale_mode,auction|numeric|min:0.01',
                 // Gold Bar Margin fields
-                'gold_margin_percent' => 'nullable|numeric|min:0|max:100',
-                'gold_margin_fixed' => 'nullable|numeric|min:0',
+                'gold_margin_percent' => 'nullable|numeric|min:0|max:100|prohibits:gold_margin_fixed',
+                'gold_margin_fixed' => 'nullable|numeric|min:0|prohibits:gold_margin_percent',
                 'auction_start' => 'nullable|required_if:sale_mode,auction|date',
                 'auction_end' => 'nullable|required_if:sale_mode,auction|date|after:auction_start',
                 'auto_mint_highest' => 'nullable|boolean',

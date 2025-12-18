@@ -2,8 +2,8 @@
 
 namespace App\View\Components;
 
+use App\Contracts\GoldPriceServiceInterface;
 use App\Models\Egi;
-use App\Services\GoldPriceService;
 use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
 
@@ -93,8 +93,8 @@ class GoldBarInfo extends Component {
         }
 
         try {
-            /** @var GoldPriceService $goldService */
-            $goldService = app(GoldPriceService::class);
+            /** @var GoldPriceServiceInterface $goldService */ // Changed type hint
+            $goldService = app(GoldPriceServiceInterface::class); // Changed class reference
             $this->goldValue = $goldService->calculateFromEgi($this->egi, $this->currency);
 
             if (!$this->goldValue) {

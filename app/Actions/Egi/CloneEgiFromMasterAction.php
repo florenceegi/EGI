@@ -79,6 +79,15 @@ class CloneEgiFromMasterAction
             // Generate Serial Number
             $child->serial_number = $this->serialService->nextFor($master);
             
+            // Correctly set commodity_type if Master is deficient (Self-Healing)
+            if (empty($child->commodity_type) && $master->isGoldBar()) {
+                $child->commodity_type = 'goldbar';
+                // Ensure metadata is copied if missing (though replicate should have stuck it if present)
+                if (empty($child->commodity_metadata) && !empty($master->commodity_metadata)) {
+                    $child->commodity_metadata = $master->commodity_metadata;
+                }
+            }
+
             $child->save();
 
             // 2. Clone Traits
