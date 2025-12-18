@@ -260,7 +260,7 @@ class EppDashboardController extends Controller {
             return $this->errorManager->handle('EPP_PROJECT_CREATE_FAILED', [
                 'user_id' => Auth::id(),
                 'error_message' => $e->getMessage(),
-                'input_data' => $request->except(['_token'])
+                'input_data' => $request->except(['_token', 'image', 'avatar'])
             ], $e);
         }
     }
