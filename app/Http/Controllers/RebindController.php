@@ -430,56 +430,43 @@ class RebindController extends Controller {
             // - Natan: config('egi.default_wallets.Natan.rebind_royalty')
             // - Frangette: config('egi.default_wallets.Ass_Frangette.rebind_royalty')
 
-            $beneficiaries = ['Creator', 'EPP', 'Natan', 'Ass_Frangette'];
-
             $totalRoyaltyPercentage = 0.0;
             $royaltyDistributions = [];
             
-            // Pre-fetch wallets for this collection
-            $collectionWallets = $egi->collection->wallets->keyBy('platform_role');
+            // Database-Driven Royalties (Source of Truth: Wallets Table)
+            // This supports both Contributor and Normal profiles automatically
+            $collectionWallets = $egi->collection->wallets;
 
-            foreach ($beneficiaries as $role) {
-                // Determine Percentage
-                $configKey = "egi.default_wallets.{$role}.rebind_royalty";
-                $defaultRoyalty = config($configKey, 0.0);
-                
-                // For Creator, prefer wallet setting if available
-                $wallet = $collectionWallets->get($role === 'Ass_Frangette' ? 'Natan' : $role); // Frangette might share Natan wallet or have none?
-                // Actually Frangette usually uses Natan wallet or distinct. 
-                // Let's assume for now Frangette is a separate logical entity but might not have a wallet in the DB yet if not created.
-                // If it's pure platform fee, we might not need a wallet record if we pay to User directly, BUT PaymentDistribution requires wallet_id usually?
-                // Nullable wallet_id is allowed in migration? Let's check. 
-                // Migration `2025_12_11_100000` didn't touch wallet_id nullability.
-                // Assuming wallet is required or preferred.
-                
-                $percentage = $defaultRoyalty;
-                if ($role === 'Creator' && $wallet && $wallet->royalty_rebind > 0) {
-                     $percentage = (float) $wallet->royalty_rebind;
+            foreach ($collectionWallets as $wallet) {
+                // Skip if no rebind royalty is configured for this wallet
+                if ((float)$wallet->royalty_rebind <= 0) {
+                    continue;
                 }
-                
-                if ($percentage <= 0) continue;
-                
+
+                $percentage = (float)$wallet->royalty_rebind;
                 $amount = round($paymentAmountEur * ($percentage / 100), 2);
+                
                 if ($amount <= 0) continue;
 
-                // Determine Payee User ID
-                $userId = null;
-                if ($role === 'Creator') {
-                    $userId = $wallet->user_id ?? $egi->collection->creator_id;
-                } elseif ($role === 'EPP') {
-                    $userId = config('egi.default_ids.epp_user_id');
-                } elseif ($role === 'Natan') {
-                    $userId = config('egi.default_ids.natan_user_id');
-                } elseif ($role === 'Ass_Frangette') {
-                    $userId = config('egi.default_ids.natan_user_id'); // Using Natan ID as placeholder/dest
+                $userId = $wallet->user_id;
+
+                // Fallback for Reader/Legacy wallets if user_id missing (shouldn't happen on new logic)
+                if (!$userId) {
+                    if ($wallet->platform_role === 'Creator') {
+                         $userId = $egi->collection->creator_id;
+                    } elseif ($wallet->platform_role === 'Natan' || $wallet->platform_role === 'Ass_Frangette') {
+                         $userId = config('egi.default_ids.natan_user_id');
+                    } elseif ($wallet->platform_role === 'EPP') {
+                         $userId = config('egi.default_ids.epp_user_id');
+                    }
                 }
 
                 if (!$userId) continue;
 
                 $royaltyDistributions[] = [
-                    'role' => $role,
+                    'role' => $wallet->platform_role,
                     'user_id' => $userId,
-                    'wallet_id' => $wallet->id ?? null, // Best effort wallet link
+                    'wallet_id' => $wallet->id,
                     'amount' => $amount,
                     'percentage' => $percentage
                 ];
@@ -510,7 +497,9 @@ class RebindController extends Controller {
                         'user_type' => match($dist['role']) { // Map roles to UserTypeEnum
                             'Creator' => UserTypeEnum::CREATOR,
                             'EPP' => UserTypeEnum::EPP,
-                            default => UserTypeEnum::FRANGETTE // Natan/Frangette are platform
+                            'Natan' => UserTypeEnum::NATAN,
+                            'Frangette', 'Ass_Frangette' => UserTypeEnum::FRANGETTE,
+                            default => UserTypeEnum::FRANGETTE // Fallback
                         },
                         'sale_price' => $paymentAmountEur,
                         'amount_eur' => $dist['amount'],

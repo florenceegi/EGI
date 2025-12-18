@@ -238,4 +238,17 @@ return [
         'use_locking' => env('EGI_POSITION_USE_LOCKING', true),
     ],
 
+    /**
+     * 🏷️ Platform Fee Configuration.
+     * Centralized settings for splits and commissions.
+     */
+    'fees' => [
+        /**
+         * Percentage of the Net Margin taken by the Platform on Commodity Sales.
+         * Default: 10% (0.10)
+         * @env PLATFORM_MARGIN_PERCENTAGE
+         */
+        'platform_margin_percentage' => (float) env('PLATFORM_MARGIN_PERCENTAGE', 10.0),
+    ],
+
 ];

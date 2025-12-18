@@ -16,48 +16,59 @@ trait HasCreateDefaultCollectionWallets
      */
     public function generateDefaultWallets(Collection $collection, ?string $wallet_creator='', $creator_id): void
     {
-        $natan_wallet_address = config('app.natan_wallet_address');
-        $natan_royalty_mint = config('app.natan_royalty_mint');
-        $natan_royalty_rebind = config('app.natan_royalty_rebind');
-        // $mediator_royalty_mint = config('app.mediator_royalty_mint');
-        // $mediator_royalty_rebind = config('app.mediator_royalty_rebind');
-        $epp_wallet_address = config('app.epp_wallet_address');
-        $epp_royalty_mint = config('app.epp_royalty_mint');
-        $epp_royalty_rebind = config('app.epp_royalty_rebind');
-        $creator_royalty_mint = config('app.creator_royalty_mint');
-        $creator_royalty_rebind = config('app.creator_royalty_rebind');
-        $natan_id = config('app.natan_id');
-        $epp_id = config('app.epp_id');
+        // 1. Determine Profile
+        $profile = $collection->profile_type ?? 'contributor';
 
-        DB::transaction(function () use (
-            $collection,
-            $natan_wallet_address,
-            $natan_royalty_mint,
-            $natan_royalty_rebind,
-            // $mediator_royalty_mint,
-            // $mediator_royalty_rebind,
-            $epp_wallet_address,
-            $epp_royalty_mint,
-            $epp_royalty_rebind,
-            $wallet_creator,
-            $creator_royalty_mint,
-            $creator_royalty_rebind,
-            $natan_id,
-            $epp_id,
-            $creator_id
-        ) {
-            // Wallet per natan
-            $this->createWallet('natan', $natan_wallet_address, $natan_royalty_mint, $natan_royalty_rebind, $collection, $natan_id);
+        // 2. Get Fee Structures
+        $mintFees = \App\Enums\Fees\FeeStructureEnum::fromProfile($profile, 'mint')->getDistribution();
+        $rebindFees = \App\Enums\Fees\FeeStructureEnum::fromProfile($profile, 'rebind')->getDistribution();
 
-            // Wallet per il Mediator (di default uguale a natan)
-            // PER IL MOMENTO NON GESTITO
-            // $this->createWallet('Mediator', $natan_wallet_address, $mediator_royalty_mint, $mediator_royalty_rebind, $collection);
+        DB::transaction(function () use ($collection, $wallet_creator, $creator_id, $mintFees, $rebindFees) {
+            
+            // 3. Iterate over mandated roles in the Fee Structure
+            // merging keys from both to ensure we cover all required wallets
+            $roles = array_unique(array_merge(array_keys($mintFees), array_keys($rebindFees)));
 
-            // Wallet per EPP
-            $this->createWallet('EPP', $epp_wallet_address, $epp_royalty_mint, $epp_royalty_rebind, $collection, $epp_id);
+            foreach ($roles as $roleName) {
+                $mintPercent = $mintFees[$roleName] ?? 0.0;
+                $rebindPercent = $rebindFees[$roleName] ?? 0.0;
 
-            // Wallet per il Creator
-            $this->createWallet('Creator', $wallet_creator, $creator_royalty_mint, $creator_royalty_rebind, $collection, $creator_id);
+                // Skip if both are 0 (unless we want to force wallet creation for completeness?)
+                // User requirement implies strict adherence to the Enum. 
+                // Creating 0% wallet is fine, it just won't receive funds but exists for structure.
+                
+                $address = '';
+                $userId = null;
+                $roleEnum = \App\Enums\Wallet\WalletRoleEnum::tryFrom($roleName);
+
+                if (!$roleEnum) {
+                    // Fallback or skip if enum doesn't match string (shouldn't happen with correct FeeEnum)
+                    if ($roleName === 'Creator') {
+                         $address = $wallet_creator;
+                         $userId = $creator_id;
+                    } else {
+                        continue; 
+                    }
+                } else {
+                    // Platform Roles (Natan, EPP, Frangette)
+                    if ($roleEnum === \App\Enums\Wallet\WalletRoleEnum::CREATOR) {
+                        $address = $wallet_creator;
+                        $userId = $creator_id;
+                    } else {
+                        $address = $roleEnum->getWalletAddress();
+                        $userId = $roleEnum->getUserId();
+                    }
+                }
+
+                $this->createWallet(
+                    $roleName, 
+                    $address, 
+                    (string)$mintPercent, 
+                    (string)$rebindPercent, 
+                    $collection, 
+                    $userId
+                );
+            }
         });
     }
 

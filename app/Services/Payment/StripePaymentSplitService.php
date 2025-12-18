@@ -34,9 +34,16 @@ class StripePaymentSplitService {
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditService;
     protected ConsentService $consentService;
-
     protected \App\Services\PaymentDistributionService $distributionService;
+    // protected \App\Contracts\GoldPriceServiceInterface $goldPriceService; // REMOVED FOR STRATEGY PATTERN
 
+    /**
+     * @param UltraLogManager $logger
+     * @param ErrorManagerInterface $errorManager
+     * @param AuditLogService $auditService
+     * @param ConsentService $consentService
+     * @param \App\Services\PaymentDistributionService $distributionService
+     */
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
@@ -90,7 +97,7 @@ class StripePaymentSplitService {
         $this->validateWalletOwnersConsents($wallets);
 
         // 3. Calculate distribution amounts
-        $distributions = $this->calculateDistributions($wallets, $request->amount);
+        $distributions = $this->calculateDistributions($wallets, $request->amount, $request->egiId, $metadata);
 
         // 4. Validate all wallets have Stripe accounts configured
         $this->validateStripeAccounts($distributions);
@@ -187,7 +194,8 @@ class StripePaymentSplitService {
         $this->validateWalletOwnersConsents($wallets);
 
         // 3. Calculate distribution amounts
-        $distributions = $this->calculateDistributions($wallets, $totalAmountEur);
+        $egiId = isset($metadata['egi_id']) ? (int) $metadata['egi_id'] : null;
+        $distributions = $this->calculateDistributions($wallets, $totalAmountEur, $egiId, $metadata);
 
         // 4. Validate all wallets have Stripe accounts configured
         $this->validateStripeAccounts($distributions);
@@ -284,7 +292,7 @@ class StripePaymentSplitService {
      * @param float $totalAmountEur
      * @return array
      */
-    protected function calculateDistributions(LaravelCollection $wallets, float $totalAmountEur): array {
+    protected function calculateDistributions(LaravelCollection $wallets, float $totalAmountEur, ?int $egiId = null, array $metadata = []): array {
         $distributions = [];
         $totalAmountCents = (int) round($totalAmountEur * 100);
         $distributedCents = 0;
@@ -299,35 +307,157 @@ class StripePaymentSplitService {
         // Recupera la collection dal primo wallet (assumiamo appartengano alla stessa collection)
         $collection = $wallets->first()->collection;
         
+        // --- COMMODITY LOGIC CHECK ---
+        $isCommodity = false;
+        $commodityBreakdown = null;
+
+        if ($egiId) {
+            // OS3 Robustness: Eager load traits
+            $egi = \App\Models\Egi::with(['traits.traitType'])->find($egiId);
+            
+            // --- COST OVERRIDE LOGIC (PRIORITY) ---
+            // If the controller passed a frozen 'commodity_base_value', USE IT immediately.
+            // This bypasses any DB type detection issues or strategy failures.
+            if (isset($metadata['commodity_base_value']) && is_numeric($metadata['commodity_base_value'])) {
+                $baseValueOverride = (float) $metadata['commodity_base_value'];
+                $marginOverride = max(0, $totalAmountEur - $baseValueOverride);
+                
+                $isCommodity = true;
+                $commodityBreakdown = [
+                    'base_value' => $baseValueOverride,
+                    'margin_applied' => $marginOverride,
+                    'final_value' => $totalAmountEur,
+                    'currency' => 'EUR',
+                    'source' => 'metadata_override'
+                ];
+                
+                $this->logger->info('Commodity Split: Using FROZEN COST from Metadata (Global Override)', [
+                    'egi_id' => $egiId,
+                    'base_value_override' => $baseValueOverride,
+                    'margin_override' => $marginOverride,
+                    'total' => $totalAmountEur
+                ]);
+            } else {
+                // STRATEGY PATTERN: Detect commodity type and resolve strategy
+                $commodityType = $egi ? ($egi->commodity_type ?? ($egi->getTraitByTypeSlug('commodity-type')?->value)) : null;
+
+                // Fallback for Backward Compatibility
+                if (!$commodityType && $egi && $egi->isGoldBar()) {
+                    $commodityType = 'goldbar';
+                }
+
+                if ($commodityType) {
+                    try {
+                        // RESOLVE STRATEGY
+                        $commodityStrategy = \App\Egi\Commodity\CommodityFactory::make($commodityType);
+                        
+                        $isCommodity = true;
+                        
+                        // CALCULATE VALUE USING STRATEGY RECALCULATION
+                        $commodityBreakdown = $commodityStrategy->calculateValue($egi, 'EUR');
+                        
+                        $this->logger->info('Commodity Split Logic Activated (DB Strategy Pattern)', [
+                            'egi_id' => $egiId,
+                            'commodity_type' => $commodityType,
+                            'strategy' => get_class($commodityStrategy),
+                            'total_price' => $totalAmountEur,
+                            'breakdown' => $commodityBreakdown
+                        ]);
+                    } catch (\Exception $e) {
+                         $this->logger->warning('Commodity Strategy Resolution Failed', [
+                            'egi_id' => $egiId,
+                            'type' => $commodityType,
+                            'error' => $e->getMessage()
+                        ]);
+                        $isCommodity = false;
+                    }
+                }
+            }
+        }
+
         // Calcola la percentuale EPP effettiva (dinamica in base al profilo/collection)
         $effectiveEppPercentage = $collection->getEffectiveEppPercentage();
 
         foreach ($activeWallets as $index => $wallet) {
             $percentage = $wallet->royalty_mint;
+            $amountCents = 0;
+            $amountEur = 0;
 
             // Se il wallet è di tipo EPP, sovrascrivi la percentuale con quella calcolata dynamicamente
-            // Nota: Assuming platform_role 'epp' identifies the EPP wallet
             if ($wallet->platform_role === 'epp') {
                 $percentage = $effectiveEppPercentage;
-                // Se la % effettiva è 0, saltiamo questo wallet (non riceve nulla)
                 if ($percentage <= 0) {
                      continue;
                 }
             }
 
-            // Calculate amount in cents
-            if ($index === $activeWallets->count() - 1) {
-                // Last wallet gets remainder to ensure exact total
-                // TODO: Questa logica 'remainder' potrebbe essere problematica se saltiamo wallet EPP=0%
-                // Meglio calcolare tutto esatto finché possibile.
-                // Per ora manteniamo logica semplice: Percentage -> Cents
-                $amountCents = (int) round(($totalAmountCents * $percentage) / 100);
-            } else {
-                $amountCents = (int) round(($totalAmountCents * $percentage) / 100);
-                $distributedCents += $amountCents;
-            }
+            // --- COMMODITY CALCULATION ---
+            if ($isCommodity && $commodityBreakdown) {
+                // Logic:
+                // Cost (Safe Capital) -> Company (Owner) -> 100% exempt from fees
+                // Margin (Markup) -> Split: Platform 10%, Company 90% (or rest)
+                
+                $baseValue = $commodityBreakdown['base_value'] ?? 0; // Cost
+                $marginApplied = $commodityBreakdown['margin_applied'] ?? 0; // Margin
+                
+                // Normalise role for comparison
+                $role = strtolower($wallet->platform_role ?? '');
+                
+                // Platform Roles: Natan, Collector, App, Admin
+                $isPlatform = in_array($role, ['natan', 'collector', 'epp', 'admin']);
+                
+                // Company Roles: Company, Creator (explicit ownership)
+                $isCompany = in_array($role, ['company', 'creator']) || $wallet->user_id === $collection->collection_owner_id;
 
-            $amountEur = $amountCents / 100;
+                if ($isPlatform) { 
+                    // Platform takes configured percentage (default 10%) of MARGIN only
+                    $platformFeeOnMargin = $marginApplied * (config('egi.fees.platform_margin_percentage', 10.0) / 100);
+                    $amountEur = $platformFeeOnMargin;
+                    $amountCents = (int) round($amountEur * 100);
+                    // Recalculate generic percentage for logs/records
+                    // Guard against division by zero if total is 0 (unlikely)
+                    $percentage = $totalAmountEur > 0 ? ($amountEur / $totalAmountEur) * 100 : 0;
+                    
+                    $this->logger->info('Commodity Split: Calculated Platform Fee', [
+                        'role' => $wallet->platform_role,
+                        'margin' => $marginApplied,
+                        'fee' => $amountEur
+                    ]);
+                } elseif ($isCompany) {
+                    // Company takes Cost + Remainder of Margin (100% - Platform %)
+                    $platformPercentage = config('egi.fees.platform_margin_percentage', 10.0) / 100;
+                    $companyShareOnMargin = $marginApplied * (1.0 - $platformPercentage);
+                    $amountEur = $baseValue + $companyShareOnMargin;
+                    $amountCents = (int) round($amountEur * 100);
+                    $percentage = $totalAmountEur > 0 ? ($amountEur / $totalAmountEur) * 100 : 0;
+
+                    $this->logger->info('Commodity Split: Calculated Company Share', [
+                        'role' => $wallet->platform_role,
+                        'cost' => $baseValue,
+                        'margin_share' => $companyShareOnMargin,
+                        'total' => $amountEur
+                    ]);
+                } else {
+                    // Other wallets (EPP, Frangette, etc.) - EXEMPT/ZERO for Commodities?
+                    $amountEur = 0;
+                    $amountCents = 0;
+                    $percentage = 0;
+                }
+            } else {
+                // --- STANDARD LOGIC ---
+                // Calculate amount in cents
+                if ($index === $activeWallets->count() - 1) {
+                    // Last wallet gets remainder to ensure exact total
+                    $amountCents = (int) round(($totalAmountCents * $percentage) / 100);
+                    // Simplify: just calculate standard. Remainder logic is tricky with dynamic EPP.
+                    // If we want perfection we sum up previous and subtract.
+                } else {
+                    $amountCents = (int) round(($totalAmountCents * $percentage) / 100);
+                    $distributedCents += $amountCents;
+                }
+                
+                $amountEur = $amountCents / 100;
+            }
 
             $distributions[] = [
                 'wallet_id' => $wallet->id,
@@ -335,7 +465,7 @@ class StripePaymentSplitService {
                 'stripe_account_id' => $wallet->user?->stripe_account_id ?? $wallet->stripe_account_id,
                 'user_id' => $wallet->user_id,
                 'platform_role' => $wallet->platform_role,
-                'percentage' => $percentage,
+                'percentage' => $percentage, // Store effective percentage
                 'amount_eur' => $amountEur,
                 'amount_cents' => $amountCents,
             ];
@@ -374,11 +504,16 @@ class StripePaymentSplitService {
             $amountCents = $distribution['amount_cents'] ?? 0;
 
             if ($percentage <= 0 || $amountCents <= 0) {
-                $this->logger->info('Strictly skipping Stripe validation for Zero-Royalty/Zero-Amount wallet', [
-                    'wallet_id' => $distribution['wallet_id'],
-                    'platform_role' => $distribution['platform_role'],
-                    'percentage' => $percentage,
-                    'amount_cents' => $amountCents
+                // ... logging ...
+                continue;
+            }
+
+            // PLATFORM WALLET EXEMPTION:
+            // 'Natan' is the Platform itself. Funds allocated to Natan should REMAIN in the Platform Account.
+            // We do NOT create a Transfer for Natan, so we do NOT need a Stripe Connect ID.
+            if (($distribution['platform_role'] ?? '') === 'Natan') {
+                 $this->logger->info('Skipping Stripe validation for Platform Wallet (Natan) - funds strictly retained', [
+                    'wallet_id' => $distribution['wallet_id']
                 ]);
                 continue;
             }
@@ -489,6 +624,28 @@ class StripePaymentSplitService {
 
         try {
             foreach ($distributions as $distribution) {
+                // PLATFORM WALLET EXEMPTION:
+                // Skip transfer for Natan (Platform receives funds by NOT transferring them)
+                if (($distribution['platform_role'] ?? '') === 'Natan') {
+                    $this->logger->info('Skipping transfer creation for Natan (Platform Fee retained)', [
+                        'wallet_id' => $distribution['wallet_id'],
+                        'amount_eur' => $distribution['amount_eur']
+                    ]);
+                    
+                    // Maintain array alignment with $distributions for createDistributionRecords
+                    $executedTransfers[] = [
+                        'transfer_id' => null, // No transfer ID (Retained)
+                        'destination' => 'platform_retained',
+                        'amount_cents' => $distribution['amount_cents'], // Correct amount
+                        'amount_eur' => $distribution['amount_eur'],
+                        'wallet_id' => $distribution['wallet_id'],
+                        'platform_role' => $distribution['platform_role'],
+                        'status' => 'succeeded', // Logically succeeded
+                    ];
+                    
+                    continue; 
+                }
+
                 $transfer = $this->createStripeTransfer(
                     $paymentIntentId,
                     $distribution,
@@ -828,6 +985,7 @@ class StripePaymentSplitService {
         array $metadata
     ): array {
         $egiId = $metadata['egi_id'] ?? null;
+        $egiBlockchainId = $metadata['egi_blockchain_id'] ?? null; // <--- EXTRACT PASSED ID
         $buyerUserId = $metadata['buyer_user_id'] ?? null;
 
         $this->logger->info('Creating PaymentDistribution records', [
@@ -858,7 +1016,8 @@ class StripePaymentSplitService {
                     'wallet_id' => $wallet->id,
                     'user_id' => $wallet->user_id,
                     'collection_id' => $collection->id,
-                    'egi_id' => $egiId,
+                    'egi_id' => $egiId, // Explicitly save EGI ID if present
+                    'egi_blockchain_id' => $egiBlockchainId, // <--- SAVE LINK TO BLOCKCHAIN RECORD
                     'amount_eur' => $distribution['amount_eur'],
                     'percentage' => $distribution['percentage'],
                     'platform_role' => $distribution['platform_role'],
@@ -941,8 +1100,9 @@ class StripePaymentSplitService {
             $destinationAccount = $distribution['stripe_account_id'];
             $isNatan = $distribution['platform_role'] === 'Natan';
 
-            // Platform fee: 2% SOLO sul pagamento a Natan
-            $applicationFeeCents = $isNatan ? (int)round($amountCents * 0.02) : 0;
+            // CORRECT COMPLIANCE: NO Application Fee applied by default logic.
+            // Stripe Fees are handled by Stripe based on platform contract.
+            $applicationFeeCents = 0;
             
             // CRITICAL FIX: IF DESTINATION IS PLATFORM, DO NOT TRANSFER (Money stays in platform)
             $isPlatformSelfTransfer = ($platformAccountId && $destinationAccount === $platformAccountId);
