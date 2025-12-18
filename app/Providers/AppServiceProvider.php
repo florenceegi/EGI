@@ -125,6 +125,15 @@ class AppServiceProvider extends ServiceProvider {
                 $app->make(EgiliService::class)
             );
         });
+
+        // Register GoldPriceService with interface binding (SOLID Fix)
+        $this->app->singleton(\App\Contracts\GoldPriceServiceInterface::class, function ($app) {
+            return new \App\Services\GoldPriceService(
+                $app->make(UltraLogManager::class),
+                $app->make(ErrorManagerInterface::class),
+                $app->make(EgiliService::class)
+            );
+        });
     }
 
     /**

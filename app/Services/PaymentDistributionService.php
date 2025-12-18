@@ -589,24 +589,31 @@ class PaymentDistributionService {
         $totalAmount = $paymentData['paid_amount'];
         $currency = $paymentData['paid_currency'] ?? 'EUR';
         
-        // --- GOLD BAR LOGIC: Check for Gold Base Value (Cost Reimbursement) ---
+        // --- COMMODITY LOGIC: Check for Base Value (Cost Reimbursement) ---
         // Stored in metadata by MintController
         $metadata = $egiBlockchain->metadata ?? [];
-        $goldBaseValue = isset($metadata['gold_base_value']) ? (float)$metadata['gold_base_value'] : 0.0;
         
-        // If gold base value exists, verify it doesn't exceed total amount
-        if ($goldBaseValue > 0) {
-            if ($goldBaseValue > $totalAmount) {
+        // OS3: Support generic 'commodity_base_value' with fallback to legacy 'gold_base_value'
+        $baseValue = 0.0;
+        if (isset($metadata['commodity_base_value'])) {
+             $baseValue = (float) $metadata['commodity_base_value'];
+        } elseif (isset($metadata['gold_base_value'])) {
+             $baseValue = (float) $metadata['gold_base_value'];
+        }
+
+        // If base value exists, verify it doesn't exceed total amount
+        if ($baseValue > 0) {
+            if ($baseValue > $totalAmount) {
                 // Safety check: Cost cannot exceed Price (shouldn't happen with correct logic)
                 // Log warning and cap base value at total amount (0 margin)
                 if ($this->logger) {
-                    $this->logger->warning('[Payment Distribution] Gold Base Value exceeds Total Amount', [
+                    $this->logger->warning('[Payment Distribution] Commodity Base Value exceeds Total Amount', [
                         'egi_blockchain_id' => $egiBlockchain->id,
                         'total_amount' => $totalAmount,
-                        'gold_base_value' => $goldBaseValue
+                        'base_value' => $baseValue
                     ]);
                 }
-                $goldBaseValue = $totalAmount;
+                $baseValue = $totalAmount;
             }
 
             // 1. Create Reimbursement Distribution (100% to Creator/Seller)
@@ -639,13 +646,13 @@ class PaymentDistributionService {
                     'user_type' => $this->determineUserType($creatorWallet),
                     'platform_role' => $creatorWallet->platform_role,
                     'percentage' => 0, // Special case: Flat amount, not percentage of total
-                    'amount_eur' => $goldBaseValue,
+                    'amount_eur' => $baseValue,
                     'exchange_rate' => 1.0,
                     'is_epp' => $this->isEppWallet($creatorWallet),
                     'distribution_status' => DistributionStatusEnum::CONFIRMED,
                     'metadata' => [
-                        'type' => 'gold_cost_reimbursement', // Mark as reimbursement
-                        'base_value' => $goldBaseValue,
+                        'type' => 'commodity_cost_reimbursement', // Mark as reimbursement
+                        'base_value' => $baseValue,
                         'calculation_timestamp' => now()->toISOString(),
                     ]
                 ];
@@ -661,7 +668,7 @@ class PaymentDistributionService {
 
             // 2. Adjust Total Amount for Royalty Calculation
             // Royalties are calculated ONLY on the MARGIN (Value Added)
-            $totalAmount = $totalAmount - $goldBaseValue; // Proceed with remaining margin
+            $totalAmount = $totalAmount - $baseValue; // Proceed with remaining margin
         }
         // ------------------------------------------------------------------
 
@@ -701,7 +708,7 @@ class PaymentDistributionService {
                     'buyer_wallet' => $egiBlockchain->buyer_wallet,
                     'buyer_user_id' => $egiBlockchain->buyer_user_id,
                     'ownership_type' => $egiBlockchain->ownership_type,
-                    'is_margin_calulation' => ($goldBaseValue > 0), // Flag if calculated on margin
+                    'is_margin_calulation' => ($baseValue > 0), // Flag if calculated on margin
                 ]
             ];
         }

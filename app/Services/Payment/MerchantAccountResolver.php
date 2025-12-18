@@ -240,7 +240,14 @@ class MerchantAccountResolver {
     private function validateSingleWallet(Wallet $wallet, string $provider): array {
         try {
             if ($provider === 'stripe') {
-                $accountId = $wallet->user?->stripe_account_id ?? $wallet->stripe_account_id;
+                // FALLBACK LOGIC "se non c'è una relazione falla":
+                // If wallet has no user, check Collection Owner
+                $user = $wallet->user;
+                if (!$user && $wallet->collection && $wallet->collection->owner) {
+                    $user = $wallet->collection->owner;
+                }
+
+                $accountId = $user?->stripe_account_id ?? $wallet->stripe_account_id;
 
                 if (empty($accountId)) {
                     return ['valid' => false, 'account_id' => null, 'error' => 'missing_account_id'];
