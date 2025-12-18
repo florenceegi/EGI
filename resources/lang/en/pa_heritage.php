@@ -75,4 +75,16 @@ return [
     'section_description' => 'Description',
     'section_collection' => 'Collection',
     'section_metadata' => 'Metadata',
+
+    // Commodity Fields
+    'field_asset_type' => 'Asset Type',
+    'asset_type_optional' => '(Optional)',
+    'asset_type_standard' => 'Standard Cultural Asset',
+    'asset_type_goldbar' => 'Gold Bar',
+    'commodity_help' => 'Select "Gold Bar" to enable dedicated commodity features.',
+    'goldbar_details' => 'Gold Bar Details',
+    'field_weight' => 'Weight',
+    'field_purity' => 'Purity',
+    'field_markup' => 'Markup (%)',
+    'field_margin_fixed' => 'Fixed Margin (€)',
 ];

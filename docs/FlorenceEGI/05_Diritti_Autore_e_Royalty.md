@@ -82,6 +82,9 @@ FlorenceEGI implementa un **sistema a doppio strato** per massimizzare i compens
 
 ### Layer 1: Royalty Piattaforma (Contrattuale)
 
+> [!WARNING]
+> **Esclusione Commodity**: Le **Gold Bars** e simili asset puramente finanziari/materiali sono **ESENTI** dalla Royalty 4.5%. Per questi asset si applica solo la Fee di servizio fissa (vedi Rebind Policy).
+
 **Base Giuridica**: Smart contract FlorenceEGI
 
 #### Caratteristiche

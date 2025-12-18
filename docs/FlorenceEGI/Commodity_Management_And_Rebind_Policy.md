@@ -123,6 +123,13 @@ La classe Commodity (es. `GoldCommodity`) è responsabile di questo calcolo nel 
 *   Il campo `price` su DB sarà 1.100€.
 *   Il campo `company_commission` su DB sarà 10€.
 
+### 6.4 Compatibilità Master & Clone
+Questa logica si applica identicamente sia ai **Master** che ai **Clones** (Direct Mint).
+*   **Master**: Definisce il prezzo e il costo base.
+*   **Clone**: Eredita il `commodity_base_value` (Costo) dal Master al momento del mint.
+    *   Il calcolo della fee avviene *sempre* sul Margine (Prezzo Clone - Costo Base Clone).
+    *   Questo garantisce che la fee piattaforme non eroda mai il capitale necessario a coprire il costo della materia prima (es. acquisto oro fisico), anche per vendite massive di copie.
+
 ---
 
 ## 7. Piano di Migrazione

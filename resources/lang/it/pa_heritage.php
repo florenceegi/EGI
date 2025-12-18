@@ -219,4 +219,5 @@ return [
     'field_weight' => 'Peso',
     'field_purity' => 'Purezza',
     'field_markup' => 'Markup (%)',
+    'field_margin_fixed' => 'Margine Fisso (€)',
 ];

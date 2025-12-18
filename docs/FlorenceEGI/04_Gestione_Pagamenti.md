@@ -12,6 +12,10 @@ Il sistema è progettato per **tutti**: dal neofita che usa solo euro al crypto-
 
 Il sistema di pagamenti non distingue più rigidamente tra Ruoli Utente, ma permette di scegliere il **Profilo della Collection** più adatto al proprio modello.
 
+> [!NOTE]
+> **Commodity (Assets Finanziari/Materiali)**:
+> Per le Commodity (es. Gold Bars, **sia Master che Clone**), la **Fee di Piattaforma (10%)** si applica solo sul **Margine Aziendale** (Markup), non sull'intero prezzo dell'asset. Il costo vivo della materia prima è esente da fee. Questo vale per ogni singola copia mintata.
+
 ### Chi può scegliere cosa?
 *   **Creator (Utenti Base):** Operano nativamente nel profilo **Contributor**.
 *   **Company (Aziende):** Possono **scegliere** tra profilo **Contributor** (per benefici etici) o profilo **Normal** (business puro).
@@ -27,15 +31,17 @@ Il sistema di pagamenti non distingue più rigidamente tra Ruoli Utente, ma perm
 | Natan (Piattaforma) | 10% | Infrastruttura tecnologica |
 | Frangette | 2% | Sviluppo ecosistema (Obbligatorio) |
 
-**Sotto-Opzioni (Scelta Owner):**
-1.  **Opzione Contributor (No Canone):**
-    *   **EPP:** 20%
-    *   **Abbonamento:** Nessuno (Gratis)
-    *   *Netto Owner:* 68%
-2.  **Opzione Subscriber (Con Canone):**
-    *   **EPP:** 0%
-    *   **Abbonamento:** Obbligatorio (Attivo)
-    *   *Netto Owner:* 88%
+### 1. Profilo CONTRIBUTOR (Modello Etico)
+*Accessibile a Creator e Company. Nessun costo fisso di abbonamento.*
+
+**Struttura Unica:**
+| Destinatario | Percentuale | Note |
+|--------------|-------------|------|
+| Owner | 68% | Royalty netta venditore |
+| **EPP** | **20%** | **Obbligatorio** (Sostegno ecosistema) |
+| Natan (Piattaforma) | 10% | Infrastruttura tecnologica |
+| **Frangette** | **2%** | **Obbligatorio** (Sviluppo sociale) |
+| **Abbonamento** | **NESSUNO** | Profilo gratuito |
 
 ### 2. Profilo NORMAL (Modello Business)
 *Esclusivo per Company. Nessun beneficio etico aggiuntivo.*
@@ -57,13 +63,14 @@ Le fee di rivendita seguono il profilo della Collection originale.
 
 | Destinatario | Profilo CONTRIBUTOR | Profilo NORMAL |
 | :--- | :--- | :--- |
-| **Creator Royalty** | 4.5% | 4.5% |
-| **Natan (Piattaforma)** | 0.7% | 0.7% |
-| **Frangette** | 0.1% | 0% |
-| **EPP** | 0.8% | 0% |
-| **TOTALE FEES** | **6.1%** | **5.2%** |
+| **Creator Royalty** | 4.5% | 6.0% |
+| **Natan (Piattaforma)** | 0.8% | 1.0% |
+| **Frangette** | 0.2% | 0% |
+| **EPP** | 1.5% | 0% |
+| **TOTALE FEES** | **7.0%** | **7.0%** |
+| **COMMODITY (GOLD)** | **Fee Fissa 50 Egili** | **Fee Fissa 50 Egili** |
 
-*(Il venditore incassa il residuo: 93.9% nel Contributor, 94.8% nel Normal)*
+*(Il venditore incassa il residuo: 93.0% nel sia Contributor che Normal)*
 
 ### Riepilogo Differenze
 
@@ -71,9 +78,15 @@ Le fee di rivendita seguono il profilo della Collection originale.
 | :--- | :--- | :--- |
 | **Target Utente** | Creator & Company (Etiche) | Solo Company |
 | **Frangette (2%)** | ✅ Obbligatorio | ❌ Esente |
-| **EPP Royalty** | 20% (o 0% se abbonato) | 0% (Esente) |
-| **Abbonamento** | Opzionale (alternativa a EPP) | **Obbligatorio** |
-| **Royalty Netta Base** | 68% (o 88%) | 90% |
+### Riepilogo Differenze
+
+| Aspetto | Profilo CONTRIBUTOR | Profilo NORMAL |
+| :--- | :--- | :--- |
+| **Target Utente** | Creator & Company (Etiche) | Solo Company |
+| **Frangette (2%)** | ✅ **Sì (2%)** | ❌ **No (0%)** |
+| **EPP Royalty** | ✅ **Sì (20%)** | ❌ **No (0%)** |
+| **Abbonamento** | ❌ **No (Gratis)** | ✅ **Obbligatorio** |
+| **Royalty Netta Base** | 68% | 90% |
 
 ---
 

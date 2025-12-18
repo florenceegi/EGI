@@ -9,6 +9,13 @@ In una transazione di Rebind, il prezzo di vendita pagato dall'acquirente viene 
 ### Logica di Distribuzione:
 L'importo totale (Prezzo di Vendita) viene allocato secondo il seguente ordine di priorità:
 
+> [!IMPORTANT]
+> **Eccezione Commodity (Gold Bars)**:
+> Le Commodity seguono una logica diversa (Capitale vs Opera d'Ingegno).
+> - **Fee Fissa**: Il venditore paga **50 Egili** fissi per il servizio.
+> - **Royalties 0%**: Non si applicano le percentuali riportate sotto (Creator, EPP, Natan = 0%).
+> - **Netto Venditore**: 100% Prezzo Mercato - 50 Egili.
+
 1.  **Creator (Autore)**
     - **Percentuale**: Predefinita da `config/egi.php` (default 4.5%) o sovrascritta da `Wallet::royalty_rebind`.
     - **Fonte**: Wallet del creatore associato alla Collection.
