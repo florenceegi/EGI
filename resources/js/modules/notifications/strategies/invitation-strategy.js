@@ -42,6 +42,13 @@ export class InvitationStrategy {
     async handleAction(actionRequest, baseUrl) {
         const fullBaseUrl = baseUrl + this.payload;
         console.log(`🚀 handleAction parametri per la notifica ${JSON.stringify(actionRequest)} e per il percorso: ${fullBaseUrl}`);
+        
+        // DEBUG: Log what values we're comparing
+        console.log(`🔍 DEBUG: actionRequest.action = "${actionRequest.action}" (type: ${typeof actionRequest.action})`);
+        console.log(`🔍 DEBUG: this.statuses.ACCEPTED = "${this.statuses.ACCEPTED}" (type: ${typeof this.statuses.ACCEPTED})`);
+        console.log(`🔍 DEBUG: this.statuses.REJECTED = "${this.statuses.REJECTED}"`);
+        console.log(`🔍 DEBUG: this.statuses.ARCHIVED = "${this.statuses.ARCHIVED}"`);
+        console.log(`🔍 DEBUG: Match ACCEPTED: ${actionRequest.action === this.statuses.ACCEPTED}`);
 
         const actions = {
             [this.statuses.ACCEPTED]: () => this.accept(actionRequest, fullBaseUrl),
@@ -55,6 +62,7 @@ export class InvitationStrategy {
             console.log(`✅ Azione ${actionRequest.action} completata per invito ${actionRequest.notificationId}`);
         } else {
             console.warn(`Azione non gestita: ${actionRequest.action}`);
+            console.warn(`🔍 DEBUG: Available actions: ${Object.keys(actions).join(', ')}`);
         }
     }
 

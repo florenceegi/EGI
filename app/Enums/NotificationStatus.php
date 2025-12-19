@@ -21,8 +21,8 @@ enum NotificationStatus: string
 
     // Stati per proposte a due vie (Inviti, Wallet)
     case REQUEST = 'request';
-    case ACCEPTED = 'Accepted';
-    case REJECTED = 'Rejected';
+    case ACCEPTED = 'accepted';
+    case REJECTED = 'rejected';
 
     // Stati specifici per il nuovo flusso GDPR
     case PENDING_CONFIRMATION = 'pending_confirmation';

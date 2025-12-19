@@ -4,6 +4,7 @@
             $notification->model->type === App\Enums\NotificationStatus::CREATION->value))
     <div class="notification-item mb-3 flex space-x-3" data-notification-id="{{ $notification->id }}"
         data-payload="{{ App\Enums\NotificationHandlerType::WALLET->value }}"
+        data-payload-id="{{ $notification->model->id }}"
         aria-label="Azioni per la notifica di creazione del wallet">
         <div class="notification-actions flex space-x-3">
             @if (
