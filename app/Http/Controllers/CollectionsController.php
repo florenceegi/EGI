@@ -655,6 +655,68 @@ class CollectionsController extends Controller {
     }
 
     /**
+     * Update or create EPP wallet user details for a collection
+     * 
+     * When an EPP project is assigned to a collection, this method ensures
+     * the EPP wallet is created (if missing) or updated with the correct
+     * user_id and wallet address from the EPP project's user.
+     *
+     * @param Collection $collection The collection with an assigned epp_project_id
+     * @return void
+     */
+    private function updateEppWalletUser(Collection $collection): void {
+        if (!$collection->epp_project_id) {
+            // No EPP project assigned, nothing to do
+            return;
+        }
+
+        // Load the EPP project with its user
+        $collection->loadMissing('eppProject.eppUser');
+        
+        if (!$collection->eppProject || !$collection->eppProject->eppUser) {
+            app(\Ultra\UltraLogManager\UltraLogManager::class)->warning('[CollectionsController] EPP project or user not found', [
+                'collection_id' => $collection->id,
+                'epp_project_id' => $collection->epp_project_id
+            ]);
+            return;
+        }
+
+        $eppUser = $collection->eppProject->eppUser;
+
+        // Find or create the EPP wallet for this collection
+        $eppWallet = \App\Models\Wallet::where('collection_id', $collection->id)
+            ->where('platform_role', 'EPP')
+            ->first();
+
+        if ($eppWallet) {
+            // Update existing wallet with the EPP user details
+            $eppWallet->user_id = $eppUser->id;
+            $eppWallet->wallet = $eppUser->wallet ?? '';
+            $eppWallet->save();
+        } else {
+            // Create new EPP wallet - get percentages from FeeStructure
+            $profile = $collection->profile_type ?? 'contributor';
+            $mintFees = \App\Enums\Fees\FeeStructureEnum::fromProfile($profile, 'mint')->getDistribution();
+            $rebindFees = \App\Enums\Fees\FeeStructureEnum::fromProfile($profile, 'rebind')->getDistribution();
+
+            \App\Models\Wallet::create([
+                'collection_id' => $collection->id,
+                'user_id' => $eppUser->id,
+                'platform_role' => 'EPP',
+                'wallet' => $eppUser->wallet ?? '',
+                'royalty_mint' => $mintFees['EPP'] ?? 20.0,
+                'royalty_rebind' => $rebindFees['EPP'] ?? 0.8,
+            ]);
+        }
+
+        app(\Ultra\UltraLogManager\UltraLogManager::class)->info('[CollectionsController] EPP wallet user synced', [
+            'collection_id' => $collection->id,
+            'epp_project_id' => $collection->epp_project_id,
+            'epp_user_id' => $eppUser->id
+        ]);
+    }
+
+    /**
      * Activate subscription for collection (Egili payment)
      *
      * @param Request $request HTTP request
