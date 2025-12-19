@@ -69,11 +69,11 @@
             data-payload-id={{ $notification->model->id }} aria-label="Azioni per la notifica di creazione del wallet">
             <div class="notification-actions flex space-x-3">
                 @if ($notification->outcome === App\Enums\NotificationStatus::PENDING->value)
-                    <button id="invitation-response-btn-{{ $notification->id }}"
-                        class="invitation-response-btn flex flex-1 items-center justify-center rounded-lg bg-green-500 px-4 py-2 text-white transition-colors duration-200 hover:bg-green-600"
-                        data-payload-id="{{ $notification->model->id }}"
-                        data-action={{ App\Enums\NotificationStatus::ACCEPTED->value }}
-                        aria-label="Accetta la notifica di creazione del wallet">
+                    <button 
+                        wire:click="response('accepted')"
+                        wire:confirm="Sei sicuro? Accettando entrerai nel team della collection."
+                        class="flex flex-1 items-center justify-center rounded-lg bg-green-500 px-4 py-2 text-white transition-colors duration-200 hover:bg-green-600"
+                        aria-label="Accetta l'invito alla collection">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -81,11 +81,11 @@
                         {{ __('label.accept') }}
                     </button>
 
-                    <button id="invitation-reject-btn-{{ $notification->id }}"
-                        class="invitation-reject-btn flex flex-1 items-center justify-center rounded-lg bg-red-500 px-4 py-2 text-white transition-colors duration-200 hover:bg-red-600"
-                        data-payload-id="{{ $notification->model->id }}"
-                        data-action={{ App\Enums\NotificationStatus::REJECTED->value }}
-                        aria-label="Rifiuta la notifica di creazione del wallet">
+                    <button 
+                        wire:click="response('rejected')"
+                        wire:confirm="Sei sicuro? Rifiutando non entrerai nel team della collection."
+                        class="flex flex-1 items-center justify-center rounded-lg bg-red-500 px-4 py-2 text-white transition-colors duration-200 hover:bg-red-600"
+                        aria-label="Rifiuta l'invito alla collection">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -109,66 +109,8 @@
         </div>
     </div>
 
+    @script
     <script>
-        // Use DOM ready pattern to ensure elements exist
-        document.addEventListener('DOMContentLoaded', function() {
-            const acceptButton = document.querySelector('.invitation-response-btn[data-action="accepted"]');
-            const rejectButton = document.querySelector('.invitation-reject-btn[data-action="rejected"]');
-
-            if (acceptButton) {
-                // Gestione messaggio di conferma per accettare
-                acceptButton.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    Swal.fire({
-                        title: 'Sei sicuro?',
-                        text: 'Accettando entrerai nel team della collection.',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Sì, accetto!',
-                        cancelButtonText: 'No, annulla',
-                        customClass: {
-                            confirmButton: 'btn btn-success',
-                            cancelButton: 'btn btn-danger'
-                        },
-                        buttonsStyling: false
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            console.log('Invito accettato!');
-                            @this.dispatch('response', {
-                                option: 'accepted'
-                            });
-                        }
-                    });
-                });
-            }
-
-            if (rejectButton) {
-                // Gestione messaggio di conferma per rifiutare
-                rejectButton.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    Swal.fire({
-                        title: 'Sei sicuro?',
-                        text: 'Rifiutando non entrerai nel team della collection.',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Sì, rifiuto!',
-                        cancelButtonText: 'No, annulla',
-                        customClass: {
-                            confirmButton: 'btn btn-danger',
-                            cancelButton: 'btn btn-secondary'
-                        },
-                        buttonsStyling: false
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            @this.dispatch('response', {
-                                option: 'rejected'
-                            });
-                        }
-                    });
-                });
-            }
-        });
-
         // Ascolta la risposta dal backend
         Livewire.on('notification-response', (data) => {
             // Livewire 3 event format: data is first element of array
@@ -206,5 +148,6 @@
             }
         });
     </script>
+    @endscript
 
 </div>
