@@ -97,87 +97,16 @@
         </div>
     </div>
 
-        <script>
-
-            const acceptButton = document.getElementById('accept-invitation');
-            const rejectButton = document.getElementById('reject-invitation');
-
-            // Gestione messaggio di conferma per accettare
-            acceptButton.addEventListener('click', function (event) {
-                event.preventDefault();
-                Swal.fire({
-                    title: 'Sei sicuro?',
-                    text: 'Accettando entrerai nel team della collection.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sì, accetto!',
-                    cancelButtonText: 'No, annulla',
-                    customClass: {
-                        confirmButton: 'btn btn-success',
-                        cancelButton: 'btn btn-danger'
-                    },
-                    buttonsStyling: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        console.log('Invito accettato!');
-                        $wire.dispatch('response', { option: 'accepted' });
-                    }
-                });
-            });
-
-            // Gestione messaggio di conferma per rifiutare
-            rejectButton.addEventListener('click', function (event) {
-                event.preventDefault();
-                Swal.fire({
-                    title: 'Sei sicuro?',
-                    text: 'Rifiutando non entrerai nel team della collection.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sì, rifiuto!',
-                    cancelButtonText: 'No, annulla',
-                    customClass: {
-                        confirmButton: 'btn btn-danger',
-                        cancelButton: 'btn btn-secondary'
-                    },
-                    buttonsStyling: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $wire.dispatch('response', { option: 'rejected' });
-                    }
-                });
-            });
-
-            // Ascolta la risposta dal backend
-            $wire.on('notification-response', (event) => {
-                if (event.detail.success) {
-                    Swal.fire(
-                        event.detail.option === 'accepted' ? 'Invito accettato!' : 'Invito rifiutato!',
-                        'Operazione completata con successo.',
-                        'success'
-                    );
-                } else {
-                    // Gestione specifica per l'errore "già membro"
-                    if (event.detail.error === 'ALREADY_MEMBER') {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Già membro!',
-                            text: event.detail.message || 'Sei già membro di questa collezione!',
-                            confirmButtonText: 'Ho capito',
-                            confirmButtonColor: '#3B82F6',
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            backdrop: 'rgba(0, 0, 0, 0.5)'
-                        });
-                    } else {
-                        // Altri errori - mostra errore generico
-                        Swal.fire(
-                            'Errore!',
-                            event.detail.message || event.detail.error || 'Si è verificato un errore.',
-                            'error'
-                        );
-                    }
-                }
-            });
-        </script>
+        {{-- 
+            NOTE: Button click handling is managed by TypeScript in:
+            resources/js/modules/notifications/responses/notification.js
+            
+            The buttons use classes .invitation-response-btn / .invitation-reject-btn
+            which are intercepted by the Notification class bindEvents() method.
+            The InvitationStrategy handles accept/reject actions.
+            
+            Do NOT add inline JavaScript here - it will conflict with the TypeScript system.
+        --}}
 
 </div>
 
