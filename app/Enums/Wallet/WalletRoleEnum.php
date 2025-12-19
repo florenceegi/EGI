@@ -83,11 +83,15 @@ enum WalletRoleEnum: string {
      * Get user ID from config for platform roles
      *
      * @return int|null Platform user ID (null for dynamic user roles)
+     * 
+     * NOTE: EPP returns null because EPP is now dynamically assigned per-collection
+     * by the user, not a fixed platform account. EPP wallet creation depends on
+     * the collection's epp_project_id relationship.
      */
     public function getUserId(): ?int {
         return match ($this) {
             self::NATAN => config('app.natan_id', 1),
-            self::EPP => config('app.epp_id', 2),
+            self::EPP => null, // EPP is dynamic per-collection, not a fixed system account
             self::FRANGETTE => config('app.frangette_id', 3),
             self::CREATOR, self::COMPANY => null, // Dynamic user
         };
@@ -95,13 +99,14 @@ enum WalletRoleEnum: string {
 
     /**
      * Check if this role is a platform role (not user-specific)
-     * Platform roles are system accounts: EPP, Natan, Frangette
-     * User roles are dynamic: Creator, Company
+     * Platform roles are system accounts: Natan, Frangette
+     * Dynamic roles: Creator, Company, EPP (assigned per-collection)
      *
      * @return bool
      */
     public function isPlatformRole(): bool {
-        return !in_array($this, [self::CREATOR, self::COMPANY], true);
+        // EPP is no longer a fixed platform role - it's dynamically assigned per-collection
+        return in_array($this, [self::NATAN, self::FRANGETTE], true);
     }
 
     /**

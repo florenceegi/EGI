@@ -1,0 +1,201 @@
+ for key '/home/fabio/.ssh/id_rsa': 
+[2025-12-18 21:39:05] staging.DEBUG: [UTM Fetch] Key 'View creator profile %s' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:39:05] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'View creator profile %s' even with fallback locale.  
+[2025-12-18 21:39:21] staging.DEBUG: [UTM Fetch] Key 'auth.logout_success' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:39:22] staging.DEBUG: [UTM Fetch] Key 'collector.carousel.empty_state.title' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:39:22] staging.DEBUG: [UTM Fetch] Key 'collector.carousel.empty_state.subtitle' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:39:22] staging.DEBUG: [UTM Fetch] Key 'collector.carousel.empty_state.cta' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:39:22] staging.DEBUG: [UTM Fetch] Key 'View collection %s by %s' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:39:22] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'View collection %s by %s' even with fallback locale.  
+[2025-12-18 21:39:22] staging.DEBUG: [UTM Fetch] Key 'by' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:39:22] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'by' even with fallback locale.  
+[2025-12-18 21:39:22] staging.DEBUG: [UTM Fetch] Key 'guest_home.epp_banner_message' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:39:22] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'guest_home.epp_banner_message' even with fallback locale.  
+[2025-12-18 21:39:27] staging.DEBUG: [UTM Fetch] Key 'auth.login_page_title' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:39:27] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'auth.login_page_title' even with fallback locale.  
+[2025-12-18 21:39:27] staging.DEBUG: [UTM Fetch] Key 'auth.login_welcome_message' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:39:27] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'auth.login_welcome_message' even with fallback locale.  
+[2025-12-18 21:42:45] staging.DEBUG: [UTM Fetch] Key 'collection.edit_collection' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:42:45] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'collection.edit_collection' even with fallback locale.  
+[2025-12-18 21:42:45] staging.DEBUG: [UTM Fetch] Key 'collection.no_collection' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:42:45] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'collection.no_collection' even with fallback locale.  
+[2025-12-18 21:42:45] staging.DEBUG: [UTM Fetch] Key 'collection.view_collection' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:42:45] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'collection.view_collection' even with fallback locale.  
+[2025-12-18 21:56:20] staging.INFO: Updating rarity percentages for collection {"collection_id":5} 
+[2025-12-18 21:56:20] staging.INFO: Found unique traits {"count":0} 
+[2025-12-18 21:56:20] staging.INFO: Rarity percentages updated successfully for collection {"collection_id":5} 
+[2025-12-18 21:56:27] staging.INFO: Updating rarity percentages for collection {"collection_id":5} 
+[2025-12-18 21:56:27] staging.INFO: Found unique traits {"count":0} 
+[2025-12-18 21:56:27] staging.INFO: Rarity percentages updated successfully for collection {"collection_id":5} 
+[2025-12-18 21:56:33] staging.INFO: Updating rarity percentages for collection {"collection_id":5} 
+[2025-12-18 21:56:33] staging.INFO: Found unique traits {"count":0} 
+[2025-12-18 21:56:33] staging.INFO: Rarity percentages updated successfully for collection {"collection_id":5} 
+[2025-12-18 21:56:41] staging.INFO: Updating rarity percentages for collection {"collection_id":5} 
+[2025-12-18 21:56:41] staging.INFO: Found unique traits {"count":0} 
+[2025-12-18 21:56:41] staging.INFO: Rarity percentages updated successfully for collection {"collection_id":5} 
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'egi.crud.saving' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'egi.crud.saving' even with fallback locale.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'egi.validation.validation_failed' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'egi.validation.validation_failed' even with fallback locale.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'egi.coa.remove_signature' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'egi.coa.confirm_remove_signature' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'egi.coa.signature_removed' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'egi.coa.signature_removal_failed' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'egi.coa.signature_removal_warning' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'Master System' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Master System' even with fallback locale.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'Template Mode' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Template Mode' even with fallback locale.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'Use as Master for cloning' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Use as Master for cloning' even with fallback locale.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'Toggle Master Settings' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Toggle Master Settings' even with fallback locale.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'Buyer Cloning' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Buyer Cloning' even with fallback locale.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'Allow buyers to purchase clones' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Allow buyers to purchase clones' even with fallback locale.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'Generate Clone' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Generate Clone' even with fallback locale.  
+[2025-12-18 21:57:02] staging.DEBUG: [UTM Fetch] Key 'Generate a new Child EGI from this Master.' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:02] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Generate a new Child EGI from this Master.' even with fallback locale.  
+[2025-12-18 21:57:14] staging.DEBUG: [UTM Fetch] Key 'patron.portfolio.supported' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:14] staging.DEBUG: [UTM Fetch] Key 'collection.show.from_collection' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:14] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'collection.show.from_collection' even with fallback locale.  
+[2025-12-18 21:57:14] staging.DEBUG: [UTM Fetch] Key 'collection.update_donation' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:14] staging.DEBUG: [UTM Fetch] Key 'collection.donation_percentage_label' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:14] staging.DEBUG: [UTM Fetch] Key 'common.loading' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:14] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'common.loading' even with fallback locale.  
+[2025-12-18 21:57:14] staging.DEBUG: [UTM Fetch] Key 'common.success' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:14] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'common.success' even with fallback locale.  
+[2025-12-18 21:57:14] staging.DEBUG: [UTM Fetch] Key 'collection.donation_updated' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:57:14] staging.DEBUG: [UTM Fetch] Key 'collection.donation_update_error' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:59:28] staging.DEBUG: [UTM Fetch] Key 'auth.gdpr_consent_required' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:59:28] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'auth.gdpr_consent_required' even with fallback locale.  
+[2025-12-18 21:59:42] staging.DEBUG: [UTM Fetch] Key 'error-manager::errors_2.dev.mint_missing_stripe_accounts' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:59:42] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'error-manager::errors_2.dev.mint_missing_stripe_accounts' even with fallback locale.  
+[2025-12-18 21:59:42] staging.DEBUG: [UTM Fetch] Key 'error-manager::errors_2.user.mint_missing_stripe_accounts' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2025-12-18 21:59:42] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'error-manager::errors_2.user.mint_missing_stripe_accounts' even with fallback locale.  
+[2025-12-18 21:59:42] staging.ERROR: Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED] {"userId":34,"exception":"[object] (Ultra\\ErrorManager\\Exceptions\\UltraErrorException(code: 500): Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED] at /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/ultra/ultra-error-manager/src/ErrorManager.php:454)
+[stacktrace]
+#0 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/ultra/ultra-error-manager/src/ErrorManager.php(223): Ultra\\ErrorManager\\ErrorManager->buildResponse()
+#1 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/app/Http/Controllers/MintController.php(1955): Ultra\\ErrorManager\\ErrorManager->handle()
+#2 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(54): App\\Http\\Controllers\\MintController->processDirectMint()
+#3 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction()
+#4 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch()
+#5 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Route.php(212): Illuminate\\Routing\\Route->runController()
+#6 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Router.php(808): Illuminate\\Routing\\Route->run()
+#7 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(170): Illuminate\\Routing\\Router->{closure:Illuminate\\Routing\\Router::runRouteWithinStack():807}()
+#8 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/app/Http/Middleware/SetLanguage.php(47): Illuminate\\Pipeline\\Pipeline->{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():168}()
+#9 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): App\\Http\\Middleware\\SetLanguage->handle()
+#10 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#11 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle()
+#12 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(64): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#13 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Auth\\Middleware\\Authenticate->handle()
+#14 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php(88): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#15 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle()
+#16 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#17 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#18 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#19 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#20 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Session\\Middleware\\StartSession->handle()
+#21 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#22 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#23 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(75): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#24 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/app/Http/Middleware/EncryptCookies.php(29): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#25 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): App\\Http\\Middleware\\EncryptCookies->handle()
+#26 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#27 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Router.php(807): Illuminate\\Pipeline\\Pipeline->then()
+#28 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack()
+#29 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Router.php(750): Illuminate\\Routing\\Router->runRoute()
+#30 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute()
+#31 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(201): Illuminate\\Routing\\Router->dispatch()
+#32 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->{closure:Illuminate\\Foundation\\Http\\Kernel::dispatchToRouter():198}()
+#33 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/livewire/livewire/src/Features/SupportDisablingBackButtonCache/DisableBackButtonCacheMiddleware.php(19): Illuminate\\Pipeline\\Pipeline->{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():168}()
+#34 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Livewire\\Features\\SupportDisablingBackButtonCache\\DisableBackButtonCacheMiddleware->handle()
+#35 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/vapor-core/src/Http/Middleware/ServeStaticAssets.php(21): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#36 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Laravel\\Vapor\\Http\\Middleware\\ServeStaticAssets->handle()
+#37 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#38 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#39 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#40 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#41 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#42 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#43 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#44 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Http\\Middleware\\ValidatePostSize->handle()
+#45 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(110): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#46 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#47 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#48 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#49 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#50 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#51 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#52 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle()
+#53 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#54 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then()
+#55 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#56 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1220): Illuminate\\Foundation\\Http\\Kernel->handle()
+#57 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/public/index.php(27): Illuminate\\Foundation\\Application->handleRequest()
+#58 {main}
+"} 
+[2025-12-18 22:07:03] staging.ERROR: Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED] {"userId":34,"exception":"[object] (Ultra\\ErrorManager\\Exceptions\\UltraErrorException(code: 500): Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED] at /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/ultra/ultra-error-manager/src/ErrorManager.php:454)
+[stacktrace]
+#0 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/ultra/ultra-error-manager/src/ErrorManager.php(223): Ultra\\ErrorManager\\ErrorManager->buildResponse()
+#1 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/app/Http/Controllers/MintController.php(1955): Ultra\\ErrorManager\\ErrorManager->handle()
+#2 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(54): App\\Http\\Controllers\\MintController->processDirectMint()
+#3 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction()
+#4 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch()
+#5 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Route.php(212): Illuminate\\Routing\\Route->runController()
+#6 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Router.php(808): Illuminate\\Routing\\Route->run()
+#7 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(170): Illuminate\\Routing\\Router->{closure:Illuminate\\Routing\\Router::runRouteWithinStack():807}()
+#8 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/app/Http/Middleware/SetLanguage.php(47): Illuminate\\Pipeline\\Pipeline->{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():168}()
+#9 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): App\\Http\\Middleware\\SetLanguage->handle()
+#10 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#11 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle()
+#12 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(64): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#13 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Auth\\Middleware\\Authenticate->handle()
+#14 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php(88): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#15 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle()
+#16 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#17 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#18 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#19 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#20 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Session\\Middleware\\StartSession->handle()
+#21 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#22 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#23 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(75): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#24 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/app/Http/Middleware/EncryptCookies.php(29): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#25 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): App\\Http\\Middleware\\EncryptCookies->handle()
+#26 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#27 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Router.php(807): Illuminate\\Pipeline\\Pipeline->then()
+#28 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack()
+#29 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Router.php(750): Illuminate\\Routing\\Router->runRoute()
+#30 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Routing/Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute()
+#31 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(201): Illuminate\\Routing\\Router->dispatch()
+#32 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->{closure:Illuminate\\Foundation\\Http\\Kernel::dispatchToRouter():198}()
+#33 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/livewire/livewire/src/Features/SupportDisablingBackButtonCache/DisableBackButtonCacheMiddleware.php(19): Illuminate\\Pipeline\\Pipeline->{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():168}()
+#34 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Livewire\\Features\\SupportDisablingBackButtonCache\\DisableBackButtonCacheMiddleware->handle()
+#35 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/vapor-core/src/Http/Middleware/ServeStaticAssets.php(21): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#36 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Laravel\\Vapor\\Http\\Middleware\\ServeStaticAssets->handle()
+#37 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#38 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#39 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#40 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#41 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#42 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#43 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#44 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Http\\Middleware\\ValidatePostSize->handle()
+#45 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(110): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#46 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#47 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#48 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#49 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#50 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#51 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#52 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle()
+#53 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():184}:185}()
+#54 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then()
+#55 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#56 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1220): Illuminate\\Foundation\\Http\\Kernel->handle()
+#57 /home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/public/index.php(27): Illuminate\\Foundation\\Application->handleRequest()
+#58 {main}
+"} 

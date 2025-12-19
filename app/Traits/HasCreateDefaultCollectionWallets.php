@@ -50,25 +50,31 @@ trait HasCreateDefaultCollectionWallets
                         continue; 
                     }
                 } else {
-                    // Platform Roles (Natan, EPP, Frangette)
+                    // Handle role-specific wallet creation
                     if ($roleEnum === \App\Enums\Wallet\WalletRoleEnum::CREATOR) {
                         $address = $wallet_creator;
                         $userId = $creator_id;
-                    } elseif ($roleEnum === \App\Enums\Wallet\WalletRoleEnum::EPP && $collection->epp_project_id) {
-                        // Intelligent EPP User fetching
-                        // Ensure relationship is loaded
-                        $collection->loadMissing('eppProject.eppUser');
-                        
-                        if ($collection->eppProject && $collection->eppProject->eppUser) {
-                            $eppUser = $collection->eppProject->eppUser;
-                            $address = $eppUser->wallet ?? '';
-                            $userId = $eppUser->id;
+                    } elseif ($roleEnum === \App\Enums\Wallet\WalletRoleEnum::EPP) {
+                        // EPP: Only create wallet if collection has an assigned EPP project
+                        // EPP is dynamically assigned per-collection by the user, not auto-created
+                        if ($collection->epp_project_id) {
+                            $collection->loadMissing('eppProject.eppUser');
+                            
+                            if ($collection->eppProject && $collection->eppProject->eppUser) {
+                                $eppUser = $collection->eppProject->eppUser;
+                                $address = $eppUser->wallet ?? '';
+                                $userId = $eppUser->id;
+                            } else {
+                                // No valid EPP user found - skip wallet creation
+                                continue;
+                            }
                         } else {
-                            // Fallback to default if project/user not found
-                            $address = $roleEnum->getWalletAddress();
-                            $userId = $roleEnum->getUserId();
+                            // No EPP project assigned - skip EPP wallet creation entirely
+                            // User will assign EPP project later if desired
+                            continue;
                         }
                     } else {
+                        // Platform roles (Natan, Frangette) - use enum defaults
                         $address = $roleEnum->getWalletAddress();
                         $userId = $roleEnum->getUserId();
                     }

@@ -1,0 +1,51 @@
+ for key '/home/fabio/.ssh/id_rsa': 
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:13:41] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_MISSING_STRIPE_ACCOUNTS]
+
+Context {
+  {
+      "missing_accounts": "[{\"wallet_id\":23,\"platform_role\":\"EPP\"}]",
+      "missing_count": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:13:41] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]
+
+File: app/Services/Payment/StripePaymentSplitService.php:587
+
+Context {
+  {
+      "error_message": "Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]",
+      "_original_code": "STRIPE_PAYMENT_UNEXPECTED_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:13:41] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]
+
+File: app/Services/Payment/StripeRealPaymentService.php:203
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "payment_method": "stripe",
+      "error": "Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
