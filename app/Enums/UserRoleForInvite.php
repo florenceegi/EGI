@@ -21,7 +21,7 @@ enum UserRoleForInvite: string {
      * Solo questi user types possono ricevere inviti per collezioni
      */
     public static function allowedPlatformRoles(): array {
-        return ['creator', 'patron', 'enterprise'];
+        return ['creator', 'patron', 'company'];
     }
 
     /**
@@ -52,7 +52,7 @@ enum UserRoleForInvite: string {
         return [
             'creator' => 'Creator',
             'patron' => 'Patron',
-            'enterprise' => 'Enterprise',
+            'company' => 'Company',
         ];
     }
 
