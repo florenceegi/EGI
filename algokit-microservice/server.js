@@ -65,10 +65,10 @@ const algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
 // Treasury account - REAL generated mnemonic
 // IMPORTANT: In production, store mnemonic in secure vault (AWS Secrets Manager, HashiCorp Vault)
 // IMPORTANT: In production, store mnemonic in secure vault (AWS Secrets Manager, HashiCorp Vault)
-const treasuryMnemonic = process.env.TREASURY_MNEMONIC;
+const treasuryMnemonic = process.env.ALGORAND_TREASURY_MNEMONIC;
 
 if (!treasuryMnemonic) {
-    console.error("❌ CRITICAL ERROR: TREASURY_MNEMONIC environment variable is missing!");
+    console.error("❌ CRITICAL ERROR: ALGORAND_TREASURY_MNEMONIC environment variable is missing!");
     process.exit(1);
 }
 
