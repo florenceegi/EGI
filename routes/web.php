@@ -232,6 +232,20 @@ if (config('app.debug')) {
         return view('test-carousel');
     })->name('test.carousel');
 
+    // Route di test per la sfera Three.js con immagine
+    Route::get('/test-sphere', function () {
+        return view('test.sphere-experiment');
+    })->name('test.sphere');
+
+    // Route di test per il Composition Builder
+    Route::get('/test-composition', function () {
+        $egis = \App\Models\Egi::where('user_id', 26)
+            ->select('id', 'title', 'collection_id', 'user_id')
+            ->take(12)
+            ->get();
+        return view('test.composition-builder', compact('egis'));
+    })->name('test.composition');
+
     Route::get('/debug-session-direct', function () {
         return [
             'session_direct' => [
