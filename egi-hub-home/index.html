@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUB-EGI | CENTER</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+                "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js"
+            }
+        }
+    </script>
+    <!-- Note: EffectComposer and others will be imported in engine.js via 'three/addons/...' -->
+</head>
+
+<body>
+
+    <div id="loader">
+        <div class="loader-t">HUB-EGI</div>
+        <div class="bar-c">
+            <div class="bar-f"></div>
+        </div>
+    </div>
+
+    <div id="interface">
+
+        <div id="top-bar" class="ui-element">
+            <div class="brand">
+                <div class="brand-logo">F</div>FLORENCE <span>EGI</span>
+            </div>
+            <div class="motto-bar">SE ESISTE, <strong>EGIZZALO</strong>. SE LO EGIZZI, <strong>VALE</strong>.</div>
+            <div class="system-metrics">
+                <div class="metric-item"><span>TENANTS</span><span class="metric-val">5</span></div>
+                <div class="metric-item"><span>STATUS</span><span class="metric-val"><span
+                            class="live-dot"></span>ONLINE</span></div>
+            </div>
+        </div>
+
+        <div id="sidebar" class="ui-element">
+            <div class="nav-btn active" onclick="window.location.reload()"><i
+                    class="fa-solid fa-globe"></i><span>HUB</span></div>
+            <div class="nav-btn" onclick="window.location.href='natan.html'"><i
+                    class="fa-solid fa-brain"></i><span>NATAN</span></div>
+            <div class="nav-btn" onclick="window.location.href='art.html'"><i
+                    class="fa-solid fa-palette"></i><span>ART</span></div>
+            <div class="nav-btn"><i class="fa-solid fa-chart-line"></i><span>TOSCA</span></div>
+            <div class="nav-btn"><i class="fa-solid fa-shield-halved"></i><span>ADMIN</span></div>
+        </div>
+
+        <div id="mission-control" class="ui-element">
+            <span class="sub">MISSION CONTROL</span>
+            <h2>REGIA ECOSISTEMA</h2>
+            <p>Non è solo tecnologia. È il centro di gravità dove asset reali e digitali acquistano valore certificato.
+                Se esiste, lo egizziamo. Se lo egizziamo, vale.</p>
+            <div class="kpi-grid">
+                <div class="kpi">VALORE<span>CERTIFICATO</span></div>
+                <div class="kpi">DIRITTO<span>CERTEZZA</span></div>
+                <div class="kpi">ASSET<span>LIQUIDI</span></div>
+                <div class="kpi">TRUST<span>ON-CHAIN</span></div>
+            </div>
+        </div>
+
+        <div id="detail-panel" class="ui-element">
+            <span class="panel-cat" id="p-cat">CATEGORY</span>
+            <h2 class="panel-title" id="p-title">TITLE</h2>
+            <div class="panel-tag" id="p-tag">Tagline</div>
+            <p class="panel-desc" id="p-desc">...</p>
+
+            <ul class="bullet-list" id="p-bullets"></ul>
+
+            <div class="egi-why" id="p-why">Why EGI?</div>
+
+            <button class="btn-open" id="p-btn">APRI PROGETTO</button>
+        </div>
+
+        <div id="bottom-bar" class="ui-element">
+            <div class="log">EVENT BUS > System Ready.</div>
+            <div style="color:#666"><i class="fa-solid fa-mouse"></i> DRAG TO ROTATE</div>
+        </div>
+    </div>
+
+    <script src="ecosystem_data.js"></script>
+    <script type="module" src="engine.js"></script>
+    <script>
+        // Hide loader on load
+        window.onload = () => {
+            setTimeout(() => document.getElementById('loader').style.opacity = 0, 1000);
+            setTimeout(() => document.getElementById('loader').remove(), 2000);
+        };
+
+        // UI INTERACTION LOGIC
+        window.openDetailPanel = function (id) {
+            const data = window.ecosystemData[id];
+            if (!data) return console.error("No data for ID:", id);
+
+            // Populate Panel
+            document.getElementById('p-cat').innerText = data.cat;
+            document.getElementById('p-cat').style.color = '#' + data.color.toString(16).padStart(6, '0');
+            document.getElementById('p-title').innerText = data.label;
+            document.getElementById('p-tag').innerText = data.tagline;
+            document.getElementById('p-desc').innerText = data.desc;
+            document.getElementById('p-why').innerText = data.egi_link;
+
+            // Bullets
+            const list = document.getElementById('p-bullets');
+            list.innerHTML = '';
+            if (data.bullets) {
+                data.bullets.forEach(txt => {
+                    const li = document.createElement('li');
+                    li.innerText = txt;
+                    list.appendChild(li);
+                });
+            }
+
+            // Button
+            const btn = document.getElementById('p-btn');
+            if (data.route && data.route !== '#') {
+                btn.onclick = () => window.location.href = data.route;
+                btn.style.display = 'block';
+            } else {
+                btn.style.display = 'none';
+            }
+
+            // Show Panel
+            document.getElementById('detail-panel').classList.add('active');
+        };
+
+        // Close on click outside (optional) or add a close button
+        document.getElementById('interface').addEventListener('click', (e) => {
+            if (e.target.id === 'interface') {
+                document.getElementById('detail-panel').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+
+</html>
