@@ -17,10 +17,10 @@
     $egis = $collection->egis ?? collect();
     $logo = config('app.logo');
 
-    // Get first 6 EGI images for cube faces
+    // Get first 6 EGI images for cube faces (using accessor for Spatie compatibility)
     $faceImages = [];
     foreach ($egis->take(6) as $egi) {
-        $faceImages[] = "/users_files/collections_{$egi->collection_id}/creator_{$egi->user_id}/{$egi->id}_thumbnail.webp";
+        $faceImages[] = $egi->main_image_url;
     }
     // Fill remaining faces with null
     while (count($faceImages) < 6) {
@@ -115,7 +115,7 @@
                 <div class="cube-egi-selector" id="{{ $cubeId }}-egis">
                     @foreach ($egis as $egi)
                         @php
-                            $imgUrl = "/users_files/collections_{$egi->collection_id}/creator_{$egi->user_id}/{$egi->id}_thumbnail.webp";
+                            $imgUrl = $egi->main_image_url;
                         @endphp
                         <div class="cube-egi-thumb" data-egi-id="{{ $egi->id }}" data-image="{{ $imgUrl }}"
                             onclick="selectEgiForFace('{{ $cubeId }}', '{{ $imgUrl }}')">
