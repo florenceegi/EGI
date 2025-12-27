@@ -11,6 +11,7 @@
     - titleClass: string - Additional classes for the title (optional)
     - bgClass: string - Background class for the container (optional)
     - marginClass: string - Margin class for the container (optional)
+    - useCube: bool - Use 3D cube cards instead of standard cards (default: false)
 --}}
 
 @props([
@@ -19,6 +20,7 @@
     'titleClass' => '',
     'bgClass' => 'bg-gray-900',
     'marginClass' => 'mb-12',
+    'useCube' => false,
 ])
 
 {{-- Debug temporaneo: verifica che i dati arrivino correttamente --}}
@@ -39,11 +41,15 @@
         <div class="featured-collections-carousel relative overflow-hidden">
             <div class="scrollbar-hide flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 md:gap-6">
                 @forelse($collections as $index => $collection)
-                    {{-- VERSIONE DESKTOP: Card completa --}}
+                    {{-- VERSIONE DESKTOP: Card completa o Cubo 3D --}}
                     <div class="collection-card-desktop hidden w-72 flex-shrink-0 snap-start md:block md:w-80 lg:w-96"
                         data-collection-id="{{ $collection->id ?? $index }}">
                         <div class="group h-full">
-                            <x-home-collection-card :collection="$collection" imageType="card" displayType="default" />
+                            @if ($useCube)
+                                <x-collection-cube-card :collection="$collection" :showManageButton="true" />
+                            @else
+                                <x-home-collection-card :collection="$collection" imageType="card" displayType="default" />
+                            @endif
                         </div>
                     </div>
                 @empty

@@ -275,6 +275,11 @@ if (config('app.debug')) {
         return view('test.prism-viewer', compact('egis'));
     })->name('test.prism');
 
+    // Route di test per il Collection Cube (3D Cube Cards nel Carousel)
+    Route::get('/test-cube', function () {
+        return view('test.collection-cube');
+    })->name('test.cube');
+
     Route::get('/debug-session-direct', function () {
         return [
             'session_direct' => [

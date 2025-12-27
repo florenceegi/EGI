@@ -1,0 +1,565 @@
+/**
+ * Collection Cube 3D - Florence EGI
+ * CSS for cube cards and management modal
+ */
+
+/* ============================================================================
+   CUBE CARD CONTAINER
+   ============================================================================ */
+
+.collection-cube-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/5;
+    background: linear-gradient(145deg, #0a0a1a 0%, #1a1a2e 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.collection-cube-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+}
+
+.collection-cube-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.collection-cube-canvas canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+/* Info overlay at bottom */
+.collection-cube-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+    pointer-events: none;
+}
+
+.collection-cube-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.collection-cube-creator {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+.collection-cube-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    background: rgba(102, 126, 234, 0.2);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ce93d8;
+    margin-top: 8px;
+}
+
+/* Manage button */
+.collection-cube-manage-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.collection-cube-card:hover .collection-cube-manage-btn {
+    opacity: 1;
+}
+
+.collection-cube-manage-btn:hover {
+    background: rgba(102, 126, 234, 0.8);
+    border-color: rgba(102, 126, 234, 0.5);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* ============================================================================
+   MANAGEMENT MODAL
+   ============================================================================ */
+
+.cube-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.cube-modal-overlay.active {
+    display: flex;
+}
+
+.cube-modal {
+    background: linear-gradient(145deg, #0f0f23 0%, #1a1a2e 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    max-width: 1100px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+}
+
+/* Left side - 3D Preview */
+.cube-modal-preview {
+    flex: 1;
+    min-width: 400px;
+    background: #0a0a0f;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cube-modal-preview-canvas {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+}
+
+/* Right side - Controls */
+.cube-modal-controls {
+    width: 380px;
+    background: rgba(15, 15, 35, 0.98);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* Modal Header */
+.cube-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 16px;
+}
+
+.cube-modal-header h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cube-modal-header h2 i {
+    color: #ce93d8;
+}
+
+.cube-modal-close {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.cube-modal-close:hover {
+    background: rgba(255, 80, 80, 0.3);
+    color: #ff6666;
+}
+
+/* Panel Sections */
+.cube-panel-section {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
+}
+
+.cube-section-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ce93d8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cube-section-title i {
+    font-size: 0.85rem;
+}
+
+/* Face Assignment Grid */
+.cube-faces-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.cube-face-slot {
+    aspect-ratio: 1;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.cube-face-slot:hover {
+    border-color: rgba(102, 126, 234, 0.5);
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.cube-face-slot.has-image {
+    border-style: solid;
+    border-color: rgba(102, 126, 234, 0.4);
+}
+
+.cube-face-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cube-face-label {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+.cube-face-slot .placeholder-icon {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 1.2rem;
+}
+
+/* EGI Selector */
+.cube-egi-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.cube-egi-thumb {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.cube-egi-thumb:hover {
+    border-color: rgba(102, 126, 234, 0.5);
+    transform: scale(1.05);
+}
+
+.cube-egi-thumb.selected {
+    border-color: #667eea;
+    box-shadow: 0 0 12px rgba(102, 126, 234, 0.5);
+}
+
+.cube-egi-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Control Rows */
+.cube-control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.cube-control-row:last-child {
+    margin-bottom: 0;
+}
+
+.cube-control-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Sliders */
+.cube-slider-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 12px;
+}
+
+.cube-slider-container input[type="range"] {
+    flex: 1;
+    height: 5px;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
+}
+
+.cube-slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+}
+
+.cube-control-value {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    min-width: 35px;
+    text-align: right;
+    font-family: monospace;
+}
+
+/* Color Picker */
+.cube-color-picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cube-color-picker input[type="color"] {
+    width: 32px;
+    height: 32px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    cursor: pointer;
+    background: transparent;
+    padding: 2px;
+}
+
+.cube-color-picker input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.cube-color-picker input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 4px;
+}
+
+.cube-color-hex {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: monospace;
+}
+
+/* Toggle Switch */
+.cube-toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+}
+
+.cube-toggle input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.cube-toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s;
+}
+
+.cube-toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.cube-toggle input:checked+.cube-toggle-slider {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.cube-toggle input:checked+.cube-toggle-slider::before {
+    transform: translateX(20px);
+}
+
+/* Preset Grid */
+.cube-preset-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.cube-preset-btn {
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: white;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cube-preset-btn:hover {
+    background: rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.4);
+}
+
+.cube-preset-btn.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: transparent;
+}
+
+/* Save Button */
+.cube-save-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.cube-save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* Scrollbar */
+.cube-modal-controls::-webkit-scrollbar,
+.cube-egi-selector::-webkit-scrollbar {
+    width: 5px;
+}
+
+.cube-modal-controls::-webkit-scrollbar-track,
+.cube-egi-selector::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.cube-modal-controls::-webkit-scrollbar-thumb,
+.cube-egi-selector::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 900px) {
+    .cube-modal {
+        flex-direction: column;
+        max-height: 95vh;
+    }
+
+    .cube-modal-preview {
+        min-width: unset;
+        min-height: 300px;
+        max-height: 40vh;
+    }
+
+    .cube-modal-controls {
+        width: 100%;
+        max-height: 55vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .cube-faces-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cube-egi-selector {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .cube-preset-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

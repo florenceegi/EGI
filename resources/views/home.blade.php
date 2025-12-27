@@ -10,7 +10,7 @@
     </x-slot>
 
     <x-slot name="platformStats">
-        <div class="flex justify-center py-2 bg-gray-900/50 backdrop-blur-sm">
+        <div class="flex justify-center bg-gray-900/50 py-2 backdrop-blur-sm">
             {{-- Desktop: Componente statistiche completo --}}
             <div class="hidden sm:block">
                 <x-payment-distribution-stats />
@@ -42,9 +42,10 @@
     <x-slot name="belowHeroContent">
         <div class="hidden lg:block">
             <x-desktop-egi-carousel :egis="$featuredEgis" />
-            <x-creators-carousel :creators="$featuredCreators" title="{{ __('guest_home.featured_creators_title') }}" bgClass="bg-gray-900" marginClass="mb-12" />
+            <x-creators-carousel :creators="$featuredCreators" title="{{ __('guest_home.featured_creators_title') }}"
+                bgClass="bg-gray-900" marginClass="mb-12" />
             <x-collector-carousel :collectors="$topCollectors" />
-            <x-collections-carousel :collections="$featuredCollections" bgClass="bg-gray-900" marginClass="mb-12" />
+            <x-collections-carousel :collections="$featuredCollections" bgClass="bg-gray-900" marginClass="mb-12" :useCube="true" />
         </div>
     </x-slot>
 
@@ -54,10 +55,8 @@
     </x-slot>
 
     {{-- Sezione: Progetti Ambientali (EPP) NFT Style --}}
-    <x-epp-cta-banner :title="__('guest_home.epp_banner_title')" :subtitle="__('guest_home.epp_banner_subtitle')"
-        :message="__('guest_home.epp_banner_message_v2')" 
-        :ctaText="__('guest_home.epp_banner_cta')" ctaLink="{{ route('archetypes.patron') }}"
-        heightClass="min-h-[50vh] md:min-h-[65vh]"
+    <x-epp-cta-banner :title="__('guest_home.epp_banner_title')" :subtitle="__('guest_home.epp_banner_subtitle')" :message="__('guest_home.epp_banner_message_v2')" :ctaText="__('guest_home.epp_banner_cta')"
+        ctaLink="{{ route('archetypes.patron') }}" heightClass="min-h-[50vh] md:min-h-[65vh]"
         overlayColor="bg-gradient-to-br from-gray-900/80 via-verde-rinascita/50 to-gray-900/80" />
 
     @vite(['resources/js/home-nft.js'])
