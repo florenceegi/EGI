@@ -246,6 +246,35 @@ if (config('app.debug')) {
         return view('test.composition-builder', compact('egis'));
     })->name('test.composition');
 
+    // Route di test per la Shapes Gallery
+    Route::get('/test-shapes', function () {
+        return view('test.shapes-gallery');
+    })->name('test.shapes');
+
+    // Route di test per il 3D Laboratory
+    Route::get('/test-lab', function () {
+        return view('test.lab-3d');
+    })->name('test.lab');
+
+    // Route di test per il Polyhedron Composer
+    Route::get('/test-polyhedron', function () {
+        $egis = \App\Models\Egi::where('user_id', 26)
+            ->select('id', 'title', 'collection_id', 'user_id')
+            ->take(24)
+            ->get();
+        return view('test.polyhedron-composer', compact('egis'));
+    })->name('test.polyhedron');
+
+    // Route di test per il Prism Viewer (EGI 3D Card Component)
+    Route::get('/test-prism', function () {
+        $egis = \App\Models\Egi::where('user_id', 30)
+            ->with('collection:id,collection_name')
+            ->select('id', 'title', 'description', 'collection_id', 'user_id')
+            ->take(12)
+            ->get();
+        return view('test.prism-viewer', compact('egis'));
+    })->name('test.prism');
+
     Route::get('/debug-session-direct', function () {
         return [
             'session_direct' => [

@@ -1,0 +1,707 @@
+/**
+ * EGI Prism 3D Component Styles
+ * Premium Design - Exact copy from prism-viewer.blade.php
+ */
+
+/* Prism Container */
+.egi-prism-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #020202;
+}
+
+.egi-prism-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Settings Button - Premium style */
+.egi-prism-settings-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 20;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.egi-prism-settings-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* Toggle 2D/3D - Bottom left */
+.egi-display-toggle {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    display: flex;
+    background: rgba(10, 10, 20, 0.9);
+    border-radius: 20px;
+    padding: 3px;
+    z-index: 30;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.egi-display-toggle button {
+    padding: 6px 14px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+}
+
+.egi-display-toggle button.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+}
+
+.egi-display-toggle button:hover:not(.active) {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   SETTINGS MODAL - Premium Glass Design
+   ============================================ */
+.egi-prism-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2147483647;
+    /* Maximum possible z-index */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.egi-prism-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.egi-prism-modal {
+    background: linear-gradient(180deg, rgba(15, 15, 35, 0.98) 0%, rgba(10, 10, 25, 0.98) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    width: 98vw !important;
+    max-width: 98vw !important;
+    /* FORCE HUGE */
+    min-width: 1000px;
+    height: 95vh !important;
+    max-height: none !important;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95);
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.egi-prism-modal-overlay.active .egi-prism-modal {
+    transform: scale(1);
+}
+
+/* Modal Content Grid */
+.egi-prism-modal-content-grid {
+    display: grid;
+    grid-template-columns: 500px 1fr;
+    /* Fixed 500px controls | Rest for Preview */
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Controls Panel (Left) */
+.egi-prism-settings-panel {
+    padding: 24px;
+    overflow-y: auto;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(10, 15, 30, 0.6);
+
+    /* 2 Columns for Controls */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-content: start;
+}
+
+/* Preview Panel (Right) */
+.egi-prism-preview-panel {
+    background: #000;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8);
+}
+
+.egi-prism-preview-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.egi-prism-preview-label {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(102, 126, 234, 0.9);
+    color: white;
+    font-size: 0.8rem;
+    padding: 6px 14px;
+    border-radius: 6px;
+    z-index: 10;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+}
+
+/* Scrollbar for panel */
+.egi-prism-settings-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.egi-prism-settings-panel::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.egi-prism-settings-panel::-webkit-scrollbar-thumb {
+    background: #445577;
+    border-radius: 4px;
+}
+
+/* Modal Header */
+.egi-prism-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.egi-prism-modal-header:active {
+    cursor: grabbing;
+}
+
+.egi-prism-modal-header h3 {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.egi-prism-modal-header h3 i {
+    color: #ce93d8;
+}
+
+.egi-prism-modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s;
+}
+
+.egi-prism-modal-close:hover {
+    background: rgba(255, 100, 100, 0.2);
+    color: #ff6b6b;
+    transform: rotate(90deg);
+}
+
+/* Modal Body - Now handled by grid settings-panel */
+.egi-prism-modal-body {
+    display: none;
+    /* Deprecated class, but kept for safety if used elsewhere */
+}
+
+/* Section Title */
+.prism-section-title {
+    grid-column: 1 / -1;
+    /* SPAN FULL WIDTH */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ce93d8;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(206, 147, 216, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.prism-full-width {
+    grid-column: 1 / -1;
+}
+
+/* Control Group */
+.prism-control-group {
+    margin-bottom: 18px;
+}
+
+.prism-control-group label {
+    display: block;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+/* Control Row */
+.prism-control-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Range Input - Premium gradient thumb */
+.prism-control-group input[type="range"] {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
+}
+
+.prism-control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.prism-control-group input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.7);
+}
+
+.prism-control-group input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+}
+
+/* Color Input */
+.prism-control-group input[type="color"] {
+    width: 44px;
+    height: 44px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    background: transparent;
+    padding: 3px;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.prism-control-group input[type="color"]:hover {
+    border-color: rgba(102, 126, 234, 0.6);
+    transform: scale(1.05);
+}
+
+.prism-control-group input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.prism-control-group input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 7px;
+}
+
+/* Value Display */
+.prism-control-value {
+    min-width: 55px;
+    text-align: right;
+    color: #667eea;
+    font-size: 0.8rem;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    background: rgba(102, 126, 234, 0.1);
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+/* Checkbox styling */
+.prism-control-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #667eea;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+/* Save Button */
+.prism-save-btn {
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    letter-spacing: 0.5px;
+}
+
+.prism-save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+.prism-save-btn:active {
+    transform: translateY(0);
+}
+
+.prism-save-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Loading Indicator */
+.egi-prism-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.5rem;
+    z-index: 5;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .egi-prism-modal {
+        width: 95%;
+        max-height: 90vh;
+        border-radius: 16px;
+    }
+
+    .egi-prism-modal-header {
+        padding: 16px 18px;
+    }
+
+    .egi-prism-modal-body {
+        padding: 16px 18px;
+    }
+}
+
+/* Preset Buttons - Replaces egi-display-toggle reuse to fix positioning */
+.prism-preset-btn {
+    background: rgba(10, 10, 20, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    width: 100%;
+}
+
+.prism-preset-btn:hover {
+    background: rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.5);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   VIEWER EXTENSIONS
+   ============================================ */
+/* Enlarge Button */
+.egi-prism-enlarge-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 56px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 20;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.egi-prism-enlarge-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Viewer Modal */
+.egi-prism-viewer-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.egi-prism-viewer-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.egi-prism-viewer-body {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+}
+
+.egi-prism-viewer-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.egi-prism-viewer-close:hover {
+    background: rgba(255, 100, 100, 0.4);
+    transform: rotate(90deg) scale(1.1);
+    border-color: rgba(255, 100, 100, 0.5);
+}
+
+/* Viewer Description Box - RESPONSIVE (Mobile First) */
+.egi-prism-viewer-desc-box {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 25vh;
+    /* FIXED HEIGHT for mobile */
+    max-height: 25vh;
+    overflow: hidden;
+    /* STRICT: No overflow beyond max-height */
+
+    background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(10, 15, 30, 0.9) 100%);
+    backdrop-filter: blur(15px);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-right: none;
+    border-radius: 16px 16px 0 0;
+
+    padding: 12px 16px;
+    color: white;
+    z-index: 100;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    transition: transform 0.3s ease;
+}
+
+.egi-prism-viewer-desc-box h4 {
+    margin: 0 0 6px 0;
+    font-size: 1rem;
+    /* Mobile: Compact title */
+    font-weight: 700;
+    color: #ffaa00;
+    flex-shrink: 0;
+}
+
+.egi-prism-viewer-desc-box p {
+    margin: 0;
+    font-size: 0.85rem;
+    /* Mobile: Compact readable */
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.9);
+    overflow-y: auto;
+    /* SCROLLBAR */
+    flex: 1;
+    max-height: calc(25vh - 60px);
+    /* Height minus padding and title */
+    padding-right: 8px;
+}
+
+/* DESKTOP LAYOUT (Side Panel > 768px) */
+@media (min-width: 769px) {
+    .egi-prism-viewer-desc-box {
+        top: 0;
+        bottom: 0;
+        right: auto;
+        left: 0;
+        width: 500px;
+        /* Reducing width slightly for elegance */
+        max-width: 35vw;
+        height: 100%;
+        max-height: none;
+
+        background: linear-gradient(90deg, rgba(0, 0, 0, 0.95) 0%, rgba(10, 15, 30, 0.85) 100%);
+        border-top: none;
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 0;
+
+        padding: 60px 40px;
+        justify-content: center;
+    }
+
+    .egi-prism-viewer-desc-box h4 {
+        margin: 0 0 20px 0;
+        font-size: 1.6rem;
+        /* Desktop: Large but not massive */
+    }
+
+    .egi-prism-viewer-desc-box p {
+        font-size: 1.05rem;
+        /* Desktop: Professional readable size */
+        line-height: 1.6;
+        padding-right: 20px;
+    }
+}
+
+/* Custom scrollbar */
+.egi-prism-viewer-desc-box p::-webkit-scrollbar {
+    width: 6px;
+}
+
+.egi-prism-viewer-desc-box p::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.egi-prism-viewer-desc-box p::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+/* Rotation Toggle Button */
+.egi-prism-viewer-controls {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    display: flex;
+    gap: 15px;
+    z-index: 100;
+    /* High priority */
+}
+
+.egi-prism-control-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.egi-prism-control-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.egi-prism-control-btn.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: transparent;
+    box-shadow: 0 0 15px rgba(118, 75, 162, 0.5);
+}

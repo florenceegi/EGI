@@ -41,7 +41,7 @@ enum UserRoleForInvite: string {
             self::PATRON->value => 'Patron',
             self::ADMIN->value => 'Admin',
             self::EDITOR->value => 'Editor',
-            self::GUEST->value => 'Guest',
+            self::GUEST->value => 'Guest',  
         ];
     }
 

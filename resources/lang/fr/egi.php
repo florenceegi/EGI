@@ -151,6 +151,10 @@ return [
         'mint_direct' => 'Minter Instantanément',
         // Actions d'enchère
         'make_offer' => 'Faire une Offre',
+        
+        // Card Toggle Actions
+        'show_description' => 'Description',
+        'show_image' => 'Image',
     ],
 
     // Système d’Historique des Réservations

@@ -160,6 +160,10 @@ return [
         'make_offer' => 'Fazer uma Oferta',
         // Phase 3: Secondary market (Rebind)
         'rebind' => 'Rebind',
+
+        // Card Toggle Actions
+        'show_description' => 'Descrição',
+        'show_image' => 'Imagem',
     ],
 
     // Sistema de Histórico de Reservas

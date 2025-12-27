@@ -185,6 +185,9 @@ class Egi extends Model {
         'is_sellable',
         'serial_number',
         'allow_buyer_clone',
+        // 3D Prism Display
+        'display_mode',
+        'prism_config',
         // Note: 'id', 'created_at', 'updated_at', 'deleted_at' are typically not fillable
     ];
 
@@ -233,6 +236,8 @@ class Egi extends Model {
         'is_template' => 'boolean',
         'is_sellable' => 'boolean',
         'allow_buyer_clone' => 'boolean',
+        // 3D Prism Display
+        'prism_config' => 'array',
     ];
 
     //--------------------------------------------------------------------------

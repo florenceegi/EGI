@@ -1,0 +1,260 @@
+diff --git a/resources/lang/de/egi.php b/resources/lang/de/egi.php
+index cac793e2..360f96d0 100644
+--- a/resources/lang/de/egi.php
++++ b/resources/lang/de/egi.php
+@@ -160,6 +160,10 @@
+         'make_offer' => 'Ein Angebot Machen',
+         // Phase 3: Secondary market (Rebind)
+         'rebind' => 'Rebind',
++
++        // Card Toggle Actions
++        'show_description' => 'Beschreibung',
++        'show_image' => 'Bild',
+     ],
+ 
+     // System für Reservierungsverlauf
+diff --git a/resources/lang/en/egi.php b/resources/lang/en/egi.php
+index 444128be..f11b1727 100644
+--- a/resources/lang/en/egi.php
++++ b/resources/lang/en/egi.php
+@@ -161,6 +161,10 @@
+         'make_offer' => 'Make an Offer',
+         // Phase 3: Secondary market (Rebind)
+         'rebind' => 'Rebind',
++
++        // Card Toggle Actions
++        'show_description' => 'Description',
++        'show_image' => 'Image',
+     ],
+ 
+     // Reservation History System
+diff --git a/resources/lang/es/egi.php b/resources/lang/es/egi.php
+index eb2fe880..6242d914 100644
+--- a/resources/lang/es/egi.php
++++ b/resources/lang/es/egi.php
+@@ -160,6 +160,10 @@
+         'make_offer' => 'Hacer una Oferta',
+         // Phase 3: Secondary market (Rebind)
+         'rebind' => 'Rebind',
++
++        // Card Toggle Actions
++        'show_description' => 'Descripción',
++        'show_image' => 'Imagen',
+     ],
+ 
+     // Sistema de Historial de Reservas
+diff --git a/resources/lang/fr/egi.php b/resources/lang/fr/egi.php
+index e216e814..08310db4 100644
+--- a/resources/lang/fr/egi.php
++++ b/resources/lang/fr/egi.php
+@@ -151,6 +151,10 @@
+         'mint_direct' => 'Minter Instantanément',
+         // Actions d'enchère
+         'make_offer' => 'Faire une Offre',
++        
++        // Card Toggle Actions
++        'show_description' => 'Description',
++        'show_image' => 'Image',
+     ],
+ 
+     // Système d’Historique des Réservations
+diff --git a/resources/lang/it/egi.php b/resources/lang/it/egi.php
+index b17736f4..7f11cd02 100644
+--- a/resources/lang/it/egi.php
++++ b/resources/lang/it/egi.php
+@@ -168,6 +168,10 @@
+         'make_offer' => 'Fai un\'Offerta',
+         // Phase 3: Secondary market (Rebind)
+         'rebind' => 'Rebind',
++        
++        // Card Toggle Actions
++        'show_description' => 'Descrizione',
++        'show_image' => 'Immagine',
+     ],
+ 
+     // Sistema di Cronologia delle Prenotazioni
+diff --git a/resources/lang/pt/egi.php b/resources/lang/pt/egi.php
+index e06a2b4d..d5b9e9c7 100644
+--- a/resources/lang/pt/egi.php
++++ b/resources/lang/pt/egi.php
+@@ -160,6 +160,10 @@
+         'make_offer' => 'Fazer uma Oferta',
+         // Phase 3: Secondary market (Rebind)
+         'rebind' => 'Rebind',
++
++        // Card Toggle Actions
++        'show_description' => 'Descrição',
++        'show_image' => 'Imagem',
+     ],
+ 
+     // Sistema de Histórico de Reservas
+diff --git a/resources/views/components/egi-card.blade.php b/resources/views/components/egi-card.blade.php
+index edd257c0..0dc9c192 100644
+--- a/resources/views/components/egi-card.blade.php
++++ b/resources/views/components/egi-card.blade.php
+@@ -186,8 +186,14 @@
+     $currentOwnerDisplay = $currentOwnerUser ? formatActivatorDisplay($currentOwnerUser) : null;
+ 
+     // Mostra secondary owner solo se owner attuale diverso da co-creator (c'è stata una rivendita)
+-    $showSecondaryOwner =
+-        $isMinted && $currentOwnerUser && $coCreatorUser && $currentOwnerUser->id !== $coCreatorUser->id;
++$showSecondaryOwner =
++    $isMinted && $currentOwnerUser && $coCreatorUser && $currentOwnerUser->id !== $coCreatorUser->id;
++
++// 🎮 3D Prism Display Mode
++$displayMode = $egi->display_mode ?? '2d';
++$is3DMode = $displayMode === '3d';
++    $isOwner = $isAuthenticated && $currentUserId === ($egi->owner_id ?? null);
++    $canToggleDisplayMode = $isCreator || $isOwner;
+ @endphp
+ 
+ {{-- Include CSS hyper se necessario --}}
+@@ -264,14 +270,127 @@ class="absolute -inset-full skew-x-12 animate-[shimmer_3s_ease-in-out_infinite]
+     @endif
+     {{-- 🖼️ Sezione Immagine --}}
+     <figure class="relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden bg-black">
+-        <a href="{{ route('egis.show', $egi->id) }}" class="block flex h-full w-full items-center justify-center">
+-            {{-- 🖼️ Media Display (Image / PDF / etc) --}}
+-            <x-egi-media-display :egi="$egi" class="object-contain" />
++        {{-- 🎮 Display Mode Toggle (solo per Creator/Owner) --}}
++        @if ($canToggleDisplayMode)
++            <div class="egi-display-toggle" data-egi-id="{{ $egi->id }}">
++                <button type="button" class="{{ !$is3DMode ? 'active' : '' }}"
++                    onclick="toggleEgiDisplayMode({{ $egi->id }}, '2d')" title="Vista 2D">2D</button>
++                <button type="button" class="{{ $is3DMode ? 'active' : '' }}"
++                    onclick="toggleEgiDisplayMode({{ $egi->id }}, '3d')" title="Vista 3D">3D</button>
++            </div>
++            @once
++                <link rel="stylesheet" href="{{ asset('css/egi-prism-3d.css') }}">
++                <script>
++                    window.toggleEgiDisplayMode = async function(egiId, mode) {
++                        try {
++                            const response = await fetch(`/api/egi/${egiId}/prism-config`, {
++                                method: 'POST',
++                                headers: {
++                                    'Content-Type': 'application/json',
++                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
++                                },
++                                body: JSON.stringify({
++                                    display_mode: mode
++                                })
++                            });
++                            if (response.ok) {
++                                location.reload();
++                            }
++                        } catch (error) {
++                            console.error('Error toggling display mode:', error);
++                        }
++                    };
++                </script>
++            @endonce
++        @endif
+ 
+-            {{-- Overlay leggero su hover --}}
+-            <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
++        @if ($is3DMode)
++            {{-- 🎲 3D Prism Display --}}
++            <div class="relative h-full w-full">
++                <x-egi-prism-3d :egi="$egi" :isCreatorOrOwner="$canToggleDisplayMode" />
++
++                {{-- 🔗 3D Link Button (Floating) --}}
++                <a href="{{ route('egis.show', $egi->id) }}" title="{{ __('egi.actions.view_details') }}"
++                    class="absolute bottom-3 right-3 z-20 flex items-center justify-center rounded-full bg-purple-600/90 p-2 text-white shadow-lg backdrop-blur-sm transition-all hover:scale-110 hover:bg-purple-500 hover:shadow-purple-500/50">
++                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
++                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
++                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
++                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
++                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
++                    </svg>
++                </a>
++            </div>
++        @else
++            {{-- 🖼️ Traditional 2D Display with Description Toggle --}}
++            <div class="group relative h-full w-full" id="egi-media-container-{{ $egi->id }}">
++
++                {{-- Toggle Button (Descrizione <-> Immagine) --}}
++                <button type="button" onclick="toggleEgiDescription(event, {{ $egi->id }})"
++                    data-label-desc="{{ __('egi.actions.show_description') }}"
++                    data-label-img="{{ __('egi.actions.show_image') }}"
++                    class="absolute left-1/2 top-2 z-30 -translate-x-1/2 rounded-lg border border-white/10 bg-black/60 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm backdrop-blur-md transition-colors hover:bg-purple-900/80">
++                    <span class="btn-text">{{ __('egi.actions.show_description') }}</span>
++                </button>
++
++                {{-- Image Link --}}
++                <a href="{{ route('egis.show', $egi->id) }}" id="egi-link-img-{{ $egi->id }}"
++                    class="block flex h-full w-full items-center justify-center">
++                    <x-egi-media-display :egi="$egi" class="object-contain" />
++                    <div
++                        class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
++                    </div>
++                </a>
++
++                {{-- Description Overlay (Hidden by default) --}}
++                <div id="egi-desc-{{ $egi->id }}"
++                    class="animate-fade-in absolute inset-0 flex hidden flex-col items-center justify-center bg-gray-900/95 p-6 text-center text-sm text-gray-200 backdrop-blur-md">
++                    <div class="custom-scrollbar max-h-full w-full overflow-y-auto">
++                        <h4 class="mb-3 text-lg font-bold text-purple-300">{{ $egi->title }}</h4>
++                        <p class="leading-relaxed text-gray-300">{{ $egi->description ?: __('egi.description.none') }}
++                        </p>
++
++                        <a href="{{ route('egis.show', $egi->id) }}"
++                            class="mt-6 inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-600/20 px-4 py-2 text-xs font-bold text-purple-300 transition-all hover:bg-purple-600/40">
++                            {{ __('egi.actions.view_details') }} <i class="fas fa-arrow-right"></i>
++                        </a>
++                    </div>
++                </div>
+             </div>
+-        </a>
++
++            @once
++                <script>
++                    window.toggleEgiDescription = function(e, id) {
++                        e.preventDefault();
++                        e.stopPropagation();
++
++                        const img = document.getElementById(`egi-link-img-${id}`);
++                        const desc = document.getElementById(`egi-desc-${id}`);
++                        const btn = e.currentTarget;
++                        const span = btn.querySelector('.btn-text');
++                        const labelDesc = btn.dataset.labelDesc;
++                        const labelImg = btn.dataset.labelImg;
++
++                        if (desc.classList.contains('hidden')) {
++                            // Switch to Show Description (so hide img, show desc)
++                            // Button should now say "Image" (to switch back)
++                            img.classList.add('hidden');
++                            img.classList.remove('flex');
++                            desc.classList.remove('hidden');
++                            span.textContent = labelImg;
++                            btn.classList.add('bg-purple-600/80');
++                        } else {
++                            // Switch to Show Image (so hide desc, show img)
++                            // Button should now say "Description"
++                            img.classList.remove('hidden');
++                            img.classList.add('flex');
++                            desc.classList.add('hidden');
++                            span.textContent = labelDesc;
++                            btn.classList.remove('bg-purple-600/80');
++                        }
++                    };
++                </script>
++            @endonce
++        @endif
+ 
+         {{-- Logo piattaforma posizionato fuori dal badge --}}
+         <img src="{{ asset('images/logo/logo_1.webp') }}" alt=""
+@@ -282,12 +401,12 @@ class="absolute left-2 top-2 h-6 w-6 opacity-70 transition-opacity duration-200
+         {{-- Badge Master / Serial / Position --}}
+         @if ($egi->is_template)
+             <span
+-                class="absolute left-10 top-2 rounded-full border border-purple-400 bg-purple-900/80 px-2 py-0.5 text-xs font-bold text-purple-100 backdrop-blur-sm shadow-sm shadow-purple-500/50">
++                class="absolute left-10 top-2 rounded-full border border-purple-400 bg-purple-900/80 px-2 py-0.5 text-xs font-bold text-purple-100 shadow-sm shadow-purple-500/50 backdrop-blur-sm">
+                 MASTER
+             </span>
+         @elseif ($egi->serial_number)
+             <span
+-                class="absolute left-10 top-2 rounded-full border border-cyan-400 bg-cyan-900/80 px-2 py-0.5 text-xs font-bold text-cyan-100 backdrop-blur-sm shadow-sm shadow-cyan-500/50">
++                class="absolute left-10 top-2 rounded-full border border-cyan-400 bg-cyan-900/80 px-2 py-0.5 text-xs font-bold text-cyan-100 shadow-sm shadow-cyan-500/50 backdrop-blur-sm">
+                 #{{ $egi->serial_number }}
+             </span>
+         @elseif ($egi->position)

@@ -360,6 +360,120 @@
             box-shadow: 0 0 20px var(--gold);
         }
 
+        /* Global Orbit Controls */
+        .global-orbit-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 0 20px;
+            border-left: 1px solid var(--border-light);
+            border-right: 1px solid var(--border-light);
+            height: 100%;
+            pointer-events: auto;
+            position: relative;
+            z-index: 50;
+        }
+
+        .global-orbit-controls .orbit-label {
+            font-family: 'Share Tech Mono';
+            font-size: 10px;
+            color: var(--primary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .global-orbit-controls .orbit-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .global-orbit-controls .mini-toggle {
+            width: 36px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+            z-index: 100;
+            pointer-events: auto;
+        }
+
+        .global-orbit-controls .mini-toggle::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .global-orbit-controls .mini-toggle.active {
+            background: rgba(0, 255, 221, 0.3);
+        }
+
+        .global-orbit-controls .mini-toggle.active::before {
+            background: var(--primary);
+            left: 18px;
+            box-shadow: 0 0 8px var(--primary);
+        }
+
+        .global-orbit-controls .orbit-speed-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .global-orbit-controls .orbit-speed-slider {
+            width: 80px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .global-orbit-controls .orbit-speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .global-orbit-controls .orbit-speed-value {
+            font-family: 'Share Tech Mono';
+            font-size: 10px;
+            color: var(--text-main);
+            min-width: 30px;
+        }
+
+        .global-orbit-controls .direction-btn {
+            padding: 4px 10px;
+            font-family: 'Share Tech Mono';
+            font-size: 10px;
+            letter-spacing: 1px;
+            border: 1px solid var(--border-light);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            z-index: 100;
+            pointer-events: auto;
+        }
+
+        .global-orbit-controls .direction-btn.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(0, 255, 221, 0.1);
+        }
+
         /* Loader */
         #loader {
             position: fixed;
@@ -639,6 +753,45 @@
             color: white;
             font-weight: 600;
         }
+
+        /* Shape selector */
+        .shape-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .shape-option {
+            padding: 10px 8px;
+            border: 1px solid var(--border-light);
+            background: transparent;
+            color: var(--text-muted);
+            font-family: 'Share Tech Mono';
+            font-size: 9px;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .shape-option:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .shape-option.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        .shape-option .icon {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 4px;
+        }
     </style>
 
     <script type="importmap">
@@ -701,6 +854,24 @@
                 <i class="fa-solid fa-cube"></i>
                 Sfere selezionate: <span id="count">0</span>
             </div>
+
+            <!-- Global Orbit Controls -->
+            <div class="global-orbit-controls">
+                <span class="orbit-label"><i class="fa-solid fa-sync-alt"></i> Orbita Globale</span>
+                <div class="orbit-toggle">
+                    <div class="mini-toggle" id="global-orbit-toggle" onclick="toggleGlobalOrbit()"></div>
+                </div>
+                <div class="orbit-speed-wrapper">
+                    <span style="font-size: 10px; color: var(--text-muted);">Vel:</span>
+                    <input type="range" class="orbit-speed-slider" id="global-orbit-speed" min="1"
+                        max="100" value="30" oninput="updateGlobalOrbitSpeed(this.value)">
+                    <span class="orbit-speed-value" id="global-orbit-speed-value">30</span>
+                </div>
+                <button class="direction-btn active" id="orbit-cw" onclick="setGlobalOrbitDirection('cw')">⟳
+                    CW</button>
+                <button class="direction-btn" id="orbit-ccw" onclick="setGlobalOrbitDirection('ccw')">⟲ CCW</button>
+            </div>
+
             <div>
                 <button class="btn" onclick="clearSelection()">RESET</button>
                 <button class="btn-confirm btn" id="confirm-btn" disabled onclick="confirmComposition()">
@@ -728,6 +899,39 @@
                 <div class="sphere-preview">
                     <img id="modal-thumb" src="" alt="">
                     <div class="title" id="modal-title">-</div>
+                </div>
+
+                <div class="setting-group">
+                    <span class="setting-label">Forma</span>
+                    <div class="shape-selector">
+                        <button class="shape-option active" data-shape="sphere">
+                            <span class="icon">🔮</span>SFERA
+                        </button>
+                        <button class="shape-option" data-shape="crystal">
+                            <span class="icon">💎</span>CRISTALLO
+                        </button>
+                        <button class="shape-option" data-shape="cube">
+                            <span class="icon">📦</span>CUBO
+                        </button>
+                        <button class="shape-option" data-shape="pyramid">
+                            <span class="icon">⛰️</span>PIRAMIDE
+                        </button>
+                        <button class="shape-option" data-shape="dodeca">
+                            <span class="icon">🔷</span>DODECA
+                        </button>
+                        <button class="shape-option" data-shape="torus">
+                            <span class="icon">🍩</span>TORUS
+                        </button>
+                        <button class="shape-option" data-shape="torusknot">
+                            <span class="icon">🌀</span>KNOT
+                        </button>
+                        <button class="shape-option" data-shape="capsule">
+                            <span class="icon">💊</span>CAPSULA
+                        </button>
+                        <button class="shape-option" data-shape="spaceship">
+                            <span class="icon">🚀</span>NAVE
+                        </button>
+                    </div>
                 </div>
 
                 <div class="setting-group">
@@ -809,6 +1013,29 @@
                         <span class="value" id="rotation-angle-val">0°</span>
                     </div>
                 </div>
+
+                <div class="setting-group">
+                    <span class="setting-label">Orbita attorno al centro</span>
+                    <div class="toggle-wrap">
+                        <label>Abilita orbita</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="enable-orbit">
+                            <span class="slider"></span>
+                        </div>
+                    </div>
+                    <div class="slider-wrap">
+                        <label>Velocità orbita</label>
+                        <input type="range" id="orbit-speed" min="1" max="100" value="20">
+                        <span class="value" id="orbit-speed-val">20%</span>
+                    </div>
+                    <div class="toggle-wrap">
+                        <label>Senso orario</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="orbit-clockwise" checked>
+                            <span class="slider"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn" onclick="resetSphereSettings()">RESET</button>
@@ -840,6 +1067,13 @@
         // STATE
         // ===========================================
         const selectedEgis = new Map(); // id -> { data, mesh }
+
+        // Global orbit state
+        const globalOrbitState = {
+            enabled: false,
+            speed: 30,
+            clockwise: true
+        };
 
         // ===========================================
         // THREE.JS SETUP
@@ -903,10 +1137,99 @@
         scene.add(stars);
 
         // ===========================================
-        // SPHERE CREATION
+        // GEOMETRY HELPERS
         // ===========================================
-        function createSphere(imageUrl, position, radius = 40) {
+        function getGeometry(shapeKey, size) {
+            switch (shapeKey) {
+                case 'sphere':
+                    return new THREE.SphereGeometry(size, 64, 32);
+                case 'crystal':
+                    return new THREE.OctahedronGeometry(size, 0);
+                case 'cube':
+                    return new THREE.BoxGeometry(size * 1.5, size * 1.5, size * 1.5, 2, 2, 2);
+                case 'pyramid':
+                    return new THREE.ConeGeometry(size, size * 1.8, 4);
+                case 'dodeca':
+                    return new THREE.DodecahedronGeometry(size, 0);
+                case 'torus':
+                    return new THREE.TorusGeometry(size * 0.8, size * 0.35, 32, 100);
+                case 'torusknot':
+                    return new THREE.TorusKnotGeometry(size * 0.6, size * 0.2, 100, 16);
+                case 'capsule':
+                    return new THREE.CapsuleGeometry(size * 0.5, size * 1.2, 16, 32);
+                case 'spaceship': {
+                    // Sleek spaceship shape using LatheGeometry
+                    const points = [];
+                    // Nose cone
+                    points.push(new THREE.Vector2(0, size * 1.5));
+                    points.push(new THREE.Vector2(size * 0.15, size * 1.2));
+                    points.push(new THREE.Vector2(size * 0.25, size * 0.9));
+                    // Cockpit bulge
+                    points.push(new THREE.Vector2(size * 0.4, size * 0.6));
+                    points.push(new THREE.Vector2(size * 0.5, size * 0.3));
+                    // Body
+                    points.push(new THREE.Vector2(size * 0.55, size * 0));
+                    points.push(new THREE.Vector2(size * 0.5, size * -0.4));
+                    // Engine section
+                    points.push(new THREE.Vector2(size * 0.6, size * -0.8));
+                    points.push(new THREE.Vector2(size * 0.7, size * -1.0));
+                    points.push(new THREE.Vector2(size * 0.5, size * -1.1));
+                    points.push(new THREE.Vector2(size * 0.3, size * -1.2));
+                    points.push(new THREE.Vector2(0, size * -1.2));
+                    return new THREE.LatheGeometry(points, 32);
+                }
+                default:
+                    return new THREE.SphereGeometry(size, 64, 32);
+            }
+        }
+
+        function getInnerGeometry(shapeKey, size) {
+            const innerSize = size * 0.8;
+            switch (shapeKey) {
+                case 'sphere':
+                    return new THREE.SphereGeometry(innerSize, 64, 32);
+                case 'crystal':
+                    return new THREE.OctahedronGeometry(innerSize * 0.7, 2);
+                case 'cube':
+                    return new THREE.BoxGeometry(innerSize * 1.3, innerSize * 1.3, innerSize * 1.3);
+                case 'pyramid':
+                    return new THREE.ConeGeometry(innerSize * 0.8, innerSize * 1.4, 4);
+                case 'dodeca':
+                    return new THREE.DodecahedronGeometry(innerSize * 0.85, 1);
+                case 'torus':
+                    return new THREE.TorusGeometry(innerSize * 0.65, innerSize * 0.25, 32, 100);
+                case 'torusknot':
+                    return new THREE.TorusKnotGeometry(innerSize * 0.5, innerSize * 0.15, 100, 16);
+                case 'capsule':
+                    return new THREE.CapsuleGeometry(innerSize * 0.4, innerSize, 16, 32);
+                case 'spaceship': {
+                    const points = [];
+                    const s = innerSize * 0.85;
+                    points.push(new THREE.Vector2(0, s * 1.4));
+                    points.push(new THREE.Vector2(s * 0.12, s * 1.1));
+                    points.push(new THREE.Vector2(s * 0.22, s * 0.8));
+                    points.push(new THREE.Vector2(s * 0.35, s * 0.5));
+                    points.push(new THREE.Vector2(s * 0.42, s * 0.2));
+                    points.push(new THREE.Vector2(s * 0.45, s * 0));
+                    points.push(new THREE.Vector2(s * 0.4, s * -0.35));
+                    points.push(new THREE.Vector2(s * 0.5, s * -0.7));
+                    points.push(new THREE.Vector2(s * 0.55, s * -0.9));
+                    points.push(new THREE.Vector2(s * 0.4, s * -1.0));
+                    points.push(new THREE.Vector2(s * 0.25, s * -1.1));
+                    points.push(new THREE.Vector2(0, s * -1.1));
+                    return new THREE.LatheGeometry(points, 32);
+                }
+                default:
+                    return new THREE.SphereGeometry(innerSize, 64, 32);
+            }
+        }
+
+        // ===========================================
+        // SHAPE CREATION
+        // ===========================================
+        function createShape(imageUrl, position, radius = 40, shapeType = 'sphere') {
             const group = new THREE.Group();
+            group.userData.shapeType = shapeType;
 
             // Glass material
             const glassMat = new THREE.MeshPhysicalMaterial({
@@ -921,17 +1244,18 @@
             });
 
             // Glass shell
-            const glassGeo = new THREE.IcosahedronGeometry(radius, 4);
+            const glassGeo = getGeometry(shapeType, radius);
             const glassMesh = new THREE.Mesh(glassGeo, glassMat);
             group.add(glassMesh);
+            group.userData.glassMesh = glassMesh;
 
-            // Image sphere
+            // Image inner mesh
             const textureLoader = new THREE.TextureLoader();
             textureLoader.load(imageUrl, (texture) => {
                 texture.colorSpace = THREE.SRGBColorSpace;
 
-                const imageSphereGeo = new THREE.SphereGeometry(radius * 0.85, 64, 32);
-                const imageSphereMat = new THREE.MeshStandardMaterial({
+                const innerGeo = getInnerGeometry(shapeType, radius);
+                const innerMat = new THREE.MeshStandardMaterial({
                     map: texture,
                     side: THREE.DoubleSide,
                     emissive: 0xffffff,
@@ -940,35 +1264,38 @@
                     roughness: 1.0,
                     metalness: 0.0
                 });
-                const imageMesh = new THREE.Mesh(imageSphereGeo, imageSphereMat);
+                const imageMesh = new THREE.Mesh(innerGeo, innerMat);
                 group.add(imageMesh);
                 group.userData.imageMesh = imageMesh;
+                group.userData.imageTexture = texture;
             });
 
-            // Rings
-            const ringMat = new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-                metalness: 0.8,
-                roughness: 0.2,
-                transparent: true,
-                opacity: 0.5
-            });
+            // Rings (skip for torus shapes)
+            if (shapeType !== 'torus' && shapeType !== 'torusknot') {
+                const ringMat = new THREE.MeshStandardMaterial({
+                    color: 0xffffff,
+                    metalness: 0.8,
+                    roughness: 0.2,
+                    transparent: true,
+                    opacity: 0.5
+                });
 
-            const ring1 = new THREE.Mesh(
-                new THREE.TorusGeometry(radius * 1.2, 0.3, 16, 100),
-                ringMat
-            );
-            ring1.rotation.x = Math.PI / 1.7;
-            group.add(ring1);
-            group.userData.ring1 = ring1;
+                const ring1 = new THREE.Mesh(
+                    new THREE.TorusGeometry(radius * 1.2, 0.3, 16, 100),
+                    ringMat.clone()
+                );
+                ring1.rotation.x = Math.PI / 1.7;
+                group.add(ring1);
+                group.userData.ring1 = ring1;
 
-            const ring2 = new THREE.Mesh(
-                new THREE.TorusGeometry(radius * 1.4, 0.3, 16, 100),
-                ringMat
-            );
-            ring2.rotation.y = Math.PI / 2;
-            group.add(ring2);
-            group.userData.ring2 = ring2;
+                const ring2 = new THREE.Mesh(
+                    new THREE.TorusGeometry(radius * 1.4, 0.3, 16, 100),
+                    ringMat.clone()
+                );
+                ring2.rotation.y = Math.PI / 2;
+                group.add(ring2);
+                group.userData.ring2 = ring2;
+            }
 
             group.position.set(position.x, position.y, position.z);
 
@@ -1014,14 +1341,17 @@
                 y: (Math.random() - 0.5) * 100,
                 z: 0
             };
-            const mesh = createSphere(thumbUrl, position, 35);
+            const mesh = createShape(thumbUrl, position, 35, 'sphere');
             scene.add(mesh);
 
             selectedEgis.set(egiId, {
                 id: egiId,
                 title,
                 thumbUrl,
-                mesh
+                mesh,
+                settings: {
+                    ...defaultSettings
+                }
             });
 
             updateLayout();
@@ -1172,7 +1502,47 @@
                         mesh.userData.imageMesh.rotation.y = angle;
                     }
                 }
+
+                // Orbital rotation around center (0,0,0)
+                if (settings.enableOrbit) {
+                    const orbitSpeed = (settings.orbitSpeed / 5000) * (settings.orbitClockwise ? -1 : 1);
+                    const pos = mesh.position;
+                    const radius = Math.sqrt(pos.x * pos.x + pos.z * pos.z);
+
+                    if (radius > 0.1) { // Avoid division by zero
+                        const currentAngle = Math.atan2(pos.z, pos.x);
+                        const newAngle = currentAngle + orbitSpeed;
+
+                        pos.x = Math.cos(newAngle) * radius;
+                        pos.z = Math.sin(newAngle) * radius;
+                    }
+                }
             });
+
+            // Global orbit animation - rotates ALL spheres on X-Y plane (frontal view)
+            // Like clock hands: objects orbit around the Z-axis (camera facing axis)
+            if (globalOrbitState.enabled) {
+                const orbitSpeed = (globalOrbitState.speed / 3000) * (globalOrbitState.clockwise ? -1 : 1);
+
+                selectedEgis.forEach((data) => {
+                    const mesh = data.mesh;
+                    const pos = mesh.position;
+
+                    // Calculate radius on X-Y plane (frontal plane - like a clock face)
+                    const radius = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
+
+                    if (radius > 0.1) { // Avoid division by zero for objects at center
+                        // Get current angle on X-Y plane (clockwise from top = 12 o'clock)
+                        const currentAngle = Math.atan2(pos.x, pos.y);
+                        const newAngle = currentAngle + orbitSpeed;
+
+                        // Apply new position (rotating around Z-axis, like clock hands)
+                        pos.x = Math.sin(newAngle) * radius;
+                        pos.y = Math.cos(newAngle) * radius;
+                        // Z remains unchanged - depth position stays the same
+                    }
+                });
+            }
 
             composer.render();
         }
@@ -1198,6 +1568,31 @@
         };
 
         // ===========================================
+        // GLOBAL ORBIT CONTROLS
+        // ===========================================
+        function toggleGlobalOrbit() {
+            globalOrbitState.enabled = !globalOrbitState.enabled;
+            const toggle = document.getElementById('global-orbit-toggle');
+            toggle.classList.toggle('active', globalOrbitState.enabled);
+        }
+
+        function updateGlobalOrbitSpeed(value) {
+            globalOrbitState.speed = parseInt(value);
+            document.getElementById('global-orbit-speed-value').textContent = value;
+        }
+
+        function setGlobalOrbitDirection(dir) {
+            globalOrbitState.clockwise = (dir === 'cw');
+            document.getElementById('orbit-cw').classList.toggle('active', dir === 'cw');
+            document.getElementById('orbit-ccw').classList.toggle('active', dir === 'ccw');
+        }
+
+        // Expose global orbit functions to window
+        window.toggleGlobalOrbit = toggleGlobalOrbit;
+        window.updateGlobalOrbitSpeed = updateGlobalOrbitSpeed;
+        window.setGlobalOrbitDirection = setGlobalOrbitDirection;
+
+        // ===========================================
         // RAYCASTING - CLICK ON SPHERES
         // ===========================================
         const raycaster = new THREE.Raycaster();
@@ -1206,6 +1601,7 @@
 
         // Default settings template
         const defaultSettings = {
+            shapeType: 'sphere',
             glassColor: '#00ffdd',
             ringsColor: '#ffffff',
             glassOpacity: 15,
@@ -1215,7 +1611,10 @@
             showRing2: true,
             enableRotation: false,
             rotationSpeed: 30,
-            rotationAngle: 0
+            rotationAngle: 0,
+            enableOrbit: false,
+            orbitSpeed: 20,
+            orbitClockwise: true
         };
 
         function onCanvasClick(event) {
@@ -1297,6 +1696,18 @@
             document.getElementById('rotation-angle').value = settings.rotationAngle || 0;
             document.getElementById('rotation-angle-val').textContent = (settings.rotationAngle || 0) + '°';
 
+            // Orbit settings
+            document.getElementById('enable-orbit').checked = settings.enableOrbit || false;
+            document.getElementById('orbit-speed').value = settings.orbitSpeed || 20;
+            document.getElementById('orbit-speed-val').textContent = (settings.orbitSpeed || 20) + '%';
+            document.getElementById('orbit-clockwise').checked = settings.orbitClockwise !== false;
+
+            // Shape selector - highlight current shape
+            const currentShape = settings.shapeType || 'sphere';
+            document.querySelectorAll('.shape-option').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.shape === currentShape);
+            });
+
             // Show modal
             document.getElementById('sphere-modal').classList.add('active');
             controls.enabled = false; // Disable camera controls
@@ -1330,6 +1741,12 @@
             document.getElementById('rotation-angle').value = defaultSettings.rotationAngle;
             document.getElementById('rotation-angle-val').textContent = defaultSettings.rotationAngle + '°';
 
+            // Orbit defaults
+            document.getElementById('enable-orbit').checked = defaultSettings.enableOrbit;
+            document.getElementById('orbit-speed').value = defaultSettings.orbitSpeed;
+            document.getElementById('orbit-speed-val').textContent = defaultSettings.orbitSpeed + '%';
+            document.getElementById('orbit-clockwise').checked = defaultSettings.orbitClockwise;
+
             applySettingsToSphere(currentEditingEgiId, defaultSettings);
         };
 
@@ -1346,7 +1763,10 @@
                 showRing2: document.getElementById('show-ring2').checked,
                 enableRotation: document.getElementById('enable-rotation').checked,
                 rotationSpeed: parseInt(document.getElementById('rotation-speed').value),
-                rotationAngle: parseInt(document.getElementById('rotation-angle').value)
+                rotationAngle: parseInt(document.getElementById('rotation-angle').value),
+                enableOrbit: document.getElementById('enable-orbit').checked,
+                orbitSpeed: parseInt(document.getElementById('orbit-speed').value),
+                orbitClockwise: document.getElementById('orbit-clockwise').checked
             };
 
             // Save settings
@@ -1409,6 +1829,8 @@
                     document.getElementById('rotation-speed').value + '%';
                 document.getElementById('rotation-angle-val').textContent =
                     document.getElementById('rotation-angle').value + '°';
+                document.getElementById('orbit-speed-val').textContent =
+                    document.getElementById('orbit-speed').value + '%';
 
                 // Live preview
                 if (currentEditingEgiId) {
@@ -1425,7 +1847,10 @@
                             showRing2: document.getElementById('show-ring2').checked,
                             enableRotation: document.getElementById('enable-rotation').checked,
                             rotationSpeed: parseInt(document.getElementById('rotation-speed').value),
-                            rotationAngle: parseInt(document.getElementById('rotation-angle').value)
+                            rotationAngle: parseInt(document.getElementById('rotation-angle').value),
+                            enableOrbit: document.getElementById('enable-orbit').checked,
+                            orbitSpeed: parseInt(document.getElementById('orbit-speed').value),
+                            orbitClockwise: document.getElementById('orbit-clockwise').checked
                         };
                         applySettingsToSphere(currentEditingEgiId, data.settings);
                     }
@@ -1450,7 +1875,10 @@
                             showRing2: document.getElementById('show-ring2').checked,
                             enableRotation: document.getElementById('enable-rotation').checked,
                             rotationSpeed: parseInt(document.getElementById('rotation-speed').value),
-                            rotationAngle: parseInt(document.getElementById('rotation-angle').value)
+                            rotationAngle: parseInt(document.getElementById('rotation-angle').value),
+                            enableOrbit: document.getElementById('enable-orbit').checked,
+                            orbitSpeed: parseInt(document.getElementById('orbit-speed').value),
+                            orbitClockwise: document.getElementById('orbit-clockwise').checked
                         };
                         applySettingsToSphere(currentEditingEgiId, data.settings);
                     }
@@ -1475,7 +1903,10 @@
                             showRing2: document.getElementById('show-ring2').checked,
                             enableRotation: document.getElementById('enable-rotation').checked,
                             rotationSpeed: parseInt(document.getElementById('rotation-speed').value),
-                            rotationAngle: parseInt(document.getElementById('rotation-angle').value)
+                            rotationAngle: parseInt(document.getElementById('rotation-angle').value),
+                            enableOrbit: document.getElementById('enable-orbit').checked,
+                            orbitSpeed: parseInt(document.getElementById('orbit-speed').value),
+                            orbitClockwise: document.getElementById('orbit-clockwise').checked
                         };
                         applySettingsToSphere(currentEditingEgiId, data.settings);
                     }
@@ -1495,6 +1926,63 @@
             if (e.key === 'Escape' && document.getElementById('sphere-modal').classList.contains('active')) {
                 closeModal();
             }
+        });
+
+        // ===========================================
+        // RESHAPE ELEMENT
+        // ===========================================
+        function reshapeElement(egiId, newShapeType) {
+            const data = selectedEgis.get(egiId);
+            if (!data) return;
+
+            const oldMesh = data.mesh;
+            const position = oldMesh.position.clone();
+
+            // Remove old mesh
+            scene.remove(oldMesh);
+            oldMesh.traverse((child) => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach(m => m.dispose());
+                    } else {
+                        child.material.dispose();
+                    }
+                }
+            });
+
+            // Create new shape
+            const newMesh = createShape(data.thumbUrl, position, 35, newShapeType);
+            scene.add(newMesh);
+
+            // Update data
+            data.mesh = newMesh;
+            data.settings.shapeType = newShapeType;
+
+            // Apply current settings to new mesh (after texture loads)
+            setTimeout(() => {
+                applySettingsToSphere(egiId, data.settings);
+            }, 100);
+        }
+
+        // Shape button click handlers
+        document.querySelectorAll('.shape-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const newShape = btn.dataset.shape;
+
+                // Update UI
+                document.querySelectorAll('.shape-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Apply shape change
+                if (currentEditingEgiId) {
+                    const data = selectedEgis.get(currentEditingEgiId);
+                    if (data && data.settings.shapeType !== newShape) {
+                        data.settings.shapeType = newShape;
+                        reshapeElement(currentEditingEgiId, newShape);
+                    }
+                }
+            });
         });
     </script>
 </body>

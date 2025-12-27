@@ -499,3 +499,85 @@ Route::middleware(['web'])->prefix('business')->name('api.business.')->group(fun
     Route::delete('/cache', [App\Http\Controllers\Api\BusinessEnrichmentController::class, 'clearCache'])
         ->name('clear-cache');
 });
+
+/*
+|--------------------------------------------------------------------------
+| EGI Prism 3D Configuration API Routes
+|--------------------------------------------------------------------------
+|
+| API endpoints for saving 3D prism display configuration.
+| Only Creator or Owner can modify these settings.
+|
+*/
+Route::middleware(['web'])->prefix('egi')->name('api.egi.')->group(function () {
+    Route::post('/{egi}/prism-config', function (\Illuminate\Http\Request $request, \App\Models\Egi $egi) {
+        \Log::info('Prism Save REQ', ['egi' => $egi->id, 'data' => $request->all()]);
+        $user = \App\Helpers\FegiAuth::user();
+        
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        
+        // Check if user is creator or owner
+        $isCreator = $user->id === $egi->user_id;
+        $isOwner = $user->id === $egi->owner_id;
+        
+        if (!$isCreator && !$isOwner) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+        
+        $validated = $request->validate([
+            'display_mode' => 'sometimes|in:2d,3d',
+            'prism_config' => 'sometimes|array',
+        ]);
+        
+        if (isset($validated['display_mode'])) {
+            $egi->display_mode = $validated['display_mode'];
+        }
+        
+        if (isset($validated['prism_config'])) {
+            $egi->prism_config = $validated['prism_config'];
+        }
+        
+        $egi->save();
+        
+        return response()->json(['success' => true]);
+    })->name('prism-config');
+
+    Route::post('/{egi}/prism-config/collection', function (\Illuminate\Http\Request $request, \App\Models\Egi $egi) {
+        \Log::info('Prism Collection Save REQ', ['egi' => $egi->id, 'data' => $request->all()]);
+        $user = \App\Helpers\FegiAuth::user();
+        
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        
+        // Only creator can update collection-wide settings
+        if ($user->id !== $egi->user_id) {
+            return response()->json(['error' => 'Only the creator can update the entire collection'], 403);
+        }
+        
+        $collectionId = $egi->collection_id;
+        if (!$collectionId) {
+             return response()->json(['error' => 'This EGI does not belong to a collection'], 404);
+        }
+
+        $validated = $request->validate([
+            'prism_config' => 'required|array',
+        ]);
+        
+        // Mass update all EGIs in the same collection
+        // Because update() on builder doesn't use model casts automatically for all drivers in older Laravel, but usually does in modern.
+        // Safer to json_encode if the column is text/json. Assuming it is castable. 
+        // Let's rely on Laravel's behavior or ensure it's json string if needed.
+        // Actually, checking the single update above: $egi->prism_config = array; $egi->save(); handles casting.
+        // Direct DB update might need json_encode. 
+        // Let's use loop if safe, or json_encode.
+        
+        $configJson = json_encode($validated['prism_config']);
+        \App\Models\Egi::where('collection_id', $collectionId)
+            ->update(['prism_config' => $configJson]);
+            
+        return response()->json(['success' => true, 'count' => \App\Models\Egi::where('collection_id', $collectionId)->count()]);
+    })->name('prism-config.collection');
+});

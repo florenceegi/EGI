@@ -168,6 +168,10 @@ return [
         'make_offer' => 'Fai un\'Offerta',
         // Phase 3: Secondary market (Rebind)
         'rebind' => 'Rebind',
+        
+        // Card Toggle Actions
+        'show_description' => 'Descrizione',
+        'show_image' => 'Immagine',
     ],
 
     // Sistema di Cronologia delle Prenotazioni
