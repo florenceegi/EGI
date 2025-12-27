@@ -12,15 +12,15 @@
     $prismConfig = $egi->prism_config ?? [];
     $displayMode = $egi->display_mode ?? '2d';
 
-    // Image URL
-    $imageUrl = "/users_files/collections_{$egi->collection_id}/creator_{$egi->user_id}/{$egi->id}_thumbnail.webp";
+    // Image URL - usa l'accessor del modello (come la card 2D)
+$imageUrl = $egi->main_image_url;
 
-    // EGI Info for back panel
-    $egiInfo = [
-        'id' => $egi->id,
-        'title' => $egi->title ?? 'EGI #' . $egi->id,
-        'collection' => $egi->collection->collection_name ?? 'Collection',
-        'description' => $egi->description ?? '',
+// EGI Info for back panel
+$egiInfo = [
+    'id' => $egi->id,
+    'title' => $egi->title ?? 'EGI #' . $egi->id,
+    'collection' => $egi->collection->collection_name ?? 'Collection',
+    'description' => $egi->description ?? '',
     ];
 @endphp
 
