@@ -4,7 +4,7 @@
 🛡/* 🎨 FlorenceEGI Cookie Banner - Modern Design */
 .gdpr-cookie-banner {
     position: fixed;
-    z-index: 9999;
+    z-index: 99999;
     left: 16px;
     right: 16px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -111,7 +111,7 @@
 <style>
     .gdpr-cookie-banner {
         position: fixed;
-        z-index: 9999;
+        z-index: 99999;
         bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
@@ -636,7 +636,7 @@
 
                 if (this.elements.closePreferences) {
                     this.elements.closePreferences.addEventListener('click', () => this
-                .togglePreferences());
+                        .togglePreferences());
                 }
 
                 if (this.elements.close) {
@@ -913,7 +913,7 @@
                 // RE-RENDER categories every time preferences are opened to ensure current state
                 if (!isVisible) {
                     console.log(
-                    '🔄 togglePreferences: Re-rendering categories because opening preferences');
+                        '🔄 togglePreferences: Re-rendering categories because opening preferences');
                     this.renderCategories();
                 }
 
