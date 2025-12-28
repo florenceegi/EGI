@@ -114,6 +114,8 @@
         bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
+        overflow: hidden;
+        /* Contain absolutely positioned children */
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         backdrop-filter: blur(12px);
         border-radius: 16px;
@@ -152,6 +154,11 @@
         background: rgba(31, 41, 55, 0.95);
         color: #f9fafb;
         border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Prevent click blocking when hidden */
+    .gdpr-cookie-banner[style*="display: none"] {
+        pointer-events: none !important;
     }
 
     /* Layout Orizzontale del Banner */
@@ -374,6 +381,12 @@
         justify-content: center;
         gap: 12px;
         border-radius: inherit;
+        pointer-events: auto;
+        /* Captura clicks only when visible */
+    }
+
+    .gdpr-cookie-banner__loading[style*="display: none"] {
+        pointer-events: none !important;
     }
 
     .gdpr-cookie-banner--dark .gdpr-cookie-banner__loading {
