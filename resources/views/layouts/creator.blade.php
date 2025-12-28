@@ -167,7 +167,7 @@
                     .catch(error => {
                         console.error('Error loading content:', error);
                         contentContainer.innerHTML =
-                        '<p class="text-red-500 text-center">Error loading content</p>';
+                            '<p class="text-red-500 text-center">Error loading content</p>';
                         contentContainer.classList.remove('hidden');
                         loader.classList.add('hidden');
                     });
@@ -187,7 +187,7 @@
     {{-- 🎩 Natan Assistant - Sempre Visibile --}}
     <div id="natan-global-assistant" class="fixed bottom-6 right-6 z-[9999]" role="region"
         aria-label="Natan Assistant">
-        @include('components.natan-assistant', ['suffix' => '-global'])
+        {{-- @include('components.natan-assistant', ['suffix' => '-global']) --}} {{-- DISABLED TEMPORARILY --}}
     </div>
 
 </body>

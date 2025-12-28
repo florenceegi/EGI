@@ -46,8 +46,8 @@ import { UEM } from './services/uemClientService';
 import reservationFeature from './features/reservations/reservationFeature';
 import reservationButtons from './features/reservations/reservationButtons';
 import { initPortfolioManager } from './features/portfolio/portfolioManager'; // 🚀 NEW
-import { NatanAssistant } from './components/natan-assistant';
-import { initNatanTutor } from './components/natan-tutor'; // 🎓 Natan Tutor
+// import { NatanAssistant } from './components/natan-assistant'; // DISABLED TEMPORARILY
+// import { initNatanTutor } from './components/natan-tutor'; // 🎓 Natan Tutor - DISABLED TEMPORARILY
 import { mountAllCurrentPrices } from './current-price'; // 🔴 Real-time price updates
 import { initializeStatsRealTime } from './stats-realtime'; // 📊 Real-time statistics updates
 import { autoInitUniversalSearch } from './features/search/universalSearch';
@@ -415,41 +415,41 @@ async function initializeFEGISystemOrchestrated(): Promise<void> {
             console.warn('Padmin Main: Portfolio manager initialization failed:', error);
         }
 
-        // 12. Inizializza Natan Assistant
-        try {
-            if (typeof NatanAssistant === 'function') {
-                const natanAssistant = new NatanAssistant();
-                (window as any).natan = natanAssistant;
-                (window as any).natanAssistant = natanAssistant;
-                (window as any).testButlerModal = () => {
-                    console.log('🎩 TEST: Forcing butler modal display from global function');
-                    natanAssistant.forceShowModal();
-                };
-                (window as any).testButler = () => {
-                    console.log('🎩 TEST: Complete butler test with state reset');
-                    natanAssistant.testButler();
-                };
-                (window as any).resetButler = () => {
-                    console.log('🎩 TEST: Resetting butler state');
-                    natanAssistant.resetButler();
-                };
-                console.log('🎩 Natan Assistant initialized successfully');
-            } else {
-                console.warn('Padmin Main: NatanAssistant is not a constructor or function.');
-            }
-        } catch (error) {
-            console.error('Padmin Main: Error initializing Natan Assistant:', error);
-            UEM.handleClientError('CLIENT_INIT_FAIL_NATAN_TS', { originalError: error instanceof Error ? error.message : String(error) });
-        }
+        // 12. Inizializza Natan Assistant - DISABLED TEMPORARILY
+        // try {
+        //     if (typeof NatanAssistant === 'function') {
+        //         const natanAssistant = new NatanAssistant();
+        //         (window as any).natan = natanAssistant;
+        //         (window as any).natanAssistant = natanAssistant;
+        //         (window as any).testButlerModal = () => {
+        //             console.log('🎩 TEST: Forcing butler modal display from global function');
+        //             natanAssistant.forceShowModal();
+        //         };
+        //         (window as any).testButler = () => {
+        //             console.log('🎩 TEST: Complete butler test with state reset');
+        //             natanAssistant.testButler();
+        //         };
+        //         (window as any).resetButler = () => {
+        //             console.log('🎩 TEST: Resetting butler state');
+        //             natanAssistant.resetButler();
+        //         };
+        //         console.log('🎩 Natan Assistant initialized successfully');
+        //     } else {
+        //         console.warn('Padmin Main: NatanAssistant is not a constructor or function.');
+        //     }
+        // } catch (error) {
+        //     console.error('Padmin Main: Error initializing Natan Assistant:', error);
+        //     UEM.handleClientError('CLIENT_INIT_FAIL_NATAN_TS', { originalError: error instanceof Error ? error.message : String(error) });
+        // }
 
-        // 🎓 13. Inizializza Natan Tutor (NEW - Backend-driven assistant)
-        try {
-            const natanTutor = initNatanTutor({ debug: true });
-            (window as any).natanTutor = natanTutor;
-            console.log('🎓 Natan Tutor initialized successfully');
-        } catch (error) {
-            console.error('Padmin Main: Error initializing Natan Tutor:', error);
-        }
+        // 🎓 13. Inizializza Natan Tutor (NEW - Backend-driven assistant) - DISABLED TEMPORARILY
+        // try {
+        //     const natanTutor = initNatanTutor({ debug: true });
+        //     (window as any).natanTutor = natanTutor;
+        //     console.log('🎓 Natan Tutor initialized successfully');
+        // } catch (error) {
+        //     console.error('Padmin Main: Error initializing Natan Tutor:', error);
+        // }
 
         // 14. Setup FEGI-specific custom event listeners
         setupFegiCustomEvents();
@@ -950,11 +950,11 @@ function setupFegiCustomEvents(): void {
  * 🎯 Purpose: Disconnette il wallet dalla sessione corrente
  * 🧱 Core Logic: Chiama l'API di disconnect e ricarica la pagina
  */
-(window as any).disconnectWallet = async function(): Promise<void> {
+(window as any).disconnectWallet = async function (): Promise<void> {
     try {
         // Get CSRF token
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        
+
         const response = await fetch('/api/wallet/disconnect', {
             method: 'POST',
             headers: {

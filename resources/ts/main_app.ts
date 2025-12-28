@@ -45,7 +45,7 @@ import { updateNavbarUI } from './ui/navbarManager';
 import { UEM } from './services/uemClientService';
 import reservationFeature from './features/reservations/reservationFeature';
 import reservationButtons from './features/reservations/reservationButtons';
-import { NatanAssistant } from './components/natan-assistant';
+// import { NatanAssistant } from './components/natan-assistant'; // DISABLED TEMPORARILY
 
 // --- 📦 IMPORTAZIONI DIPENDENZE ESTERNE (ora gestite da app.js) ---
 // jQuery, SweetAlert2, etc. sono già disponibili globalmente via app.js
@@ -321,18 +321,18 @@ async function initializeFEGISystemOrchestrated(): Promise<void> {
             console.warn('Padmin Main: reservationButtons or its initialize method not found.');
         }
 
-        // 11. Inizializza Natan Assistant
-        try {
-            if (typeof NatanAssistant === 'function') {
-                const natanAssistant = new NatanAssistant();
-                console.log('Padmin Main: Natan Assistant initialized.');
-            } else {
-                console.warn('Padmin Main: NatanAssistant is not a constructor or function.');
-            }
-        } catch (error) {
-            console.error('Padmin Main: Error initializing Natan Assistant:', error);
-            UEM.handleClientError('CLIENT_INIT_FAIL_NATAN_TS', { originalError: error instanceof Error ? error.message : String(error) });
-        }
+        // 11. Inizializza Natan Assistant - DISABLED TEMPORARILY
+        // try {
+        //     if (typeof NatanAssistant === 'function') {
+        //         const natanAssistant = new NatanAssistant();
+        //         console.log('Padmin Main: Natan Assistant initialized.');
+        //     } else {
+        //         console.warn('Padmin Main: NatanAssistant is not a constructor or function.');
+        //     }
+        // } catch (error) {
+        //     console.error('Padmin Main: Error initializing Natan Assistant:', error);
+        //     UEM.handleClientError('CLIENT_INIT_FAIL_NATAN_TS', { originalError: error instanceof Error ? error.message : String(error) });
+        // }
 
         // 12. Setup FEGI-specific custom event listeners
         setupFegiCustomEvents();

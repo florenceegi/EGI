@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLORENCE ART | Collezionismo Digitale</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+                "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js"
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+    <div id="loader">
+        <div class="loader-t">FLORENCE ART</div>
+        <div class="bar-c">
+            <div class="bar-f"></div>
+        </div>
+    </div>
+
+    <div id="interface">
+
+        <div id="top-bar" class="ui-element">
+            <div class="brand">
+                <div class="brand-logo">F</div>FLORENCE <span>EGI</span>
+            </div>
+            <div class="motto-bar"><a href="index.html" style="color:inherit;text-decoration:none;">HOME</a> &gt; <a href="project.html" style="color:inherit;text-decoration:none;">PROJECT</a> &gt; <strong>FLORENCE ART</strong></div>
+            <div class="system-metrics">
+                <div class="metric-item"><span>FEATURES</span><span class="metric-val">4</span></div>
+                <div class="metric-item"><span>STATUS</span><span class="metric-val"><span
+                            class="live-dot"></span>ACTIVE</span></div>
+            </div>
+        </div>
+
+        <div id="sidebar" class="ui-element">
+            <div class="nav-btn" onclick="window.location.href='index.html'"><i
+                    class="fa-solid fa-globe"></i><span>HUB</span></div>
+            <div class="nav-btn" onclick="window.location.href='project.html'"><i
+                    class="fa-solid fa-rocket"></i><span>PROJECT</span></div>
+            <div class="nav-btn active"><i
+                    class="fa-solid fa-palette"></i><span>ART</span></div>
+            <div class="nav-btn" onclick="window.location.href='epp.html'"><i
+                    class="fa-solid fa-leaf"></i><span>EPP</span></div>
+            <div class="nav-btn" onclick="window.location.href='payments.html'"><i
+                    class="fa-solid fa-credit-card"></i><span>PAYMENTS</span></div>
+        </div>
+
+        <div id="mission-control" class="ui-element">
+            <span class="sub">VERTICAL PROJECT</span>
+            <h2>FLORENCE ART</h2>
+            <p>Marketplace per arte digitale e phygital con certificazione EGI. Certifica, vendi e colleziona opere d'arte con royalty automatiche on-chain.</p>
+            <div class="kpi-grid">
+                <div class="kpi">NFT<span>& PHYGITAL</span></div>
+                <div class="kpi">ROYALTY<span>AUTOMATICHE</span></div>
+                <div class="kpi">MERCATO<span>SECONDARIO</span></div>
+                <div class="kpi">EPP<span>INTEGRATO</span></div>
+            </div>
+        </div>
+
+        <div id="detail-panel" class="ui-element">
+            <span class="panel-cat" id="p-cat">CATEGORY</span>
+            <h2 class="panel-title" id="p-title">TITLE</h2>
+            <div class="panel-tag" id="p-tag">Tagline</div>
+            <p class="panel-desc" id="p-desc">...</p>
+
+            <ul class="bullet-list" id="p-bullets"></ul>
+
+            <div class="egi-why" id="p-why">Why EGI?</div>
+
+            <button class="btn-open" id="p-btn">APRI PROGETTO</button>
+        </div>
+
+        <div id="bottom-bar" class="ui-element">
+            <div class="log">EVENT BUS > Florence Art Ready.</div>
+            <div style="color:#666"><i class="fa-solid fa-mouse"></i> DRAG TO ROTATE</div>
+        </div>
+    </div>
+
+    <script src="florence_art_data.js"></script>
+    <script type="module" src="engine.js"></script>
+    <script>
+        // Hide loader on load
+        window.onload = () => {
+            setTimeout(() => document.getElementById('loader').style.opacity = 0, 1000);
+            setTimeout(() => document.getElementById('loader').remove(), 2000);
+        };
+
+        // UI INTERACTION LOGIC
+        window.openDetailPanel = function (id) {
+            const data = window.ecosystemData[id];
+            if (!data) return console.error("No data for ID:", id);
+
+            // Populate Panel
+            document.getElementById('p-cat').innerText = data.cat;
+            document.getElementById('p-cat').style.color = '#' + data.color.toString(16).padStart(6, '0');
+            document.getElementById('p-title').innerText = data.label;
+            document.getElementById('p-tag').innerText = data.tagline;
+            document.getElementById('p-desc').innerText = data.desc;
+            document.getElementById('p-why').innerText = data.egi_link;
+
+            // Bullets
+            const list = document.getElementById('p-bullets');
+            list.innerHTML = '';
+            if (data.bullets) {
+                data.bullets.forEach(txt => {
+                    const li = document.createElement('li');
+                    li.innerText = txt;
+                    list.appendChild(li);
+                });
+            }
+
+            // Button
+            const btn = document.getElementById('p-btn');
+            if (data.route && data.route !== '#' && !data.route.startsWith('#')) {
+                btn.onclick = () => window.location.href = data.route;
+                btn.style.display = 'block';
+            } else {
+                btn.style.display = 'none';
+            }
+
+            // Show Panel
+            document.getElementById('detail-panel').classList.add('active');
+        };
+
+        // Close on click outside
+        document.getElementById('interface').addEventListener('click', (e) => {
+            if (e.target.id === 'interface') {
+                document.getElementById('detail-panel').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+
+</html>
