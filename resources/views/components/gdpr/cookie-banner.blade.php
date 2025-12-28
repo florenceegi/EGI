@@ -98,13 +98,12 @@
         aria-label="{{ __('gdpr.cookie.banner.close') }}" style="display: none;">
         <span aria-hidden="true">&times;</span>
     </button>
-</div>
 
-<!-- Loading spinner per salvataggio -->
-<div id="cookie-banner-loading" class="gdpr-cookie-banner__loading" style="display: none;">
-    <div class="gdpr-cookie-banner__spinner" aria-hidden="true"></div>
-    <span class="gdpr-cookie-banner__loading-text">{{ __('gdpr.cookie.banner.saving') }}</span>
-</div>
+    <!-- Loading spinner per salvataggio -->
+    <div id="cookie-banner-loading" class="gdpr-cookie-banner__loading" style="display: none;">
+        <div class="gdpr-cookie-banner__spinner" aria-hidden="true"></div>
+        <span class="gdpr-cookie-banner__loading-text">{{ __('gdpr.cookie.banner.saving') }}</span>
+    </div>
 </div>
 
 {{-- Stili CSS del Banner --}}
