@@ -168,6 +168,18 @@ function MainApp() {
   const [overlayOpacity, setOverlayOpacity] = useState(1); // Overlay nero che copre tutto
   const [skipAnimation, setSkipAnimation] = useState(false);
 
+  // Ref per memorizzare l'handler e poterlo rimuovere
+  const skipHandlerRef = React.useRef<((e: Event) => void) | null>(null);
+
+  // Funzione per rimuovere i listener
+  const removeSkipListeners = () => {
+    if (skipHandlerRef.current) {
+      document.removeEventListener('touchstart', skipHandlerRef.current);
+      document.removeEventListener('click', skipHandlerRef.current);
+      skipHandlerRef.current = null;
+    }
+  };
+
   useEffect(() => {
     // Rimuovi il loading iniziale appena React si monta
     const initialOverlay = document.getElementById('home-initial-overlay');
@@ -180,21 +192,28 @@ function MainApp() {
 
     // Click/tap per saltare animazione (funziona su mobile e desktop)
     const handleSkip = (e: Event) => {
-      // Evita doppi trigger su dispositivi touch
+      // Evita doppi trigger su dispositivi touch - MA NON bloccare click futuri!
       if (e.type === 'touchstart') {
-        e.preventDefault();
+        // Solo per questo evento, non per tutti i futuri
+        e.stopPropagation();
       }
       console.log('🖐️ User interaction detected - skipping animation');
+
+      // IMPORTANTE: Rimuovi i listener SUBITO prima di fare skip
+      removeSkipListeners();
+
       setSkipAnimation(true);
     };
 
+    // Salva il riferimento
+    skipHandlerRef.current = handleSkip;
+
     // Listener per touch (mobile) e click (desktop)
-    document.addEventListener('touchstart', handleSkip, { passive: false });
+    document.addEventListener('touchstart', handleSkip, { passive: true });
     document.addEventListener('click', handleSkip);
 
     return () => {
-      document.removeEventListener('touchstart', handleSkip);
-      document.removeEventListener('click', handleSkip);
+      removeSkipListeners();
     };
   }, []);
 
@@ -215,6 +234,9 @@ function MainApp() {
   };
 
   const handleRainComplete = () => {
+    // IMPORTANTE: Rimuovi i listener PRIMA di tutto
+    removeSkipListeners();
+
     // Rimuovi la classe dal body
     document.body.classList.remove('splash-active');
 
