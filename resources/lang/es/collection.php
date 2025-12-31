@@ -449,6 +449,14 @@ return [
         // Edit data modal
         'edit_button' => 'Editar datos',
         'manage_team' => 'Gestionar Equipo',
+
+        'dashboard' => [
+            'tab_payments' => 'Pagos',
+            'payment_methods_title' => 'Métodos de Pago de la Colección',
+            'payment_methods_desc' => 'Habilite o deshabilite los métodos de pago para esta colección. Solo los métodos habilitados en su configuración principal están disponibles aquí.',
+            'no_global_methods' => 'No se encontraron métodos de pago habilitados.',
+            'configure_global_methods' => 'Configurar Ajustes Globales',
+        ],
     ],
 
     'back_to_collection' => 'Volver a la Colección',

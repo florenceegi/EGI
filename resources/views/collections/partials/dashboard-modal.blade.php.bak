@@ -1,63 +1,42 @@
 {{-- 💼 DASHBOARD MONETIZATION MODAL --}}
-<div id="dashboardModal" class="fixed inset-0 z-50 hidden bg-gray-900/80 backdrop-blur-sm transition-opacity"
+<div id="dashboardModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/80 backdrop-blur-sm"
     aria-labelledby="dashboardModalLabel" role="dialog" aria-modal="true">
-
-    {{-- Wrapper: Full screen on mobile, Centered flex on desktop --}}
-    <div class="relative h-full w-full md:flex md:h-screen md:items-center md:justify-center md:px-4 md:py-8">
-        {{-- Modal Card: Full screen column on mobile, Rounded card on desktop --}}
-        <div style="justify-content: flex-start !important;"
-            class="flex h-full w-full flex-col justify-start bg-gray-900 shadow-2xl md:h-auto md:max-h-[90vh] md:max-w-6xl md:rounded-2xl md:border md:border-gray-700 md:bg-gray-900">
-
-            {{-- Header: Sticky/Fixed at top --}}
+    <div class="flex min-h-screen items-center justify-center px-4 py-8">
+        <div class="relative w-full max-w-6xl rounded-2xl border border-gray-700 bg-gray-900 shadow-2xl">
+            {{-- Header --}}
             <div
-                class="flex shrink-0 items-center justify-between border-b border-gray-700 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 px-4 py-3 md:rounded-t-2xl md:px-6 md:py-4">
+                class="flex items-center justify-between border-b border-gray-700 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 px-6 py-4">
                 <div class="flex items-center gap-3">
                     <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600/20">
                         <span class="material-symbols-outlined text-xl text-indigo-400">dashboard</span>
                     </div>
                     <div>
-                        <h3 id="dashboardModalLabel" class="text-lg font-bold text-white md:text-xl">
+                        <h3 id="dashboardModalLabel" class="text-xl font-bold text-white">
                             {{ __('collection.show.dashboard.title') }}
                         </h3>
-                        <p class="text-xs text-gray-400 md:text-sm">{{ $collection->collection_name }}</p>
+                        <p class="text-sm text-gray-400">{{ $collection->collection_name }}</p>
                     </div>
                 </div>
-                {{-- Close Button --}}
-                <button id="closeDashboardX"
-                    class="flex h-10 w-10 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-800 hover:text-white">
+                <button id="closeDashboardX" class="text-gray-400 transition-colors hover:text-white">
                     <span class="material-symbols-outlined text-2xl">close</span>
                 </button>
             </div>
 
-            {{-- Scrollable Content Area --}}
-            <div style="justify-content: flex-start !important;"
-                class="flex flex-1 flex-col justify-start overflow-y-auto p-4 pb-32 md:p-6 md:pb-6">
-                {{-- Tabs Navigation (Desktop Only) --}}
-                <div
-                    class="scrollbar-hide mb-6 hidden gap-2 overflow-x-auto whitespace-nowrap border-b border-gray-700 pb-1 md:flex">
-                    <button
-                        class="dashboard-tab active flex items-center whitespace-nowrap px-3 py-2 text-sm md:px-4 md:text-base"
-                        data-tab="monetization">
-                        <span class="material-symbols-outlined mr-2 text-lg md:text-xl">payments</span>
+            {{-- Content --}}
+            <div class="p-6">
+                {{-- Tabs Navigation --}}
+                <div class="mb-6 flex gap-2 overflow-x-auto border-b border-gray-700">
+                    <button class="dashboard-tab active" data-tab="monetization">
+                        <span class="material-symbols-outlined mr-2">payments</span>
                         {{ __('collection.show.dashboard.tab_monetization') }}
                     </button>
-                    <button
-                        class="dashboard-tab flex items-center whitespace-nowrap px-3 py-2 text-sm md:px-4 md:text-base"
-                        data-tab="statistics">
-                        <span class="material-symbols-outlined mr-2 text-lg md:text-xl">analytics</span>
+                    <button class="dashboard-tab" data-tab="statistics">
+                        <span class="material-symbols-outlined mr-2">analytics</span>
                         {{ __('collection.show.dashboard.tab_statistics') }}
                     </button>
-                    <button
-                        class="dashboard-tab flex items-center whitespace-nowrap px-3 py-2 text-sm md:px-4 md:text-base"
-                        data-tab="subscription">
-                        <span class="material-symbols-outlined mr-2 text-lg md:text-xl">subscriptions</span>
+                    <button class="dashboard-tab" data-tab="subscription">
+                        <span class="material-symbols-outlined mr-2">subscriptions</span>
                         {{ __('collection.show.dashboard.tab_subscription') }}
-                    </button>
-                    <button
-                        class="dashboard-tab flex items-center whitespace-nowrap px-3 py-2 text-sm md:px-4 md:text-base"
-                        data-tab="payments">
-                        <span class="material-symbols-outlined mr-2 text-lg md:text-xl">credit_card</span>
-                        {{ __('collection.show.dashboard.tab_payments') }}
                     </button>
                 </div>
 
@@ -65,7 +44,7 @@
                 <div id="tab-monetization" class="dashboard-tab-content">
                     <div class="grid gap-6 md:grid-cols-2">
                         {{-- Current Status --}}
-                        <div class="rounded-xl border border-gray-700 bg-gray-800/50 p-4 md:p-6">
+                        <div class="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
                             <h4 class="mb-4 flex items-center text-lg font-semibold text-white">
                                 <span class="material-symbols-outlined mr-2">info</span>
                                 {{ __('collection.show.dashboard.current_monetization') }}
@@ -74,17 +53,12 @@
                             @php
                                 $monetizationType = $collection->monetization_type ?? 'epp';
                                 $isEpp = $monetizationType === 'epp';
-                                // Only show Company Mode for actual Company users, not Creators with EPP voluntary
-                                $isCompanyCollection =
-                                    $collection->creator &&
-                                    $collection->creator->usertype ===
-                                        \App\Enums\User\MerchantUserTypeEnum::COMPANY->value;
+                                $isCompanyCollection = $collection->is_epp_voluntary || ($collection->creator && $collection->creator->usertype === \App\Enums\User\MerchantUserTypeEnum::COMPANY->value);
                             @endphp
 
                             @if ($isCompanyCollection)
                                 {{-- COMPANY MODE: Subscription Required + Voluntary EPP Donation --}}
-                                <div
-                                    class="flex items-start gap-4 rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-3 md:p-4">
+                                <div class="flex items-start gap-4 rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-4">
                                     <div class="flex-shrink-0 rounded-lg bg-indigo-500/20 p-2">
                                         <span class="material-symbols-outlined text-2xl text-indigo-400">business</span>
                                     </div>
@@ -93,13 +67,11 @@
                                             <h5 class="font-semibold text-indigo-400">
                                                 {{ __('collection.show.dashboard.company_mode') }}</h5>
                                             @if ($collection->subscription_status === 'active')
-                                                <span
-                                                    class="rounded-full border border-green-500/30 bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400">
+                                                <span class="rounded-full border border-green-500/30 bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400">
                                                     {{ __('collection.show.dashboard.active') }}
                                                 </span>
                                             @else
-                                                <span
-                                                    class="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2 py-1 text-xs font-medium text-yellow-400">
+                                                <span class="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2 py-1 text-xs font-medium text-yellow-400">
                                                     {{ __('collection.show.dashboard.subscription_required') }}
                                                 </span>
                                             @endif
@@ -109,13 +81,11 @@
                                         </p>
                                         <div class="space-y-1 text-sm text-gray-400">
                                             <div class="flex items-center gap-2">
-                                                <span class="material-symbols-outlined text-indigo-400"
-                                                    style="font-size: 16px;">check_circle</span>
+                                                <span class="material-symbols-outlined text-indigo-400" style="font-size: 16px;">check_circle</span>
                                                 {{ __('collection.show.dashboard.subscription_access') }}
                                             </div>
                                             <div class="flex items-center gap-2">
-                                                <span class="material-symbols-outlined text-green-400"
-                                                    style="font-size: 16px;">volunteer_activism</span>
+                                                <span class="material-symbols-outlined text-green-400" style="font-size: 16px;">volunteer_activism</span>
                                                 {{ __('collection.company_epp_voluntary') }}
                                             </div>
                                         </div>
@@ -135,31 +105,27 @@
                                     @if ($collection->eppProject)
                                         <div class="mb-4 rounded border border-green-500/20 bg-green-500/10 p-3">
                                             <p class="text-sm text-gray-300">
-                                                {{ __('collection.show.dashboard.supporting') }}:
-                                                <strong
-                                                    class="text-green-400">{{ $collection->eppProject->name }}</strong>
+                                                {{ __('collection.show.dashboard.supporting') }}: 
+                                                <strong class="text-green-400">{{ $collection->eppProject->name }}</strong>
                                             </p>
                                             <p class="mt-1 text-xs text-gray-400">
-                                                {{ __('collection.donation_percentage_label') }}:
-                                                <strong
-                                                    class="text-green-400">{{ $collection->epp_donation_percentage ?? 0 }}%</strong>
+                                                {{ __('collection.donation_percentage_label') }}: 
+                                                <strong class="text-green-400">{{ $collection->epp_donation_percentage ?? 0 }}%</strong>
                                             </p>
                                         </div>
                                     @endif
 
                                     {{-- Donation Percentage Slider --}}
                                     <div class="mb-4">
-                                        <label for="companyDonationPercentage"
-                                            class="mb-2 block text-sm font-medium text-gray-300">
+                                        <label for="companyDonationPercentage" class="mb-2 block text-sm font-medium text-gray-300">
                                             {{ __('collection.donation_percentage_label') }}
                                         </label>
                                         <div class="flex items-center gap-4">
-                                            <input type="range" id="companyDonationPercentage"
+                                            <input type="range" id="companyDonationPercentage" 
                                                 class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-700 accent-green-500"
-                                                min="0" max="100" step="1"
+                                                min="0" max="100" step="1" 
                                                 value="{{ $collection->epp_donation_percentage ?? 0 }}">
-                                            <span id="donationPercentageValue"
-                                                class="min-w-[3rem] text-center text-lg font-bold text-green-400">
+                                            <span id="donationPercentageValue" class="min-w-[3rem] text-center text-lg font-bold text-green-400">
                                                 {{ $collection->epp_donation_percentage ?? 0 }}%
                                             </span>
                                         </div>
@@ -279,7 +245,7 @@
                                     $status = $collection->subscription_status ?? 'pending';
                                 @endphp
                                 <div
-                                    class="flex items-start gap-4 rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-3 md:p-4">
+                                    class="flex items-start gap-4 rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-4">
                                     <div class="flex-shrink-0 rounded-lg bg-indigo-500/20 p-2">
                                         <span
                                             class="material-symbols-outlined text-2xl text-indigo-400">subscriptions</span>
@@ -329,7 +295,7 @@
                         </div>
 
                         {{-- Switch Options --}}
-                        <div class="rounded-xl border border-gray-700 bg-gray-800/50 p-4 md:p-6">
+                        <div class="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
                             <h4 class="mb-4 flex items-center text-lg font-semibold text-white">
                                 <span class="material-symbols-outlined mr-2">swap_horiz</span>
                                 {{ __('collection.show.dashboard.switch_monetization') }}
@@ -352,8 +318,7 @@
                                                     <div class="text-xs text-gray-400">{{ $tierData['egis'] }}
                                                         {{ __('collection.show.dashboard.egis_per_month') }}</div>
                                                 </div>
-                                                <div class="text-lg font-bold text-indigo-400">
-                                                    {{ $tierData['price'] }}
+                                                <div class="text-lg font-bold text-indigo-400">{{ $tierData['price'] }}
                                                 </div>
                                             </div>
                                         </button>
@@ -548,42 +513,26 @@
                         @if ($collection->subscription_status === 'active')
                             <div class="space-y-6">
                                 {{-- Subscription Details --}}
-                                <div class="rounded-xl border border-gray-700 bg-gray-800/50 p-4 md:p-6">
+                                <div class="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
                                     <h4 class="mb-6 flex items-center gap-2 text-lg font-semibold text-white">
                                         <span class="material-symbols-outlined text-indigo-400">badge</span>
                                         {{ __('collection.show.dashboard.subscription_details') }}
                                     </h4>
-
+                                    
                                     <div class="grid gap-y-4 md:grid-cols-2 lg:grid-cols-2">
                                         {{-- Plan Name --}}
                                         <div class="flex flex-col gap-1">
-                                            <span
-                                                class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.plan') }}</span>
+                                            <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.plan') }}</span>
                                             <span class="text-lg font-bold text-white">
                                                 @php
                                                     $tierLabels = [
-                                                        'tier_1_19' => [
-                                                            'name' => 'Starter (1-19 EGIs)',
-                                                            'price' => '€4.90',
-                                                        ],
-                                                        'tier_20_49' => [
-                                                            'name' => 'Growth (20-49 EGIs)',
-                                                            'price' => '€7.90',
-                                                        ],
-                                                        'tier_50_99' => [
-                                                            'name' => 'Pro (50-99 EGIs)',
-                                                            'price' => '€9.90',
-                                                        ],
-                                                        'tier_100_plus' => [
-                                                            'name' => 'Unlimited (100+ EGIs)',
-                                                            'price' => '€19.90',
-                                                        ],
+                                                        'tier_1_19' => ['name' => 'Starter (1-19 EGIs)', 'price' => '€4.90'],
+                                                        'tier_20_49' => ['name' => 'Growth (20-49 EGIs)', 'price' => '€7.90'],
+                                                        'tier_50_99' => ['name' => 'Pro (50-99 EGIs)', 'price' => '€9.90'],
+                                                        'tier_100_plus' => ['name' => 'Unlimited (100+ EGIs)', 'price' => '€19.90'],
                                                     ];
                                                     // Handle legacy/service default 'collection_basic' by mapping to Unlimited
-                                                    $displayTier =
-                                                        $collection->subscription_tier === 'collection_basic'
-                                                            ? 'tier_100_plus'
-                                                            : $collection->subscription_tier ?? 'tier_1_19';
+                                                    $displayTier = $collection->subscription_tier === 'collection_basic' ? 'tier_100_plus' : ($collection->subscription_tier ?? 'tier_1_19');
                                                 @endphp
                                                 {{ $tierLabels[$displayTier]['name'] ?? $tierLabels['tier_100_plus']['name'] }}
                                             </span>
@@ -591,11 +540,9 @@
 
                                         {{-- Status --}}
                                         <div class="flex flex-col gap-1">
-                                            <span
-                                                class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.status') }}</span>
+                                            <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.status') }}</span>
                                             <div>
-                                                <span
-                                                    class="inline-flex items-center rounded-md bg-green-500/10 px-2 py-1 text-sm font-medium text-green-400 ring-1 ring-inset ring-green-500/20">
+                                                <span class="bg-green-500/10 text-green-400 ring-green-500/20 inline-flex items-center rounded-md px-2 py-1 text-sm font-medium ring-1 ring-inset">
                                                     <span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-green-400"></span>
                                                     {{ ucfirst($collection->subscription_status) }}
                                                 </span>
@@ -604,8 +551,7 @@
 
                                         {{-- Price --}}
                                         <div class="flex flex-col gap-1">
-                                            <span
-                                                class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.price') }}</span>
+                                            <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.price') }}</span>
                                             <span class="font-medium text-white">
                                                 {{ $tierLabels[$displayTier]['price'] ?? '€19.90' }}/{{ __('collection.show.dashboard.month') }}
                                             </span>
@@ -614,8 +560,7 @@
                                         {{-- Started At --}}
                                         @if ($collection->subscription_started_at)
                                             <div class="flex flex-col gap-1">
-                                                <span
-                                                    class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.started') }}</span>
+                                                <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.started') }}</span>
                                                 <span class="font-medium text-white">
                                                     {{ \Carbon\Carbon::parse($collection->subscription_started_at)->format('d M Y, H:i') }}
                                                 </span>
@@ -625,39 +570,28 @@
                                         {{-- Expires At --}}
                                         @if ($collection->subscription_expires_at)
                                             <div class="flex flex-col gap-1">
-                                                <span
-                                                    class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.expires') }}</span>
+                                                <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.expires') }}</span>
                                                 <div class="flex items-center gap-2">
                                                     <span class="font-medium text-white">
                                                         {{ \Carbon\Carbon::parse($collection->subscription_expires_at)->format('d M Y') }}
                                                     </span>
                                                     @php
-                                                        $daysLeft = \Carbon\Carbon::now()->diffInDays(
-                                                            \Carbon\Carbon::parse($collection->subscription_expires_at),
-                                                            false,
-                                                        );
+                                                        $daysLeft = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($collection->subscription_expires_at), false);
                                                     @endphp
                                                     @if ($daysLeft > 0 && $daysLeft < 7)
-                                                        <span
-                                                            class="text-xs font-medium text-yellow-500">({{ ceil($daysLeft) }}
-                                                            days left)</span>
+                                                        <span class="text-xs font-medium text-yellow-500">({{ ceil($daysLeft) }} days left)</span>
                                                     @endif
                                                 </div>
                                             </div>
                                         @endif
-
+                                        
                                         {{-- Auto-Renewal Toggle --}}
                                         <div class="flex flex-col gap-1">
-                                            <span
-                                                class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.auto_renew') }}</span>
+                                            <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('collection.show.dashboard.auto_renew') }}</span>
                                             <div class="flex items-center gap-2">
                                                 <label class="relative inline-flex cursor-pointer items-center">
-                                                    <input type="checkbox" value="" class="peer sr-only"
-                                                        {{ $collection->is_auto_renew_active ? 'checked' : '' }}
-                                                        onchange="toggleAutoRenew(this.checked)">
-                                                    <div
-                                                        class="peer h-6 w-11 rounded-full bg-gray-700 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-indigo-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300/30 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-indigo-800">
-                                                    </div>
+                                                    <input type="checkbox" value="" class="peer sr-only" {{ $collection->is_auto_renew_active ? 'checked' : '' }} onchange="toggleAutoRenew(this.checked)">
+                                                    <div class="peer h-6 w-11 rounded-full bg-gray-700 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-indigo-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300/30 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-indigo-800"></div>
                                                 </label>
                                                 <span class="text-sm font-medium text-white" id="auto-renew-label">
                                                     {{ $collection->is_auto_renew_active ? __('collection.show.dashboard.enabled') : __('collection.show.dashboard.disabled') }}
@@ -674,14 +608,12 @@
                                     </h4>
                                     <div class="grid gap-3 sm:grid-cols-2">
                                         @if ($collection->subscription_stripe_id)
-                                            <a href="#"
-                                                class="flex items-center justify-center gap-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-4 py-3 text-white transition-all hover:bg-indigo-500/20">
+                                            <a href="#" class="flex items-center justify-center gap-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-4 py-3 text-white transition-all hover:bg-indigo-500/20">
                                                 <span class="material-symbols-outlined">credit_card</span>
                                                 {{ __('collection.show.dashboard.manage_payment_methods') }}
                                             </a>
                                         @endif
-                                        <button onclick="cancelSubscription()"
-                                            class="flex items-center justify-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-400 transition-all hover:bg-red-500/20 hover:text-red-300">
+                                        <button onclick="cancelSubscription()" class="flex items-center justify-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-400 transition-all hover:bg-red-500/20 hover:text-red-300">
                                             <span class="material-symbols-outlined">cancel</span>
                                             {{ __('collection.show.dashboard.cancel_subscription') }}
                                         </button>
@@ -692,52 +624,42 @@
                             {{-- Not Active: Show PLAN SELECTION --}}
                             <div class="space-y-6">
                                 <div class="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-6 text-center">
-                                    <div
-                                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-600/20">
-                                        <span
-                                            class="material-symbols-outlined text-3xl text-indigo-400">subscriptions</span>
+                                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-600/20">
+                                        <span class="material-symbols-outlined text-3xl text-indigo-400">subscriptions</span>
                                     </div>
-                                    <h2 class="mb-2 text-2xl font-bold text-white">
-                                        {{ __('collection.show.dashboard.choose_your_plan') }}</h2>
-                                    <p class="mx-auto max-w-lg text-gray-300">
-                                        {{ __('collection.show.dashboard.choose_plan_desc') }}</p>
+                                    <h2 class="mb-2 text-2xl font-bold text-white">{{ __('collection.show.dashboard.choose_your_plan') }}</h2>
+                                    <p class="mx-auto max-w-lg text-gray-300">{{ __('collection.show.dashboard.choose_plan_desc') }}</p>
                                 </div>
 
                                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                                     @foreach ([
-        'tier_1_19' => ['name' => __('collection.show.dashboard.tier_starter'), 'price' => '€4.90', 'egis' => '1-19', 'color' => 'gray'],
-        'tier_20_49' => ['name' => __('collection.show.dashboard.tier_basic'), 'price' => '€7.90', 'egis' => '20-49', 'color' => 'blue'],
-        'tier_50_99' => ['name' => __('collection.show.dashboard.tier_professional'), 'price' => '€9.90', 'egis' => '50-99', 'color' => 'indigo'],
-        'tier_100_plus' => ['name' => __('collection.show.dashboard.tier_unlimited'), 'price' => '€19.90', 'egis' => '100+', 'color' => 'purple'],
-    ] as $tierCode => $tierData)
-                                        <div
-                                            class="relative flex flex-col rounded-xl border border-gray-700 bg-gray-800 p-6 transition-all hover:-translate-y-1 hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10">
+                                        'tier_1_19' => ['name' => __('collection.show.dashboard.tier_starter'), 'price' => '€4.90', 'egis' => '1-19', 'color' => 'gray'],
+                                        'tier_20_49' => ['name' => __('collection.show.dashboard.tier_basic'), 'price' => '€7.90', 'egis' => '20-49', 'color' => 'blue'],
+                                        'tier_50_99' => ['name' => __('collection.show.dashboard.tier_professional'), 'price' => '€9.90', 'egis' => '50-99', 'color' => 'indigo'],
+                                        'tier_100_plus' => ['name' => __('collection.show.dashboard.tier_unlimited'), 'price' => '€19.90', 'egis' => '100+', 'color' => 'purple']
+                                    ] as $tierCode => $tierData)
+                                        <div class="relative flex flex-col rounded-xl border border-gray-700 bg-gray-800 p-6 transition-all hover:-translate-y-1 hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10">
                                             <div class="mb-4">
                                                 <h3 class="text-lg font-bold text-white">{{ $tierData['name'] }}</h3>
-                                                <div class="mt-2 text-3xl font-bold text-white">
-                                                    {{ $tierData['price'] }}<span
-                                                        class="text-sm font-normal text-gray-400">/mo</span></div>
+                                                <div class="mt-2 text-3xl font-bold text-white">{{ $tierData['price'] }}<span class="text-sm font-normal text-gray-400">/mo</span></div>
                                             </div>
-
+                                            
                                             <ul class="mb-6 flex-1 space-y-3 text-sm text-gray-300">
                                                 <li class="flex items-center gap-2">
-                                                    <span class="material-symbols-outlined text-green-400"
-                                                        style="font-size: 18px">check</span>
+                                                    <span class="material-symbols-outlined text-green-400" style="font-size: 18px">check</span>
                                                     {{ $tierData['egis'] }} EGIs
                                                 </li>
                                                 <li class="flex items-center gap-2">
-                                                    <span class="material-symbols-outlined text-green-400"
-                                                        style="font-size: 18px">check</span>
+                                                    <span class="material-symbols-outlined text-green-400" style="font-size: 18px">check</span>
                                                     Full Analytics
                                                 </li>
                                                 <li class="flex items-center gap-2">
-                                                    <span class="material-symbols-outlined text-green-400"
-                                                        style="font-size: 18px">check</span>
+                                                    <span class="material-symbols-outlined text-green-400" style="font-size: 18px">check</span>
                                                     Priority Support
                                                 </li>
                                             </ul>
-
-                                            <button onclick="selectSubscriptionTier('{{ $tierCode }}')"
+                                            
+                                            <button onclick="selectSubscriptionTier('{{ $tierCode }}')" 
                                                 class="mt-auto w-full rounded-lg bg-indigo-600 py-2.5 font-semibold text-white transition-colors hover:bg-indigo-700">
                                                 Select Plan
                                             </button>
@@ -749,145 +671,19 @@
                     @else
                         <div class="rounded-xl border border-gray-700 bg-gray-800/30 p-12 text-center">
                             <span class="material-symbols-outlined text-4xl text-gray-600">subscriptions</span>
-                            <p class="mt-2 text-gray-400">
-                                {{ __('collection.show.dashboard.no_active_subscription') }}
+                            <p class="mt-2 text-gray-400">{{ __('collection.show.dashboard.no_active_subscription') }}
                             </p>
                             <p class="text-sm text-gray-500">{{ __('collection.show.dashboard.using_epp_mode') }}</p>
                         </div>
                     @endif
                 </div>
-
-                {{-- Tab: Payments (Rebuilt) - NOW INSIDE SCROLLABLE AREA --}}
-                <div id="tab-payments-content" class="dashboard-tab-content hidden w-full">
-                    {{-- Wrapper Card with Border --}}
-                    <div class="rounded-xl border border-gray-700 bg-gray-800/50 p-4 md:p-6">
-                        {{-- Title Section --}}
-                        <div class="mb-6 px-1">
-                            <h4 class="mb-2 flex items-center gap-2 text-xl font-bold text-white">
-                                <span class="material-symbols-outlined text-indigo-400">credit_card</span>
-                                {{ __('collection.show.dashboard.payment_methods_title') }}
-                            </h4>
-                            <p class="text-sm text-gray-400">
-                                {{ __('collection.show.dashboard.payment_methods_desc') }}
-                            </p>
-                        </div>
-
-                        {{-- Methods List --}}
-                        <div class="space-y-4">
-                            @php
-                                $userMethods = auth()->user()->paymentMethods->keyBy('method');
-                                $collectionMethods = $collection->paymentMethods->keyBy('method');
-                                $availableMethods = \App\Http\Controllers\PaymentSettingsController::AVAILABLE_METHODS;
-                            @endphp
-
-                            @foreach ($availableMethods as $methodKey => $methodInfo)
-                                @php
-                                    $userMethod = $userMethods[$methodKey] ?? null;
-                                    $isUserEnabled = $userMethod?->is_enabled ?? false;
-                                @endphp
-
-                                @if ($isUserEnabled)
-                                    @php
-                                        $collectionMethod = $collectionMethods[$methodKey] ?? null;
-                                        $isCollectionEnabled = $collectionMethod?->is_enabled ?? false;
-                                    @endphp
-
-                                    {{-- Solid Card with Solid Border --}}
-                                    <div
-                                        class="{{ $isCollectionEnabled ? 'ring-2 ring-indigo-500 border-transparent' : '' }} group relative flex items-center justify-between rounded-xl border border-gray-600 bg-gray-800 p-5 transition-all hover:border-gray-500">
-                                        <div class="flex items-center gap-4">
-                                            {{-- Icon Box --}}
-                                            <div
-                                                class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-gray-700 text-gray-300">
-                                                @if ($methodInfo['icon'] === 'credit-card')
-                                                    <span class="material-symbols-outlined text-2xl">credit_card</span>
-                                                @elseif($methodInfo['icon'] === 'coins')
-                                                    <span
-                                                        class="material-symbols-outlined text-2xl">account_balance_wallet</span>
-                                                @else
-                                                    <span
-                                                        class="material-symbols-outlined text-2xl">account_balance</span>
-                                                @endif
-                                            </div>
-
-                                            <div>
-                                                <h5 class="text-base font-bold text-white">{{ $methodInfo['name'] }}
-                                                </h5>
-                                                <p class="text-xs text-gray-400">{{ $methodInfo['description'] }}</p>
-                                            </div>
-                                        </div>
-
-                                        <label class="relative z-10 inline-flex cursor-pointer items-center">
-                                            <input type="checkbox" class="peer sr-only"
-                                                onchange="toggleCollectionPaymentMethod('{{ $methodKey }}', this, {{ $collection->id }}); const card = this.closest('.group'); if(this.checked) { card.classList.add('ring-2', 'ring-indigo-500', 'border-transparent'); card.classList.remove('border-gray-600'); } else { card.classList.remove('ring-2', 'ring-indigo-500', 'border-transparent'); card.classList.add('border-gray-600'); }"
-                                                {{ $isCollectionEnabled ? 'checked' : '' }}>
-                                            <div
-                                                class="peer h-6 w-11 rounded-full bg-gray-700 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-indigo-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none dark:border-gray-600 dark:bg-gray-900">
-                                            </div>
-                                        </label>
-                                    </div>
-                                @endif
-                            @endforeach
-
-                            @if ($userMethods->where('is_enabled', true)->isEmpty())
-                                <div
-                                    class="rounded-xl border border-dashed border-gray-600 bg-gray-800/50 p-8 text-center text-gray-400">
-                                    <span class="material-symbols-outlined mb-2 text-3xl">warning</span>
-                                    <p class="mb-2">{{ __('collection.show.dashboard.no_global_methods') }}</p>
-                                    <a href="#" onclick="window.paymentModal.open(); return false;"
-                                        class="font-bold text-indigo-400 hover:text-indigo-300 hover:underline">
-                                        {{ __('collection.show.dashboard.configure_global_methods') }}
-                                    </a>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
-            {{-- Footer (Desktop Only) --}}
-            <div class="hidden justify-end gap-3 border-t border-gray-700 bg-gray-800/30 px-6 py-4 md:flex">
+            {{-- Footer --}}
+            <div class="flex justify-end gap-3 border-t border-gray-700 bg-gray-800/30 px-6 py-4">
                 <button id="closeDashboardBtn"
                     class="rounded-lg border border-gray-600 px-6 py-2 text-gray-300 transition-colors hover:bg-gray-700">
                     {{ __('collection.show.dashboard.close') }}
-                </button>
-            </div>
-
-            {{-- Mobile Bottom Navigation Bar --}}
-            <div
-                class="fixed bottom-0 left-0 z-[60] grid w-full grid-cols-4 gap-1 border-t border-gray-700 bg-gray-900 px-2 py-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.3)] md:hidden">
-                <button
-                    class="dashboard-tab-mobile group active flex flex-col items-center justify-center rounded-xl p-2 transition-all hover:bg-gray-800"
-                    data-tab="monetization">
-                    <span
-                        class="material-symbols-outlined mb-1 text-2xl text-gray-400 group-[.active]:text-indigo-400">payments</span>
-                    <span
-                        class="text-[10px] font-medium text-gray-500 group-[.active]:text-indigo-400">{{ __('collection.show.dashboard.tab_monetization') }}</span>
-                </button>
-                <button
-                    class="dashboard-tab-mobile group flex flex-col items-center justify-center rounded-xl p-2 transition-all hover:bg-gray-800"
-                    data-tab="statistics">
-                    <span
-                        class="material-symbols-outlined mb-1 text-2xl text-gray-400 group-[.active]:text-indigo-400">analytics</span>
-                    <span
-                        class="text-[10px] font-medium text-gray-500 group-[.active]:text-indigo-400">{{ __('collection.show.dashboard.tab_statistics') }}</span>
-                </button>
-                <button
-                    class="dashboard-tab-mobile group flex flex-col items-center justify-center rounded-xl p-2 transition-all hover:bg-gray-800"
-                    data-tab="subscription">
-                    <span
-                        class="material-symbols-outlined mb-1 text-2xl text-gray-400 group-[.active]:text-indigo-400">subscriptions</span>
-                    <span
-                        class="text-[10px] font-medium text-gray-500 group-[.active]:text-indigo-400">{{ __('collection.show.dashboard.tab_subscription') }}</span>
-                </button>
-                <button
-                    class="dashboard-tab-mobile group flex flex-col items-center justify-center rounded-xl p-2 transition-all hover:bg-gray-800"
-                    data-tab="payments">
-                    <span
-                        class="material-symbols-outlined mb-1 text-2xl text-gray-400 group-[.active]:text-indigo-400">credit_card</span>
-                    <span
-                        class="text-[10px] font-medium text-gray-500 group-[.active]:text-indigo-400">{{ __('collection.show.dashboard.tab_payments') }}</span>
                 </button>
             </div>
         </div>
@@ -898,147 +694,83 @@
     function toggleAutoRenew(isActive) {
         const label = document.getElementById('auto-renew-label');
         const url = "{{ route('home.collections.subscription.toggle-auto-renew', $collection->id) }}";
-
+        
         // Visual feedback
         label.style.opacity = '0.5';
 
         fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    active: isActive
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                label.style.opacity = '1';
-                if (data.success) {
-                    label.textContent = data.message;
-                } else {
-                    console.error(data.message);
-                    alert('Errore: ' + data.message);
-                }
-            })
-            .catch(error => {
-                label.style.opacity = '1';
-                console.error('Error:', error);
-                alert('Si è verificato un errore di rete.');
-            });
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ active: isActive })
+        })
+        .then(response => response.json())
+        .then(data => {
+            label.style.opacity = '1';
+            if(data.success) {
+                label.textContent = data.message;
+            } else {
+                console.error(data.message);
+                alert('Errore: ' + data.message);
+            }
+        })
+        .catch(error => {
+            label.style.opacity = '1';
+            console.error('Error:', error);
+            alert('Si è verificato un errore di rete.');
+        });
     }
 
     function cancelSubscription() {
         Swal.fire({
-            title: '{{ __('collection.show.dashboard.cancel_confirm_title') }}',
-            text: '{{ __('collection.show.dashboard.cancel_confirm_text') }}',
+            title: '{{ __("collection.show.dashboard.cancel_confirm_title") }}',
+            text: '{{ __("collection.show.dashboard.cancel_confirm_text") }}',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
-            confirmButtonText: '{{ __('collection.show.dashboard.cancel_confirm_btn') }}',
-            cancelButtonText: '{{ __('collection.show.dashboard.cancel_cancel_btn') }}'
+            confirmButtonText: '{{ __("collection.show.dashboard.cancel_confirm_btn") }}',
+            cancelButtonText: '{{ __("collection.show.dashboard.cancel_cancel_btn") }}'
         }).then((result) => {
             if (result.isConfirmed) {
                 const url = "{{ route('home.collections.subscription.cancel', $collection->id) }}";
-
+                
                 fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                                'content')
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire(
-                                '{{ __('collection.show.dashboard.cancelled') }}',
-                                data.message + (data.refund_amount > 0 ? '\nRefund: ' + data
-                                    .refund_amount + ' Egili' : ''),
-                                'success'
-                            ).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire(
-                                'Error',
-                                data.message,
-                                'error'
-                            );
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        Swal.fire(
+                            '{{ __("collection.show.dashboard.cancelled") }}',
+                            data.message + (data.refund_amount > 0 ? '\nRefund: ' + data.refund_amount + ' Egili' : ''),
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    } else {
                         Swal.fire(
                             'Error',
-                            'Network error occurred.',
+                            data.message,
                             'error'
                         );
-                    });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire(
+                        'Error',
+                        'Network error occurred.',
+                        'error'
+                    );
+                });
             }
         })
-    }
-
-    function toggleCollectionPaymentMethod(method, checkbox, collectionId) {
-        const url = '/collections/' + collectionId + '/settings/payments/' + method + '/toggle';
-        const originalState = !checkbox.checked; // State before click
-
-        fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => {
-                        throw new Error(err.message || 'Server Error');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Optional: Show toast
-                    const toast = window.Swal || window.alert;
-                    if (window.Swal) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: data.message,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000
-                        });
-                    }
-                } else {
-                    checkbox.checked = originalState; // Revert
-                    alert(data.message || 'Error toggling payment method');
-                }
-            })
-            .catch(error => {
-                checkbox.checked = originalState; // Revert
-                console.error('Payment Error:', error);
-                const msg = error.message || 'Generic network error';
-
-                if (window.Swal) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Ops...',
-                        text: msg,
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 4000
-                    });
-                } else {
-                    alert(msg);
-                }
-            });
     }
 </script>

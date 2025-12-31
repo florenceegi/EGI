@@ -123,4 +123,9 @@ return [
     'superadmin_padmin_symbols' => 'Symbols Registry',
     'superadmin_padmin_search' => 'Semantic Search',
     'superadmin_padmin_statistics' => 'Statistics',
+    'superadmin_padmin_statistics' => 'Statistics',
+
+    // Selling Tools
+    'selling_tools' => 'Selling Tools',
+    'payment_settings' => 'Payment Settings',
 ];

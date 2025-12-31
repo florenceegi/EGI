@@ -123,28 +123,11 @@ class CollectionService
             // Enhanced validation
             $this->validateUserForCollectionCreation($user);
 
-            // Prepare EPP configuration based on usertype
-            // Company: EPP is voluntary (null by default), is_epp_voluntary = true
-            // Others: EPP is mandatory (use default config)
-            // Prepare EPP configuration based on usertype
-            // Company: EPP is voluntary (null by default), is_epp_voluntary = true
-            // Others: EPP is mandatory (use default config)
-            $eppId = config('app.epp_id');
-
-            // Validate that the configured EPP project exists to prevent FK violations
-            if ($eppId && !\App\Models\EppProject::where('id', $eppId)->exists()) {
-                // Fallback: try to find the first available EPP project
-                $fallbackProject = \App\Models\EppProject::first();
-                $eppId = $fallbackProject ? $fallbackProject->id : null;
-
-                $this->logger->warning('[CollectionService] Configured EPP ID not found, using fallback', [
-                    'configured_id' => config('app.epp_id'),
-                    'fallback_id' => $eppId
-                ]);
-            }
-
-            $eppProjectId = $isCompanyUser ? null : $eppId;
-            $isEppVoluntary = $isCompanyUser;
+            // EPP Configuration:
+            // Default to null/voluntary to allow users to configure their payment/donation preferences later.
+            // This replaces the previous logic that forced epp_project_id for non-company users.
+            $eppProjectId = null;
+            $isEppVoluntary = true;
 
             // Create collection with enhanced data
             $collection = Collection::create([

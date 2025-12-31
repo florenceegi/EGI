@@ -679,6 +679,11 @@ return [
             'cancel_confirm_btn' => 'Sì, Cancella Abbonamento',
             'cancel_cancel_btn' => 'Annulla',
             'cancelled' => 'Abbonamento Cancellato',
+            'tab_payments' => 'Pagamenti',
+            'payment_methods_title' => 'Metodi di Pagamento Collezione',
+            'payment_methods_desc' => 'Abilita o disabilita metodi di pagamento specifici per questa collezione. Sono disponibili solo i metodi già attivi nelle tue impostazioni principali.',
+            'no_global_methods' => 'Nessun metodo di pagamento abilitato trovato.',
+            'configure_global_methods' => 'Configura Impostazioni Globali',
         ],
 
         // Collection items

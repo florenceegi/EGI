@@ -1,4 +1,4 @@
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-gray-900 scroll-smooth">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full scroll-smooth bg-gray-900">
 
 <head>
     <meta charset="UTF-8" />
@@ -20,6 +20,8 @@
                 position: fixed;
                 inset: 0;
                 z-index: 9999;
+                pointer-events: none;
+                /* Prevent blocking clicks if React fails */
             }
         </style>
     @endif
@@ -29,7 +31,7 @@
     <meta name="description" content="{{ $metaDescription ?? __('collection.default_meta_description') }}">
     {!! $headMetaExtra ??
         '
-                <meta name="robots" content="index, follow">' !!}
+                        <meta name="robots" content="index, follow">' !!}
 
     {{-- Favicon --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
@@ -104,12 +106,13 @@
 
 </head>
 
-<body class="flex flex-col min-h-screen antialiased text-gray-300 bg-gray-900 font-body">
+<body class="flex min-h-screen flex-col bg-gray-900 font-body text-gray-300 antialiased">
 
     {{-- 🎬 SPLASH SCREEN - React 3D Animation (solo per home) --}}
     @if (request()->is('home'))
         {{-- Overlay iniziale nero con loading - React lo rimuoverà --}}
-        <div id="home-initial-overlay" style="
+        <div id="home-initial-overlay"
+            style="
             position: fixed;
             inset: 0;
             background-color: #0a0a0a;
@@ -120,34 +123,76 @@
             flex-direction: column;
             gap: 1.5rem;
         ">
-            <div style="
+            <div
+                style="
                 width: 60px;
                 height: 60px;
                 border: 3px solid rgba(0, 255, 255, 0.3);
                 border-top-color: #00ffff;
                 border-radius: 50%;
                 animation: spin 1s linear infinite;
-            "></div>
-            <p style="
+            ">
+            </div>
+            <p
+                style="
                 color: #00ffff;
                 font-family: 'JetBrains Mono', monospace;
                 font-size: 1.2rem;
                 animation: pulse 2s ease-in-out infinite;
-            ">Caricamento in corso...</p>
+            ">
+                Caricamento in corso...</p>
         </div>
         <style>
             @keyframes spin {
-                to { transform: rotate(360deg); }
+                to {
+                    transform: rotate(360deg);
+                }
             }
+
             @keyframes pulse {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.5; }
+
+                0%,
+                100% {
+                    opacity: 1;
+                }
+
+                50% {
+                    opacity: 0.5;
+                }
             }
         </style>
 
         <div id="home-splash-root"></div>
         @vite(['resources/react/home/home-splash.tsx'])
-    @endif    {{-- Cookie Consent Banner - Universal GDPR compliance for all visitors --}}
+
+        {{-- Fallback: Remove overlays after 10s if React fails to mount --}}
+        <script>
+            (function() {
+                var fallbackTimeout = setTimeout(function() {
+                    console.warn('⚠️ Splash fallback: React did not remove overlays, forcing removal');
+                    var overlay = document.getElementById('home-initial-overlay');
+                    var splashRoot = document.getElementById('home-splash-root');
+                    var blackOverlay = document.getElementById('home-black-overlay');
+                    if (overlay) overlay.remove();
+                    if (splashRoot) splashRoot.remove();
+                    if (blackOverlay) blackOverlay.remove();
+                    document.body.classList.remove('splash-active');
+                }, 10000);
+
+                // Clear timeout if React successfully removes the overlay
+                var observer = new MutationObserver(function(mutations) {
+                    if (!document.getElementById('home-initial-overlay')) {
+                        clearTimeout(fallbackTimeout);
+                        observer.disconnect();
+                    }
+                });
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+            })();
+        </script>
+    @endif {{-- Cookie Consent Banner - Universal GDPR compliance for all visitors --}}
     @include('components.gdpr.cookie-banner')
 
     @include('layouts.partials.header-navbar')

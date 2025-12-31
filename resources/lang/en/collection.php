@@ -626,6 +626,11 @@ return [
             'cancel_confirm_btn' => 'Yes, Cancel Subscription',
             'cancel_cancel_btn' => 'Cancel',
             'cancelled' => 'Subscription Cancelled',
+            'tab_payments' => 'Payments',
+            'payment_methods_title' => 'Collection Payment Methods',
+            'payment_methods_desc' => 'Enable or disable specific payment methods for this collection. Only methods enabled in your main settings are available here.',
+            'no_global_methods' => 'No enabled payment methods found.',
+            'configure_global_methods' => 'Configure Global Payment Settings',
         ],
 
         // Collection items
@@ -685,7 +690,7 @@ return [
     'donation_update_error' => 'Error updating donation settings',
     'select_epp_for_donation' => 'Select an environmental project to donate to',
     'donation_percentage_range' => 'The percentage must be between 0 and 100',
-    'company_requires_subscription' => 'Company collections require an active subscription to sell NFTs',
+    'company_requires_subscription' => 'Company collections require an active subscription to sell EGIs',
     'company_epp_voluntary' => 'Environmental project donation is optional for companies',
     'epp_donation_removed' => 'Environmental donation removed',
     'epp_donation_updated' => 'Donation settings updated',

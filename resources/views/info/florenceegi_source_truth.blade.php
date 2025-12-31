@@ -351,8 +351,24 @@
                         <div>
                             <dt id="glossary-coa" class="text-xl font-bold text-emerald-700">CoA (Certificate of
                                 Authenticity)</dt>
-                            <dd class="mt-1 text-gray-700">Certificato di autenticità verificato collegato a ogni <a
-                                    href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
+                            <dd class="mt-1 text-gray-700">Certificato digitale immutabile emesso <strong>dal
+                                    Creator</strong> per ogni <a href="#glossary-egi" class="glossary-link">EGI</a>.
+                                Attesta l'<strong>autenticità</strong> dell'opera: autore originale,
+                                snapshot dei traits, firme digitali e hash on-chain. <strong>Non attesta la
+                                    proprietà</strong> (vedi <a href="#glossary-coo" class="glossary-link">CoO</a>).
+                            </dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-coo" class="text-xl font-bold text-emerald-700">CoO (Certificate of
+                                Ownership)</dt>
+                            <dd class="mt-1 text-gray-700">Certificato digitale emesso al <strong>settlement di una
+                                    transazione</strong> che attesta il
+                                <strong>trasferimento di proprietà</strong> di un <a href="#glossary-egi"
+                                    class="glossary-link">EGI</a>. Contiene:
+                                proprietario, importo pagato, tasso di cambio, transaction ID on-chain e Merkle proof.
+                                <strong>Distinto dal <a href="#glossary-coa" class="glossary-link">CoA</a></strong>
+                                che attesta solo l'autenticità.
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-qr-nfc" class="text-xl font-bold text-emerald-700">QR/NFC</dt>

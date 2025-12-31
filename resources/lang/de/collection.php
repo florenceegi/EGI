@@ -449,6 +449,14 @@ return [
         // Edit data modal
         'edit_button' => 'Daten bearbeiten',
         'manage_team' => 'Team verwalten',
+
+        'dashboard' => [
+            'tab_payments' => 'Zahlungen',
+            'payment_methods_title' => 'Zahlungsmethoden der Sammlung',
+            'payment_methods_desc' => 'Aktivieren oder deaktivieren Sie Zahlungsmethoden für diese Sammlung. Nur Methoden, die in Ihren Haupteinstellungen aktiviert sind, sind hier verfügbar.',
+            'no_global_methods' => 'Keine aktivierten Zahlungsmethoden gefunden.',
+            'configure_global_methods' => 'Globale Einstellungen konfigurieren',
+        ],
     ],
 
     'back_to_collection' => 'Zurück zur Sammlung',

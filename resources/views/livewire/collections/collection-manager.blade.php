@@ -1,39 +1,47 @@
-<div class="w-full max-w-4xl mx-auto md:p-4">
+<div class="mx-auto w-full max-w-4xl md:p-4">
 
     <!-- Flash Messages -->
     @if (session()->has('message'))
-        <div class="mb-4 alert alert-success">
+        <div class="alert alert-success mb-4">
             {{ session('message') }}
         </div>
     @endif
 
     @if (session()->has('error'))
-        <div class="mb-4 alert alert-error">
+        <div class="alert alert-error mb-4">
             {{ session('error') }}
         </div>
     @endif
 
-    <h2 class="px-4 mb-4 text-2xl font-bold md:px-0">{{ __('collection.manage_collection') }}</h2>
+    <h2 class="mb-4 px-4 text-2xl font-bold md:px-0">{{ __('collection.manage_collection') }}</h2>
 
-    <form wire:submit.prevent="save({{ $collectionId }})"
-        class="space-y-6 md:bg-white md:rounded-lg md:shadow-sm md:p-6">
+    <form wire:submit.prevent="save({{ $collectionId }})" class="space-y-6 md:rounded-lg md:bg-white md:p-6 md:shadow-sm">
 
         <!-- Sezione dei dati della collection -->
         @include('livewire.collection-manager-includes.data_section')
 
-        <div class="flex items-center justify-center p-4 mt-6 transition-shadow duration-300 bg-gray-900 shadow-md md:rounded-xl hover:shadow-lg">
+        <div
+            class="mt-6 flex items-center justify-center bg-gray-900 p-4 shadow-md transition-shadow duration-300 hover:shadow-lg md:rounded-xl">
             <div class="grid w-full grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
                 <!-- Bottone per aprire la vista per la gestione delle immagini di testata -->
-                <a href="{{ route('collections.head_images', ['id' => $collectionId]) }}" class="w-full btn btn-primary btn-lg">
+                <a href="{{ route('collections.head_images', ['id' => $collectionId]) }}"
+                    class="btn btn-primary btn-lg w-full">
                     {{ __('collection.collection_image') }}
                 </a>
 
                 <!-- Bottone per aprire la vista dei membri della collection -->
-                @if(App\Helpers\FegiAuth::can('update_team'))
-                    <a href="{{ route('collections.collection_user', ['id' => $collectionId]) }}" class="w-full btn btn-primary btn-lg">
+                @if (App\Helpers\FegiAuth::can('update_team'))
+                    <a href="{{ route('collections.collection_user', ['id' => $collectionId]) }}"
+                        class="btn btn-primary btn-lg w-full">
                         {{ __('collection.collection_members') }}
                     </a>
                 @endif
+
+                <!-- Bottone per le impostazioni pagamenti -->
+                <a href="{{ route('collections.settings.payments.index', ['collection' => $collectionId]) }}"
+                    class="btn btn-primary btn-lg w-full">
+                    {{ __('Payment Settings') }}
+                </a>
                 <!-- Bottone per il salvataggio -->
                 <div class="flex justify-center md:justify-end">
                     <x-form-button type="submit" style="primary" class="w-full px-6 md:w-auto">
@@ -53,8 +61,8 @@
 
 <script>
     function closeModal() {
-    document.querySelector('.fixed').remove();
-}
+        document.querySelector('.fixed').remove();
+    }
 </script>
 
 <script>

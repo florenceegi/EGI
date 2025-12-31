@@ -66,24 +66,29 @@ class EgiliTransactionService {
                 $balanceBefore = $availableEgili;
                 $balanceAfter = $balanceBefore - $amount;
 
-                $wallet->update([
+                // Use forceFill() because egili_balance is NOT in $fillable for security
+                // This is intentional - only EgiliService/EgiliTransactionService should modify it
+                $wallet->forceFill([
                     'egili_balance' => $balanceAfter,
-                    'egili_spent_today' => ($wallet->egili_spent_today ?? 0) + $amount,
-                    'last_spent_at' => now(),
-                ]);
+                    'egili_lifetime_spent' => ($wallet->egili_lifetime_spent ?? 0) + $amount,
+                ])->save();
 
                 $transaction = EgiliTransaction::create([
                     'user_id' => $user->id,
                     'wallet_id' => $wallet->id,
                     'amount' => $amount,
-                    'type' => 'debit',
-                    'reason' => 'ai_feature',
+                    'transaction_type' => 'spent', // Use valid enum value, not 'debit'
+                    'operation' => 'subtract',
+                    'reason' => 'ai_feature_' . $featureCode,
                     'category' => 'ai_services',
                     'metadata' => array_merge($metadata, [
                         'feature_code' => $featureCode,
                     ]),
                     'balance_before' => $balanceBefore,
                     'balance_after' => $balanceAfter,
+                    'status' => 'completed',
+                    'ip_address' => request()?->ip(),
+                    'user_agent' => request()?->userAgent(),
                 ]);
 
                 return $transaction;

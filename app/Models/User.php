@@ -619,6 +619,60 @@ class User extends Authenticatable implements HasMedia {
         return $this->primaryWallet?->egili_balance ?? 0;
     }
 
+    /**
+     * Get payment methods configured by this user.
+     * Uses polymorphic relationship to user_payment_methods table.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function paymentMethods(): \Illuminate\Database\Eloquent\Relations\MorphMany {
+        return $this->morphMany(UserPaymentMethod::class, 'payable');
+    }
+
+    /**
+     * Get only enabled payment methods for this user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function enabledPaymentMethods(): \Illuminate\Database\Eloquent\Relations\MorphMany {
+        return $this->paymentMethods()->where('is_enabled', true);
+    }
+
+    /**
+     * Check if user is a seller (can configure payment methods).
+     * Collectors are buyers only and don't need payment configuration.
+     *
+     * @return bool
+     */
+    public function isSeller(): bool {
+        return !in_array($this->usertype, ['collector']);
+    }
+
+    /**
+     * Check if user has a specific payment method enabled.
+     *
+     * @param string $method The payment method code (stripe, egili, bank_transfer)
+     * @return bool
+     */
+    public function hasPaymentMethod(string $method): bool {
+        return $this->paymentMethods()
+            ->where('method', $method)
+            ->where('is_enabled', true)
+            ->exists();
+    }
+
+    /**
+     * Get the default payment method for this user.
+     *
+     * @return UserPaymentMethod|null
+     */
+    public function getDefaultPaymentMethod(): ?UserPaymentMethod {
+        return $this->paymentMethods()
+            ->where('is_default', true)
+            ->where('is_enabled', true)
+            ->first();
+    }
+
     public function customNotifications() {
         return $this->morphMany(CustomDatabaseNotification::class, 'notifiable');
     }

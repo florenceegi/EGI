@@ -146,4 +146,9 @@ return [
 
     // Admin Menu Items
     'admin_consumption_ledger' => 'Consumption Ledger',
+    'admin_consumption_ledger' => 'Consumption Ledger',
+
+    // Selling Tools
+    'selling_tools' => 'Strumenti di Vendita',
+    'payment_settings' => 'Impostazioni Pagamento',
 ];

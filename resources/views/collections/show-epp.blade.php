@@ -14,7 +14,7 @@
         $collection = collect($collection);
     }
     // Verifica se questa collection è essa stessa un'iniziativa EPP (es. creata da un EPP user o legata al progetto come core)
-    $isEppCollection = $collection->creator && in_array($collection->creator->usertype, ['epp', 'natan', 'frangette']);
+$isEppCollection = $collection->creator && in_array($collection->creator->usertype, ['epp', 'natan', 'frangette']);
 @endphp
 
 <x-collection-layout :title="$collection->collection_name . ' | FlorenceEGI'" :metaDescription="Str::limit($collection->description, 155) ??
@@ -43,16 +43,16 @@
     </x-slot>
 
     {{-- 🎯 SEZIONE STATISTICHE PAYMENT DISTRIBUTION --}}
-    <div class="bg-gray-900 border-b border-gray-800">
-        <div class="container px-4 py-6 mx-auto sm:px-6 lg:px-8">
+    <div class="border-b border-gray-800 bg-gray-900">
+        <div class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
             {{-- Breadcrumb migliorato --}}
-            <nav class="flex items-center mb-4 space-x-2 text-sm text-gray-400" aria-label="Breadcrumb">
+            <nav class="mb-4 flex items-center space-x-2 text-sm text-gray-400" aria-label="Breadcrumb">
                 <a href="{{ route('home.collections.index') }}"
                     class="transition-colors duration-200 hover:text-emerald-400">
-                    <span class="mr-1 text-base material-symbols-outlined">collections</span>
+                    <span class="material-symbols-outlined mr-1 text-base">collections</span>
                     {{ __('collection.show.collections_breadcrumb') }}
                 </a>
-                <span class="text-xs material-symbols-outlined">chevron_right</span>
+                <span class="material-symbols-outlined text-xs">chevron_right</span>
                 <span class="font-medium text-gray-300">{{ Str::limit($collection->collection_name, 30) }}</span>
             </nav>
 
@@ -73,9 +73,9 @@
             @endphp
             @if ($bannerUrl || $collection->image_banner)
                 <img src="{{ $bannerUrl ?: $collection->image_banner }}"
-                    alt="Banner for {{ $collection->collection_name }}" class="object-cover w-full h-full">
+                    alt="Banner for {{ $collection->collection_name }}" class="h-full w-full object-cover">
             @else
-                <div class="w-full h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900"></div>
+                <div class="h-full w-full bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900"></div>
             @endif
             {{-- Overlay gradiente potenziato --}}
             <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
@@ -84,20 +84,20 @@
 
         {{-- Top Section: Creator Info + Upload Button - Solo mobile positioning --}}
         <div
-            class="absolute z-20 flex items-center justify-between left-4 right-4 top-4 sm:static sm:bottom-8 sm:left-8 sm:right-8 sm:top-8 sm:h-auto sm:flex-col sm:items-start sm:justify-between sm:bg-transparent">
+            class="absolute left-4 right-4 top-4 z-20 flex items-center justify-between sm:static sm:bottom-8 sm:left-8 sm:right-8 sm:top-8 sm:h-auto sm:flex-col sm:items-start sm:justify-between sm:bg-transparent">
             {{-- Creator Info - Desktop: parte della hero content, Mobile: top bar --}}
             <div class="sm:hidden">
                 @if ($collection->creator)
                     <a href="{{ route('creator.home', ['id' => $collection->creator->id]) }}"
-                        class="flex items-center gap-3 transition-all duration-200 group hover:opacity-80">
+                        class="group flex items-center gap-3 transition-all duration-200 hover:opacity-80">
                         <div class="flex-shrink-0">
                             @if ($collection->creator->profile_photo_url)
                                 <img src="{{ $collection->creator->profile_photo_url }}"
                                     alt="{{ $collection->creator->name }}"
-                                    class="object-cover w-10 h-10 transition-transform duration-200 border-2 rounded-full border-white/30 group-hover:scale-110">
+                                    class="h-10 w-10 rounded-full border-2 border-white/30 object-cover transition-transform duration-200 group-hover:scale-110">
                             @else
                                 <div
-                                    class="flex items-center justify-center w-10 h-10 transition-transform duration-200 rounded-full bg-gradient-to-br from-emerald-500 to-blue-500 group-hover:scale-110">
+                                    class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-blue-500 transition-transform duration-200 group-hover:scale-110">
                                     <span
                                         class="text-sm font-bold text-white">{{ substr($collection->creator->name ?? 'U', 0, 1) }}</span>
                                 </div>
@@ -108,7 +108,7 @@
                                 <span
                                     class="text-sm font-semibold text-white transition-colors duration-200 group-hover:text-emerald-400">{{ $collection->creator->name ?? __('collection.show.unknown_creator') }}</span>
                                 @if ($collection->creator->usertype === 'verified')
-                                    <span class="text-sm text-blue-400 material-symbols-outlined"
+                                    <span class="material-symbols-outlined text-sm text-blue-400"
                                         title="{{ __('collection.show.verified_creator') }}">verified</span>
                                 @endif
                             </div>
@@ -120,7 +120,7 @@
                     <div class="flex items-center gap-3">
                         <div class="flex-shrink-0">
                             <div
-                                class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-blue-500">
+                                class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-blue-500">
                                 <span class="text-sm font-bold text-white">U</span>
                             </div>
                         </div>
@@ -137,13 +137,13 @@
             <div class="sm:hidden">
                 @can('create_collection')
                     <button id="uploadBannerBtn"
-                        class="flex items-center justify-center w-10 h-10 text-white transition-colors bg-indigo-600 rounded-lg backdrop-blur-sm hover:bg-indigo-700"
+                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600 text-white backdrop-blur-sm transition-colors hover:bg-indigo-700"
                         data-uploading-label="{{ __('collection.show.uploading') }}"
                         data-upload-success="{{ __('collection.show.banner_updated') }}"
                         data-upload-error="{{ __('collection.show.banner_upload_error') }}"
                         data-upload-label="{{ __('collection.show.upload_banner') }}"
                         title="{{ __('collection.show.upload_banner') }}">
-                        <span class="text-lg material-symbols-outlined">upload</span>
+                        <span class="material-symbols-outlined text-lg">upload</span>
                     </button>
                     <input type="file" id="bannerFileInput" accept="image/*" class="hidden" />
                 @endcan
@@ -151,17 +151,17 @@
         </div>
 
         {{-- Desktop Upload Button - Posizionamento originale --}}
-        <div class="absolute z-20 hidden right-8 top-8 sm:block">
+        <div class="absolute right-8 top-8 z-20 hidden sm:block">
             {{-- @if (auth()->check() && auth()->id() === ($collection->creator_id ?? null)) --}}
             @if ($collection->userHasPermission(Auth::id(), 'create_collection'))
                 <button id="uploadBannerBtnDesktop"
-                    class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors bg-indigo-600 rounded-lg backdrop-blur-sm hover:bg-indigo-700"
+                    class="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-indigo-700"
                     data-uploading-label="{{ __('collection.show.uploading') }}"
                     data-upload-success="{{ __('collection.show.banner_updated') }}"
                     data-upload-error="{{ __('collection.show.banner_upload_error') }}"
                     data-upload-label="{{ __('collection.show.upload_banner') }}"
                     title="{{ __('collection.show.upload_banner') }}">
-                    <span class="text-base material-symbols-outlined">upload</span>
+                    <span class="material-symbols-outlined text-base">upload</span>
                     <span>{{ __('collection.show.upload_banner') }}</span>
                 </button>
                 <input type="file" id="bannerFileInputDesktop" accept="image/*" class="hidden" />
@@ -169,35 +169,35 @@
         </div>
 
         {{-- CTA Section - Positioned at bottom right --}}
-        <div class="absolute z-20 flex gap-2 bottom-6 right-4 sm:bottom-8 sm:right-8">
+        <div class="absolute bottom-6 right-4 z-20 flex gap-2 sm:bottom-8 sm:right-8">
             {{-- Like Button - New Component --}}
             <x-like-button :resourceType="'collection'" :resourceId="$collection->id" :isLiked="$collection->is_liked ?? false" :likesCount="$collection->likes_count ?? 0" size="medium" />
 
             {{-- Dashboard Button - NEW --}}
             @if ($collection->userHasPermission(Auth::id(), 'create_collection'))
                 <button id="openDashboardBtn"
-                    class="flex items-center justify-center w-10 h-10 text-sm font-medium text-white transition-all duration-300 border rounded-lg border-indigo-500/40 bg-indigo-600/80 backdrop-blur-sm hover:bg-indigo-600 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
+                    class="flex h-10 w-10 items-center justify-center rounded-lg border border-indigo-500/40 bg-indigo-600/80 text-sm font-medium text-white backdrop-blur-sm transition-all duration-300 hover:bg-indigo-600 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
                     title="Dashboard & Monetization">
-                    <span class="mr-0 text-lg material-symbols-outlined sm:mr-1 sm:text-base">dashboard</span>
+                    <span class="material-symbols-outlined mr-0 text-lg sm:mr-1 sm:text-base">dashboard</span>
                     <span class="hidden text-sm sm:inline">Dashboard</span>
                 </button>
             @endif
 
             {{-- Share Button - Compact --}}
             <button
-                class="flex items-center justify-center w-10 h-10 text-sm font-medium text-white transition-all duration-300 border rounded-lg border-white/20 bg-white/10 backdrop-blur-sm hover:bg-white/20 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
+                class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/20 bg-white/10 text-sm font-medium text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/20 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
                 onclick="navigator.share ? navigator.share({title: '{{ $collection->collection_name }}', url: window.location.href}) : copyToClipboard(window.location.href)"
                 title="{{ __('collection.show.share') }}">
-                <span class="mr-0 text-lg material-symbols-outlined sm:mr-1 sm:text-base">share</span>
+                <span class="material-symbols-outlined mr-0 text-lg sm:mr-1 sm:text-base">share</span>
                 <span class="hidden text-sm sm:inline">{{ __('collection.show.share') }}</span>
             </button>
 
             {{-- Edit Button - Compact --}}
             @if ($collection->userHasPermission(Auth::id(), 'create_collection'))
                 <button id="editMetaBtn"
-                    class="flex items-center justify-center w-10 h-10 text-sm font-medium text-white transition-all duration-300 border rounded-lg border-white/20 bg-white/10 backdrop-blur-sm hover:bg-white/20 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
+                    class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/20 bg-white/10 text-sm font-medium text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/20 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
                     title="{{ __('collection.show.edit_button') }}">
-                    <span class="mr-0 text-lg material-symbols-outlined sm:mr-1 sm:text-base">edit</span>
+                    <span class="material-symbols-outlined mr-0 text-lg sm:mr-1 sm:text-base">edit</span>
                     <span class="hidden text-sm sm:inline">{{ __('collection.show.edit_button') }}</span>
                 </button>
             @endif
@@ -205,9 +205,9 @@
             {{-- Team Management Button - Compact --}}
             @if ($collection->userHasPermission(Auth::id(), 'create_team'))
                 <a href="{{ route('collections.collection_user', ['id' => $collection->id]) }}"
-                    class="flex items-center justify-center w-10 h-10 text-sm font-medium text-white transition-all duration-300 border rounded-lg border-white/20 bg-white/10 backdrop-blur-sm hover:bg-white/20 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
+                    class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/20 bg-white/10 text-sm font-medium text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/20 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
                     title="{{ __('collection.show.manage_team') }}">
-                    <span class="mr-0 text-lg material-symbols-outlined sm:mr-1 sm:text-base">group</span>
+                    <span class="material-symbols-outlined mr-0 text-lg sm:mr-1 sm:text-base">group</span>
                     <span class="hidden text-sm sm:inline">{{ __('collection.show.manage_team') }}</span>
                 </a>
             @endif
@@ -215,32 +215,32 @@
         </div>
 
         {{-- Hero Content - Layout responsive --}}
-        <div class="container relative z-10 px-4 py-8 mx-auto sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+        <div class="container relative z-10 mx-auto px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
             <div class="max-w-4xl">
                 {{-- Creator Info - Solo Desktop in alto --}}
-                <div class="hidden mb-8 sm:block">
+                <div class="mb-8 hidden sm:block">
                     @if ($collection->creator)
                         <a href="{{ route('creator.home', ['id' => $collection->creator->id]) }}"
-                            class="inline-flex items-center gap-4 transition-all duration-200 group hover:opacity-90">
+                            class="group inline-flex items-center gap-4 transition-all duration-200 hover:opacity-90">
                             <div class="flex-shrink-0">
                                 @if ($collection->creator->profile_photo_url)
                                     <img src="{{ $collection->creator->profile_photo_url }}"
                                         alt="{{ $collection->creator->name }}"
-                                        class="object-cover w-16 h-16 transition-transform duration-200 border-2 rounded-full border-white/40 group-hover:scale-105">
+                                        class="h-16 w-16 rounded-full border-2 border-white/40 object-cover transition-transform duration-200 group-hover:scale-105">
                                 @else
                                     <div
-                                        class="flex items-center justify-center w-16 h-16 transition-transform duration-200 rounded-full bg-gradient-to-br from-emerald-500 to-blue-500 group-hover:scale-105">
+                                        class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-blue-500 transition-transform duration-200 group-hover:scale-105">
                                         <span
                                             class="text-xl font-bold text-white">{{ substr($collection->creator->name ?? 'U', 0, 1) }}</span>
                                     </div>
                                 @endif
                             </div>
                             <div>
-                                <div class="flex items-center gap-2 mb-1">
+                                <div class="mb-1 flex items-center gap-2">
                                     <span
                                         class="text-xl font-bold text-white transition-colors duration-200 group-hover:text-emerald-400">{{ $collection->creator->name ?? __('collection.show.unknown_creator') }}</span>
                                     @if ($collection->creator->usertype === 'verified')
-                                        <span class="text-xl text-blue-400 material-symbols-outlined"
+                                        <span class="material-symbols-outlined text-xl text-blue-400"
                                             title="{{ __('collection.show.verified_creator') }}">verified</span>
                                     @endif
                                 </div>
@@ -253,7 +253,7 @@
                         <div class="inline-flex items-center gap-4">
                             <div class="flex-shrink-0">
                                 <div
-                                    class="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-blue-500">
+                                    class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-blue-500">
                                     <span class="text-xl font-bold text-white">U</span>
                                 </div>
                             </div>
@@ -268,14 +268,15 @@
 
                 {{-- Collection Title + Description --}}
                 <div class="mt-16 sm:mt-40">
-                    <div class="flex items-start gap-4 mb-4">
+                    <div class="mb-4 flex items-start gap-4">
                         <h1 id="collection-title"
                             class="text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
                             {{ $collection->collection_name }}
                         </h1>
 
-                        @if($isEppCollection)
-                            <div class="mt-1 rounded-full bg-[#2D5016] px-3 py-1 text-sm font-bold text-white shadow-lg border border-green-600/50 backdrop-blur-sm">
+                        @if ($isEppCollection)
+                            <div
+                                class="mt-1 rounded-full border border-green-600/50 bg-[#2D5016] px-3 py-1 text-sm font-bold text-white shadow-lg backdrop-blur-sm">
                                 {{ __('collection.show.official_epp_collection') }}
                             </div>
                         @endif
@@ -283,7 +284,7 @@
 
                     @if ($collection->description)
                         <p id="collection-description"
-                            class="text-base leading-relaxed text-gray-200 line-clamp-3 sm:line-clamp-none sm:text-lg">
+                            class="line-clamp-3 text-base leading-relaxed text-gray-200 sm:line-clamp-none sm:text-lg">
                             {{ $collection->description }}
                         </p>
                     @endif
@@ -301,14 +302,14 @@
     {{-- 🌱 EPP PROJECT SELECTION MODAL --}}
     <div id="eppProjectSelectionModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/80 backdrop-blur-sm"
         aria-labelledby="eppProjectSelectionModalLabel" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen px-4 py-8">
-            <div class="relative w-full max-w-6xl bg-gray-900 border border-gray-700 shadow-2xl rounded-2xl">
+        <div class="flex min-h-screen items-center justify-center px-4 py-8">
+            <div class="relative w-full max-w-6xl rounded-2xl border border-gray-700 bg-gray-900 shadow-2xl">
                 {{-- Header --}}
                 <div
-                    class="flex items-center justify-between px-6 py-4 border-b border-gray-700 bg-gradient-to-r from-green-900/30 to-emerald-900/30">
+                    class="flex items-center justify-between border-b border-gray-700 bg-gradient-to-r from-green-900/30 to-emerald-900/30 px-6 py-4">
                     <div class="flex items-center gap-3">
-                        <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-green-600/20">
-                            <span class="text-xl text-green-400 material-symbols-outlined">eco</span>
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-600/20">
+                            <span class="material-symbols-outlined text-xl text-green-400">eco</span>
                         </div>
                         <div>
                             <h3 id="eppProjectSelectionModalLabel" class="text-xl font-bold text-white">
@@ -318,19 +319,19 @@
                         </div>
                     </div>
                     <button id="closeEppProjectSelectionX" class="text-gray-400 transition-colors hover:text-white">
-                        <span class="text-2xl material-symbols-outlined">close</span>
+                        <span class="material-symbols-outlined text-2xl">close</span>
                     </button>
                 </div>
 
                 {{-- Content --}}
                 <div class="p-6">
                     {{-- Filters --}}
-                    <div class="flex flex-col gap-3 mb-6 sm:flex-row">
+                    <div class="mb-6 flex flex-col gap-3 sm:flex-row">
                         <input type="text" id="eppProjectSearchInput"
                             placeholder="{{ __('collection.show.search_projects_organizations') }}"
-                            class="flex-1 px-4 py-2 text-white bg-gray-800 border border-gray-700 rounded-lg focus:border-green-500 focus:ring-1 focus:ring-green-500">
+                            class="flex-1 rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white focus:border-green-500 focus:ring-1 focus:ring-green-500">
                         <select id="eppProjectTypeFilter"
-                            class="px-4 py-2 text-white bg-gray-800 border border-gray-700 rounded-lg focus:border-green-500 focus:ring-1 focus:ring-green-500">
+                            class="rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white focus:border-green-500 focus:ring-1 focus:ring-green-500">
                             <option value="">{{ __('collection.show.all_project_types') }}</option>
                             <option value="ARF">{{ __('collection.show.project_type_arf') }}</option>
                             <option value="APR">{{ __('collection.show.project_type_apr') }}</option>
@@ -341,30 +342,30 @@
                     {{-- Loading State --}}
                     <div id="eppProjectLoadingState" class="hidden p-12 text-center">
                         <div
-                            class="inline-block w-8 h-8 border-4 border-green-500 rounded-full animate-spin border-t-transparent">
+                            class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-green-500 border-t-transparent">
                         </div>
                         <p class="mt-4 text-gray-400">{{ __('collection.show.loading_environmental_projects') }}</p>
                     </div>
 
                     {{-- EPP Project Grid --}}
-                    <div id="eppProjectGrid" class="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 lg:grid-cols-3"></div>
+                    <div id="eppProjectGrid" class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
 
                     {{-- Empty State --}}
                     <div id="eppProjectEmptyState"
-                        class="hidden p-12 text-center border border-gray-700 rounded-xl bg-gray-800/30">
-                        <span class="text-4xl text-gray-600 material-symbols-outlined">search_off</span>
+                        class="hidden rounded-xl border border-gray-700 bg-gray-800/30 p-12 text-center">
+                        <span class="material-symbols-outlined text-4xl text-gray-600">search_off</span>
                         <p class="mt-2 text-gray-400">{{ __('collection.show.no_projects_found') }}</p>
                     </div>
                 </div>
 
                 {{-- Footer --}}
-                <div class="flex justify-between gap-3 px-6 py-4 border-t border-gray-700 bg-gray-800/30">
+                <div class="flex justify-between gap-3 border-t border-gray-700 bg-gray-800/30 px-6 py-4">
                     <button id="closeEppProjectSelectionBtn"
-                        class="px-6 py-2 text-gray-300 transition-colors border border-gray-600 rounded-lg hover:bg-gray-700">
+                        class="rounded-lg border border-gray-600 px-6 py-2 text-gray-300 transition-colors hover:bg-gray-700">
                         {{ __('collection.show.cancel') }}
                     </button>
                     <button id="confirmEppProjectSelectionBtn" disabled
-                        class="px-6 py-2 font-semibold text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50">
+                        class="rounded-lg bg-green-600 px-6 py-2 font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50">
                         {{ __('collection.show.confirm_selection') }}
                     </button>
                 </div>
@@ -375,30 +376,31 @@
     {{-- 🌳 EPP PROJECT SECTION (Mostra SOLO se NON è una collezione di tipo EPP) --}}
     @if ($collection->eppProject && !$isEppCollection)
         <div class="border-b border-gray-800 bg-gradient-to-r from-green-900/20 to-emerald-900/20">
-            <div class="container px-4 py-6 mx-auto sm:px-6 lg:px-8">
-                <div class="relative overflow-hidden p-4 rounded-xl sm:p-6 border border-white/10">
+            <div class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                <div class="relative overflow-hidden rounded-xl border border-white/10 p-4 sm:p-6">
                     {{-- Background Image with Overlay DENTRO IL BOX --}}
-                    @if($collection->eppProject->getFirstMediaUrl('project_images'))
+                    @if ($collection->eppProject->getFirstMediaUrl('project_images'))
                         <div class="absolute inset-0">
-                            <img src="{{ $collection->eppProject->getFirstMediaUrl('project_images') }}" 
-                                 alt="{{ $collection->eppProject->name }}"
-                                 class="object-cover w-full h-full">
-                            <div class="absolute inset-0 bg-gradient-to-r from-[#2D5016]/95 via-[#2D5016]/85 to-[#1B365D]/90"></div>
+                            <img src="{{ $collection->eppProject->getFirstMediaUrl('project_images') }}"
+                                alt="{{ $collection->eppProject->name }}" class="h-full w-full object-cover">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-r from-[#2D5016]/95 via-[#2D5016]/85 to-[#1B365D]/90">
+                            </div>
                         </div>
                     @else
                         <div class="absolute inset-0 bg-gradient-to-r from-green-900/60 to-emerald-900/60"></div>
                     @endif
-                    
+
                     <div class="relative flex items-start gap-4">
                         {{-- Avatar del progetto --}}
-                        @if($collection->eppProject->getFirstMediaUrl('project_avatar'))
-                            <img src="{{ $collection->eppProject->getFirstMediaUrl('project_avatar') }}" 
-                                 alt="{{ $collection->eppProject->name }}"
-                                 class="flex-shrink-0 w-16 h-16 rounded-full object-cover ring-4 ring-green-400/50">
+                        @if ($collection->eppProject->getFirstMediaUrl('project_avatar'))
+                            <img src="{{ $collection->eppProject->getFirstMediaUrl('project_avatar') }}"
+                                alt="{{ $collection->eppProject->name }}"
+                                class="h-16 w-16 flex-shrink-0 rounded-full object-cover ring-4 ring-green-400/50">
                         @else
-                            <div class="flex-shrink-0 p-3 rounded-full bg-green-500/30 ring-4 ring-green-400/50">
+                            <div class="flex-shrink-0 rounded-full bg-green-500/30 p-3 ring-4 ring-green-400/50">
                                 <span class="text-2xl text-green-400">
-                                    @if($collection->eppProject->project_type === 'ARF')
+                                    @if ($collection->eppProject->project_type === 'ARF')
                                         🌳
                                     @elseif($collection->eppProject->project_type === 'APR')
                                         🌊
@@ -410,20 +412,21 @@
                                 </span>
                             </div>
                         @endif
-                        
-                        <div class="flex-1 min-w-0">
+
+                        <div class="min-w-0 flex-1">
                             <h3 class="mb-2 text-lg font-semibold text-white drop-shadow-lg">
                                 {{ __('collection.show.supporting_environmental_project') }}</h3>
-                            <h4 class="mb-1 font-bold text-xl text-emerald-300 drop-shadow-lg">{{ $collection->eppProject->name }}</h4>
+                            <h4 class="mb-1 text-xl font-bold text-emerald-300 drop-shadow-lg">
+                                {{ $collection->eppProject->name }}</h4>
                             <p class="mb-2 text-xs font-medium text-gray-200 drop-shadow">
                                 {{ __('collection.show.by') }}
                                 {{ $collection->eppProject->eppUser->organizationData->organization_name ?? $collection->eppProject->eppUser->name }}
                             </p>
-                            <p class="mb-3 text-sm text-gray-100 line-clamp-2 drop-shadow">
+                            <p class="mb-3 line-clamp-2 text-sm text-gray-100 drop-shadow">
                                 {{ $collection->eppProject->description }}</p>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-xs font-medium text-green-300 bg-green-900/50 px-2 py-1 rounded">
+                                    <span class="rounded bg-green-900/50 px-2 py-1 text-xs font-medium text-green-300">
                                         {{ round($collection->eppProject->completion_percentage) }}%
                                         {{ __('collection.show.completed') }}
                                     </span>
@@ -437,7 +440,7 @@
                                         </span>
                                     @endif
                                 </div>
-                                <span class="text-xs font-medium text-green-300 bg-green-900/50 px-2 py-1 rounded">
+                                <span class="rounded bg-green-900/50 px-2 py-1 text-xs font-medium text-green-300">
                                     {{ __('collection.show.epp_percentage') }}
                                     {{ __('collection.show.of_sales_support_this_project') }}
                                 </span>
@@ -450,17 +453,17 @@
     @elseif ($collection->epp && !$isEppCollection)
         {{-- FALLBACK: Old EPP relationship (deprecated) --}}
         <div class="border-b border-gray-800 bg-gradient-to-r from-green-900/20 to-emerald-900/20">
-            <div class="container px-4 py-6 mx-auto sm:px-6 lg:px-8">
-                <div class="p-4 hero-glass rounded-xl sm:p-6">
+            <div class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                <div class="hero-glass rounded-xl p-4 sm:p-6">
                     <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0 p-3 rounded-lg bg-green-500/20">
-                            <span class="text-2xl text-green-400 material-symbols-outlined">eco</span>
+                        <div class="flex-shrink-0 rounded-lg bg-green-500/20 p-3">
+                            <span class="material-symbols-outlined text-2xl text-green-400">eco</span>
                         </div>
-                        <div class="flex-1 min-w-0">
+                        <div class="min-w-0 flex-1">
                             <h3 class="mb-2 text-lg font-semibold text-white">
                                 {{ __('collection.show.supporting_environmental_project') }}</h3>
                             <h4 class="mb-2 font-medium text-emerald-400">{{ $collection->epp->name }}</h4>
-                            <p class="mb-3 text-sm text-gray-300 line-clamp-2">{{ $collection->epp->description }}</p>
+                            <p class="mb-3 line-clamp-2 text-sm text-gray-300">{{ $collection->epp->description }}</p>
                             <div class="flex items-center justify-between">
                                 <span
                                     class="text-xs font-medium text-green-400">{{ __('collection.show.epp_percentage') }}
@@ -468,7 +471,7 @@
                                 <a href="{{ route('epps.show', $collection->epp_id) }}"
                                     class="flex items-center gap-1 text-sm font-medium text-emerald-400 hover:text-emerald-300">
                                     {{ __('collection.show.learn_more') }}
-                                    <span class="text-sm material-symbols-outlined">arrow_forward</span>
+                                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
                                 </a>
                             </div>
                         </div>
@@ -479,10 +482,10 @@
     @endif
 
     {{-- 🎨 GRIGLIA EGI PRINCIPALE --}}
-    <main class="py-8 bg-gray-900 sm:py-12">
-        <div class="container px-4 mx-auto sm:px-6 lg:px-8">
+    <main class="bg-gray-900 py-8 sm:py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             {{-- Header con Filtri --}}
-            <div class="flex flex-col items-start justify-between gap-4 mb-8 sm:flex-row sm:items-center">
+            <div class="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                 <div>
                     <h2 class="mb-2 text-2xl font-bold text-white sm:text-3xl">
                         {{ __('collection.show.collection_items') }}
@@ -497,11 +500,18 @@
             {{-- Container EGI Semplice (EPP Collections) --}}
             <div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5" id="egis-container">
                 @forelse($collection->egis as $egi)
-                    <div class="relative overflow-hidden transition-all bg-white shadow-md group rounded-xl hover:shadow-xl">
+                    <div
+                        class="group relative overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-xl">
                         <a href="{{ route('egis.show', $egi) }}" class="block">
                             @php
                                 $fileUrl = $egi->original_image_url ?? null;
-                                if (!$fileUrl && $egi->collection_id && $egi->user_id && $egi->key_file && $egi->extension) {
+                                if (
+                                    !$fileUrl &&
+                                    $egi->collection_id &&
+                                    $egi->user_id &&
+                                    $egi->key_file &&
+                                    $egi->extension
+                                ) {
                                     $path = sprintf(
                                         'storage/users_files/collections_%d/creator_%d/%d.%s',
                                         $egi->collection_id,
@@ -514,31 +524,34 @@
                                 if (!$fileUrl && $egi->path_image) {
                                     $fileUrl = asset('storage/' . $egi->path_image);
                                 }
-                                $isPdf = strtolower($egi->extension ?? '') === 'pdf' || $egi->file_mime === 'application/pdf';
+                                $isPdf =
+                                    strtolower($egi->extension ?? '') === 'pdf' ||
+                                    $egi->file_mime === 'application/pdf';
                             @endphp
 
                             @if ($egi->url_image_ipfs || $fileUrl)
-                                <div class="relative overflow-hidden bg-gray-100 aspect-[3/4]">
+                                <div class="relative aspect-[3/4] overflow-hidden bg-gray-100">
                                     @if ($isPdf)
                                         <embed src="{{ $fileUrl }}#toolbar=0&navpanes=0&scrollbar=0"
                                             type="application/pdf"
-                                            class="object-cover w-full h-full pointer-events-none">
+                                            class="pointer-events-none h-full w-full object-cover">
                                     @else
                                         <img src="{{ $egi->url_image_ipfs ?? $fileUrl }}" alt="{{ $egi->title }}"
-                                            class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105">
+                                            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105">
                                     @endif
                                 </div>
                             @else
-                                <div class="flex flex-col items-center justify-center aspect-[3/4] bg-gradient-to-br from-green-100 to-blue-100">
+                                <div
+                                    class="flex aspect-[3/4] flex-col items-center justify-center bg-gradient-to-br from-green-100 to-blue-100">
                                     <span class="mb-2 text-4xl">📜</span>
                                 </div>
                             @endif
 
-                            <div class="p-3 bg-white">
-                                <div class="text-sm font-bold truncate text-gray-900">
+                            <div class="bg-white p-3">
+                                <div class="truncate text-sm font-bold text-gray-900">
                                     {{ $egi->title }}
                                 </div>
-                                <div class="text-xs text-gray-500 truncate">
+                                <div class="truncate text-xs text-gray-500">
                                     #{{ $egi->id }}
                                 </div>
                             </div>
@@ -546,11 +559,11 @@
                     </div>
                 @empty
                     <div class="col-span-full py-16 text-center">
-                        <div class="inline-flex items-center justify-center w-16 h-16 mb-6 bg-gray-800 rounded-full">
-                            <span class="text-2xl text-gray-400 material-symbols-outlined">image</span>
+                        <div class="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-800">
+                            <span class="material-symbols-outlined text-2xl text-gray-400">image</span>
                         </div>
                         <h3 class="mb-2 text-xl font-semibold text-white">{{ __('collection.show.no_egis_yet') }}</h3>
-                        <p class="max-w-md mx-auto text-gray-400">{{ __('collection.show.no_egis_message') }}</p>
+                        <p class="mx-auto max-w-md text-gray-400">{{ __('collection.show.no_egis_message') }}</p>
                     </div>
                 @endforelse
             </div>
@@ -559,9 +572,9 @@
 
     {{-- 📚 COLLEZIONI CORRELATE --}}
     @if (isset($relatedCollections) && $relatedCollections->count() > 0)
-        <section class="py-12 bg-gray-800">
-            <div class="container px-4 mx-auto sm:px-6 lg:px-8">
-                <h2 class="mb-8 text-2xl font-bold text-center text-white">
+        <section class="bg-gray-800 py-12">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="mb-8 text-center text-2xl font-bold text-white">
                     {{ __('collection.show.more_from_this_creator') }}
                 </h2>
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -578,15 +591,15 @@
     {{-- 🚀 FLOATING ACTIONS (Mobile) --}}
     <div class="floating-actions lg:hidden">
         <div
-            class="flex items-center gap-3 px-4 py-3 border border-gray-700 rounded-full bg-gray-900/90 backdrop-blur-sm">
+            class="flex items-center gap-3 rounded-full border border-gray-700 bg-gray-900/90 px-4 py-3 backdrop-blur-sm">
             <button
-                class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors bg-indigo-600 rounded-full hover:bg-indigo-700">
-                <span class="text-sm material-symbols-outlined">favorite_border</span>
+                class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700">
+                <span class="material-symbols-outlined text-sm">favorite_border</span>
                 {{ __('collection.show.like_collection') }}
             </button>
             <button
-                class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors bg-gray-700 rounded-full hover:bg-gray-600">
-                <span class="text-sm material-symbols-outlined">share</span>
+                class="flex items-center gap-2 rounded-full bg-gray-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-600">
+                <span class="material-symbols-outlined text-sm">share</span>
                 {{ __('collection.show.share') }}
             </button>
         </div>
@@ -890,7 +903,7 @@
                             .then(data => {
                                 console.log('Subscription response:', data);
                                 Swal.close();
-                                
+
                                 if (data.success) {
                                     // Subscription activated successfully
                                     Swal.fire({
@@ -929,15 +942,18 @@
                                         if (result.isConfirmed) {
                                             // Apri modale acquisto Egili
                                             console.log('Trying to open Egili modal...');
-                                            console.log('window.openEgiliPurchaseModal type:', typeof window.openEgiliPurchaseModal);
-                                            console.log('window object keys:', Object.keys(window).filter(k => k.includes('egili') || k.includes('Egili')));
-                                            
+                                            console.log('window.openEgiliPurchaseModal type:', typeof window
+                                                .openEgiliPurchaseModal);
+                                            console.log('window object keys:', Object.keys(window).filter(
+                                                k => k.includes('egili') || k.includes('Egili')));
+
                                             if (typeof window.openEgiliPurchaseModal === 'function') {
                                                 console.log('Calling openEgiliPurchaseModal()...');
                                                 window.openEgiliPurchaseModal();
                                             } else {
                                                 console.error('openEgiliPurchaseModal() not found!');
-                                                console.error('Available on window:', typeof window.openEgiliPurchaseModal);
+                                                console.error('Available on window:', typeof window
+                                                    .openEgiliPurchaseModal);
                                             }
                                         }
                                     });
@@ -1275,7 +1291,7 @@
 
         <style>
             .dashboard-tab {
-                @apply px-4 py-3 text-sm font-medium text-gray-400 transition-colors border-b-2 border-transparent hover:text-white hover:border-gray-600 flex items-center whitespace-nowrap;
+                @apply font-medium text-gray-400 transition-colors border-b-2 border-transparent hover:text-white hover:border-gray-600;
             }
 
             .dashboard-tab.active {

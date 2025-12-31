@@ -336,12 +336,37 @@ Route::middleware(['auth'])
             ->name('update');
         Route::delete('{collection}', [\App\Http\Controllers\CollectionCrudController::class, 'destroy'])
             ->name('destroy');
+
+        // Collection Payment Settings
+        Route::prefix('{collection}/settings/payments')->name('settings.payments.')->group(function () {
+            Route::get('/', [App\Http\Controllers\PaymentSettingsController::class, 'indexCollection'])
+                ->name('index');
+            Route::post('/{method}/toggle', [App\Http\Controllers\PaymentSettingsController::class, 'toggleCollection'])
+                ->name('toggle');
+            Route::post('/{method}/default', [App\Http\Controllers\PaymentSettingsController::class, 'setDefaultCollection'])
+                ->name('set-default');
+            Route::post('/bank-transfer/config', [App\Http\Controllers\PaymentSettingsController::class, 'updateBankConfigCollection'])
+                ->name('bank-config');
+        });
     });
 
 // Notification Center (ex-Dashboard)
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+
+// Type-specific dashboards (currently aliased to main dashboard, future-proof for separate views)
+Route::get('/creator/dashboard', function () {
+    return view('dashboard');
+})->name('creator.dashboard');
+
+Route::get('/company/dashboard', function () {
+    return view('dashboard');
+})->name('company.dashboard');
+
+Route::get('/collector/dashboard', function () {
+    return view('dashboard');
+})->name('collector.dashboard');
 
 // Alias per chiarezza semantica
 Route::get('/notifications', function () {
@@ -763,6 +788,24 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             ->name('account.invoices.settings.update');
         Route::get('/account/invoices/{id}/pdf', [App\Http\Controllers\InvoiceController::class, 'downloadPdf'])
             ->name('account.invoices.download.pdf');
+
+        // Payment Settings Routes (Sellers only - Collectors excluded)
+        Route::prefix('settings/payments')->name('settings.payments.')->group(function () {
+            Route::get('/modal', [App\Http\Controllers\PaymentSettingsController::class, 'modal'])
+                ->name('modal');
+            Route::get('/', [App\Http\Controllers\PaymentSettingsController::class, 'index'])
+                ->name('index');
+            Route::post('/{method}/toggle', [App\Http\Controllers\PaymentSettingsController::class, 'toggle'])
+                ->name('toggle');
+            Route::post('/{method}/default', [App\Http\Controllers\PaymentSettingsController::class, 'setDefault'])
+                ->name('set-default');
+            Route::post('/stripe/config', [App\Http\Controllers\PaymentSettingsController::class, 'updateStripeConfig'])
+                ->name('stripe.config');
+            Route::post('/bank-transfer/config', [App\Http\Controllers\PaymentSettingsController::class, 'updateBankConfig'])
+                ->name('bank-config');
+            Route::get('/available', [App\Http\Controllers\PaymentSettingsController::class, 'getAvailable'])
+                ->name('available');
+        });
 
         // Upload configuration and authorization (override vendor routes)
         Route::get('/config/global-config', [GlobalConfigController::class, 'getGlobalConfig'])

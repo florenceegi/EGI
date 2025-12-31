@@ -341,6 +341,34 @@ class Collection extends Model implements HasMedia {
     }
 
     /**
+     * Get payment methods configured for this collection.
+     * Uses polymorphic relationship to user_payment_methods table.
+     *
+     * @return MorphMany
+     */
+    public function paymentMethods(): MorphMany {
+        return $this->morphMany(UserPaymentMethod::class, 'payable');
+    }
+
+    /**
+     * Get effective payment methods for this collection.
+     * Returns collection-specific methods if configured, otherwise inherits from creator.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getEffectivePaymentMethods(): \Illuminate\Database\Eloquent\Collection {
+        // Check if collection has its own payment methods configured
+        $collectionMethods = $this->paymentMethods()->where('is_enabled', true)->get();
+        
+        if ($collectionMethods->isNotEmpty()) {
+            return $collectionMethods;
+        }
+        
+        // Fall back to creator's enabled payment methods
+        return $this->creator?->enabledPaymentMethods()->get() ?? collect();
+    }
+
+    /**
      * Spatie Media: definizione della media collection per il banner (head)
      */
     public function registerMediaCollections(): void {

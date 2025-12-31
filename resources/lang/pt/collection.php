@@ -448,6 +448,14 @@ return [
         // Edit data modal
         'edit_button' => 'Editar dados',
         'manage_team' => 'Gerenciar Equipe',
+
+        'dashboard' => [
+            'tab_payments' => 'Pagamentos',
+            'payment_methods_title' => 'Métodos de Pagamento da Coleção',
+            'payment_methods_desc' => 'Ative ou desative os métodos de pagamento para esta coleção. Apenas os métodos ativados nas suas configurações principais estão disponíveis aqui.',
+            'no_global_methods' => 'Nenhum método de pagamento ativado encontrado.',
+            'configure_global_methods' => 'Configurar Definições Globais',
+        ],
     ],
 
     'back_to_collection' => 'Voltar à Coleção',

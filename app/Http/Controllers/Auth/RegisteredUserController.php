@@ -188,22 +188,30 @@ class RegisteredUserController extends Controller {
                 'ecosystem_created' => $result['ecosystem_created']
             ]);
 
-            // Instead of redirecting immediately, return to register view with modal open
-            // This allows user to configure IBAN before being redirected to home
-            $postRegistrationRoute = $this->authRedirectService->getRedirectRoute($result['user']);
+            // ═══ DIRECT REDIRECT TO USER'S PERSONAL PAGE ═══
+            // Skip IBAN modal and Stripe onboarding - redirect directly to user's portfolio/home
+            // Route depends on user type and requires dynamic parameters (user ID or nickname)
+            $user = $result['user'];
+            $userType = $validated['user_type'];
+            
+            // Determine redirect URL based on user type
+            $redirectUrl = match($userType) {
+                'creator' => route('creator.portfolio', ['id' => $user->id]),
+                'company' => route('company.portfolio', ['id' => $user->id]),
+                'collector' => route('collector.portfolio', ['id' => $user->id]),
+                'epp', 'epp_entity' => route('home'), // EPP goes to main home
+                'pa_entity' => route('pa.acts.index'),
+                default => route('home'),
+            };
 
-            // Merchant user types (sellers) go to Stripe onboarding
-            if (MerchantUserTypeEnum::isMerchant($validated['user_type'] ?? null)) {
-                $postRegistrationRoute = 'creator.onboarding.summary';
-            }
-
-            return view('auth.register-wallet-setup', [
-                'user' => $result['user'],
-                'wallet' => $result['user']->fresh()->wallets()->whereNotNull('secret_ciphertext')->first(),
-                'ecosystem_created' => $result['ecosystem_created'],
-                'user_type' => $validated['user_type'],
-                'postRegistrationRedirectUrl' => route($postRegistrationRoute),
+            $this->logger->info('[Registration] Redirecting to personal page', [
+                ...$logContext,
+                'user_type' => $userType,
+                'redirect_url' => $redirectUrl
             ]);
+
+            return redirect($redirectUrl)
+                ->with('success', __('auth.registration_successful'));
         } catch (\Exception $e) {
             $errorContext = [
                 ...$logContext,

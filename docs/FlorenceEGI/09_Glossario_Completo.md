@@ -107,12 +107,36 @@ Ruolo nell'ecosistema **Co-Creazione**. Utente che:
 
 ### CoA
 
-**Certificate of Authenticity**. Certificato digitale emesso per ogni EGI che attesta:
+**Certificate of Authenticity**. Certificato digitale immutabile emesso **dal Creator** per ogni EGI che attesta:
 
-- Autore originale
-- Data creazione
-- Metadata (tecnica, dimensioni, etc.)
-- Hash on-chain (proof immutabile)
+- **Autore originale** (issuer_type: author/archive/platform)
+- **Data creazione** e timestamp emissione
+- **Snapshot immutabile dei traits** dell'opera (titolo, tecnica, materiali, dimensioni, etc.)
+- **Hash on-chain** (proof immutabile)
+- **Verification hash** (SHA-256) e **integrity hash**
+- **Firme digitali** (autore, ispettore)
+- **QR code** per verifica pubblica
+
+**Emesso da**: `CoaIssueService` → crea `Coa` + `CoaSnapshot` immutabile.
+
+> ⚠️ **Nota**: Il CoA attesta l'**AUTENTICITÀ** dell'opera, NON la proprietà.
+
+### CoO
+
+**Certificate of Ownership**. Certificato digitale emesso al **settlement di una transazione** che attesta il **trasferimento di proprietà** di un EGI. Contiene:
+
+- **Proprietario corrente** dell'EGI
+- **Importo pagato** (EUR + valuta buyer)
+- **Tasso di cambio** utilizzato (`fx_rate_used`)
+- **Transaction ID on-chain** per verifica (se applicabile)
+- **Merkle proof** per ancoraggio blockchain
+- **Data/ora** del trasferimento
+
+**Emesso al**: completamento del settlement (`escrow_locked → completed`).
+
+> **Distinzione CoA vs CoO:**
+> - **CoA** → emesso dal **Creator** per attestare l'**autenticità** dell'opera
+> - **CoO** → emesso al **settlement** per attestare il **trasferimento di proprietà**
 
 ### Collector
 

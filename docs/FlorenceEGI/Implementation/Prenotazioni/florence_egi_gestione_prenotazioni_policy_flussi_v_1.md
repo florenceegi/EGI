@@ -286,9 +286,13 @@ Integrare i **certificati** nel ciclo di vita della prenotazione rende l’esper
 1. **Escrow Receipt** (alla transizione `awaiting_payment → escrow_locked`)
    - Prova di fondi bloccati (ALGO/USDC/carta), con `algo_amount_locked_micro`, `fx_rate_used`, `executed_at`, `algo_tx_id`.
    - Uso: comunicazione al buyer; base per eventuale rimborso.
-2. **Certificate of Ownership & Authenticity (COA)** (alla transizione `escrow_locked → completed/settled`)
-   - Attesta il trasferimento/assegnazione dell’EGI all’acquirente.
+2. **Certificate of Ownership (CoO)** (alla transizione `escrow_locked → completed/settled`)
+   - Attesta il **trasferimento di proprietà** dell’EGI all’acquirente.
    - Contiene: `amount_eur`, `buyer_currency/amount`, `fx_rate_used`, `executed_at`, identificativi EGI, eventuale `asa_id` (se coniato), `anchor_tx_id` e **Merkle proof**.
+   
+   > ⚠️ **Nota**: Il **Certificate of Ownership (CoO)** è distinto dal **Certificate of Authenticity (CoA)**.
+   > - **CoA** → emesso dal **Creator** per attestare l'**autenticità** dell'opera (vedi `CoaIssueService`).
+   > - **CoO** → emesso al **settlement** per attestare il **trasferimento di proprietà**.
 3. **Refund Note** (quando `refunding → cancelled` o rimborso parziale post‑settlement)
    - Attesta importo rimborsato (in EUR), valuta di erogazione, `fx_rate_used` del rimborso, `refund_algo_tx_id`.
 
@@ -307,7 +311,7 @@ Integrare i **certificati** nel ciclo di vita della prenotazione rende l’esper
 
 1. **Trigger applicativo**
    - Escrow Receipt: al successo del pagamento/lock.
-   - COA: al completamento del settlement.
+   - CoO: al completamento del settlement.
    - Refund Note: alla conferma rimborso.
 2. **Build payload JSON** (ordinamento deterministico delle chiavi) → `payload_sha256`.
 3. **PDF/A** da template (Blade/Chromium) con watermark discreto e QR.
@@ -328,8 +332,8 @@ Integrare i **certificati** nel ciclo di vita della prenotazione rende l’esper
 
 ### Aggiunte a `reservations`
 
-- `certificate_status ENUM('none','escrow_issued','coa_issued','revoked') DEFAULT 'none'`
-- `escrow_certificate_id ULID NULL`, `coa_certificate_id ULID NULL`
+- `certificate_status ENUM('none','escrow_issued','coo_issued','revoked') DEFAULT 'none'`
+- `escrow_certificate_id ULID NULL`, `coo_certificate_id ULID NULL`
 
 ### Nuove tabelle
 
@@ -338,7 +342,7 @@ Integrare i **certificati** nel ciclo di vita della prenotazione rende l’esper
 - `id ULID PK`
 - `reservation_id BIGINT NULL` | `payment_id BIGINT NULL`
 - `egi_id BIGINT NOT NULL`
-- `type ENUM('escrow_receipt','coa','refund_note')`
+- `type ENUM('escrow_receipt','coo','refund_note')`
 - `version VARCHAR(8) DEFAULT 'v1.0'`
 - `payload_sha256 CHAR(64)`, `pdf_sha256 CHAR(64)`
 - `app_signature TEXT`, `signing_key_id VARCHAR(64)`
@@ -392,8 +396,8 @@ Integrare i **certificati** nel ciclo di vita della prenotazione rende l’esper
 ## Test di accettazione (aggiuntivi)
 
 1. **Escrow Receipt**: dopo pagamento, PDF generato con `fx_rate_used`, `algo_amount_locked_micro`, `algo_tx_id`; hash coerente; verifica OK.
-2. **COA**: al settlement, PDF con dati finali; dopo job Merkle, pagina verify mostra ancoraggio valido.
-3. **Revoca & Riemissione**: revoca giustificata di un COA (errore dati), nuova emissione collegata; verify segnala lo stato corretto.
+2. **CoO**: al settlement, PDF con dati finali; dopo job Merkle, pagina verify mostra ancoraggio valido.
+3. **Revoca & Riemissione**: revoca giustificata di un CoO (errore dati), nuova emissione collegata; verify segnala lo stato corretto.
 4. **Tampering**: upload di PDF alterato → verify risponde `tampered`.
 5. **Rimborso**: emissione Refund Note con cambio del momento; verify OK.
 
