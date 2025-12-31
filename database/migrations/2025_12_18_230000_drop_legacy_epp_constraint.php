@@ -18,10 +18,14 @@ return new class extends Migration
         $table = 'epp_projects';
         $constraintName = 'epp_milestones_epp_id_foreign';
 
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement("ALTER TABLE {$table} DROP CONSTRAINT IF EXISTS \"{$constraintName}\"");
-        } else {
-             Schema::table($table, function (Blueprint $table) use ($constraintName) {
+        // Check if constraint exists before trying to drop it to avoid PostgreSQL transaction errors
+        $hasConstraint = DB::table('information_schema.table_constraints')
+            ->where('constraint_name', $constraintName)
+            ->where('table_name', $table)
+            ->exists();
+
+        if ($hasConstraint) {
+            Schema::table($table, function (Blueprint $table) use ($constraintName) {
                 $table->dropForeign($constraintName);
             });
         }
