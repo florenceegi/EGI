@@ -163,7 +163,7 @@ class WalletWelcomeController extends Controller {
                             || !($accountArray['charges_enabled'] ?? false);
 
                         // Determine redirect route based on user type
-                        $onboardingRedirectRoute = match($user->usertype) {
+                        $onboardingRedirectRoute = match ($user->usertype) {
                             'creator' => route('creator.onboarding.summary'),
                             'company' => route('company.dashboard'),
                             default => route('dashboard'),
@@ -181,7 +181,7 @@ class WalletWelcomeController extends Controller {
                     }
 
                     // Set redirect URL based on user type (use onboarding URL if available)
-                    $redirectUrl = $onboardingUrl ?? match($user->usertype) {
+                    $redirectUrl = $onboardingUrl ?? match ($user->usertype) {
                         'creator' => route('creator.onboarding.summary'),
                         'company' => route('company.dashboard'),
                         default => route('dashboard'),
@@ -304,9 +304,11 @@ class WalletWelcomeController extends Controller {
             $onboardingUrl = null;
             $redirectUrl = route($this->resolvePostIbanRedirectRoute($user));
 
-            if (in_array($user->usertype ?? null, $userTypesNeedingStripe) 
-                && $this->stripeConnectService !== null 
-                && $wallet) {
+            if (
+                in_array($user->usertype ?? null, $userTypesNeedingStripe)
+                && $this->stripeConnectService !== null
+                && $wallet
+            ) {
                 try {
                     $stripeAccountData = $this->stripeConnectService->ensureExpressAccount($wallet, $user);
                     $accountArray = $stripeAccountData['account'] ?? [];
@@ -317,7 +319,7 @@ class WalletWelcomeController extends Controller {
                             || !($accountArray['charges_enabled'] ?? false);
 
                         // Determine redirect route based on user type
-                        $onboardingRedirectRoute = match($user->usertype) {
+                        $onboardingRedirectRoute = match ($user->usertype) {
                             'creator' => route('creator.onboarding.summary'),
                             'company' => route('company.dashboard'),
                             default => route('dashboard'),

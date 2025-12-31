@@ -100,8 +100,10 @@ trait HasCreateDefaultCollectionWallets
      * @param  string  $royalty_mint
      * @param  string  $royalty_rebind
      * @param  Collection  $collection
+     * @param  int|null  $id  User ID
+     * @param  string  $walletType  Tipo wallet (default: stripe per royalty PSP)
      */
-    protected function createWallet(string $role, ?string $address='', string $royalty_mint, string $royalty_rebind, Collection $collection, $id): void
+    protected function createWallet(string $role, ?string $address='', string $royalty_mint, string $royalty_rebind, Collection $collection, $id, string $walletType = 'stripe'): void
     {
         Wallet::create([
             'collection_id' => $collection->id,
@@ -110,6 +112,7 @@ trait HasCreateDefaultCollectionWallets
             'wallet' => $address,
             'royalty_mint' => $royalty_mint,
             'royalty_rebind' => $royalty_rebind,
+            'wallet_type' => $walletType,
         ]);
     }
 }

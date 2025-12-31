@@ -92,18 +92,34 @@ class StripeRealPaymentService implements PaymentServiceInterface {
             // PLATFORM DIRECT: Use platform account (Egili, etc.)
 
             if ($requiresSplit) {
-                // MiCA-SAFE: Direct charges to wallets, NO Transfer API
-                $collection = Collection::find($collectionId);
-
-                if (!$collection) {
-                    throw new \RuntimeException("Collection {$collectionId} not found for split payment");
+                // FIXED: Use single PaymentIntent + Transfer API (sane model)
+                // createDirectSplitPayments() creates N PaymentIntents = UX disaster
+                
+                // Create single PaymentIntent first
+                $result = $this->createSinglePaymentIntent($request, $metadata, $isConnectPayment, $stripeAccountId);
+                
+                if ($result->success && $result->status === 'succeeded') {
+                    // Execute split after payment succeeded
+                    $collection = Collection::find($collectionId);
+                    if (!$collection) {
+                        throw new \RuntimeException("Collection {$collectionId} not found for split payment");
+                    }
+                    
+                    $splitResult = $this->splitService->splitPaymentToWallets(
+                        $result->paymentId,
+                        $collection,
+                        $request->amount,
+                        array_merge($metadata, ['buyer_user_id' => $request->userId])
+                    );
+                    
+                    // Add split info to metadata
+                    $result->metadata = array_merge($result->metadata ?? [], [
+                        'split_executed' => $splitResult['success'],
+                        'transfers_count' => count($splitResult['transfers'] ?? [])
+                    ]);
                 }
-
-                return $this->splitService->createDirectSplitPayments(
-                    $collection,
-                    $request,
-                    $metadata
-                );
+                
+                return $result;
             }
 
             // Use Stripe Checkout for real user interaction (card input)
@@ -248,6 +264,17 @@ class StripeRealPaymentService implements PaymentServiceInterface {
 
             $amount = ($refund->amount ?? 0) / 100;
             $currency = strtoupper($refund->currency ?? 'EUR');
+
+            // P0 FIX: Reverse split transfers if they exist for this payment
+            try {
+                $this->reverseTransfersForPayment($paymentId);
+            } catch (\Exception $e) {
+                $this->logger->warning('Failed to reverse transfers during refund', [
+                    'payment_id' => $paymentId,
+                    'error' => $e->getMessage()
+                ]);
+                // Continue with refund even if transfer reversal fails
+            }
 
             return RefundResult::success(
                 refundId: $refund->id,
@@ -416,5 +443,107 @@ class StripeRealPaymentService implements PaymentServiceInterface {
                 'payment_status' => 'pending_checkout',
             ])
         );
+    }
+    
+    /**
+     * Create single PaymentIntent (extracted from processPayment for split payment fix)
+     */
+    private function createSinglePaymentIntent(
+        PaymentRequest $request,
+        array $metadata,
+        bool $isConnectPayment,
+        ?string $stripeAccountId
+    ): PaymentResult {
+        $amountCents = round($request->amount * 100);
+        $currency = strtolower($request->currency);
+        
+        $params = [
+            'amount' => $amountCents,
+            'currency' => $currency,
+            'description' => sprintf('EGI Mint #%s', $request->egiId ?? 'unknown'),
+            'metadata' => $metadata,
+            'receipt_email' => $request->customerEmail,
+            'confirmation_method' => 'automatic',
+            'confirm' => true,
+        ];
+
+        if ($this->isSandbox() && $this->sandboxPaymentMethod) {
+            $params['payment_method'] = $this->sandboxPaymentMethod;
+        }
+
+        $createOptions = $isConnectPayment ? ['stripe_account' => $stripeAccountId] : [];
+        $paymentIntent = $this->client->paymentIntents->create($params, $createOptions);
+
+        if ($paymentIntent->status !== 'succeeded') {
+            throw new \RuntimeException(
+                sprintf('Stripe payment failed with status %s', $paymentIntent->status)
+            );
+        }
+
+        $charge = $paymentIntent->charges->data[0] ?? null;
+        $receiptUrl = $charge->receipt_url ?? null;
+
+        return new PaymentResult(
+            success: true,
+            paymentId: $paymentIntent->id,
+            amount: $request->amount,
+            currency: strtoupper($request->currency),
+            status: 'succeeded',
+            metadata: array_merge($metadata, [
+                'payment_intent_status' => $paymentIntent->status,
+                'client_secret' => $paymentIntent->client_secret,
+                'receipt_url' => $receiptUrl,
+            ]),
+            receiptUrl: $receiptUrl,
+            processedAt: new \DateTimeImmutable()
+        );
+    }
+    
+    /**
+     * Reverse all transfers for a given payment (for refunds)
+     */
+    private function reverseTransfersForPayment(string $paymentId): void
+    {
+        // Query payment distributions to find transfers to reverse
+        $distributions = \DB::table('payment_distributions')
+            ->where('payment_intent_id', $paymentId)
+            ->where('transfer_id', '!=', null)
+            ->get();
+            
+        if ($distributions->isEmpty()) {
+            $this->logger->info('No transfers found to reverse for payment', [
+                'payment_id' => $paymentId
+            ]);
+            return;
+        }
+        
+        foreach ($distributions as $distribution) {
+            try {
+                $reversal = $this->client->transfers->createReversal(
+                    $distribution->transfer_id,
+                    [
+                        'description' => 'Refund - automatic transfer reversal',
+                        'metadata' => [
+                            'payment_intent_id' => $paymentId,
+                            'reason' => 'refund_initiated',
+                        ],
+                    ]
+                );
+                
+                $this->logger->info('Transfer reversed for refund', [
+                    'transfer_id' => $distribution->transfer_id,
+                    'reversal_id' => $reversal->id,
+                    'payment_id' => $paymentId
+                ]);
+                
+            } catch (\Exception $e) {
+                $this->logger->error('Failed to reverse transfer', [
+                    'transfer_id' => $distribution->transfer_id,
+                    'payment_id' => $paymentId,
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
+            }
+        }
     }
 }

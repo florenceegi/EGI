@@ -23,37 +23,23 @@
             </div>
 
 
+
             <div class="flex flex-wrap gap-4 space-x-0">
                 <!-- Bottone per invitare un nuovo membro alla collection -->
                 <button id="inviteNewMember" class="btn btn-primary w-full sm:w-auto" wire:click="openInviteModal">
                     {{ __('collection.invite_collection_member') }}
                 </button>
-                <!-- Bottone per creare un nuovo wallet Algorand -->
-                <button id="createNewWallet" wire:click="createNewWallet" wire:loading.attr="disabled"
-                    class="{{ !$canCreateWallet ? 'opacity-50 cursor-not-allowed' : '' }} btn btn-primary w-full sm:w-auto">
-                    <span wire:loading.remove wire:target="createNewWallet">
-                        {{ __('collection.wallet.create_the_wallet') }}
-                    </span>
-                    <span wire:loading wire:target="createNewWallet" class="flex items-center">
-                        <svg class="mr-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                            </path>
-                        </svg>
-                        {{ __('collection.wallet.creating') }}...
-                    </span>
-                </button>
-                <!-- Bottone per aggiungere wallet esterno -->
-                <button id="addExternalWallet" wire:click="openExternalWalletModal"
-                    class="{{ !$canCreateWallet ? 'opacity-50 cursor-not-allowed' : '' }} btn btn-secondary w-full sm:w-auto">
-                    <span class="flex items-center">
-                        <span class="material-symbols-outlined mr-2">wallet</span>
-                        {{ __('collection.wallet.add_external') }}
-                    </span>
-                </button>
+
+                {{-- SINGOLO BOTTONE: Apre modal di selezione tipo wallet --}}
+                @if ($canCreateWallet)
+                    <button id="openWalletTypeModal" wire:click="openWalletTypeModal"
+                        class="btn btn-primary w-full sm:w-auto">
+                        <span class="flex items-center">
+                            <span class="material-symbols-outlined mr-2">add_circle</span>
+                            {{ __('collection.wallet.create_the_wallet') }}
+                        </span>
+                    </button>
+                @endif
             </div>
 
         </div>
@@ -226,6 +212,58 @@ $memberWallet = $memberUser ? $memberUser->wallet : '';
         ])
     @endif
 
+    {{-- Modal: Selezione Tipo Wallet --}}
+    @if ($showWalletTypeModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <div class="w-full max-w-2xl rounded-lg bg-gray-800 p-6 shadow-xl">
+                {{-- Header --}}
+                <div class="mb-4 flex items-center justify-between border-b border-gray-700 pb-4">
+                    <h3 class="text-2xl font-bold text-white">
+                        <span class="material-symbols-outlined mr-2">wallet</span>
+                        {{ __('collection.wallet.select_type_title') }}
+                    </h3>
+                    <button wire:click="closeWalletTypeModal" class="text-gray-400 hover:text-white">
+                        <span class="material-symbols-outlined text-2xl">close</span>
+                    </button>
+                </div>
+
+                {{-- Description --}}
+                <p class="mb-6 text-sm text-gray-400">
+                    {{ __('collection.wallet.select_type_description') }}
+                </p>
+
+                {{-- Wallet Type Cards --}}
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    @foreach ($availableWalletTypes as $type => $config)
+                        <button wire:click="selectWalletType('{{ $type }}')"
+                            class="group flex flex-col rounded-lg border border-gray-600 bg-gray-700 p-4 text-left transition-all hover:border-blue-500 hover:bg-gray-600">
+                            <div class="mb-2 flex items-center">
+                                <span
+                                    class="material-symbols-outlined mr-3 text-3xl text-blue-400 group-hover:text-blue-300">
+                                    {{ $config['icon'] }}
+                                </span>
+                                <span class="text-lg font-semibold text-white">
+                                    {{ $config['label'] }}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-400 group-hover:text-gray-300">
+                                {{ $config['description'] }}
+                            </p>
+                        </button>
+                    @endforeach
+                </div>
+
+                {{-- Cancel Button --}}
+                <div class="mt-6 flex justify-end">
+                    <button wire:click="closeWalletTypeModal"
+                        class="rounded-lg bg-gray-700 px-6 py-2 text-gray-300 transition-colors hover:bg-gray-600">
+                        {{ __('label.cancel') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Modal: Aggiungi Wallet Esterno --}}
     @if ($showExternalWalletModal)
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
@@ -337,6 +375,490 @@ $memberWallet = $memberUser ? $memberUser->wallet : '';
                                 </path>
                             </svg>
                             {{ __('collection.wallet.adding') }}...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Modal: Stripe Wallet --}}
+    @if ($showStripeWalletModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <div class="w-full max-w-2xl rounded-lg bg-gray-800 p-6 shadow-xl">
+                <div class="mb-4 flex items-center justify-between border-b border-gray-700 pb-4">
+                    <h3 class="text-2xl font-bold text-white">
+                        <span class="material-symbols-outlined mr-2">credit_card</span>
+                        {{ __('collection.wallet.stripe.title') }}
+                    </h3>
+                    <button wire:click="closeStripeWalletModal" class="text-gray-400 hover:text-white">
+                        <span class="material-symbols-outlined text-2xl">close</span>
+                    </button>
+                </div>
+
+                {{-- Step 1: Choose Mode --}}
+                @if ($stripeMode === 'choose')
+                    <div class="mb-6 rounded-lg border border-blue-700 bg-blue-900 bg-opacity-30 p-4">
+                        <p class="text-sm text-blue-200">
+                            <span class="material-symbols-outlined mr-2">info</span>
+                            {{ __('collection.wallet.stripe.choose_description') }}
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        {{-- Option: New Account (Onboarding) --}}
+                        <button wire:click="setStripeMode('onboarding')"
+                            class="group flex flex-col items-center justify-center rounded-xl border-2 border-gray-600 bg-gray-700 p-6 text-center transition-all hover:border-blue-500 hover:bg-gray-600">
+                            <span
+                                class="material-symbols-outlined mb-3 text-4xl text-blue-400 group-hover:text-blue-300">add_circle</span>
+                            <h4 class="mb-2 text-lg font-semibold text-white">
+                                {{ __('collection.wallet.stripe.new_account') }}</h4>
+                            <p class="text-sm text-gray-400">{{ __('collection.wallet.stripe.new_account_desc') }}</p>
+                        </button>
+
+                        {{-- Option: Link Existing Account --}}
+                        <button wire:click="setStripeMode('existing')"
+                            class="group flex flex-col items-center justify-center rounded-xl border-2 border-gray-600 bg-gray-700 p-6 text-center transition-all hover:border-green-500 hover:bg-gray-600">
+                            <span
+                                class="material-symbols-outlined mb-3 text-4xl text-green-400 group-hover:text-green-300">link</span>
+                            <h4 class="mb-2 text-lg font-semibold text-white">
+                                {{ __('collection.wallet.stripe.existing_account') }}</h4>
+                            <p class="text-sm text-gray-400">
+                                {{ __('collection.wallet.stripe.existing_account_desc') }}</p>
+                        </button>
+                    </div>
+
+                    {{-- Step 2a: Onboarding Flow --}}
+                @elseif ($stripeMode === 'onboarding')
+                    @if ($stripeOnboardingUrl)
+                        {{-- Onboarding link generated --}}
+                        <div class="mb-6 rounded-lg border border-green-700 bg-green-900 bg-opacity-30 p-4">
+                            <p class="text-sm text-green-200">
+                                <span class="material-symbols-outlined mr-2">check_circle</span>
+                                {{ __('collection.wallet.stripe.onboarding_ready') }}
+                            </p>
+                        </div>
+                        <div class="text-center">
+                            <a href="{{ $stripeOnboardingUrl }}" target="_blank"
+                                class="inline-flex items-center rounded-lg bg-blue-600 px-8 py-3 text-lg font-semibold text-white transition-colors hover:bg-blue-700">
+                                <span class="material-symbols-outlined mr-2">open_in_new</span>
+                                {{ __('collection.wallet.stripe.complete_onboarding') }}
+                            </a>
+                            <p class="mt-4 text-sm text-gray-400">
+                                {{ __('collection.wallet.stripe.onboarding_redirect_info') }}</p>
+                        </div>
+                    @else
+                        {{-- Onboarding form --}}
+                        <button wire:click="setStripeMode('choose')"
+                            class="mb-4 flex items-center text-sm text-gray-400 hover:text-white">
+                            <span class="material-symbols-outlined mr-1 text-sm">arrow_back</span>
+                            {{ __('label.back') }}
+                        </button>
+
+                        <div class="mb-6 rounded-lg border border-blue-700 bg-blue-900 bg-opacity-30 p-4">
+                            <p class="text-sm text-blue-200">
+                                <span class="material-symbols-outlined mr-2">info</span>
+                                {{ __('collection.wallet.stripe.onboarding_info') }}
+                            </p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="mb-2 block text-sm font-medium text-gray-200">
+                                    {{ __('collection.wallet.stripe.account_name') }} <span
+                                        class="text-gray-500">({{ __('label.optional') }})</span>
+                                </label>
+                                <input type="text" wire:model="stripeAccountName"
+                                    placeholder="{{ __('collection.wallet.stripe.account_placeholder') }}"
+                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 text-white placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="mb-2 block text-sm font-medium text-gray-200">
+                                        {{ __('collection.wallet.royalty_mint_label') }} <span
+                                            class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="number" wire:model="stripeRoyaltyMint" min="0"
+                                            max="100" step="0.01"
+                                            class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 pr-9 text-white focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                                        <span
+                                            class="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400">%</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="mb-2 block text-sm font-medium text-gray-200">
+                                        {{ __('collection.wallet.royalty_rebind_label') }} <span
+                                            class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="number" wire:model="stripeRoyaltyRebind" min="0"
+                                            max="100" step="0.01"
+                                            class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 pr-9 text-white focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                                        <span
+                                            class="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400">%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-lg border border-yellow-700 bg-yellow-900 bg-opacity-30 p-4">
+                                <p class="text-sm text-yellow-200">
+                                    <span class="material-symbols-outlined mr-2">warning</span>
+                                    {{ __('collection.wallet.royalty_deduction_warning') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex justify-end gap-3">
+                            <button wire:click="closeStripeWalletModal"
+                                class="rounded-lg bg-gray-700 px-6 py-2 text-gray-300 transition-colors hover:bg-gray-600">
+                                {{ __('label.cancel') }}
+                            </button>
+                            <button wire:click="initiateStripeOnboarding" wire:loading.attr="disabled"
+                                class="rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50">
+                                <span wire:loading.remove wire:target="initiateStripeOnboarding">
+                                    {{ __('collection.wallet.stripe.start_onboarding') }}
+                                </span>
+                                <span wire:loading wire:target="initiateStripeOnboarding" class="flex items-center">
+                                    <svg class="mr-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                            stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+                                    {{ __('label.loading') }}...
+                                </span>
+                            </button>
+                        </div>
+                    @endif
+
+                    {{-- Step 2b: Link Existing Account --}}
+                @elseif ($stripeMode === 'existing')
+                    <button wire:click="setStripeMode('choose')"
+                        class="mb-4 flex items-center text-sm text-gray-400 hover:text-white">
+                        <span class="material-symbols-outlined mr-1 text-sm">arrow_back</span>
+                        {{ __('label.back') }}
+                    </button>
+
+                    <div class="mb-6 rounded-lg border border-green-700 bg-green-900 bg-opacity-30 p-4">
+                        <p class="text-sm text-green-200">
+                            <span class="material-symbols-outlined mr-2">info</span>
+                            {{ __('collection.wallet.stripe.link_existing_info') }}
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-200">
+                                {{ __('collection.wallet.stripe.account_id_label') }} <span
+                                    class="text-red-500">*</span>
+                            </label>
+                            <input type="text" wire:model="stripeAccountId" placeholder="acct_1234567890"
+                                class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 font-mono text-white placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                            <p class="mt-1 text-xs text-gray-400">{{ __('collection.wallet.stripe.account_id_hint') }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-200">
+                                {{ __('collection.wallet.stripe.account_name') }} <span
+                                    class="text-gray-500">({{ __('label.optional') }})</span>
+                            </label>
+                            <input type="text" wire:model="stripeAccountName"
+                                placeholder="{{ __('collection.wallet.stripe.account_placeholder') }}"
+                                class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 text-white placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="mb-2 block text-sm font-medium text-gray-200">
+                                    {{ __('collection.wallet.royalty_mint_label') }} <span
+                                        class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="number" wire:model="stripeRoyaltyMint" min="0"
+                                        max="100" step="0.01"
+                                        class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 pr-9 text-white focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                                    <span
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400">%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-sm font-medium text-gray-200">
+                                    {{ __('collection.wallet.royalty_rebind_label') }} <span
+                                        class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="number" wire:model="stripeRoyaltyRebind" min="0"
+                                        max="100" step="0.01"
+                                        class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 pr-9 text-white focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                                    <span
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-yellow-700 bg-yellow-900 bg-opacity-30 p-4">
+                            <p class="text-sm text-yellow-200">
+                                <span class="material-symbols-outlined mr-2">warning</span>
+                                {{ __('collection.wallet.royalty_deduction_warning') }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button wire:click="closeStripeWalletModal"
+                            class="rounded-lg bg-gray-700 px-6 py-2 text-gray-300 transition-colors hover:bg-gray-600">
+                            {{ __('label.cancel') }}
+                        </button>
+                        <button wire:click="linkExistingStripeAccount" wire:loading.attr="disabled"
+                            class="rounded-lg bg-green-600 px-6 py-2 text-white transition-colors hover:bg-green-700 disabled:opacity-50">
+                            <span wire:loading.remove wire:target="linkExistingStripeAccount">
+                                {{ __('collection.wallet.stripe.link_button') }}
+                            </span>
+                            <span wire:loading wire:target="linkExistingStripeAccount" class="flex items-center">
+                                <svg class="mr-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                {{ __('label.verifying') }}...
+                            </span>
+                        </button>
+                    </div>
+                @endif
+            </div>
+        </div>
+    @endif
+
+
+    {{-- Modal: PayPal Wallet --}}
+    @if ($showPaypalWalletModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <div class="w-full max-w-2xl rounded-lg bg-gray-800 p-6 shadow-xl">
+                <div class="mb-4 flex items-center justify-between border-b border-gray-700 pb-4">
+                    <h3 class="text-2xl font-bold text-white">
+                        <span class="material-symbols-outlined mr-2">payments</span>
+                        {{ __('collection.wallet.paypal.title') }}
+                    </h3>
+                    <button wire:click="closePaypalWalletModal" class="text-gray-400 hover:text-white">
+                        <span class="material-symbols-outlined text-2xl">close</span>
+                    </button>
+                </div>
+
+                <div class="mb-6 rounded-lg border border-blue-700 bg-blue-900 bg-opacity-30 p-4">
+                    <p class="text-sm text-blue-200">
+                        <span class="material-symbols-outlined mr-2">info</span>
+                        {{ __('collection.wallet.paypal.description') }}
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-gray-200">
+                            {{ __('collection.wallet.paypal.email_label') }} <span class="text-red-500">*</span>
+                        </label>
+                        <input type="email" wire:model="paypalEmail"
+                            placeholder="{{ __('collection.wallet.paypal.email_placeholder') }}"
+                            class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 text-white placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-gray-200">
+                            {{ __('collection.wallet.paypal.merchant_id_label') }} <span
+                                class="text-gray-500">({{ __('label.optional') }})</span>
+                        </label>
+                        <input type="text" wire:model="paypalMerchantId"
+                            placeholder="{{ __('collection.wallet.paypal.merchant_placeholder') }}"
+                            class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 text-white placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-200">
+                                {{ __('collection.wallet.royalty_mint_label') }} <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="number" wire:model="paypalRoyaltyMint" min="0" max="100"
+                                    step="0.01"
+                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 pr-9 text-white focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                                <span
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400">%</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-200">
+                                {{ __('collection.wallet.royalty_rebind_label') }} <span
+                                    class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="number" wire:model="paypalRoyaltyRebind" min="0" max="100"
+                                    step="0.01"
+                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 pr-9 text-white focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                                <span
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg border border-yellow-700 bg-yellow-900 bg-opacity-30 p-4">
+                        <p class="text-sm text-yellow-200">
+                            <span class="material-symbols-outlined mr-2">warning</span>
+                            {{ __('collection.wallet.royalty_deduction_warning') }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end gap-3">
+                    <button wire:click="closePaypalWalletModal"
+                        class="rounded-lg bg-gray-700 px-6 py-2 text-gray-300 transition-colors hover:bg-gray-600">
+                        {{ __('label.cancel') }}
+                    </button>
+                    <button wire:click="createPaypalWallet" wire:loading.attr="disabled"
+                        class="rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50">
+                        <span wire:loading.remove wire:target="createPaypalWallet">
+                            {{ __('collection.wallet.paypal.create_button') }}
+                        </span>
+                        <span wire:loading wire:target="createPaypalWallet" class="flex items-center">
+                            <svg class="mr-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            {{ __('label.creating') }}...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Modal: IBAN Wallet --}}
+    @if ($showIbanWalletModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <div class="w-full max-w-2xl rounded-lg bg-gray-800 p-6 shadow-xl">
+                <div class="mb-4 flex items-center justify-between border-b border-gray-700 pb-4">
+                    <h3 class="text-2xl font-bold text-white">
+                        <span class="material-symbols-outlined mr-2">account_balance</span>
+                        {{ __('collection.wallet.iban.title') }}
+                    </h3>
+                    <button wire:click="closeIbanWalletModal" class="text-gray-400 hover:text-white">
+                        <span class="material-symbols-outlined text-2xl">close</span>
+                    </button>
+                </div>
+
+                <div class="mb-6 rounded-lg border border-blue-700 bg-blue-900 bg-opacity-30 p-4">
+                    <p class="text-sm text-blue-200">
+                        <span class="material-symbols-outlined mr-2">info</span>
+                        {{ __('collection.wallet.iban.description') }}
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-gray-200">
+                            {{ __('collection.wallet.iban.iban_label') }} <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" wire:model="ibanNumber"
+                            placeholder="{{ __('collection.wallet.iban.iban_placeholder') }}"
+                            class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 font-mono text-white placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-gray-200">
+                            {{ __('collection.wallet.iban.holder_label') }} <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" wire:model="ibanAccountHolder"
+                            placeholder="{{ __('collection.wallet.iban.holder_placeholder') }}"
+                            class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 text-white placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-200">
+                                {{ __('collection.wallet.iban.bank_name_label') }} <span
+                                    class="text-gray-500">({{ __('label.optional') }})</span>
+                            </label>
+                            <input type="text" wire:model="ibanBankName"
+                                placeholder="{{ __('collection.wallet.iban.bank_placeholder') }}"
+                                class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 text-white placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-200">
+                                {{ __('collection.wallet.iban.swift_label') }} <span
+                                    class="text-gray-500">({{ __('label.optional') }})</span>
+                            </label>
+                            <input type="text" wire:model="ibanSwiftBic"
+                                placeholder="{{ __('collection.wallet.iban.swift_placeholder') }}"
+                                class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 font-mono text-white placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-200">
+                                {{ __('collection.wallet.royalty_mint_label') }} <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="number" wire:model="ibanRoyaltyMint" min="0" max="100"
+                                    step="0.01"
+                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 pr-9 text-white focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                                <span
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400">%</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-200">
+                                {{ __('collection.wallet.royalty_rebind_label') }} <span
+                                    class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="number" wire:model="ibanRoyaltyRebind" min="0" max="100"
+                                    step="0.01"
+                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 pr-9 text-white focus:border-transparent focus:ring-2 focus:ring-blue-500">
+                                <span
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg border border-yellow-700 bg-yellow-900 bg-opacity-30 p-4">
+                        <p class="text-sm text-yellow-200">
+                            <span class="material-symbols-outlined mr-2">warning</span>
+                            {{ __('collection.wallet.royalty_deduction_warning') }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end gap-3">
+                    <button wire:click="closeIbanWalletModal"
+                        class="rounded-lg bg-gray-700 px-6 py-2 text-gray-300 transition-colors hover:bg-gray-600">
+                        {{ __('label.cancel') }}
+                    </button>
+                    <button wire:click="createIbanWallet" wire:loading.attr="disabled"
+                        class="rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50">
+                        <span wire:loading.remove wire:target="createIbanWallet">
+                            {{ __('collection.wallet.iban.create_button') }}
+                        </span>
+                        <span wire:loading wire:target="createIbanWallet" class="flex items-center">
+                            <svg class="mr-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            {{ __('label.creating') }}...
                         </span>
                     </button>
                 </div>
