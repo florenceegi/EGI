@@ -1,5 +1,15 @@
 <?php
 
+// [CSRF BYPASS] Intercept Stripe Webhook and route to API (No CSRF)
+// Fixes persistent 419 error on Staging due to Middleware cache/zombie state.
+if (isset($_SERVER['REQUEST_URI']) && (
+    $_SERVER['REQUEST_URI'] === '/stripe/webhook' || 
+    strpos($_SERVER['REQUEST_URI'], '/stripe/webhook?') === 0
+)) {
+    $_SERVER['REQUEST_URI'] = str_replace('/stripe/webhook', '/api/webhooks/stripe', $_SERVER['REQUEST_URI']);
+}
+
+
 use Illuminate\Http\Request;
 
 /**
