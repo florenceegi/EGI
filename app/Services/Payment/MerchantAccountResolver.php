@@ -50,9 +50,24 @@ class MerchantAccountResolver {
 
         $wallet = match ($provider) {
             'stripe' => $wallets->first(function (Wallet $wallet) {
+                // Check WalletDestination first (New Architecture)
+                $hasDestination = $wallet->destinations->contains(function ($destination) {
+                    return $destination->payment_type === \App\Enums\Payment\PaymentTypeEnum::STRIPE->value 
+                        && filled($destination->destination_value);
+                });
+                if ($hasDestination) return true;
+
+                // Fallback (Legacy)
                 return filled($wallet->user?->stripe_account_id) || filled($wallet->stripe_account_id);
             }),
             'paypal' => $wallets->first(function (Wallet $wallet) {
+                // Check WalletDestination first
+                $hasDestination = $wallet->destinations->contains(function ($destination) {
+                    return $destination->payment_type === \App\Enums\Payment\PaymentTypeEnum::PAYPAL->value 
+                        && filled($destination->destination_value);
+                });
+                if ($hasDestination) return true;
+
                 return filled($wallet->paypal_merchant_id);
             }),
             default => null,
@@ -79,12 +94,25 @@ class MerchantAccountResolver {
             );
         }
 
+        // Resolve Account ID prioritizing WalletDestination
+        $accountId = null;
+        if ($provider === 'stripe') {
+             $dest = $wallet->destinations->firstWhere('payment_type', \App\Enums\Payment\PaymentTypeEnum::STRIPE->value);
+             $accountId = $dest?->destination_value 
+                ?? $wallet->user?->stripe_account_id 
+                ?? $wallet->stripe_account_id;
+        } elseif ($provider === 'paypal') {
+             $dest = $wallet->destinations->firstWhere('payment_type', \App\Enums\Payment\PaymentTypeEnum::PAYPAL->value);
+             $accountId = $dest?->destination_value 
+                ?? $wallet->paypal_merchant_id;
+        }
+
         return array_filter([
             'provider' => $provider,
             'collection_id' => $collection->id,
             'wallet_id' => $wallet->id,
-            'stripe_account_id' => $wallet->user?->stripe_account_id ?? $wallet->stripe_account_id,
-            'paypal_merchant_id' => $wallet->paypal_merchant_id,
+            'stripe_account_id' => $provider === 'stripe' ? $accountId : null,
+            'paypal_merchant_id' => $provider === 'paypal' ? $accountId : null,
         ], static fn($value) => $value !== null && $value !== '');
     }
 
@@ -153,13 +181,19 @@ class MerchantAccountResolver {
 
         $wallets = $this->collectCandidateWallets($collection);
 
-        // Filter wallets with this provider's account
+        // Filter wallets configured for this provider via WalletDestination
         $providerWallets = $wallets->filter(function (Wallet $wallet) use ($provider) {
-            return match ($provider) {
-                'stripe' => filled($wallet->user?->stripe_account_id) || filled($wallet->stripe_account_id),
-                'paypal' => filled($wallet->paypal_merchant_id),
-                default => false,
+             $paymentType = match ($provider) {
+                'stripe' => \App\Enums\Payment\PaymentTypeEnum::STRIPE,
+                'paypal' => \App\Enums\Payment\PaymentTypeEnum::PAYPAL,
+                default => null,
             };
+
+            if (!$paymentType) return false;
+
+            return $wallet->destinations->contains(function ($destination) use ($paymentType) {
+                return $destination->payment_type === $paymentType->value && !empty($destination->destination_value);
+            });
         });
 
         if ($providerWallets->isEmpty()) {
@@ -173,7 +207,7 @@ class MerchantAccountResolver {
                 'provider' => $provider,
                 'all_valid' => false,
                 'can_accept_payments' => false,
-                'total_wallets' => $providerWallets->count(), // Fixed: use $providerWallets, not $wallets
+                'total_wallets' => $providerWallets->count(),
                 'valid_wallets' => 0,
                 'invalid_wallets' => [],
                 'provider_enabled' => $providerEnabled,
@@ -240,14 +274,17 @@ class MerchantAccountResolver {
     private function validateSingleWallet(Wallet $wallet, string $provider): array {
         try {
             if ($provider === 'stripe') {
-                // FALLBACK LOGIC "se non c'è una relazione falla":
-                // If wallet has no user, check Collection Owner
-                $user = $wallet->user;
-                if (!$user && $wallet->collection && $wallet->collection->owner) {
-                    $user = $wallet->collection->owner;
+                // Retrieve Stripe Account ID from WalletDestinations
+                $destination = $wallet->destinations->firstWhere('payment_type', \App\Enums\Payment\PaymentTypeEnum::STRIPE->value);
+                $accountId = $destination?->destination_value;
+                
+                // FALLBACK: Legacy check for User model (to be removed once fully migrated)
+                if (empty($accountId)) {
+                    $accountId = $wallet->user?->stripe_account_id ?? $wallet->stripe_account_id;
+                    if (!$accountId && $wallet->collection && $wallet->collection->owner) {
+                        $accountId = $wallet->collection->owner->stripe_account_id;
+                    }
                 }
-
-                $accountId = $user?->stripe_account_id ?? $wallet->stripe_account_id;
 
                 if (empty($accountId)) {
                     return ['valid' => false, 'account_id' => null, 'error' => 'missing_account_id'];
@@ -275,6 +312,7 @@ class MerchantAccountResolver {
 
                 return ['valid' => false, 'account_id' => $accountId, 'error' => 'charges_disabled'];
             }
+// ... (rest of method)
 
             if ($provider === 'paypal') {
                 // PayPal validation not yet implemented
@@ -302,11 +340,11 @@ class MerchantAccountResolver {
     private function collectCandidateWallets(Collection $collection) {
         $wallets = $collection->relationLoaded('wallets')
             ? $collection->wallets
-            : $collection->wallets()->get();
+            : $collection->wallets()->with('destinations')->get();
 
         $ownerWallets = $collection->owner?->relationLoaded('wallets')
             ? $collection->owner->wallets
-            : ($collection->owner?->wallets()->get() ?? collect());
+            : ($collection->owner?->wallets()->with('destinations')->get() ?? collect());
 
         return $wallets
             ->merge($ownerWallets)
