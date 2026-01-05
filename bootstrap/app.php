@@ -58,6 +58,14 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->appendToGroup('web', [SetLanguage::class]);
+
+        // P0 FIX: Exclude Stripe Webhooks from CSRF to prevent 419 Errors & Redirects
+        $middleware->validateCsrfTokens(except: [
+            'stripe/*',
+            'api/webhooks/*',
+            'api/webhooks/stripe',
+            'stripe/webhook'
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // definisci eventuali eccezioni qui
