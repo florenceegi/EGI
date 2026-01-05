@@ -158,7 +158,25 @@ return [
         'reservation_status_failed' => 'Impossibile recuperare lo stato della prenotazione per l\'EGI :egi_id. Errore: :error',
         'reservation_unknown_error' => 'Si è verificato un errore sconosciuto durante il processo di prenotazione. Errore: :error',
         'certificate_generation_failed_post_mint' => 'Generazione certificato blockchain fallita DOPO mint completato per EGI blockchain ID :egi_blockchain_id. ASA ID: :asa_id. Errore: :error',
+        'certificate_generation_failed_post_mint' => 'Generazione certificato blockchain fallita DOPO mint completato per EGI blockchain ID :egi_blockchain_id. ASA ID: :asa_id. Errore: :error',
         'blockchain_certificate_generation_failed' => 'Impossibile generare il certificato blockchain per EGI blockchain ID :egi_blockchain_id. Errore: :error',
+        
+        // == Payment & Stripe Errors (Dev) ==
+        'stripe_webhook_split_failed' => 'Fallimento criticale nello split dei pagamenti via Webhook Stripe.',
+        'stripe_transfer_failed' => 'Trasferimento Stripe fallito.',
+        'stripe_split_partial_failure' => 'Split pagamenti Stripe parzialmente fallito. Alcuni trasferimenti non sono riusciti.',
+        'stripe_split_critical_failure' => 'Fallimento critico nello split dei pagamenti Stripe. Rollback richiesto.',
+        'mint_missing_stripe_accounts' => 'Account Stripe mancanti per la distribuzione del mint.',
+        'mint_insufficient_stripe_capabilities' => 'Account Stripe con capacità insufficienti per ricevere trasferimenti.',
+
+        // == Blockchain & Minting Errors (Dev) ==
+        'algorand_mint_failed' => 'Minting su Algorand fallito.',
+        'egi_transfer_failed' => 'Trasferimento EGI (ASA) fallito.',
+        'mint_distribution_failed' => 'Distribuzione pagamenti mint fallita.',
+        'certificate_generation_failed' => 'Generazione certificato post-mint fallita.',
+        'egili_creator_reward_failed' => 'Pagamento reward creatore (Egili) fallito.',
+        'real_blockchain_mint_failed' => 'Tentativo di mint su blockchain reale fallito via MintEgiJob.',
+        'real_blockchain_mint_final_failure' => 'FALLIMENTO FINALE mint su blockchain reale. Tentativi esauriti.',
 
         // Dev message for statistics system
         'statistics_calculation_failed' => 'Calcolo statistiche fallito per utente :user_id. Contesto: :error_context. Errore: :error_message',
@@ -599,6 +617,19 @@ return [
         'reservation_unknown_error' => 'Qualcosa è andato storto con la tua prenotazione. Il nostro team è stato informato.',
         'certificate_generation_failed_post_mint' => 'Il mint è stato completato con successo, ma il certificato non è stato generato. Riceverai il certificato via email appena disponibile.',
         'blockchain_certificate_generation_failed' => 'Non siamo riusciti a generare il certificato blockchain. Il nostro team è stato informato e risolveremo il problema al più presto.',
+
+        // == Payment & Stripe Errors (User) ==
+        'generic_payment_error' => 'Si è verificato un errore durante l\'elaborazione del pagamento. Contatta l\'assistenza.',
+        'payment_processing_error' => 'Errore durante l\'elaborazione del pagamento.',
+        'payment_partially_processed' => 'Il pagamento è stato elaborato parzialmente. Contatta l\'assistenza per verifiche.',
+        'payment_failed_fatal' => 'Pagamento fallito. Non è stato possibile completare l\'operazione.',
+        'configuration_error' => 'Errore di configurazione del sistema. Riprova più tardi.',
+
+        // == Blockchain & Minting Errors (User) ==
+        'minting_error' => 'Errore durante la creazione (minting) dell\'opera digitale.',
+        'transfer_error' => 'Errore durante il trasferimento dell\'opera digitale.',
+        'internal_warning' => 'Si è verificato un problema tecnico interno. Il nostro team è stato avvisato.',
+        'minting_fatal_error' => 'Impossibile completare la creazione dell\'opera digitale. Contatta l\'assistenza.',
 
         // User messages for statistics system
         'statistics_calculation_failed' => 'Impossibile caricare le tue statistiche al momento. Il nostro team è stato notificato. Riprova più tardi.',

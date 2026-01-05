@@ -144,6 +144,10 @@ class StripePaymentService implements PaymentServiceInterface {
     /**
      * {@inheritdoc}
      */
+    public function processPaymentWebhook(array $payload, array $headers = []): array {
+        return ['success' => true, 'status' => 'mock_processed'];
+    }
+
     public function verifyWebhook(array $payload): bool {
         // MOCK: Always return true for development
         $this->logger->info('Stripe webhook verification (MOCK)', [

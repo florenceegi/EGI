@@ -62,13 +62,15 @@ class AuthRedirectService
      * Add new usertypes here as they are implemented
      */
     protected array $redirectRegistry = [
+        'epp' => 'epp.dashboard.index',     // EPP Dashboard
+        'epp_entity' => 'epp.dashboard.index', // EPP Entity Dashboard (same as epp)
         'pa_entity' => 'pa.acts.index',     // PA N.A.T.A.N. Intelligence Center
         'pa_identity' => 'pa.acts.index',   // PA Identity (same as pa_entity)
         'inspector' => 'home',              // Inspector dashboard [FUTURE]
-        'company' => 'company.dashboard',   // Company dashboard
-        'collector' => 'collector.dashboard', // Collector dashboard
+        'company' => 'company.portfolio',   // Company dashboard
+        'collector' => 'collector.portfolio', // Collector dashboard
         'patron' => 'home',                 // Patron dashboard [FUTURE]
-        'creator' => 'creator.dashboard',   // Creator Dashboard
+        'creator' => 'creator.portfolio',   // Creator Dashboard -> Portfolio
     ];
 
     /**
@@ -160,7 +162,14 @@ class AuthRedirectService
     public function getRedirectUrl(User $user): string
     {
         $routeName = $this->getRedirectRoute($user);
-        return route($routeName);
+        $routeParams = [];
+
+        // Portfolio routes require ID parameter
+        if (in_array($routeName, ['creator.portfolio', 'company.portfolio', 'collector.portfolio'])) {
+            $routeParams = ['id' => $user->id];
+        }
+
+        return route($routeName, $routeParams);
     }
 
     /**

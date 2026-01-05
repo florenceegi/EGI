@@ -220,7 +220,7 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
     {{-- Wallet Welcome Modal (after registration) --}}
     {{-- Exclude from onboarding-summary page to avoid double modal --}}
     @auth
-        @if (!request()->routeIs('creator.onboarding.summary'))
+        @if (!request()->routeIs('creator.onboarding.summary') && auth()->user()->usertype !== 'epp')
             @include('components.wallet-welcome-modal')
         @endif
     @endauth

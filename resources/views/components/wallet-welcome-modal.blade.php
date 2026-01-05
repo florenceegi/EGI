@@ -887,8 +887,8 @@
                 // Show modal only if:
                 // 1. User hasn't skipped or added IBAN yet
     // 2. User doesn't have an IBAN
-                // 3. User was created in the last 10 minutes (first session after registration)
-                $shouldShow = !$hasSkippedOrAddedIban && !$hasIban && $minutesSinceCreation < 10;
+                // FORCE DISABLED as per user request (IBAN insertion moved to settings)
+                $shouldShow = false;
             }
         @endphp
 

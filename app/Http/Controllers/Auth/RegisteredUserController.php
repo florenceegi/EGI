@@ -195,14 +195,8 @@ class RegisteredUserController extends Controller {
             $userType = $validated['user_type'];
             
             // Determine redirect URL based on user type
-            $redirectUrl = match($userType) {
-                'creator' => route('creator.portfolio', ['id' => $user->id]),
-                'company' => route('company.portfolio', ['id' => $user->id]),
-                'collector' => route('collector.portfolio', ['id' => $user->id]),
-                'epp', 'epp_entity' => route('home'), // EPP goes to main home
-                'pa_entity' => route('pa.acts.index'),
-                default => route('home'),
-            };
+            // Determine redirect URL based on user type using centralized service
+            $redirectUrl = $this->authRedirectService->getRedirectUrl($user);
 
             $this->logger->info('[Registration] Redirecting to personal page', [
                 ...$logContext,

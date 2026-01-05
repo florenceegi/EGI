@@ -146,9 +146,10 @@ class PayPalPaymentService implements PaymentServiceInterface {
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    public function processPaymentWebhook(array $payload, array $headers = []): array {
+        return ['success' => true, 'status' => 'mock_processed'];
+    }
+
     public function verifyWebhook(array $payload): bool {
         try {
             // 1. ULM: Log webhook verification start

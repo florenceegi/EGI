@@ -119,11 +119,12 @@ class EgiMintingService
             return $egiBlockchain;
 
         } catch (\Exception $e) {
-            $this->logger->error('EGI_MINT_WITH_PAYMENT_FAILED', [
+            $this->errorManager->handle('ALGORAND_MINT_FAILED', [
+                'context' => 'EGI_MINT_WITH_PAYMENT_FAILED',
                 'egi_id' => $egi->id,
-                'error' => $e->getMessage(),
                 'payment_intent_id' => $paymentResult['payment_intent_id'] ?? null,
-            ]);
+                'error' => $e->getMessage(),
+            ], $e);
 
             // Mark blockchain record as failed
             $this->handleMintingError($egi, $e);
@@ -233,12 +234,12 @@ class EgiMintingService
                     'certificate_path' => $certificate->pdf_path,
                 ]);
             } catch (\Exception $certError) {
-                // Certificate generation failed - log but don't block mint
-                $this->logger->error('Certificate generation failed after mint', [
+                // Certificate generation failed - use UEM non-blocking
+                $this->errorManager->handle('CERTIFICATE_GENERATION_FAILED_POST_MINT', [
                     'egi_id' => $egi->id,
                     'blockchain_id' => $egiBlockchain->id,
                     'error' => $certError->getMessage(),
-                ]);
+                ], $certError);
                 // Don't throw - mint was successful, certificate can be generated later
             }
 
@@ -299,10 +300,11 @@ class EgiMintingService
 
             return $transferTxId;
         } catch (\Exception $e) {
-            $this->logger->error('EGI_TRANSFER_FAILED', [
+            $this->errorManager->handle('EGI_TRANSFER_FAILED', [
                 'egi_id' => $egiBlockchain->egi_id,
+                'buyer_wallet' => $buyerWallet,
                 'error' => $e->getMessage()
-            ]);
+            ], $e);
             throw $e;
         }
     }
@@ -359,10 +361,10 @@ class EgiMintingService
             ]);
         }
 
-        $this->logger->error('EGI_MINTING_FAILED', [
+        $this->errorManager->handle('ALGORAND_MINT_FAILED', [
+            'context' => 'handleMintingError',
             'egi_id' => $egi->id,
-            'error' => $error->getMessage(),
-            'trace' => $error->getTraceAsString()
-        ]);
+            'error' => $error->getMessage()
+        ], $error);
     }
 }

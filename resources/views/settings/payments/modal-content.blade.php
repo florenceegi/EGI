@@ -166,7 +166,7 @@
                                             <div>
                                                 <p class="text-sm font-medium text-green-400">Connected</p>
                                                 <p class="font-mono text-xs text-green-500/60">
-                                                    {{ $user->stripe_account_id }}</p>
+                                                    {{ $stripeAccountId }}</p>
                                             </div>
                                         </div>
                                         {{-- Optional: Disconnect button could go here --}}
@@ -261,7 +261,7 @@
                                     Code</label>
                                 <div class="relative">
                                     <input type="text" id="iban" name="iban"
-                                        value="{{ $bankMethod?->getIban() }}"
+                                        value="{{ $bankDetails['iban'] ?? $bankMethod?->getIban() }}"
                                         class="block w-full rounded-xl border border-gray-700 bg-gray-900/80 px-4 py-3 font-mono tracking-wider text-white placeholder-gray-600 transition-all focus:border-amber-500 focus:ring-1 focus:ring-amber-500 sm:text-sm"
                                         placeholder="IT60X0542811101000000123456">
                                 </div>
@@ -271,7 +271,7 @@
                                     class="mb-2 block text-xs font-bold uppercase tracking-widest text-gray-400 transition-colors group-focus-within:text-amber-400">BIC/SWIFT</label>
                                 <div class="relative">
                                     <input type="text" id="bic" name="bic"
-                                        value="{{ $bankMethod?->getBic() }}"
+                                        value="{{ $bankDetails['bic'] ?? $bankMethod?->getBic() }}"
                                         class="block w-full rounded-xl border border-gray-700 bg-gray-900/80 px-4 py-3 font-mono tracking-wider text-white placeholder-gray-600 transition-all focus:border-amber-500 focus:ring-1 focus:ring-amber-500 sm:text-sm"
                                         placeholder="BPPIITRRXXX">
                                 </div>
@@ -281,7 +281,7 @@
                             <label for="holder"
                                 class="mb-2 block text-xs font-bold uppercase tracking-widest text-gray-400 transition-colors group-focus-within:text-amber-400">{{ __('Account Holder') }}</label>
                             <input type="text" id="holder" name="holder"
-                                value="{{ $bankMethod?->getHolder() }}"
+                                value="{{ $bankDetails['holder'] ?? $bankMethod?->getHolder() }}"
                                 class="block w-full rounded-xl border border-gray-700 bg-gray-900/80 px-4 py-3 text-white placeholder-gray-600 transition-all focus:border-amber-500 focus:ring-1 focus:ring-amber-500 sm:text-sm"
                                 placeholder="{{ __('Full name as on bank account') }}">
                         </div>

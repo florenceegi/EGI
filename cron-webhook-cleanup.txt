@@ -1,0 +1,12 @@
+# FlorenceEGI Payment System P0.5 GAP FIX
+# Webhook cleanup and retry automation
+# Add this to your crontab with: crontab -e
+
+# Clean up stuck webhook events every 5 minutes
+*/5 * * * * cd /home/fabio/EGI && php artisan webhooks:cleanup --timeout=5 >> /var/log/webhook-cleanup.log 2>&1
+
+# Optional: Daily summary report
+0 6 * * * cd /home/fabio/EGI && php artisan webhooks:cleanup --dry-run >> /var/log/webhook-daily-summary.log 2>&1
+
+# Optional: Retry failed webhooks once daily (use with caution)
+# 0 2 * * * cd /home/fabio/EGI && php artisan webhooks:retry --max-retries=3 >> /var/log/webhook-retry.log 2>&1

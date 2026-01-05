@@ -56,10 +56,10 @@ class AuthenticatedSessionController extends Controller {
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
     public function create(Request $request) {
-        if (Auth::check()) {
+            if (Auth::check()) {
             // Use AuthRedirectService for usertype-based redirect
-            $redirectRoute = $this->authRedirectService->getRedirectRoute(Auth::user());
-            return redirect()->route($redirectRoute);
+            $redirectUrl = $this->authRedirectService->getRedirectUrl(Auth::user());
+            return redirect($redirectUrl);
         }
 
         return view('auth.login', [
@@ -125,8 +125,8 @@ class AuthenticatedSessionController extends Controller {
                     $this->logger->info('[Auth] Redirecting to GDPR consent', $logContext);
 
                     // Use AuthRedirectService for usertype-based redirect
-                    $redirectRoute = $this->authRedirectService->getRedirectRoute($user);
-                    return redirect()->route($redirectRoute);
+                    $redirectUrl = $this->authRedirectService->getRedirectUrl($user);
+                    return redirect($redirectUrl);
                 }
 
                 // Update last login timestamp
@@ -138,8 +138,8 @@ class AuthenticatedSessionController extends Controller {
                 $this->logger->info('[Auth] Login completed successfully, returning response', $logContext);
 
                 // Use AuthRedirectService for usertype-based redirect
-                $redirectRoute = $this->authRedirectService->getRedirectRoute($user);
-                return redirect()->route($redirectRoute);
+                $redirectUrl = $this->authRedirectService->getRedirectUrl($user);
+                return redirect($redirectUrl);
             } else {
                 // Authentication failed
                 $this->logger->info('[Auth] Authentication failed - invalid credentials', $logContext);

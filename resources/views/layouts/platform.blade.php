@@ -220,7 +220,7 @@
 
 {{-- Wallet welcome modal for PSP onboarding --}}
 {{-- Exclude from onboarding-summary page to avoid double modal --}}
-@if (!request()->routeIs('creator.onboarding.summary'))
+@if (!request()->routeIs('creator.onboarding.summary') && auth()->user()?->usertype !== 'epp')
     @include('components.wallet-welcome-modal')
 @endif
 

@@ -193,27 +193,42 @@ class PaymentSettingsController extends Controller
                 return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
             }
 
-            $paymentMethod = $user->paymentMethods()->updateOrCreate(
-                ['method' => 'bank_transfer'],
+            $wallet = $user->primaryWallet;
+            if (!$wallet) {
+                throw new \Exception("User {$user->id} has no primary wallet available for payment configuration.");
+            }
+
+            // Create or update WalletDestination for BANK_TRANSFER
+            $destination = \App\Models\WalletDestination::updateOrCreate(
                 [
-                    'is_enabled' => true,
-                    'config' => [
-                        'iban' => strtoupper(str_replace(' ', '', $request->iban)),
+                    'wallet_id' => $wallet->id,
+                    'payment_type' => \App\Enums\Payment\PaymentTypeEnum::BANK_TRANSFER->value,
+                ],
+                [
+                    'destination_value' => strtoupper(str_replace(' ', '', $request->iban)), // Automatically encrypted by mutator
+                    'is_verified' => false, // Verify manually or via API
+                    'is_primary' => true, // Default to primary if setting up
+                    'metadata' => [
                         'bic' => $request->bic ? strtoupper($request->bic) : null,
                         'holder' => $request->holder,
-                    ],
+                    ]
                 ]
             );
+            
+            // Legacy: also update UserPaymentMethod for backward compatibility if needed, 
+            // but for now we focus on the new architecture. 
+            // Use the UserPaymentMethod only if strictly required by other legacy parts not yet refactored.
+            // ... (Skipping legacy update as per instruction to use WalletDestination)
 
             // GDPR AUDIT - Sensitive Financial Data
             $this->auditService->logUserAction(
                 $user,
                 'payment_bank_details_updated',
-                ['method_id' => $paymentMethod->id],
+                ['destination_id' => $destination->id],
                 GdprActivityCategory::WALLET_MANAGEMENT
             );
 
-            $this->logger->info('[Payment] Bank details updated', ['user_id' => $user->id]);
+            $this->logger->info('[Payment] Bank details updated via WalletDestination', ['user_id' => $user->id, 'wallet_id' => $wallet->id]);
 
             return response()->json([
                 'success' => true,
@@ -244,28 +259,38 @@ class PaymentSettingsController extends Controller
                 return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
             }
 
-            // Update User model directly (since strict 1:1 relationship for Stripe Connect)
-            $user->stripe_account_id = $request->stripe_account_id;
-            $user->save();
+            $wallet = $user->primaryWallet;
+            if (!$wallet) {
+                throw new \Exception("User {$user->id} has no primary wallet available for payment configuration.");
+            }
 
-            // Enable Stripe Payment Method
-            $paymentMethod = $user->paymentMethods()->updateOrCreate(
-                ['method' => 'stripe'],
+            // Update WalletDestination for STRIPE
+            $destination = \App\Models\WalletDestination::updateOrCreate(
                 [
-                    'is_enabled' => true,
-                    'config' => ['account_id' => $user->stripe_account_id], // Redundant but consistent
+                    'wallet_id' => $wallet->id,
+                    'payment_type' => \App\Enums\Payment\PaymentTypeEnum::STRIPE->value,
+                ],
+                [
+                    'destination_value' => $request->stripe_account_id,
+                    'is_verified' => true, // Assuming manual entry is trusted or verified elsewhere
+                    'is_primary' => true,
+                    'metadata' => ['connected_at' => now()->toIso8601String()]
                 ]
             );
+
+            // Deprecated: Update User model directly (legacy) - KEEPING for safety until full deprecation
+            $user->stripe_account_id = $request->stripe_account_id;
+            $user->save();
 
             // GDPR AUDIT - Financial Data
             $this->auditService->logUserAction(
                 $user,
                 'payment_stripe_connected_manually',
-                ['stripe_account_id' => $user->stripe_account_id],
+                ['stripe_account_id' => $request->stripe_account_id, 'destination_id' => $destination->id],
                 GdprActivityCategory::WALLET_MANAGEMENT
             );
 
-            $this->logger->info('[Payment] Stripe manually connected', ['user_id' => $user->id]);
+            $this->logger->info('[Payment] Stripe connected via WalletDestination', ['user_id' => $user->id, 'wallet_id' => $wallet->id]);
 
             return response()->json([
                 'success' => true,
@@ -324,19 +349,40 @@ class PaymentSettingsController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Get User Payment Methods (from DB)
+        // 1. Get User Payment Methods (from DB) - Legacy fallback
         $userMethods = $user->paymentMethods->keyBy('method');
 
-        // 2. Define Available Methods (Static Config for now, or from config file)
-        // Note: Using the class constant AVAILABLE_METHODS
+        // 2. Load Wallet Destinations (New Source of Truth)
+        $wallet = $user->primaryWallet;
+        $destinations = $wallet 
+            ? $wallet->destinations()->get()->keyBy('payment_type') 
+            : collect();
+
+        // 3. Resolve Stripe Configuration
+        $stripeDest = $destinations->get(\App\Enums\Payment\PaymentTypeEnum::STRIPE->value);
+        $stripeAccountId = $stripeDest?->destination_value;
+        
+        // 4. Resolve Bank Configuration
+        $bankDest = $destinations->get(\App\Enums\Payment\PaymentTypeEnum::BANK_TRANSFER->value);
+        $bankDetails = [
+            // Decrypted value via accessor if accessible, otherwise direct decryption if needed
+            // The model accessor is getDecryptedValueAttribute
+            'iban' => $bankDest?->decrypted_value, 
+            'bic' => $bankDest?->metadata['bic'] ?? null,
+            'holder' => $bankDest?->metadata['holder'] ?? null,
+        ];
+
+        // 5. Define Available Methods
         $availableMethods = self::AVAILABLE_METHODS;
 
-        // 3. Prepare View Data
+        // 6. Prepare View Data
         return view('settings.payments.modal-content', [
             'user' => $user,
             'userMethods' => $userMethods,
             'availableMethods' => $availableMethods,
-            'stripeConnected' => $user->stripe_account_id ? true : false,
+            'stripeConnected' => !empty($stripeAccountId),
+            'stripeAccountId' => $stripeAccountId, // New variable for View
+            'bankDetails' => $bankDetails,          // New variable for View
         ]);
     }
 

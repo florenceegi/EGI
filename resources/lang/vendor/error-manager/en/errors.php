@@ -154,6 +154,23 @@ return [
         'reservation_status_failed' => 'Failed to retrieve reservation status for EGI :egi_id. Error: :error',
         'reservation_unknown_error' => 'An unknown error occurred during the reservation process. Error: :error',
 
+        // == Payment & Stripe Errors (Dev) ==
+        'stripe_webhook_split_failed' => 'Critical failure in Stripe Webhook payment split.',
+        'stripe_transfer_failed' => 'Stripe transfer failed.',
+        'stripe_split_partial_failure' => 'Stripe payment split partially failed. Some transfers did not succeed.',
+        'stripe_split_critical_failure' => 'Critical failure in Stripe payment split. Rollback required.',
+        'mint_missing_stripe_accounts' => 'Missing Stripe accounts for mint distribution.',
+        'mint_insufficient_stripe_capabilities' => 'Stripe accounts with insufficient capabilities to receive transfers.',
+
+        // == Blockchain & Minting Errors (Dev) ==
+        'algorand_mint_failed' => 'Algorand minting failed.',
+        'egi_transfer_failed' => 'EGI (ASA) transfer failed.',
+        'mint_distribution_failed' => 'Mint payment distribution failed.',
+        'certificate_generation_failed' => 'Post-mint certificate generation failed.',
+        'egili_creator_reward_failed' => 'Egili creator reward payment failed.',
+        'real_blockchain_mint_failed' => 'Real blockchain mint attempt failed via MintEgiJob.',
+        'real_blockchain_mint_final_failure' => 'FINAL FAILURE real blockchain mint. Attempts exhausted.',
+
         // Dev message for statistics
         'statistics_calculation_failed' => 'Statistics calculation failed for user :user_id. Context: :error_context. Error: :error_message',
         'icon_not_found' => 'Icon :icon_name with style :style not found in database. Using fallback icon.',
@@ -586,6 +603,19 @@ return [
         'reservation_unauthorized_cancel' => 'You don\'t have permission to cancel this reservation.',
         'reservation_status_failed' => 'Could not retrieve the reservation status. Please try again later.',
         'reservation_unknown_error' => 'Something went wrong with your reservation. Our team has been notified.',
+
+        // == Payment & Stripe Errors (User) ==
+        'generic_payment_error' => 'An error occurred while processing the payment. Please contact support.',
+        'payment_processing_error' => 'Error during payment processing.',
+        'payment_partially_processed' => 'The payment was partially processed. Please contact support for verification.',
+        'payment_failed_fatal' => 'Payment failed. The operation could not be completed.',
+        'configuration_error' => 'System configuration error. Please try again later.',
+
+        // == Blockchain & Minting Errors (User) ==
+        'minting_error' => 'Error during the creation (minting) of the digital artwork.',
+        'transfer_error' => 'Error during the transfer of the digital artwork.',
+        'internal_warning' => 'An internal technical issue occurred. Our team has been notified.',
+        'minting_fatal_error' => 'Unable to complete the creation of the digital artwork. Please contact support.',
 
         // user messages for statistics
         'statistics_calculation_failed' => 'Unable to load your statistics at the moment. Our team has been notified. Please try again later.',

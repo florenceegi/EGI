@@ -61,6 +61,16 @@ interface PaymentServiceInterface {
     public function getPaymentStatus(string $paymentId): PaymentStatus;
 
     /**
+     * Process payment webhook event
+     *
+     * @param array $payload Webhook payload
+     * @param array $headers Webhook headers
+     * @return array Processing result ['success' => bool, 'payment_id' => string, ...]
+     * @throws \Exception Processing failed
+     */
+    public function processPaymentWebhook(array $payload, array $headers = []): array;
+
+    /**
      * Get provider name for identification
      *
      * @return string Provider name (stripe, paypal, etc.)

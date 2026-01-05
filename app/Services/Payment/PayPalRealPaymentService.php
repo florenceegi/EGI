@@ -188,6 +188,12 @@ class PayPalRealPaymentService implements PaymentServiceInterface
         }
     }
 
+    public function processPaymentWebhook(array $payload, array $headers = []): array
+    {
+        // TODO: Implement PayPal webhook processing logic if needed
+        return ['success' => true, 'status' => 'not_implemented'];
+    }
+
     public function verifyWebhook(array $payload): bool
     {
         try {

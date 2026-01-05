@@ -78,6 +78,13 @@ return [
          * @type int
          */
         'epp_user_id'   => (int) env('EPP_ID', 2),     // Cast to int for safety
+
+        /**
+         * User ID representing the 'Frangette' entity (Ecosystem Association).
+         * @env FRANGETTE_ID
+         * @type int
+         */
+        'frangette_user_id' => (int) env('FRANGETTE_ID', 3),
     ],
 
     /**
@@ -197,7 +204,7 @@ return [
              * Configuration key path to retrieve the Natan User ID from within this config file.
              * @type string
              */
-            'user_id_config_key' => 'egi.default_ids.natan_user_id',
+            'user_id_config_key' => 'egi.default_ids.frangette_user_id',
         ],
     ],
 
@@ -249,6 +256,13 @@ return [
          * @env PLATFORM_MARGIN_PERCENTAGE
          */
         'platform_margin_percentage' => (float) env('PLATFORM_MARGIN_PERCENTAGE', 10.0),
+
+        /**
+         * Additional Platform Fee taken from Gross Amount (Transaction Fee).
+         * Default: 0.5% (0.5)
+         * @env PLATFORM_FEE_PERCENTAGE
+         */
+        'platform_fee_percentage' => (float) env('PLATFORM_FEE_PERCENTAGE', 0.5),
     ],
 
 ];
