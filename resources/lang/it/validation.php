@@ -210,4 +210,11 @@ return [
         'terms_accepted' => 'termini e condizioni',
         'iban' => 'codice IBAN',
     ],
+
+    'values' => [
+        'payment_method' => [
+            'stripe' => 'Carta di Credito (Stripe)',
+            'paypal' => 'PayPal',
+        ],
+    ],
 ];

@@ -19,4 +19,8 @@ return [
     'stripe_description' => 'Ricevi pagamenti via carta di credito direttamente sul tuo conto bancario.',
     'egili_description' => 'Ricevi pagamenti in token Egili (presto disponibile).',
     'bank_description' => 'Ricevi pagamenti tramite bonifico bancario diretto.',
+    'errors' => [
+        'merchant_account_incomplete' => 'Account venditore incompleto.',
+        'paypal_not_configured' => 'PayPal non configurato.',
+    ],
 ];

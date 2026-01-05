@@ -640,6 +640,11 @@ Route::middleware(['auth'])->group(function () {
         ->name('worker.attempt.start');
 });
 
+// Fallback Stripe Webhook (Root Level Access)
+Route::post('/stripe/webhook', [\App\Http\Controllers\Payment\PspWebhookController::class, 'handleStripeWebhook'])
+    ->name('web.stripe.webhook.fallback')
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
 // EPP routes (DEPRECATED - old epps table)
 Route::get('/epps', [EppController::class, 'index'])->name('epps.index');
 Route::get('/epps/{epp}', [EppController::class, 'show'])->name('epps.show');

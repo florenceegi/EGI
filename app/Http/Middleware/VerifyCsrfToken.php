@@ -13,5 +13,8 @@ class VerifyCsrfToken extends Middleware {
     protected $except = [
         'cookie-consent/*', // Exclude cookie consent API from CSRF (needs to be accessible to anonymous users)
         'mint/*/certificate/pdf/check', // Public certificate PDF check endpoint (blockchain transparency)
+        'stripe/webhook', // Fallback Stripe Webhook (if configured incorrectly in dashboard)
+        'webhooks/*', // Allow all webhooks prefixes
+        'api/webhooks/*', // Allow API webhooks (redundant but safe)
     ];
 }

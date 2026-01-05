@@ -3,6 +3,7 @@
 return [
     // Page Meta
     'page_title' => 'Mint :title - FlorenceEGI',
+    'minted_title' => 'EGI Minted: :title',
     'meta_description' => 'Mint your EGI :title on the Algorand blockchain. Safe and transparent process.',
 
     // Header

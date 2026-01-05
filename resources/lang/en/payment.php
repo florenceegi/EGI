@@ -19,4 +19,8 @@ return [
     'stripe_description' => 'Receive payments via credit card directly to your bank account.',
     'egili_description' => 'Receive payments in Egili tokens (coming soon).',
     'bank_description' => 'Receive payments via direct bank transfer.',
+    'errors' => [
+        'merchant_account_incomplete' => 'Merchant account incomplete.',
+        'paypal_not_configured' => 'PayPal not configured.',
+    ],
 ];

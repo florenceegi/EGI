@@ -270,6 +270,11 @@ Route::prefix('webhooks')->name('api.webhooks.')->group(function () {
         ->name('health');
 });
 
+// Fallback Route for Misconfigured Stripe Dashboard (pointing to /stripe/webhook instead of /api/webhooks/stripe)
+Route::post('/stripe/webhook', [\App\Http\Controllers\Payment\PspWebhookController::class, 'handleStripeWebhook'])
+    ->name('stripe.webhook.fallback')
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]); // Explicitly disable CSRF just in case
+
 /*
 |--------------------------------------------------------------------------
 | N.A.T.A.N. Agent API Routes (Bearer Token Authentication)
