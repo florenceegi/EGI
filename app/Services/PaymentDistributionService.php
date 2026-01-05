@@ -259,7 +259,7 @@ class PaymentDistributionService {
      * @param Wallet $wallet
      * @return UserTypeEnum
      */
-    private function determineUserType(Wallet $wallet): UserTypeEnum {
+    public function determineUserType(Wallet $wallet): UserTypeEnum {
         // Priority 1: Platform role mapping
         if ($wallet->platform_role === 'EPP') {
             return UserTypeEnum::EPP;
@@ -715,7 +715,7 @@ class PaymentDistributionService {
                     'amount_eur' => $baseValue,
                     'exchange_rate' => 1.0,
                     'is_epp' => $this->isEppWallet($creatorWallet),
-                    'distribution_status' => DistributionStatusEnum::CONFIRMED,
+                    'distribution_status' => DistributionStatusEnum::COMPLETED,
                     'metadata' => [
                         'type' => 'commodity_cost_reimbursement', // Mark as reimbursement
                         'base_value' => $baseValue,
@@ -780,7 +780,7 @@ class PaymentDistributionService {
                 'amount_eur' => $amount,
                 'exchange_rate' => 1.0, // TODO: Implement multi-currency exchange rates
                 'is_epp' => $this->isEppWallet($wallet),
-                'distribution_status' => DistributionStatusEnum::CONFIRMED, // ✅ MINT = payment already confirmed on blockchain
+                'distribution_status' => DistributionStatusEnum::COMPLETED, // ✅ MINT = payment already confirmed on blockchain
                 'metadata' => [
                     'wallet_id' => $wallet->id, // Keep in metadata for backward compat
                     'wallet_address' => $wallet->wallet,

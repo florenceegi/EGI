@@ -92,34 +92,17 @@ class StripeRealPaymentService implements PaymentServiceInterface {
             // PLATFORM DIRECT: Use platform account (Egili, etc.)
 
             if ($requiresSplit) {
-                // FIXED: Use single PaymentIntent + Transfer API (sane model)
-                // createDirectSplitPayments() creates N PaymentIntents = UX disaster
-                
-                // Create single PaymentIntent first
-                $result = $this->createSinglePaymentIntent($request, $metadata, $isConnectPayment, $stripeAccountId);
-                
-                if ($result->success && $result->status === 'succeeded') {
-                    // Execute split after payment succeeded
-                    $collection = Collection::find($collectionId);
-                    if (!$collection) {
-                        throw new \RuntimeException("Collection {$collectionId} not found for split payment");
-                    }
-                    
-                    $splitResult = $this->splitService->splitPaymentToWallets(
-                        $result->paymentId,
-                        $collection,
-                        $request->amount,
-                        array_merge($metadata, ['buyer_user_id' => $request->userId])
-                    );
-                    
-                    // Add split info to metadata
-                    $result->metadata = array_merge($result->metadata ?? [], [
-                        'split_executed' => $splitResult['success'],
-                        'transfers_count' => count($splitResult['transfers'] ?? [])
-                    ]);
-                }
-                
-                return $result;
+                // WEBHOOK-ONLY SPLIT: All split logic moved to webhook for consistency
+                // This ensures split works for both auto-confirm (sandbox) and Checkout Session (production)
+
+                // P0 FIX: Ensure metadata includes requires_split for Webhook
+                $dataWithSplitMetadata = array_merge($metadata, [
+                    'requires_split' => 'true',
+                    'collection_id' => $collectionId
+                ]);
+
+                // Create single PaymentIntent - split happens ONLY in webhook
+                return $this->createSinglePaymentIntent($request, $dataWithSplitMetadata, $isConnectPayment, $stripeAccountId);
             }
 
             // Use Stripe Checkout for real user interaction (card input)
@@ -226,6 +209,120 @@ class StripeRealPaymentService implements PaymentServiceInterface {
                 errorCode: 'STRIPE_UNEXPECTED_ERROR'
             );
         }
+    }
+
+    public function processPaymentWebhook(array $payload, array $headers = []): array {
+        $type = $payload['type'] ?? 'unknown';
+        $object = $payload['data']['object'] ?? [];
+
+        $this->logger->info('Processing Stripe webhook event', [
+            'type' => $type,
+            'payment_id' => $object['id'] ?? 'unknown',
+        ]);
+
+        // ULM DEBUG: Track Webhook Payload for Split Logic
+        $this->logger->info('ULM DEBUG: Webhook Payload Received', [
+            'type' => $type,
+            'payment_id' => $object['id'] ?? 'unknown',
+            'metadata_requires_split' => $object['metadata']['requires_split'] ?? 'MISSING',
+            'metadata_collection_id' => $object['metadata']['collection_id'] ?? 'MISSING',
+            'log_file' => 'upload.log' // Explicit marker
+        ]);
+
+        if ($type === 'payment_intent.succeeded') {
+            $paymentId = $object['id'];
+            $amount = ($object['amount'] ?? 0) / 100;
+            $currency = strtoupper($object['currency'] ?? 'EUR');
+            $metadata = $object['metadata'] ?? [];
+
+            // 1. Fetch Charge to get Balance Transaction
+            $chargeId = $object['charges']['data'][0]['id'] ?? null;
+            $balanceTransactionId = $object['charges']['data'][0]['balance_transaction'] ?? null;
+            $netAmount = $amount; // Fallback
+            $stripeFee = 0.00;
+
+            if ($balanceTransactionId) {
+                try {
+                    $bt = $this->client->balanceTransactions->retrieve($balanceTransactionId);
+                    $netAmount = ($bt->net ?? 0) / 100;
+                    $stripeFee = ($bt->fee ?? 0) / 100;
+                } catch (\Exception $e) {
+                    $this->logger->warning('Failed to fetch balance transaction for fees', [
+                        'payment_id' => $paymentId, 
+                        'bt_id' => $balanceTransactionId
+                    ]);
+                    // Fallback estimate: 2.9% + 0.25 (approximate if API fails)
+                    $stripeFee = ($amount * 0.029) + 0.25;
+                    $netAmount = $amount - $stripeFee;
+                }
+            }
+
+            // 2. Calculate Platform Fee (0.5% of GROSS)
+            $platformFeeConfig = config('egi.fees.platform_fee_percentage', 0.5); 
+            $platformFee = $amount * ($platformFeeConfig / 100);
+
+            // 3. Calculate Distributable Amount
+            // "distribuzione solo del netto dalla fee di stripe" implies: Net from Stripe - Platform Fee
+            $distributableAmount = max(0, $netAmount - $platformFee);
+
+            // Check if this payment requires split distribution
+            if (isset($metadata['requires_split']) && $metadata['requires_split'] === 'true') {
+                $collectionId = $metadata['collection_id'] ?? null;
+
+                if ($collectionId) {
+                    try {
+                        $collection = Collection::findOrFail($collectionId);
+                        
+                        // Pass NET details to metadata for split service
+                        $metadata['stripe_fee'] = $stripeFee;
+                        $metadata['platform_fee'] = $platformFee;
+                        $metadata['net_available_stripe'] = $netAmount;
+                        
+                        // Execute split payment logic with DISTRIBUTABLE AMOUNT
+                        $this->splitService->splitPaymentToWallets(
+                            $paymentId,
+                            $collection,
+                            $distributableAmount, // <-- CRITICAL: Distributing only what remains
+                            $metadata
+                        );
+
+                        $this->logger->info('Split payment distribution triggered via webhook (NET)', [
+                            'payment_id' => $paymentId,
+                            'gross' => $amount,
+                            'stripe_fee' => $stripeFee,
+                            'platform_fee' => $platformFee,
+                            'distributable' => $distributableAmount
+                        ]);
+                    } catch (\Exception $e) {
+                         // UEM: Critical error but non-blocking for the webhook response
+                         // This notifies devs/slack according to configuration
+                         $this->errorManager->handle('STRIPE_WEBHOOK_SPLIT_FAILED', [
+                            'payment_id' => $paymentId,
+                            'collection_id' => $collectionId,
+                            'amount' => $amount,
+                            'distributable' => $distributableAmount,
+                            'stripe_fee' => $stripeFee,
+                            'platform_fee' => $platformFee,
+                            'error_message' => $e->getMessage()
+                        ], $e);
+                    }
+                }
+            }
+
+            return [
+                'success' => true,
+                'payment_id' => $paymentId,
+                'status' => 'succeeded',
+                'amount' => $amount,
+                'currency' => $currency,
+                'metadata' => $metadata
+            ];
+        }
+
+        return [
+            'success' => true,
+            'status' => 'ignored_event_type'
+        ];
     }
 
     public function verifyWebhook(array $payload): bool {
@@ -389,6 +486,12 @@ class StripeRealPaymentService implements PaymentServiceInterface {
         $amountCents = $request->getAmountInCents();
         $currency = strtolower($request->currency);
 
+        // P0 FIX: Ensure metadata includes requires_split (passed from caller)
+        // If caller didn't merge it, we can't easily guess here, but processPayment logic should have handled it.
+        // However, explicit safety check:
+        // (No-op if already present)
+
+
         // Build line item description
         $description = $metadata['description'] ?? 'Egili Purchase';
         if (isset($metadata['egili_amount'])) {
@@ -444,7 +547,7 @@ class StripeRealPaymentService implements PaymentServiceInterface {
             ])
         );
     }
-    
+
     /**
      * Create single PaymentIntent (extracted from processPayment for split payment fix)
      */
@@ -456,16 +559,27 @@ class StripeRealPaymentService implements PaymentServiceInterface {
     ): PaymentResult {
         $amountCents = round($request->amount * 100);
         $currency = strtolower($request->currency);
-        
+
         $params = [
             'amount' => $amountCents,
             'currency' => $currency,
             'description' => sprintf('EGI Mint #%s', $request->egiId ?? 'unknown'),
             'metadata' => $metadata,
             'receipt_email' => $request->customerEmail,
-            'confirmation_method' => 'automatic',
             'confirm' => true,
+            'automatic_payment_methods' => [
+                'enabled' => 'true',
+                'allow_redirects' => 'never',
+            ],
         ];
+
+        // ULM DEBUG: Log Single Payment Intent Creation
+        $this->logger->info('ULM DEBUG: Creating Single Payment Intent', [
+           'egi_id' => $request->egiId,
+           'amount_cents' => $amountCents,
+           'metadata_requires_split' => $metadata['requires_split'] ?? 'N/A',
+           'metadata_collection_id' => $metadata['collection_id'] ?? 'N/A'
+        ]);
 
         if ($this->isSandbox() && $this->sandboxPaymentMethod) {
             $params['payment_method'] = $this->sandboxPaymentMethod;
@@ -498,27 +612,37 @@ class StripeRealPaymentService implements PaymentServiceInterface {
             processedAt: new \DateTimeImmutable()
         );
     }
-    
+
     /**
      * Reverse all transfers for a given payment (for refunds)
      */
-    private function reverseTransfersForPayment(string $paymentId): void
-    {
+    /**
+     * P0.5 GAP FIX: Reverse transfers with proper state tracking
+     */
+    private function reverseTransfersForPayment(string $paymentId): void {
         // Query payment distributions to find transfers to reverse
-        $distributions = \DB::table('payment_distributions')
-            ->where('payment_intent_id', $paymentId)
+        $distributions = \App\Models\PaymentDistribution::where('payment_intent_id', $paymentId)
             ->where('transfer_id', '!=', null)
+            ->where('status', 'completed') // Only reverse completed transfers
             ->get();
-            
+
         if ($distributions->isEmpty()) {
-            $this->logger->info('No transfers found to reverse for payment', [
+            $this->logger->info('No completed transfers found to reverse for payment', [
                 'payment_id' => $paymentId
             ]);
             return;
         }
-        
+
+        $this->logger->info('Starting transfer reversal for refund', [
+            'payment_id' => $paymentId,
+            'transfers_to_reverse' => $distributions->count()
+        ]);
+
         foreach ($distributions as $distribution) {
             try {
+                // Create idempotency key for reversal
+                $reversalIdempotencyKey = $paymentId . '_reversal_' . $distribution->transfer_id;
+
                 $reversal = $this->client->transfers->createReversal(
                     $distribution->transfer_id,
                     [
@@ -526,24 +650,63 @@ class StripeRealPaymentService implements PaymentServiceInterface {
                         'metadata' => [
                             'payment_intent_id' => $paymentId,
                             'reason' => 'refund_initiated',
+                            'original_distribution_id' => $distribution->id
                         ],
+                    ],
+                    [
+                        'idempotency_key' => $reversalIdempotencyKey  // CRITICAL: Prevents duplicate reversals
                     ]
                 );
-                
-                $this->logger->info('Transfer reversed for refund', [
+
+                // P0.5 FIX: Update distribution record with reversal info
+                $distribution->update([
+                    'status' => 'reversed',
+                    'reversal_id' => $reversal->id,
+                    'reversed_at' => now(),
+                ]);
+
+                $this->logger->info('Transfer reversed successfully', [
                     'transfer_id' => $distribution->transfer_id,
                     'reversal_id' => $reversal->id,
-                    'payment_id' => $paymentId
+                    'payment_id' => $paymentId,
+                    'distribution_id' => $distribution->id,
+                    'amount_eur' => $distribution->amount_eur
                 ]);
-                
             } catch (\Exception $e) {
-                $this->logger->error('Failed to reverse transfer', [
+                // P0.5 FIX: Track reversal failure but don't block entire refund
+                $distribution->update([
+                    'status' => 'reversal_failed',
+                    'failure_reason' => $e->getMessage(),
+                    'retry_count' => ($distribution->retry_count ?? 0) + 1
+                ]);
+
+                $this->logger->error('Failed to reverse transfer - REQUIRES MANUAL INTERVENTION', [
                     'transfer_id' => $distribution->transfer_id,
                     'payment_id' => $paymentId,
-                    'error' => $e->getMessage()
+                    'distribution_id' => $distribution->id,
+                    'wallet_id' => $distribution->wallet_id,
+                    'amount_eur' => $distribution->amount_eur,
+                    'error' => $e->getMessage(),
+                    'action_required' => 'Manual debt collection or account adjustment needed'
                 ]);
-                throw $e;
+
+                // Continue with other reversals - don't fail entire refund
+                // but this creates a debt that needs manual handling
             }
+        }
+
+        // Summary log
+        $reversalSummary = [
+            'payment_id' => $paymentId,
+            'total_distributions' => $distributions->count(),
+            'successful_reversals' => $distributions->where('status', 'reversed')->count(),
+            'failed_reversals' => $distributions->where('status', 'reversal_failed')->count(),
+        ];
+
+        if ($reversalSummary['failed_reversals'] > 0) {
+            $this->logger->warning('Partial reversal failure - manual intervention required', $reversalSummary);
+        } else {
+            $this->logger->info('All transfers reversed successfully', $reversalSummary);
         }
     }
 }

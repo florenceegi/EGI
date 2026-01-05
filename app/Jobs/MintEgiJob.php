@@ -136,38 +136,56 @@ class MintEgiJob implements ShouldQueue {
 
             // 4.8. PAYMENT DISTRIBUTIONS OR EGILI REWARDS
             if ($egiBlockchain->payment_method === 'egili') {
-                $this->rewardCreatorForEgiliPayment($egi, $egiBlockchain, $logger);
+                $this->rewardCreatorForEgiliPayment($egi, $egiBlockchain, $logger, $errorManager);
             } elseif ($egiBlockchain->paid_amount && $egiBlockchain->paid_amount > 0) {
-                try {
-                    $distributionService = app(\App\Services\PaymentDistributionService::class);
-                    $distributions = $distributionService->recordMintDistribution(
-                        $egiBlockchain->fresh(),
-                        [
-                            'paid_amount' => $egiBlockchain->paid_amount,
-                            'paid_currency' => $egiBlockchain->paid_currency ?? 'EUR',
-                            'payment_method' => $egiBlockchain->payment_method ?? 'fiat',
-                        ]
-                    );
+                // OS3 FIX: Skip distribution recording for Stripe/Credit Card payments here.
+                // The Stripe Webhook (StripePaymentSplitService) handles NET split distribution and 
+                // transfers authoritatively. If we record it here, we record Gross amounts and block the Split Service.
+                
+                // Identify if this is a Stripe-managed payment
+                $paymentMethod = strtolower($egiBlockchain->payment_method ?? 'fiat');
+                $isStripeManaged = in_array($paymentMethod, ['fiat', 'stripe', 'card', 'cc']);
 
-                    $logger->info('Payment distributions created successfully', [
-                        'egi_blockchain_id' => $this->egiBlockchainId,
-                        'distributions_count' => count($distributions),
-                        'total_distributed' => array_sum(array_column($distributions, 'amount_eur')),
-                        'log_category' => 'MINT_DISTRIBUTION_SUCCESS'
-                    ]);
-                } catch (\Exception $distException) {
-                    // Log warning but don't fail the mint (distributions can be created later)
-                    $logger->warning('Payment distribution creation failed, mint successful', [
-                        'egi_blockchain_id' => $this->egiBlockchainId,
-                        'error' => $distException->getMessage(),
-                        'log_category' => 'MINT_DISTRIBUTION_WARNING'
-                    ]);
+                // ULM DEBUG: Trace why specific logic is chosen
+                $logger->info('MintEgiJob: Distribution Logic Decision', [
+                    'egi_blockchain_id' => $this->egiBlockchainId,
+                    'raw_payment_method' => $egiBlockchain->payment_method,
+                    'normalized_method' => $paymentMethod,
+                    'is_stripe_managed' => $isStripeManaged ? 'YES' : 'NO'
+                ]);
 
-                    $errorManager->handle('MINT_DISTRIBUTION_FAILED', [
+                if ($isStripeManaged) {
+                     $logger->info('Skipping local distribution recording for Stripe payment - Webhook handles Net Split', [
                         'egi_blockchain_id' => $this->egiBlockchainId,
-                        'asa_id' => $result->asa_id,
-                        'error' => $distException->getMessage()
-                    ], $distException);
+                        'payment_method' => $egiBlockchain->payment_method,
+                        'reason' => 'Delegated to StripePaymentSplitService (Net Logic)'
+                     ]);
+                } else {
+                    try {
+                        $distributionService = app(\App\Services\PaymentDistributionService::class);
+                        $distributions = $distributionService->recordMintDistribution(
+                            $egiBlockchain->fresh(),
+                            [
+                                'paid_amount' => $egiBlockchain->paid_amount,
+                                'paid_currency' => $egiBlockchain->paid_currency ?? 'EUR',
+                                'payment_method' => $egiBlockchain->payment_method ?? 'fiat',
+                            ]
+                        );
+
+                        $logger->info('Payment distributions created successfully (Non-Stripe)', [
+                            'egi_blockchain_id' => $this->egiBlockchainId,
+                            'distributions_count' => count($distributions),
+                            'total_distributed' => array_sum(array_column($distributions, 'amount_eur')),
+                            'log_category' => 'MINT_DISTRIBUTION_SUCCESS'
+                        ]);
+                    } catch (\Exception $distException) {
+                        // UEM Handle: Non-blocking warning
+                        $errorManager->handle('MINT_DISTRIBUTION_FAILED', [
+                            'egi_blockchain_id' => $this->egiBlockchainId,
+                            'asa_id' => $result->asa_id,
+                            'error' => $distException->getMessage()
+                        ], $distException);
+                    }
                 }
             }
 
@@ -181,19 +199,14 @@ class MintEgiJob implements ShouldQueue {
                     'certificate_path' => $certificate->pdf_path
                 ]);
             } catch (\Exception $certException) {
-                // Certificate generation failure is NOT blocking - mint already completed
-                $logger->warning('Certificate generation failed (mint completed successfully)', [
-                    'egi_blockchain_id' => $this->egiBlockchainId,
-                    'error' => $certException->getMessage()
-                ]);
-
+                // UEM Handle: Non-blocking warning
                 $errorManager->handle('CERTIFICATE_GENERATION_FAILED_POST_MINT', [
                     'egi_blockchain_id' => $this->egiBlockchainId,
                     'asa_id' => $result->asa_id,
                     'error' => $certException->getMessage()
                 ], $certException);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // Update error status
             $egiBlockchain = EgiBlockchain::find($this->egiBlockchainId);
             if ($egiBlockchain) {
@@ -230,11 +243,13 @@ class MintEgiJob implements ShouldQueue {
      * @param \App\Models\Egi $egi The EGI that was minted
      * @param EgiBlockchain $egiBlockchain The blockchain record with payment info
      * @param \Ultra\UltraLogManager\UltraLogManager $logger Logger instance
+     * @param ErrorManagerInterface $errorManager Error Manager instance
      */
     private function rewardCreatorForEgiliPayment(
         \App\Models\Egi $egi,
         EgiBlockchain $egiBlockchain,
-        \Ultra\UltraLogManager\UltraLogManager $logger
+        \Ultra\UltraLogManager\UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
     ): void {
         try {
             /** @var \App\Services\EgiliService $egiliService */
@@ -289,16 +304,7 @@ class MintEgiJob implements ShouldQueue {
                 'log_category' => 'EGILI_CREATOR_REWARD_SUCCESS'
             ]);
         } catch (\Exception $e) {
-            // Log error but don't fail the mint (reward can be retried manually)
-            $logger->error('Failed to reward creator with Gift Egili', [
-                'egi_id' => $egi->id,
-                'egi_blockchain_id' => $egiBlockchain->id,
-                'error' => $e->getMessage(),
-                'log_category' => 'EGILI_CREATOR_REWARD_FAILED'
-            ]);
-
-            // Handle via ErrorManager but don't throw
-            $errorManager = app(\Ultra\ErrorManager\Interfaces\ErrorManagerInterface::class);
+            // UEM Handle: Non-blocking warning (Reward Failure)
             $errorManager->handle('EGILI_CREATOR_REWARD_FAILED', [
                 'egi_id' => $egi->id,
                 'egi_blockchain_id' => $egiBlockchain->id,
@@ -315,6 +321,7 @@ class MintEgiJob implements ShouldQueue {
      */
     public function failed(\Throwable $exception): void {
         $logger = app(\Ultra\UltraLogManager\UltraLogManager::class);
+        $errorManager = app(\Ultra\ErrorManager\Interfaces\ErrorManagerInterface::class);
 
         $egiBlockchain = EgiBlockchain::find($this->egiBlockchainId);
 
@@ -324,6 +331,13 @@ class MintEgiJob implements ShouldQueue {
                 'mint_status' => 'failed',
                 'mint_error' => 'Job failed after ' . $this->tries . ' attempts: ' . $exception->getMessage()
             ]);
+
+            // REPORT CRITICAL FAILURE VIA UEM
+            $errorManager->handle('REAL_BLOCKCHAIN_MINT_FINAL_FAILURE', [
+                'egi_blockchain_id' => $this->egiBlockchainId,
+                'max_attempts' => $this->tries,
+                'error' => $exception->getMessage()
+            ], $exception);
 
             // ROLLBACK: Ripristina stato EGI originale
             if ($egiBlockchain->egi) {

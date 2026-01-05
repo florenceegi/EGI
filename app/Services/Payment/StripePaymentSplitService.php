@@ -172,19 +172,47 @@ class StripePaymentSplitService {
     public function splitPaymentToWallets(
         string $paymentIntentId,
         Collection $collection,
-        float $totalAmountEur,
+        float $grossAmountEur, // Renamed for clarity, though original was totalAmountEur
         array $metadata = []
     ): array {
-        $buyerUserId = $metadata['buyer_user_id'] ?? null;
+        // OS3 FIX: Accept 'user_id' (used by StripeRealPaymentService) as fallback for 'buyer_user_id'
+        $buyerUserId = $metadata['buyer_user_id'] ?? $metadata['user_id'] ?? null;
 
         if (!$buyerUserId) {
-            throw new \Exception('buyer_user_id required in metadata for GDPR compliance');
+            throw new \Exception('buyer_user_id (or user_id) required in metadata for GDPR compliance');
         }
 
-        $this->logger->info('Stripe split payment initiated', [
+        // 0. NET AMOUNT RETRIEVAL (Architecture Change)
+        // We must split based on the NET amount received (after Stripe Fees).
+        try {
+            $netAmountEur = $this->getNetAmountFromPaymentIntent($paymentIntentId);
+            $this->logger->info('Net Amount Retrieved from Stripe', [
+                'payment_intent_id' => $paymentIntentId,
+                'gross_eur' => $grossAmountEur,
+                'net_eur' => $netAmountEur,
+                'stripe_fee_approx' => $grossAmountEur - $netAmountEur
+            ]);
+        } catch (\Exception $e) {
+            // Critical failure: cannot proceed without Net Amount
+            $this->logger->error('Failed to retrieve Net Amount for split', [
+                'error' => $e->getMessage(),
+                'payment_intent_id' => $paymentIntentId
+            ]);
+            throw $e;
+        }
+
+        $this->logger->info('DEBUG: VERSION 2.5 NET FIX ACTIVE (Confirmed)', [
+            'method' => 'splitPaymentToWallets',
+            'incoming_arg_gross' => $grossAmountEur,
+            'fetched_net_eur' => $netAmountEur,
+            'difference' => $grossAmountEur - $netAmountEur
+        ]);
+
+        $this->logger->info('Stripe split payment initiated (NET SPLIT)', [
             'payment_intent_id' => $paymentIntentId,
             'collection_id' => $collection->id,
-            'total_amount_eur' => $totalAmountEur,
+            'gross_amount_eur' => $grossAmountEur,
+            'net_amount_eur' => $netAmountEur,
             'buyer_user_id' => $buyerUserId,
             'log_category' => 'STRIPE_SPLIT_PAYMENT_START'
         ]);
@@ -195,9 +223,9 @@ class StripePaymentSplitService {
         // 2. GDPR: Validate payment processing consents for ALL wallet owners
         $this->validateWalletOwnersConsents($wallets);
 
-        // 3. Calculate distribution amounts
+        // 3. Calculate distribution amounts (USING NET AMOUNT)
         $egiId = isset($metadata['egi_id']) ? (int) $metadata['egi_id'] : null;
-        $distributions = $this->calculateDistributions($wallets, $totalAmountEur, $egiId, $metadata);
+        $distributions = $this->calculateDistributions($wallets, $netAmountEur, $egiId, $metadata);
 
         // 4. Validate all wallets have Stripe accounts configured
         $this->validateStripeAccounts($distributions);
@@ -206,7 +234,8 @@ class StripePaymentSplitService {
         $transferResults = $this->executeAtomicTransfers(
             $paymentIntentId,
             $distributions,
-            $metadata
+            $metadata,
+            $collection // P0 FIX: Pass collection for valid DB record creation
         );
 
         // 6. ACCOUNTING: Create PaymentDistribution records for financial tracking
@@ -242,7 +271,44 @@ class StripePaymentSplitService {
             'distributions' => $distributions,
             'distribution_records' => $distributionRecords,
             'payment_intent_id' => $paymentIntentId,
+            'accounting' => [
+                'gross_eur' => $grossAmountEur,
+                'net_eur' => $netAmountEur,
+            ]
         ];
+    }
+
+    /**
+     * Retrieve precise NET amount from Stripe Balance Transaction
+     */
+    protected function getNetAmountFromPaymentIntent(string $paymentIntentId): float
+    {
+        // Retrieve PI with expansion to reach Balance Transaction
+        $pi = $this->stripeClient->paymentIntents->retrieve($paymentIntentId, [
+            'expand' => ['latest_charge.balance_transaction']
+        ]);
+
+        if (empty($pi->latest_charge)) {
+            throw new \Exception("PaymentIntent {$paymentIntentId} has no latest_charge");
+        }
+
+        // Handle case where latest_charge is ID string (not expanded correctly?) - unlikely with client lib but safe
+        $charge = $pi->latest_charge;
+        if (is_string($charge)) {
+             $charge = $this->stripeClient->charges->retrieve($charge, ['expand' => ['balance_transaction']]);
+        }
+
+        if (empty($charge->balance_transaction)) {
+             throw new \Exception("Charge {$charge->id} has no balance_transaction");
+        }
+
+        $txn = $charge->balance_transaction;
+        if (is_string($txn)) {
+             $txn = $this->stripeClient->balanceTransactions->retrieve($txn);
+        }
+
+        // Net amount is in cents
+        return (float) ($txn->net / 100);
     }
 
     /**
@@ -308,7 +374,7 @@ class StripePaymentSplitService {
 
         // Recupera la collection dal primo wallet (assumiamo appartengano alla stessa collection)
         $collection = $wallets->first()->collection;
-        
+
         // --- COMMODITY LOGIC CHECK ---
         $isCommodity = false;
         $commodityBreakdown = null;
@@ -316,14 +382,14 @@ class StripePaymentSplitService {
         if ($egiId) {
             // OS3 Robustness: Eager load traits
             $egi = \App\Models\Egi::with(['traits.traitType'])->find($egiId);
-            
+
             // --- COST OVERRIDE LOGIC (PRIORITY) ---
             // If the controller passed a frozen 'commodity_base_value', USE IT immediately.
             // This bypasses any DB type detection issues or strategy failures.
             if (isset($metadata['commodity_base_value']) && is_numeric($metadata['commodity_base_value'])) {
                 $baseValueOverride = (float) $metadata['commodity_base_value'];
                 $marginOverride = max(0, $totalAmountEur - $baseValueOverride);
-                
+
                 $isCommodity = true;
                 $commodityBreakdown = [
                     'base_value' => $baseValueOverride,
@@ -332,7 +398,7 @@ class StripePaymentSplitService {
                     'currency' => 'EUR',
                     'source' => 'metadata_override'
                 ];
-                
+
                 $this->logger->info('Commodity Split: Using FROZEN COST from Metadata (Global Override)', [
                     'egi_id' => $egiId,
                     'base_value_override' => $baseValueOverride,
@@ -352,12 +418,12 @@ class StripePaymentSplitService {
                     try {
                         // RESOLVE STRATEGY
                         $commodityStrategy = \App\Egi\Commodity\CommodityFactory::make($commodityType);
-                        
+
                         $isCommodity = true;
-                        
+
                         // CALCULATE VALUE USING STRATEGY RECALCULATION
                         $commodityBreakdown = $commodityStrategy->calculateValue($egi, 'EUR');
-                        
+
                         $this->logger->info('Commodity Split Logic Activated (DB Strategy Pattern)', [
                             'egi_id' => $egiId,
                             'commodity_type' => $commodityType,
@@ -366,7 +432,7 @@ class StripePaymentSplitService {
                             'breakdown' => $commodityBreakdown
                         ]);
                     } catch (\Exception $e) {
-                         $this->logger->warning('Commodity Strategy Resolution Failed', [
+                        $this->logger->warning('Commodity Strategy Resolution Failed', [
                             'egi_id' => $egiId,
                             'type' => $commodityType,
                             'error' => $e->getMessage()
@@ -389,7 +455,7 @@ class StripePaymentSplitService {
             if ($wallet->platform_role === WalletRoleEnum::EPP->value) {
                 $percentage = $effectiveEppPercentage;
                 if ($percentage <= 0) {
-                     continue;
+                    continue;
                 }
             }
 
@@ -398,29 +464,29 @@ class StripePaymentSplitService {
                 // Logic:
                 // Cost (Safe Capital) -> Company (Owner) -> 100% exempt from fees
                 // Margin (Markup) -> Split: Platform 10%, Company 90% (or rest)
-                
+
                 $baseValue = $commodityBreakdown['base_value'] ?? 0; // Cost
                 $marginApplied = $commodityBreakdown['margin_applied'] ?? 0; // Margin
-                
+
                 // Normalise role for comparison
                 $role = strtolower($wallet->platform_role ?? '');
-                
-                
+
+
                 // Platform Roles: Natan, Collector, App, Admin
                 $isPlatform = in_array($role, [
-                    strtolower(WalletRoleEnum::NATAN->value), 
-                    'collector', 
-                    strtolower(WalletRoleEnum::EPP->value), 
+                    strtolower(WalletRoleEnum::NATAN->value),
+                    'collector',
+                    strtolower(WalletRoleEnum::EPP->value),
                     'admin'
                 ]);
-                
+
                 // Company Roles: Company, Creator (explicit ownership)
                 $isCompany = in_array($role, [
-                    strtolower(WalletRoleEnum::COMPANY->value), 
+                    strtolower(WalletRoleEnum::COMPANY->value),
                     strtolower(WalletRoleEnum::CREATOR->value)
                 ]) || $wallet->user_id === $collection->collection_owner_id;
 
-                if ($isPlatform) { 
+                if ($isPlatform) {
                     // Platform takes configured percentage (default 10%) of MARGIN only
                     $platformFeeOnMargin = $marginApplied * (config('egi.fees.platform_margin_percentage', 10.0) / 100);
                     $amountEur = $platformFeeOnMargin;
@@ -428,7 +494,7 @@ class StripePaymentSplitService {
                     // Recalculate generic percentage for logs/records
                     // Guard against division by zero if total is 0 (unlikely)
                     $percentage = $totalAmountEur > 0 ? ($amountEur / $totalAmountEur) * 100 : 0;
-                    
+
                     $this->logger->info('Commodity Split: Calculated Platform Fee', [
                         'role' => $wallet->platform_role,
                         'margin' => $marginApplied,
@@ -466,20 +532,61 @@ class StripePaymentSplitService {
                     $amountCents = (int) round(($totalAmountCents * $percentage) / 100);
                     $distributedCents += $amountCents;
                 }
-                
+
                 $amountEur = $amountCents / 100;
             }
 
             $distributions[] = [
                 'wallet_id' => $wallet->id,
                 'wallet_address' => $wallet->wallet,
-                'stripe_account_id' => $wallet->user?->stripe_account_id ?? $wallet->stripe_account_id,
+                // LOGIC VARIANT FOR DEFAULT ACCOUNTS:
+                // If user type is 'natan', 'epp', 'frangette' -> read from USERS table (as they are system accounts)
+                // Otherwise -> read from WALLET_DESTINATIONS table (per collection specific)
+                'stripe_account_id' => in_array($wallet->user?->usertype, ['natan', 'epp', 'frangette']) 
+                    ? ($wallet->user?->stripe_account_id ?? $wallet->stripe_account_id)
+                    : \App\Models\WalletDestination::where('wallet_id', $wallet->id)
+                        ->where('payment_type', \App\Enums\Payment\PaymentTypeEnum::STRIPE->value)
+                        ->value('destination_value'), 
                 'user_id' => $wallet->user_id,
+                'user_type' => $this->distributionService->determineUserType($wallet), // P0 FIX: Required for DB
                 'platform_role' => $wallet->platform_role,
+                'egi_id' => $egiId ?? $metadata['egi_id'] ?? null, // P0 FIX: Required for DB
+                'egi_blockchain_id' => $metadata['egi_blockchain_id'] ?? null, // P0 FIX: Required for DB
                 'percentage' => $percentage, // Store effective percentage
                 'amount_eur' => $amountEur,
                 'amount_cents' => $amountCents,
             ];
+            
+            // --- NATAN FEE SPLIT RE-CALCULATION (9.5% Transfer / 0.5% Retained) ---
+            // Natan Wallet represents the Platform Fee (usually 10%).
+            // Strategy:
+            // - 9.5% of NET -> Transferred to Natan's Connected Account (Revenue)
+            // - 0.5% of NET -> Retained in Platform Account (Reserve Fund)
+            if (($wallet->platform_role ?? '') === WalletRoleEnum::NATAN->value) {
+                 // Hardcoded split policy matching Architecture
+                 $transferPercentage = 9.5; 
+                 $reservePercentage = 0.5;
+
+                 // Calculate Transfer Amount (9.5% of NET)
+                 $transferAmountEur = ($totalAmountEur * $transferPercentage) / 100;
+                 
+                 // Calculate Reserve Amount (0.5% of NET)
+                 $reserveAmountEur = ($totalAmountEur * $reservePercentage) / 100;
+                 
+                 // Update the main distribution entry to be ONLY the Transfer part
+                 $distributions[count($distributions) - 1]['amount_eur'] = $transferAmountEur;
+                 $distributions[count($distributions) - 1]['amount_cents'] = (int) round($transferAmountEur * 100);
+                 $distributions[count($distributions) - 1]['percentage'] = $transferPercentage;
+                 
+                 // Log explicitly the reserve part (it won't generate a transfer, but is tracked)
+                 $this->logger->info('Natan Fee Split Applied', [
+                    'total_net_eur' => $totalAmountEur,
+                    'original_fee_eur' => $amountEur,
+                    'transfer_to_natan_eur' => $transferAmountEur,
+                    'retained_reserve_eur' => $reserveAmountEur,
+                    'note' => '0.5% Reserve retained implicitly'
+                 ]);
+            }
         }
 
         $this->logger->info('Distributions calculated', [
@@ -519,15 +626,15 @@ class StripePaymentSplitService {
                 continue;
             }
 
-            // PLATFORM WALLET EXEMPTION:
-            // 'Natan' is the Platform itself. Funds allocated to Natan should REMAIN in the Platform Account.
-            // We do NOT create a Transfer for Natan, so we do NOT need a Stripe Connect ID.
+            // PLATFORM WALLET EXEMPTION (UPDATED):
+            // Natan NOW RECEIVES a transfer (9.5%), so we DO need to validate it.
+            // Only if it's strictly "Retained" (0%) we skip.
+            // But now Natan (User 1) behaves like a normal recipient for the 9.5% part.
+            /* 
             if (($distribution['platform_role'] ?? '') === WalletRoleEnum::NATAN->value) {
-                 $this->logger->info('Skipping Stripe validation for Platform Wallet (Natan) - funds strictly retained', [
-                    'wallet_id' => $distribution['wallet_id']
-                ]);
-                continue;
-            }
+                 // REMOVED skip - Natan now needs a transfer!
+            } 
+            */
 
             // Check if Stripe account ID exists
             if (empty($distribution['stripe_account_id'])) {
@@ -566,7 +673,8 @@ class StripePaymentSplitService {
                     'card_payments' => $capabilities->card_payments ?? 'not_set',
                 ]);
             } catch (\Stripe\Exception\ApiErrorException $e) {
-                $this->logger->error('Failed to verify Stripe account capabilities', [
+                // Log warning, will be handled by collective check below
+                $this->logger->warning('Failed to verify Stripe account capabilities', [
                     'stripe_account_id' => $distribution['stripe_account_id'],
                     'wallet_id' => $distribution['wallet_id'],
                     'error' => $e->getMessage(),
@@ -623,100 +731,152 @@ class StripePaymentSplitService {
      * @return array ['success' => bool, 'transfers' => array]
      * @throws \Exception If any transfer fails
      */
+    /**
+     * P0.5 GAP FIX: Execute atomic transfers with proper pending state and idempotency
+     *
+     * Records PENDING state BEFORE Stripe calls to ensure consistency
+     * Uses deterministic idempotency keys for safe retries
+     */
     protected function executeAtomicTransfers(
         string $paymentIntentId,
         array $distributions,
-        array $metadata
+        array $metadata,
+        Collection $collection // Added Collection arg
     ): array {
         $executedTransfers = [];
-        $success = false;
-
-        DB::beginTransaction();
 
         try {
+            // P0.5 FIX: No single large transaction - use short transactions per record
             foreach ($distributions as $distribution) {
-                // PLATFORM WALLET EXEMPTION:
-                // Skip transfer for Natan (Platform receives funds by NOT transferring them)
-                if (($distribution['platform_role'] ?? '') === WalletRoleEnum::NATAN->value) {
-                    $this->logger->info('Skipping transfer creation for Natan (Platform Fee retained)', [
-                        'wallet_id' => $distribution['wallet_id'],
-                        'amount_eur' => $distribution['amount_eur']
-                    ]);
-                    
-                    // Maintain array alignment with $distributions for createDistributionRecords
+                try {
+                    // PLATFORM WALLET EXEMPTION (REMOVED):
+                    // Natan now receives a transfer, so we process it normally.
+                    /*
+                    if (($distribution['platform_role'] ?? '') === WalletRoleEnum::NATAN->value) {
+                        $executedTransfers[] = $this->handlePlatformRetention($paymentIntentId, $distribution);
+                        continue;
+                    }
+                    */
+
+                    // P0.5 FIX: Check for existing terminal distribution FIRST (v2.4.1 hotfix)
+                    $existingRecord = \App\Models\PaymentDistribution::where('payment_intent_id', $paymentIntentId)
+                        ->where('wallet_id', $distribution['wallet_id'])
+                        ->first();
+
+                    if ($existingRecord && in_array($existingRecord->status, ['completed', 'reversed', 'reversal_failed'], true)) {
+                        // Return existing terminal record - NO new operations
+                        $executedTransfers[] = [
+                            'transfer_id' => $existingRecord->transfer_id,
+                            'destination' => $existingRecord->stripe_account_id,
+                            'amount_cents' => $existingRecord->amount_cents,
+                            'amount_eur' => $existingRecord->amount_eur,
+                            'wallet_id' => $existingRecord->wallet_id,
+                            'platform_role' => $existingRecord->platform_role,
+                            'status' => 'succeeded',
+                        ];
+                        continue;
+                    }
+
+                    // Create or reuse PENDING record (only if not terminal)
+                    $distributionRecord = $existingRecord ?: $this->createPendingDistribution($paymentIntentId, $distribution, $collection);
+
+                    // Safety: double-check if record was completed by another process
+                    if ($distributionRecord->transfer_id && $distributionRecord->status === 'completed') {
+                        $executedTransfers[] = [
+                            'transfer_id' => $distributionRecord->transfer_id,
+                            'destination' => $distributionRecord->stripe_account_id,
+                            'amount_cents' => $distributionRecord->amount_cents,
+                            'amount_eur' => $distributionRecord->amount_eur,
+                            'wallet_id' => $distributionRecord->wallet_id,
+                            'platform_role' => $distributionRecord->platform_role,
+                            'status' => 'succeeded',
+                        ];
+                        continue;
+                    }
+
+                    // Create Stripe Transfer
+                    $transfer = $this->createStripeTransfer(
+                        $paymentIntentId,
+                        $distribution,
+                        $metadata,
+                        $distributionRecord->idempotency_key
+                    );
+
+                    // Update record with success (short transaction)
+                    $this->completeDistribution($distributionRecord, $transfer->id);
+
                     $executedTransfers[] = [
-                        'transfer_id' => null, // No transfer ID (Retained)
-                        'destination' => 'platform_retained',
-                        'amount_cents' => $distribution['amount_cents'], // Correct amount
+                        'transfer_id' => $transfer->id,
+                        'destination' => $transfer->destination,
+                        'amount_cents' => $transfer->amount,
                         'amount_eur' => $distribution['amount_eur'],
                         'wallet_id' => $distribution['wallet_id'],
                         'platform_role' => $distribution['platform_role'],
-                        'status' => 'succeeded', // Logically succeeded
+                        'status' => 'succeeded',
                     ];
-                    
-                    continue; 
+
+                    $this->logger->info('Transfer executed successfully', [
+                        'transfer_id' => $transfer->id,
+                        'destination_account' => $transfer->destination,
+                        'amount_cents' => $transfer->amount,
+                        'wallet_id' => $distribution['wallet_id'],
+                        'platform_role' => $distribution['platform_role'],
+                    ]);
+                } catch (ApiErrorException $e) {
+                    // Mark specific distribution as failed
+                    $this->failDistribution($distributionRecord ?? null, $e->getMessage());
+
+                    // UEM Handle: Soft blocking (loop continues)
+                    $this->errorManager->handle('STRIPE_TRANSFER_FAILED', [
+                        'payment_intent_id' => $paymentIntentId,
+                        'wallet_id' => $distribution['wallet_id'],
+                        'error_type' => $e->getError()?->type,
+                        'error_message' => $e->getMessage(),
+                    ], $e);
+
+                    // Continue with other transfers but flag this failure
+                    $executedTransfers[] = [
+                        'transfer_id' => null,
+                        'destination' => $distribution['stripe_account_id'] ?? 'unknown',
+                        'amount_cents' => $distribution['amount_cents'],
+                        'amount_eur' => $distribution['amount_eur'],
+                        'wallet_id' => $distribution['wallet_id'],
+                        'platform_role' => $distribution['platform_role'],
+                        'status' => 'failed',
+                        'error' => $e->getMessage(),
+                    ];
                 }
-
-                $transfer = $this->createStripeTransfer(
-                    $paymentIntentId,
-                    $distribution,
-                    $metadata
-                );
-
-                $executedTransfers[] = [
-                    'transfer_id' => $transfer->id,
-                    'destination' => $transfer->destination,
-                    'amount_cents' => $transfer->amount,
-                    'amount_eur' => $distribution['amount_eur'],
-                    'wallet_id' => $distribution['wallet_id'],
-                    'platform_role' => $distribution['platform_role'],
-                    'status' => 'succeeded',
-                ];
-
-                $this->logger->info('Transfer executed successfully', [
-                    'transfer_id' => $transfer->id,
-                    'destination_account' => $transfer->destination,
-                    'amount_cents' => $transfer->amount,
-                    'wallet_id' => $distribution['wallet_id'],
-                    'platform_role' => $distribution['platform_role'],
-                ]);
             }
 
-            // All transfers succeeded
-            DB::commit();
-            $success = true;
+            // Check if any critical transfers failed
+            $failedTransfers = array_filter($executedTransfers, fn($t) => $t['status'] === 'failed');
+            if (!empty($failedTransfers)) {
+                $this->errorManager->handle('STRIPE_SPLIT_PARTIAL_FAILURE', [
+                    'payment_intent_id' => $paymentIntentId,
+                    'failed_count' => count($failedTransfers),
+                    'success_count' => count($executedTransfers) - count($failedTransfers),
+                ]);
 
-            $this->logger->info('All transfers committed successfully', [
+                // Decide policy: fail all or continue with partial success?
+                // For P0.5: continue but log the failures for manual review
+            }
+
+            $this->logger->info('Transfer execution completed', [
                 'payment_intent_id' => $paymentIntentId,
-                'transfers_count' => count($executedTransfers),
-            ]);
-        } catch (ApiErrorException $e) {
-            DB::rollBack();
-
-            $this->logger->error('Stripe transfer failed - rolling back', [
-                'payment_intent_id' => $paymentIntentId,
-                'executed_transfers_count' => count($executedTransfers),
-                'error_type' => $e->getError()?->type,
-                'error_message' => $e->getMessage(),
+                'total_transfers' => count($executedTransfers),
+                'successful_transfers' => count(array_filter($executedTransfers, fn($t) => $t['status'] === 'succeeded')),
+                'failed_transfers' => count($failedTransfers),
             ]);
 
-            // Reverse all executed transfers
-            $this->reverseExecutedTransfers($executedTransfers, $paymentIntentId);
-
-            throw new \Exception(
-                'Split payment failed: ' . $e->getMessage() .
-                    '. All transfers have been reversed.',
-                0,
-                $e
-            );
+            return ['success' => true, 'transfers' => $executedTransfers];
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            $this->logger->error('Unexpected error during transfers - rolling back', [
+            $this->errorManager->handle('STRIPE_SPLIT_CRITICAL_FAILURE', [
                 'payment_intent_id' => $paymentIntentId,
                 'executed_transfers_count' => count($executedTransfers),
                 'error_message' => $e->getMessage(),
-            ]);
+            ], $e);
 
             // Reverse all executed transfers
             $this->reverseExecutedTransfers($executedTransfers, $paymentIntentId);
@@ -744,20 +904,37 @@ class StripePaymentSplitService {
      * @return \Stripe\Transfer
      * @throws ApiErrorException
      */
+    /**
+     * P0.5 GAP FIX: Create Stripe Transfer with idempotency key
+     */
     protected function createStripeTransfer(
         string $paymentIntentId,
         array $distribution,
-        array $metadata
+        array $metadata,
+        ?string $idempotencyKey = null
     ): \Stripe\Transfer {
         // Retrieve the charge ID from the PaymentIntent
         // Stripe Transfer requires charge ID (ch_xxx), not PaymentIntent ID (pi_xxx)
         $paymentIntent = $this->stripeClient->paymentIntents->retrieve($paymentIntentId);
 
-        if (empty($paymentIntent->charges->data)) {
+        // Stripe API 2022-11-15+: Use 'latest_charge' instead of deprecated 'charges.data'
+        // Fallback to old method for backward compatibility
+        $chargeId = null;
+        
+        // Method 1: Use latest_charge (modern API)
+        if (!empty($paymentIntent->latest_charge)) {
+            $chargeId = is_string($paymentIntent->latest_charge) 
+                ? $paymentIntent->latest_charge 
+                : $paymentIntent->latest_charge->id;
+        }
+        // Method 2: Fallback to deprecated charges.data (legacy API)
+        elseif (!empty($paymentIntent->charges) && !empty($paymentIntent->charges->data)) {
+            $chargeId = $paymentIntent->charges->data[0]->id;
+        }
+        
+        if (!$chargeId) {
             throw new \Exception("No charge found for PaymentIntent {$paymentIntentId}");
         }
-
-        $chargeId = $paymentIntent->charges->data[0]->id;
 
         $transferMetadata = array_merge($metadata, [
             'wallet_id' => $distribution['wallet_id'],
@@ -767,7 +944,7 @@ class StripePaymentSplitService {
             'charge_id' => $chargeId,
         ]);
 
-        return $this->stripeClient->transfers->create([
+        $transferParams = [
             'amount' => $distribution['amount_cents'],
             'currency' => 'eur',
             'destination' => $distribution['stripe_account_id'],
@@ -778,7 +955,15 @@ class StripePaymentSplitService {
                 $distribution['percentage']
             ),
             'metadata' => $transferMetadata,
-        ]);
+        ];
+
+        // P0.5 FIX: Add idempotency key for safe retries
+        $options = [];
+        if ($idempotencyKey) {
+            $options['idempotency_key'] = $idempotencyKey;
+        }
+
+        return $this->stripeClient->transfers->create($transferParams, $options);
     }
 
     /**
@@ -1094,16 +1279,16 @@ class StripePaymentSplitService {
     ): array {
         $paymentIntents = [];
         $currency = strtolower($request->currency);
-        
+
         // Dynamically retrieve Platform Stripe Account ID to prevent "Source matches Destination" error
         // This handles cases where a wallet (e.g., Natan/Company) has the same Stripe ID as the Platform
         try {
             $platformAccount = $this->stripeClient->accounts->retrieve();
             $platformAccountId = $platformAccount->id;
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->error('STRIPE_PLATFORM_ID_FETCH_FAILED', ['error' => $e->getMessage()]);
             // Fallback: Proceed without filter, relying on Stripe validation (risk of error remains but logged)
-            $platformAccountId = null; 
+            $platformAccountId = null;
         }
 
         foreach ($distributions as $distribution) {
@@ -1114,7 +1299,7 @@ class StripePaymentSplitService {
             // CORRECT COMPLIANCE: NO Application Fee applied by default logic.
             // Stripe Fees are handled by Stripe based on platform contract.
             $applicationFeeCents = 0;
-            
+
             // CRITICAL FIX: IF DESTINATION IS PLATFORM, DO NOT TRANSFER (Money stays in platform)
             $isPlatformSelfTransfer = ($platformAccountId && $destinationAccount === $platformAccountId);
 
@@ -1138,7 +1323,7 @@ class StripePaymentSplitService {
                 'receipt_email' => $request->customerEmail,
                 'confirmation_method' => 'automatic',
             ];
-            
+
             // Only add transfer_data if NOT transferring to self
             if (!$isPlatformSelfTransfer) {
                 $intentParams['transfer_data'] = [
@@ -1294,5 +1479,133 @@ class StripePaymentSplitService {
                 GdprActivityCategory::WALLET_MANAGEMENT
             );
         }
+    }
+
+    /**
+     * P0.5 GAP FIX: Helper methods for atomic distribution management
+     */
+
+    /**
+     * Handle platform fee retention (no actual transfer)
+     */
+    private function handlePlatformRetention(string $paymentIntentId, array $distribution): array {
+        // Create distribution record for platform retention
+        $distributionRecord = $this->distributionService->createPaymentDistribution([
+            'payment_intent_id' => $paymentIntentId,
+            'wallet_id' => $distribution['wallet_id'],
+            'transfer_id' => null, // No transfer for platform retention
+            'amount_cents' => $distribution['amount_cents'],
+            'amount_eur' => $distribution['amount_eur'],
+            'percentage' => $distribution['percentage'],
+            'platform_role' => $distribution['platform_role'],
+            'user_type' => $distribution['user_type'],
+            'stripe_account_id' => null,
+            'destination_type' => 'platform_retained',
+            'status' => 'completed', // Immediately completed
+            'metadata' => json_encode($distribution),
+        ]);
+
+        $this->logger->info('Platform fee retained (no transfer created)', [
+            'wallet_id' => $distribution['wallet_id'],
+            'amount_eur' => $distribution['amount_eur'],
+            'distribution_id' => $distributionRecord->id
+        ]);
+
+        return [
+            'transfer_id' => null,
+            'destination' => 'platform_retained',
+            'amount_cents' => $distribution['amount_cents'],
+            'amount_eur' => $distribution['amount_eur'],
+            'wallet_id' => $distribution['wallet_id'],
+            'platform_role' => $distribution['platform_role'],
+            'status' => 'succeeded',
+        ];
+    }
+
+    /**
+     * Create pending distribution record BEFORE Stripe call
+     * P0.5 FIX v2.4.1: NEVER degrade completed records during retry
+     */
+    private function createPendingDistribution(string $paymentIntentId, array $distribution, Collection $collection) { // Added Collection arg
+        $idempotencyKey = $this->generateIdempotencyKey($paymentIntentId, $distribution['wallet_id']);
+
+        // CRITICAL v2.4.1: Check existing record and protect terminal states
+        $existing = \App\Models\PaymentDistribution::where('payment_intent_id', $paymentIntentId)
+            ->where('wallet_id', $distribution['wallet_id'])
+            ->first();
+
+        // If record exists and is terminal, return it unchanged
+        if ($existing && in_array($existing->status, ['completed', 'reversed', 'reversal_failed'], true)) {
+            return $existing; // NO updates to terminal records
+        }
+
+        // Create or update only non-terminal records with race condition protection
+        try {
+            return \App\Models\PaymentDistribution::updateOrCreate(
+                [
+                    'payment_intent_id' => $paymentIntentId,
+                    'wallet_id' => $distribution['wallet_id']
+                ],
+                [
+                    'collection_id' => $collection->id, // P0 FIX: Explicitly set from passed object
+                    'egi_id' => $distribution['egi_id'] ?? null, // P0 FIX: Required field
+                    'egi_blockchain_id' => $distribution['egi_blockchain_id'] ?? null, // P0 FIX: Required field
+                    'user_id' => $distribution['user_id'] ?? null, // P0 FIX: Required field
+                    'user_type' => $distribution['user_type'] ?? null, // P0 FIX: Required field
+                    'transfer_id' => null, // Will be set after Stripe success
+                    'idempotency_key' => $idempotencyKey,
+                    'amount_cents' => $distribution['amount_cents'],
+                    'amount_eur' => $distribution['amount_eur'],
+                    'percentage' => $distribution['percentage'],
+                    'platform_role' => $distribution['platform_role'],
+                    'stripe_account_id' => $distribution['stripe_account_id'],
+                    'destination_type' => 'stripe_transfer',
+                    'distribution_status' => 'pending', // P0 FIX: Correct column name (was 'status')
+                    'source_type' => 'mint', // P0 FIX: Set correct source (avoid default 'reservation')
+                    'exchange_rate' => 1.0, // P0 FIX: Required Not Null
+                    'metadata' => json_encode($distribution),
+                ]
+            );
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle race condition on unique constraint
+            if ($e->errorInfo[1] === 1062 || str_contains($e->getMessage(), 'UNIQUE constraint')) {
+                // Re-fetch the record created by concurrent process
+                return \App\Models\PaymentDistribution::where('payment_intent_id', $paymentIntentId)
+                    ->where('wallet_id', $distribution['wallet_id'])
+                    ->first();
+            }
+            throw $e; // Re-throw non-collision errors
+        }
+    }
+
+    /**
+     * Mark distribution as completed after successful Stripe transfer
+     */
+    private function completeDistribution($distributionRecord, string $transferId): void {
+        $distributionRecord->update([
+            'transfer_id' => $transferId,
+            'distribution_status' => 'completed', // P0 FIX: Correct column name
+            'completed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Mark distribution as failed
+     */
+    private function failDistribution($distributionRecord, string $errorMessage): void {
+        if ($distributionRecord) {
+            $distributionRecord->update([
+                'distribution_status' => 'failed', // P0 FIX: Correct column name
+                'failure_reason' => $errorMessage,
+                'retry_count' => ($distributionRecord->retry_count ?? 0) + 1,
+            ]);
+        }
+    }
+
+    /**
+     * Generate deterministic idempotency key for safe retries
+     */
+    private function generateIdempotencyKey(string $paymentIntentId, int $walletId): string {
+        return "pi_{$paymentIntentId}_w_{$walletId}_v2"; // v2 for new implementation
     }
 }
