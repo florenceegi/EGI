@@ -65,10 +65,18 @@ class PaymentDistribution extends Model {
         'platform_role',         // Wallet role (Natan, EPP, Frangette, Creator) - NEW SOURCE OF TRUTH
         'percentage',
         'amount_eur',
+        'amount_cents',          // Amount in cents
         'exchange_rate',
         'is_epp',
         'metadata',
         'distribution_status',
+        'transfer_id',           // Stripe transfer ID
+        'reversal_id',           // Stripe reversal ID
+        'failure_reason',        // Failure reason for failed transfers
+        'retry_count',           // Number of retry attempts
+        'completed_at',          // When distribution was completed
+        'reversed_at',           // When distribution was reversed
+        'idempotency_key',       // Idempotency key for Stripe operations
     ];
 
     /**

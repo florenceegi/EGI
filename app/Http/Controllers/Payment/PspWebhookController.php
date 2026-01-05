@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Payment;
 use App\Http\Controllers\Controller;
 use App\Services\Payment\PaymentServiceFactory;
 use App\Jobs\ProcessEgiMintingJob;
-use App\Models\{EgiBlockchain, Reservation};
+use App\Models\{EgiBlockchain, Reservation, PspWebhookEvent};
 use App\Enums\Gdpr\GdprActivityCategory;
 use App\Services\Gdpr\{AuditLogService, ConsentService};
 use Ultra\UltraLogManager\UltraLogManager;
@@ -100,25 +100,37 @@ class PspWebhookController extends Controller {
      * @privacy-safe No sensitive data exposure in logs
      */
     private function processWebhook(Request $request, string $provider): JsonResponse {
-        $webhookId = 'webhook_' . uniqid();
+        $payload = $request->all();
 
         try {
-            // 1. ULM: Log webhook reception
-            $this->logger->info("PSP webhook received", [
-                'provider' => $provider,
-                'webhook_id' => $webhookId,
-                'payload_size' => strlen($request->getContent()),
-                'headers' => $request->headers->all(),
-                'ip' => $request->ip()
-            ]);
+            // 1. Extract webhook ID for idempotency tracking
+            $webhookId = $this->extractWebhookId($request, $provider);
 
-            // 2. Get payment service for verification
+            // 2. Ensure webhook idempotency (avoid duplicate processing)
+            $webhookEvent = $this->ensureWebhookIdempotency($webhookId, $provider, $payload);
+
+            if ($webhookEvent->status === 'processed') {
+                return response()->json([
+                    'success' => true,
+                    'status' => 'already_processed',
+                    'webhook_id' => $webhookId
+                ], Response::HTTP_OK);
+            }
+
+            if ($webhookEvent->status === 'failed' && $webhookEvent->retry_count >= 5) {
+                return response()->json([
+                    'success' => true,
+                    'status' => 'max_retries_exceeded',
+                    'webhook_id' => $webhookId
+                ], Response::HTTP_OK);
+            }
+
+            // 3. Get payment service and verify webhook
             $paymentService = $this->paymentFactory->create($provider);
 
-            // 3. SECURITY: Verify webhook authenticity
             $payloadWrapper = [
                 'body' => $request->getContent(),
-                'json' => $request->all(),
+                'json' => $payload,
                 'headers' => $request->headers->all(),
             ];
 
@@ -127,119 +139,179 @@ class PspWebhookController extends Controller {
             }
 
             if (!$paymentService->verifyWebhook($payloadWrapper)) {
-                $this->errorManager->handle('PSP_WEBHOOK_VERIFICATION_FAILED', [
-                    'provider' => $provider,
-                    'webhook_id' => $webhookId,
-                    'ip' => $request->ip()
-                ]);
+                $this->updateWebhookEventStatus($webhookEvent, 'failed', 'Webhook signature verification failed');
 
                 return response()->json([
+                    'success' => false,
                     'error' => 'Webhook verification failed',
                     'webhook_id' => $webhookId
                 ], Response::HTTP_UNAUTHORIZED);
             }
 
-            // 4. Extract payment information
-            $paymentData = $this->extractPaymentData($payloadWrapper, $provider);
+            // 4. Process payment webhook via service (NO hardcoded logic here!)
+            $result = $paymentService->processPaymentWebhook($payload, $payloadWrapper['headers'] ?? []);
 
-            if (!$paymentData) {
+            if (!$result || !$result['success']) {
+                $this->updateWebhookEventStatus($webhookEvent, 'failed', 'Payment processing failed');
+
                 return response()->json([
-                    'message' => 'Event not relevant for processing',
+                    'success' => false,
+                    'error' => 'Payment processing failed',
                     'webhook_id' => $webhookId
-                ], Response::HTTP_OK);
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
             }
 
-            // 5. Process within database transaction
-            DB::transaction(function () use ($paymentData, $provider, $webhookId) {
-                $this->processPaymentEvent($paymentData, $provider, $webhookId);
-            });
+            // 5. Mark webhook as processed
+            $this->updateWebhookEventStatus($webhookEvent, 'processed');
 
             // 6. Success response
             return response()->json([
-                'message' => 'Webhook processed successfully',
+                'success' => true,
                 'webhook_id' => $webhookId,
-                'payment_id' => $paymentData['payment_id'] ?? null
+                'payment_id' => $result['payment_id'] ?? null
             ], Response::HTTP_OK);
-        } catch (ValidationException $e) {
-            // 7. UEM: Validation error
-            $this->errorManager->handle('PSP_WEBHOOK_VALIDATION_ERROR', [
-                'provider' => $provider,
-                'webhook_id' => $webhookId,
-                'errors' => $e->errors()
-            ], $e);
-
-            return response()->json([
-                'error' => 'Invalid webhook payload',
-                'webhook_id' => $webhookId
-            ], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            // 8. UEM: Processing error
-            $this->errorManager->handle('PSP_WEBHOOK_PROCESSING_ERROR', [
+            // Handle any processing errors
+            $this->logger->error('Webhook processing error', [
                 'provider' => $provider,
-                'webhook_id' => $webhookId,
+                'webhook_id' => $webhookId ?? 'unknown',
                 'error' => $e->getMessage()
-            ], $e);
+            ]);
+
+            if (isset($webhookEvent)) {
+                $this->updateWebhookEventStatus($webhookEvent, 'failed', $e->getMessage());
+            }
 
             return response()->json([
+                'success' => false,
                 'error' => 'Webhook processing failed',
-                'webhook_id' => $webhookId
+                'webhook_id' => $webhookId ?? 'unknown'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Extract relevant payment data from webhook payload
+     * Extract webhook ID from request headers (PSP-agnostic)
      *
-     * @param array $payload Webhook payload
+     * @param Request $request Webhook request
      * @param string $provider PSP provider
-     * @return array|null Payment data or null if not relevant
-     * @privacy-safe Extract only necessary payment data
+     * @return string Webhook ID for tracking
      */
-    private function extractPaymentData(array $payload, string $provider): ?array {
-        $event = $payload['json'] ?? $payload;
-
+    private function extractWebhookId(Request $request, string $provider): string {
         switch ($provider) {
             case 'stripe':
-                if (($event['type'] ?? '') === 'payment_intent.succeeded') {
-                    return [
-                        'payment_id' => $event['data']['object']['id'] ?? null,
-                        'status' => 'succeeded',
-                        'amount' => $event['data']['object']['amount'] ?? 0,
-                        'currency' => $event['data']['object']['currency'] ?? 'EUR',
-                        'metadata' => $event['data']['object']['metadata'] ?? []
-                    ];
+                $signature = $request->header('stripe-signature', '');
+                if (preg_match('/wh_id=([^,]+)/', $signature, $matches)) {
+                    return $matches[1];
                 }
-                break;
+                return 'stripe_' . hash('sha256', $request->getContent() . time());
 
             case 'paypal':
-                if (($event['event_type'] ?? '') === 'PAYMENT.CAPTURE.COMPLETED') {
-                    return [
-                        'payment_id' => $event['resource']['id'] ?? null,
-                        'status' => 'completed',
-                        'amount' => $event['resource']['amount']['value'] ?? 0,
-                        'currency' => $event['resource']['amount']['currency_code'] ?? 'EUR',
-                        'metadata' => $event['resource']['custom_id'] ? ['custom_id' => $event['resource']['custom_id']] : []
-                    ];
-                }
-                break;
+                return $request->header('paypal-transmission-id', 'paypal_' . uniqid());
+
+            default:
+                return $provider . '_' . hash('sha256', $request->getContent() . time());
+        }
+    }
+
+    /**
+     * Ensure webhook idempotency using database
+     *
+     * @param string $webhookId Unique webhook identifier
+     * @param string $psp PSP provider name
+     * @param array $payload Webhook payload
+     * @return PspWebhookEvent Webhook event record
+     */
+    private function ensureWebhookIdempotency(string $webhookId, string $psp, array $payload): PspWebhookEvent {
+        $payloadHash = hash('sha256', json_encode($payload));
+        $eventType = $this->determineEventType($payload);
+
+        // Try to find existing webhook event
+        $webhookEvent = PspWebhookEvent::where('event_id', $webhookId)->first();
+
+        if ($webhookEvent) {
+            // Existing event - check status
+            return $webhookEvent;
         }
 
-        return null;
+        // Create new webhook event record
+        return PspWebhookEvent::create([
+            'event_id' => $webhookId,
+            'provider' => $psp,
+            'event_type' => $eventType,
+            'status' => 'processing',
+            'payload' => $payload,
+            'received_at' => now(),
+            'retry_count' => 0
+        ]);
+    }
+
+    /**
+     * Determine event type from payload (PSP-agnostic)
+     *
+     * @param array $payload Webhook payload
+     * @return string Event type for logging
+     */
+    private function determineEventType(array $payload): string {
+        // Generic object-based detection (no PSP hardcoding!)
+        if (isset($payload['object'])) {
+            return $payload['object'];
+        }
+
+        if (isset($payload['type'])) {
+            return explode('.', $payload['type'])[0] ?? 'unknown';
+        }
+
+        if (isset($payload['event_type'])) {
+            return explode('.', $payload['event_type'])[0] ?? 'unknown';
+        }
+
+        return 'unknown';
+    }
+
+    /**
+     * Update webhook event status in database
+     *
+     * @param PspWebhookEvent $webhookEvent Event to update
+     * @param string $status New status
+     * @param string|null $errorMessage Error message if failed
+     */
+    private function updateWebhookEventStatus(PspWebhookEvent $webhookEvent, string $status, ?string $errorMessage = null): void {
+        $updateData = ['status' => $status];
+
+        if ($status === 'processed') {
+            $updateData['processed_at'] = now();
+            $updateData['retry_count'] = 0; // Reset on success
+            $updateData['error_message'] = null;
+        } elseif ($status === 'failed') {
+            $updateData['retry_count'] = $webhookEvent->retry_count + 1;
+            $updateData['error_message'] = $errorMessage;
+        }
+
+        $webhookEvent->update($updateData);
     }
 
     /**
      * Process payment event and dispatch async jobs
      *
-     * @param array $paymentData Payment event data
+     * @param array $result Payment processing result from service
      * @param string $provider PSP provider
      * @param string $webhookId Webhook tracking ID
      * @throws Exception Processing failed
      * @gdpr-compliant Audit trail for all payment events
      * @blockchain-safe Async job dispatch for minting
      */
-    private function processPaymentEvent(array $paymentData, string $provider, string $webhookId): void {
-        $paymentId = $paymentData['payment_id'];
-        $metadata = $paymentData['metadata'] ?? [];
+    private function processPaymentEvent(array $result, string $provider, string $webhookId): void {
+        $paymentId = $result['payment_id'] ?? null;
+        $metadata = $result['metadata'] ?? [];
+
+        if (!$paymentId) {
+            $this->logger->warning('No payment ID in webhook result', [
+                'webhook_id' => $webhookId,
+                'provider' => $provider
+            ]);
+            return;
+        }
 
         // 1. Find associated EGI or Reservation
         $egiBlockchain = null;
@@ -286,8 +358,8 @@ class PspWebhookController extends Controller {
                     'payment_id' => $paymentId,
                     'provider' => $provider,
                     'egi_id' => $egiBlockchain->id,
-                    'amount' => $paymentData['amount'],
-                    'currency' => $paymentData['currency']
+                    'amount' => $result['amount'] ?? null,
+                    'currency' => $result['currency'] ?? 'EUR'
                 ]
             );
 
@@ -322,8 +394,8 @@ class PspWebhookController extends Controller {
                     'payment_id' => $paymentId,
                     'provider' => $provider,
                     'reservation_id' => $reservation->id,
-                    'amount' => $paymentData['amount'],
-                    'currency' => $paymentData['currency']
+                    'amount' => $result['amount'] ?? null,
+                    'currency' => $result['currency'] ?? 'EUR'
                 ]
             );
         }
@@ -335,7 +407,7 @@ class PspWebhookController extends Controller {
             'webhook_id' => $webhookId,
             'egi_id' => $egiBlockchain?->id,
             'reservation_id' => $reservation?->id,
-            'status' => $paymentData['status']
+            'status' => $result['status'] ?? 'completed'
         ]);
     }
 
