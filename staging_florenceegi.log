@@ -1,0 +1,2 @@
+[2026-01-05 14:27:19] staging.INFO: >>> DASHBOARD USER STATUS IN MOUNT {"user_id":null,"auth_type":"guest","user_is_null":true,"is_strong_auth":false,"is_weak_auth":false} 
+[2026-01-05 14:27:19] staging.INFO: Dashboard: mount - User is guest, skipping privileged actions.  

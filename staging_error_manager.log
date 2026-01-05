@@ -1,0 +1,1511 @@
+[2025-12-18 21:25:03] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [EPP_PROJECT_CREATE_FAILED]
+
+Illuminate\Database\QueryException:
+SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "epp_projects" violates foreign key constraint "epp_milestones_epp_id_foreign"
+DETAIL:  Key (epp_user_id)=(35) is not present in table "epps". (Connection: pgsql, SQL: insert into "epp_projects" ("epp_user_id", "name", "project_type", "description", "target_value", "current_value", "target_date", "status", "evidence_url", "current_funds", "updated_at", "created_at") values (35, Pulizia dell'Adriatico, APR, Puliamo l'adriatico, 1000000, 0, ?, planned, ?, 0, 2025-12-18 21:25:03, 2025-12-18 21:25:03) returning "id")
+
+File: app/Http/Controllers/Epp/EppDashboardController.php:220
+
+Context {
+  {
+      "user_id": 35,
+      "error_message": "SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \"epp_projects\" violates foreign key constraint \"epp_milestones_epp_id_foreign\"\nDETAIL:  Key (epp_user_id)=(35) is not present in table \"epps\". (Connection: pgsql, SQL: insert into \"epp_projects\" (\"epp_user_id\", \"name\", \"project_type\", \"description\", \"target_value\", \"current_value\", \"target_date\", \"status\", \"evidence_url\", \"current_funds\", \"updated_at\", \"created_at\") values (35, Pulizia dell'Adriatico, APR, Puliamo l'a...",
+      "input_data": "{\"name\":\"Pulizia dell'Adriatico\",\"project_type\":\"APR\",\"description\":\"Puliamo l'adriatico\",\"target_value\":\"1000000\",\"target_date\":null,\"status\":\"planned\",\"evidence_url\":null}"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 21:30:40] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [EPP_PROJECT_CREATE_FAILED]
+
+Illuminate\Database\QueryException:
+SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "epp_projects" violates foreign key constraint "epp_milestones_epp_id_foreign"
+DETAIL:  Key (epp_user_id)=(35) is not present in table "epps". (Connection: pgsql, SQL: insert into "epp_projects" ("epp_user_id", "name", "project_type", "description", "target_value", "current_value", "target_date", "status", "evidence_url", "current_funds", "updated_at", "created_at") values (35, Pulizia dell'Adriatico, APR, Puliamo l'adriatico, 1000000, 0, ?, planned, ?, 0, 2025-12-18 21:30:40, 2025-12-18 21:30:40) returning "id")
+
+File: app/Http/Controllers/Epp/EppDashboardController.php:220
+
+Context {
+  {
+      "user_id": 35,
+      "error_message": "SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \"epp_projects\" violates foreign key constraint \"epp_milestones_epp_id_foreign\"\nDETAIL:  Key (epp_user_id)=(35) is not present in table \"epps\". (Connection: pgsql, SQL: insert into \"epp_projects\" (\"epp_user_id\", \"name\", \"project_type\", \"description\", \"target_value\", \"current_value\", \"target_date\", \"status\", \"evidence_url\", \"current_funds\", \"updated_at\", \"created_at\") values (35, Pulizia dell'Adriatico, APR, Puliamo l'a...",
+      "input_data": "{\"name\":\"Pulizia dell'Adriatico\",\"project_type\":\"APR\",\"description\":\"Puliamo l'adriatico\",\"target_value\":\"1000000\",\"target_date\":null,\"status\":\"planned\",\"evidence_url\":null}"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 21:59:42] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_MISSING_STRIPE_ACCOUNTS]
+
+Context {
+  {
+      "missing_accounts": "[{\"wallet_id\":23,\"platform_role\":\"EPP\"}]",
+      "missing_count": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 21:59:42] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]
+
+File: app/Services/Payment/StripePaymentSplitService.php:587
+
+Context {
+  {
+      "error_message": "Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]",
+      "_original_code": "STRIPE_PAYMENT_UNEXPECTED_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 21:59:42] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]
+
+File: app/Services/Payment/StripeRealPaymentService.php:203
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "payment_method": "stripe",
+      "error": "Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:07:02] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:07:03] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_MISSING_STRIPE_ACCOUNTS]
+
+Context {
+  {
+      "missing_accounts": "[{\"wallet_id\":23,\"platform_role\":\"EPP\"}]",
+      "missing_count": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:07:03] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]
+
+File: app/Services/Payment/StripePaymentSplitService.php:587
+
+Context {
+  {
+      "error_message": "Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]",
+      "_original_code": "STRIPE_PAYMENT_UNEXPECTED_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:07:03] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]
+
+File: app/Services/Payment/StripeRealPaymentService.php:203
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "payment_method": "stripe",
+      "error": "Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:11:30] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:11:31] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_MISSING_STRIPE_ACCOUNTS]
+
+Context {
+  {
+      "missing_accounts": "[{\"wallet_id\":23,\"platform_role\":\"EPP\"}]",
+      "missing_count": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:11:31] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]
+
+File: app/Services/Payment/StripePaymentSplitService.php:587
+
+Context {
+  {
+      "error_message": "Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]",
+      "_original_code": "STRIPE_PAYMENT_UNEXPECTED_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:11:31] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]
+
+File: app/Services/Payment/StripeRealPaymentService.php:203
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "payment_method": "stripe",
+      "error": "Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:13:40] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:13:41] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_MISSING_STRIPE_ACCOUNTS]
+
+Context {
+  {
+      "missing_accounts": "[{\"wallet_id\":23,\"platform_role\":\"EPP\"}]",
+      "missing_count": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:13:41] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]
+
+File: app/Services/Payment/StripePaymentSplitService.php:587
+
+Context {
+  {
+      "error_message": "Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]",
+      "_original_code": "STRIPE_PAYMENT_UNEXPECTED_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:13:41] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]
+
+File: app/Services/Payment/StripeRealPaymentService.php:203
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "payment_method": "stripe",
+      "error": "Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:19:05] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:19:06] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_MISSING_STRIPE_ACCOUNTS]
+
+Context {
+  {
+      "missing_accounts": "[{\"wallet_id\":23,\"platform_role\":\"EPP\"}]",
+      "missing_count": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:19:06] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]
+
+File: app/Services/Payment/StripePaymentSplitService.php:587
+
+Context {
+  {
+      "error_message": "Si è verificato un problema inatteso nel sistema. Riprova più tardi o contatta l'assistenza. [Rif: FALLBACK]",
+      "_original_code": "STRIPE_PAYMENT_UNEXPECTED_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:19:06] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]
+
+File: app/Services/Payment/StripeRealPaymentService.php:203
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "payment_method": "stripe",
+      "error": "Si è verificato un errore imprevisto. Il nostro team tecnico è stato informato. Riprova più tardi. [Rif: UNEXPECTED]",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:22:33] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:22:41] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [REAL_BLOCKCHAIN_MINT_FAILED]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "egi_blockchain_id": 11,
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "attempt": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:22:41] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "payment_method": "stripe",
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:25:17] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:25:23] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [REAL_BLOCKCHAIN_MINT_FAILED]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "egi_blockchain_id": 12,
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "attempt": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:25:23] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32,
+      "payment_method": "stripe",
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:27:54] UEM.WARNING: 
+--------------------------------------------------------------------------------
+✦ UEM [DIRECT_MINT_NOT_AVAILABLE]
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:28:17] UEM.WARNING: 
+--------------------------------------------------------------------------------
+✦ UEM [DIRECT_MINT_NOT_AVAILABLE]
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-18 22:28:59] UEM.WARNING: 
+--------------------------------------------------------------------------------
+✦ UEM [DIRECT_MINT_NOT_AVAILABLE]
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 32
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 08:50:10] UEM.WARNING: 
+--------------------------------------------------------------------------------
+✦ UEM [DIRECT_MINT_NOT_AVAILABLE]
+
+Context {
+  {
+      "user_id": 38,
+      "egi_id": 32
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 08:52:37] UEM.WARNING: 
+--------------------------------------------------------------------------------
+✦ UEM [DIRECT_MINT_NOT_AVAILABLE]
+
+Context {
+  {
+      "user_id": 38,
+      "egi_id": 30
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 09:00:50] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [WALLET_CREATION_FAILED]
+
+Illuminate\Database\QueryException:
+SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "wallets" violates foreign key constraint "wallets_user_id_foreign"
+DETAIL:  Key (user_id)=(2) is not present in table "users". (Connection: pgsql, SQL: insert into "wallets" ("collection_id", "user_id", "wallet", "royalty_mint", "royalty_rebind", "platform_role", "updated_at", "created_at") values (6, 2, MKPN8RWQL5X3VZTY9MBHJ6KUSG7PX4ZN2VBCM5ER7WQPL3YHGF9TSXVBNRA, 20, 0.8, EPP, 2025-12-19 09:00:50, 2025-12-19 09:00:50) returning "id")
+
+File: packages/ultra/egi-module/src/Services/WalletService.php:425
+
+Context {
+  {
+      "collection_id": 6,
+      "user_id": 2,
+      "royalty_mint": 20,
+      "royalty_rebind": 0.8,
+      "platform_role": "EPP",
+      "error_message": "SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \"wallets\" violates foreign key constraint \"wallets_user_id_foreign\"\nDETAIL:  Key (user_id)=(2) is not present in table \"users\". (Connection: pgsql, SQL: insert into \"wallets\" (\"collection_id\", \"user_id\", \"wallet\", \"royalty_mint\", \"royalty_rebind\", \"platform_role\", \"updated_at\", \"created_at\") values (6, 2, MKPN8RWQL5X3VZTY9MBHJ6KUSG7PX4ZN2VBCM5ER7WQPL3YHGF9TSXVBNRA, 20, 0.8, EPP, 2025-12-19 09:00:50, 2025-12-19 09:00:5...",
+      "wallet_address_provided": true
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 09:00:50] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [WALLET_CREATION_FAILED]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Unable to setup the wallet for this collection. Please try again later.
+
+File: packages/ultra/egi-module/src/Services/WalletService.php:449
+
+Context {
+  {
+      "collection_id": 6,
+      "user_id": 39,
+      "collection_name": null,
+      "error_message": "Unable to setup the wallet for this collection. Please try again later.",
+      "error_code": 500
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 09:00:50] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [COLLECTION_WALLET_ATTACHMENT_FAILED]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Unable to setup the wallet for this collection. Please try again later.
+
+File: packages/ultra/egi-module/src/Services/WalletService.php:218
+
+Context {
+  {
+      "creator_id": 39,
+      "collection_name": "Yuri's Collection",
+      "operation": "create_default_collection",
+      "is_company_user": false,
+      "collection_id": 6,
+      "collection_position": 1,
+      "epp_project_id": 6,
+      "is_epp_voluntary": false,
+      "wallet_service_error": "Unable to setup the wallet for this collection. Please try again later.",
+      "wallet_service_class": "Ultra\\ErrorManager\\Exceptions\\UltraErrorException"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 09:00:50] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [ROLE_ASSIGNMENT_FAILED]
+
+Illuminate\Database\QueryException:
+SQLSTATE[25P02]: In failed sql transaction: 7 ERROR:  current transaction is aborted, commands ignored until end of transaction block (Connection: pgsql, SQL: select * from "users" where "users"."id" = 39 limit 1)
+
+File: app/Helpers/FegiAuth.php:460
+
+Context {
+  {
+      "user_id": 39,
+      "role": "creator",
+      "error_message": "SQLSTATE[25P02]: In failed sql transaction: 7 ERROR:  current transaction is aborted, commands ignored until end of transaction block (Connection: pgsql, SQL: select * from \"users\" where \"users\".\"id\" = 39 limit 1)"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 09:00:50] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [USER_CURRENT_COLLECTION_UPDATE_FAILED]
+
+Illuminate\Database\QueryException:
+SQLSTATE[25P02]: In failed sql transaction: 7 ERROR:  current transaction is aborted, commands ignored until end of transaction block (Connection: pgsql, SQL: select * from "users" where "users"."id" = 39 limit 1)
+
+File: packages/ultra/egi-module/src/Services/UserRoleService.php:773
+
+Context {
+  {
+      "creator_id": 39,
+      "collection_name": "Yuri's Collection",
+      "operation": "update_user_current_collection",
+      "is_company_user": false,
+      "collection_id": 6,
+      "collection_position": 1,
+      "epp_project_id": 6,
+      "is_epp_voluntary": false,
+      "method": "updateCurrentCollectionSafely",
+      "user_id": 39,
+      "service": "Ultra\\EgiModule\\Services\\UserRoleService",
+      "error_message": "SQLSTATE[25P02]: In failed sql transaction: 7 ERROR:  current transaction is aborted, commands ignored until end of transaction block (Connection: pgsql, SQL: select * from \"users\" where \"users\".\"id\" = 39 limit 1)",
+      "error_class": "Illuminate\\Database\\QueryException",
+      "error_file": "/home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/laravel/framework/src/Illuminate/Database/Connection.php",
+      "error_line": 825
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 09:00:50] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [COLLECTION_CURRENT_UPDATE_ERROR]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Abbiamo riscontrato un problema critico durante la configurazione della tua collezione. Il nostro team tecnico è stato avvisato e risolverà la questione immediatamente. Ti invitiamo a riprovare tra qualche momento o contattare il supporto se il problema persiste.
+
+File: packages/ultra/egi-module/src/Services/UserRoleService.php:744
+
+Context {
+  {
+      "creator_id": 39,
+      "collection_name": "Yuri's Collection",
+      "operation": "create_default_collection",
+      "is_company_user": false,
+      "collection_id": 6,
+      "collection_position": 1,
+      "epp_project_id": 6,
+      "is_epp_voluntary": false,
+      "update_error": "Abbiamo riscontrato un problema critico durante la configurazione della tua collezione. Il nostro team tecnico è stato avvisato e risolverà la questione immediatamente. Ti invitiamo a riprovare tra qualche momento o contattare il supporto se il problema persiste.",
+      "update_error_class": "Ultra\\ErrorManager\\Exceptions\\UltraErrorException",
+      "user_id": 39,
+      "method": "updateCurrentCollectionSafely"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 09:00:50] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [COLLECTION_CREATION_FAILED]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Errore durante l'aggiornamento della tua collezione attiva. Riprova.
+
+File: app/Services/CollectionService.php:636
+
+Context {
+  {
+      "creator_id": 39,
+      "collection_name": "Yuri's Collection",
+      "operation": "create_default_collection",
+      "is_company_user": false,
+      "error_message": "Errore durante l'aggiornamento della tua collezione attiva. Riprova.",
+      "error_class": "Ultra\\ErrorManager\\Exceptions\\UltraErrorException",
+      "error_file": "/home/forge/florence-egi.157.245.20.197.sslip.io/releases/60922432/vendor/ultra/ultra-error-manager/src/ErrorManager.php",
+      "error_line": 213
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 09:00:50] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [COLLECTION_FIND_CREATE_FAILED]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Impossibile creare la tua collezione. Riprova più tardi o contatta il supporto.
+
+File: app/Services/CollectionService.php:209
+
+Context {
+  {
+      "operation": "find_or_create_user_collection",
+      "ip_address": "188.217.59.169",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+      "timestamp": "2025-12-19T09:00:50.281826Z",
+      "user_type": "creator",
+      "user_id": 39,
+      "algorand_wallet": "5VAI53FUFX45I7IKO4K253IVHAJ4YB5T5OSWM3N4DDII4HRITFC4QQB45E",
+      "can_create_ecosystem": true,
+      "custom_name": "Yuri's Arte",
+      "created_via": "user_registration",
+      "user_type_context": "creator",
+      "creator_id": 39,
+      "service": "App\\Services\\CollectionService",
+      "error_message": "Impossibile creare la tua collezione. Riprova più tardi o contatta il supporto.",
+      "error_class": "Ultra\\ErrorManager\\Exceptions\\UltraErrorException"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 09:00:50] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [ECOSYSTEM_SETUP_FAILED]
+
+Exception:
+Failed to create ecosystem: Impossibile accedere alle tue collezioni. Riprova più tardi.
+
+File: app/Http/Controllers/Auth/RegisteredUserController.php:153
+
+Context {
+  {
+      "operation": "permission_based_user_registration",
+      "ip_address": "188.217.59.169",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+      "timestamp": "2025-12-19T09:00:50.281826Z",
+      "user_type": "creator",
+      "user_id": 39,
+      "collection_id": null,
+      "error": "Failed to create ecosystem: Impossibile accedere alle tue collezioni. Riprova più tardi."
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 10:42:50] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [INVITATION_RESPONSE_SYSTEM_ERROR]
+
+Illuminate\Database\QueryException:
+SQLSTATE[23514]: Check violation: 7 ERROR:  new row for relation "notification_payload_invitations" violates check constraint "notification_payload_invitations_status_check"
+DETAIL:  Failing row contains (1, 7, 40, 37, fabiogianni@gmail.com, editor, Accepted, 2025-12-19 09:54:11, 2025-12-19 10:42:50, {"created_via":"invitation_service","permissions_assigned":["acc...). (Connection: pgsql, SQL: update "notification_payload_invitations" set "status" = Accepted, "updated_at" = 2025-12-19 10:42:50 where "id" = 1)
+
+File: app/Services/Notifications/InvitationService.php:247
+
+Context {
+  {
+      "user_id": 37,
+      "error": "SQLSTATE[23514]: Check violation: 7 ERROR:  new row for relation \"notification_payload_invitations\" violates check constraint \"notification_payload_invitations_status_check\"\nDETAIL:  Failing row contains (1, 7, 40, 37, fabiogianni@gmail.com, editor, Accepted, 2025-12-19 09:54:11, 2025-12-19 10:42:50, {\"created_via\":\"invitation_service\",\"permissions_assigned\":[\"acc...). (Connection: pgsql, SQL: update \"notification_payload_invitations\" set \"status\" = Accepted, \"updated_at\" = 2025-12-19 10:42:5...",
+      "payloadId": "1",
+      "action": "Accepted"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 10:47:30] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [INVITATION_RESPONSE_SYSTEM_ERROR]
+
+Illuminate\Database\QueryException:
+SQLSTATE[23514]: Check violation: 7 ERROR:  new row for relation "notification_payload_invitations" violates check constraint "notification_payload_invitations_status_check"
+DETAIL:  Failing row contains (1, 7, 40, 37, fabiogianni@gmail.com, editor, Accepted, 2025-12-19 09:54:11, 2025-12-19 10:47:30, {"created_via":"invitation_service","permissions_assigned":["acc...). (Connection: pgsql, SQL: update "notification_payload_invitations" set "status" = Accepted, "updated_at" = 2025-12-19 10:47:30 where "id" = 1)
+
+File: app/Services/Notifications/InvitationService.php:247
+
+Context {
+  {
+      "user_id": 37,
+      "error": "SQLSTATE[23514]: Check violation: 7 ERROR:  new row for relation \"notification_payload_invitations\" violates check constraint \"notification_payload_invitations_status_check\"\nDETAIL:  Failing row contains (1, 7, 40, 37, fabiogianni@gmail.com, editor, Accepted, 2025-12-19 09:54:11, 2025-12-19 10:47:30, {\"created_via\":\"invitation_service\",\"permissions_assigned\":[\"acc...). (Connection: pgsql, SQL: update \"notification_payload_invitations\" set \"status\" = Accepted, \"updated_at\" = 2025-12-19 10:47:3...",
+      "payloadId": "1",
+      "action": "Accepted"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 11:06:17] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [INVITATION_RESPONSE_SYSTEM_ERROR]
+
+Illuminate\Database\QueryException:
+SQLSTATE[23514]: Check violation: 7 ERROR:  new row for relation "notification_payload_invitations" violates check constraint "notification_payload_invitations_status_check"
+DETAIL:  Failing row contains (1, 7, 40, 37, fabiogianni@gmail.com, editor, Accepted, 2025-12-19 09:54:11, 2025-12-19 11:06:17, {"created_via":"invitation_service","permissions_assigned":["acc...). (Connection: pgsql, SQL: update "notification_payload_invitations" set "status" = Accepted, "updated_at" = 2025-12-19 11:06:17 where "id" = 1)
+
+File: app/Services/Notifications/InvitationService.php:247
+
+Context {
+  {
+      "user_id": 37,
+      "error": "SQLSTATE[23514]: Check violation: 7 ERROR:  new row for relation \"notification_payload_invitations\" violates check constraint \"notification_payload_invitations_status_check\"\nDETAIL:  Failing row contains (1, 7, 40, 37, fabiogianni@gmail.com, editor, Accepted, 2025-12-19 09:54:11, 2025-12-19 11:06:17, {\"created_via\":\"invitation_service\",\"permissions_assigned\":[\"acc...). (Connection: pgsql, SQL: update \"notification_payload_invitations\" set \"status\" = Accepted, \"updated_at\" = 2025-12-19 11:06:1...",
+      "payloadId": "1",
+      "action": "Accepted"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 11:06:34] UEM.ERROR: 
+--------------------------------------------------------------------------------
+✦ UEM [INVITATION_RESPONSE_SYSTEM_ERROR]
+
+Illuminate\Database\QueryException:
+SQLSTATE[23514]: Check violation: 7 ERROR:  new row for relation "notification_payload_invitations" violates check constraint "notification_payload_invitations_status_check"
+DETAIL:  Failing row contains (1, 7, 40, 37, fabiogianni@gmail.com, editor, Accepted, 2025-12-19 09:54:11, 2025-12-19 11:06:34, {"created_via":"invitation_service","permissions_assigned":["acc...). (Connection: pgsql, SQL: update "notification_payload_invitations" set "status" = Accepted, "updated_at" = 2025-12-19 11:06:34 where "id" = 1)
+
+File: app/Services/Notifications/InvitationService.php:247
+
+Context {
+  {
+      "user_id": 37,
+      "error": "SQLSTATE[23514]: Check violation: 7 ERROR:  new row for relation \"notification_payload_invitations\" violates check constraint \"notification_payload_invitations_status_check\"\nDETAIL:  Failing row contains (1, 7, 40, 37, fabiogianni@gmail.com, editor, Accepted, 2025-12-19 09:54:11, 2025-12-19 11:06:34, {\"created_via\":\"invitation_service\",\"permissions_assigned\":[\"acc...). (Connection: pgsql, SQL: update \"notification_payload_invitations\" set \"status\" = Accepted, \"updated_at\" = 2025-12-19 11:06:3...",
+      "payloadId": "1",
+      "action": "Accepted"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 16:17:24] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Illuminate\Database\QueryException:
+SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "transaction_type" of relation "egili_transactions" violates not-null constraint
+DETAIL:  Failing row contains (11, 22, 37, null, null, 30, 10000, 9970, null, null, ai_feature, ai_services, {"egi_id":33,"feature_code":"ai_description_generation","executi..., null, null, completed, null, null, null, 2025-12-19 16:17:24, 2025-12-19 16:17:24, lifetime, null, f, null, null, 0). (Connection: pgsql, SQL: insert into "egili_transactions" ("user_id", "wallet_id", "amount", "reason", "category", "metadata", "balance_before", "balance_after", "updated_at", "created_at") values (37, 22, 30, ai_feature, ai_services, {"egi_id":33,"feature_code":"ai_description_generation","execution_result":"success"}, 10000, 9970, 2025-12-19 16:17:24, 2025-12-19 16:17:24) returning "id")
+
+File: app/Services/EgiliTransactionService.php:75
+
+Context {
+  {
+      "user_id": 37,
+      "amount": 30,
+      "feature_code": "ai_description_generation",
+      "_original_code": "EGILI_DEBIT_FAILED"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 16:18:59] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Illuminate\Database\QueryException:
+SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "transaction_type" of relation "egili_transactions" violates not-null constraint
+DETAIL:  Failing row contains (12, 22, 37, null, null, 50, 10000, 9950, null, null, ai_feature, ai_services, {"egi_id":33,"feature_code":"ai_trait_generation","execution_res..., null, null, completed, null, null, null, 2025-12-19 16:18:59, 2025-12-19 16:18:59, lifetime, null, f, null, null, 0). (Connection: pgsql, SQL: insert into "egili_transactions" ("user_id", "wallet_id", "amount", "reason", "category", "metadata", "balance_before", "balance_after", "updated_at", "created_at") values (37, 22, 50, ai_feature, ai_services, {"egi_id":33,"feature_code":"ai_trait_generation","execution_result":"success"}, 10000, 9950, 2025-12-19 16:18:59, 2025-12-19 16:18:59) returning "id")
+
+File: app/Services/EgiliTransactionService.php:75
+
+Context {
+  {
+      "user_id": 37,
+      "amount": 50,
+      "feature_code": "ai_trait_generation",
+      "_original_code": "EGILI_DEBIT_FAILED"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 16:37:06] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MICROSERVICE_NOT_REACHABLE]
+
+Illuminate\Http\Client\ConnectionException:
+cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health
+
+File: app/Services/AlgorandService.php:453
+
+Context {
+  {
+      "url": "http://127.0.0.1:3001",
+      "error": "cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 16:37:09] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MICROSERVICE_AUTO_START_FAILED]
+
+Exception:
+Microservice auto-start completed but health check failed
+
+File: app/Services/AlgorandService.php:483
+
+Context {
+  {
+      "pid": "7901",
+      "path": "/home/forge/florence-egi.157.245.20.197.sslip.io/releases/60961799/algokit-microservice"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 16:37:11] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_MICROSERVICE_UNAVAILABLE]
+
+Exception:
+Errore verifica stato rete: Microservice call failed after 3 attempts. Last error: cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health
+
+File: app/Http/Controllers/MintController.php:1437
+
+Context {
+  {
+      "egi_id": 42,
+      "user_id": 34,
+      "error": "Errore verifica stato rete: Microservice call failed after 3 attempts. Last error: cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 16:37:11] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Il servizio di certificazione blockchain non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l'assistenza.
+
+File: app/Http/Controllers/MintController.php:1446
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 34,
+      "payment_method": "stripe",
+      "error": "Il servizio di certificazione blockchain non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l'assistenza.",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 16:46:00] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MICROSERVICE_NOT_REACHABLE]
+
+Illuminate\Http\Client\ConnectionException:
+cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health
+
+File: app/Services/AlgorandService.php:453
+
+Context {
+  {
+      "url": "http://127.0.0.1:3001",
+      "error": "cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 16:46:03] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MICROSERVICE_AUTO_START_FAILED]
+
+Exception:
+Microservice auto-start completed but health check failed
+
+File: app/Services/AlgorandService.php:483
+
+Context {
+  {
+      "pid": "8952",
+      "path": "/home/forge/florence-egi.157.245.20.197.sslip.io/releases/60961799/algokit-microservice"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 16:46:05] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_MICROSERVICE_UNAVAILABLE]
+
+Exception:
+Errore verifica stato rete: Microservice call failed after 3 attempts. Last error: cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health
+
+File: app/Http/Controllers/MintController.php:1437
+
+Context {
+  {
+      "egi_id": 43,
+      "user_id": 34,
+      "error": "Errore verifica stato rete: Microservice call failed after 3 attempts. Last error: cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 16:46:05] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Il servizio di certificazione blockchain non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l'assistenza.
+
+File: app/Http/Controllers/MintController.php:1446
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 34,
+      "payment_method": "stripe",
+      "error": "Il servizio di certificazione blockchain non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l'assistenza.",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 17:56:02] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MICROSERVICE_NOT_REACHABLE]
+
+Illuminate\Http\Client\ConnectionException:
+cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health
+
+File: app/Services/AlgorandService.php:453
+
+Context {
+  {
+      "url": "http://127.0.0.1:3001",
+      "error": "cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 17:56:05] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MICROSERVICE_AUTO_START_FAILED]
+
+Exception:
+Microservice auto-start completed but health check failed
+
+File: app/Services/AlgorandService.php:483
+
+Context {
+  {
+      "pid": "14812",
+      "path": "/home/forge/florence-egi.157.245.20.197.sslip.io/releases/60961799/algokit-microservice"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 17:56:07] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_MICROSERVICE_UNAVAILABLE]
+
+Exception:
+Errore verifica stato rete: Microservice call failed after 3 attempts. Last error: cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health
+
+File: app/Http/Controllers/MintController.php:1437
+
+Context {
+  {
+      "egi_id": 44,
+      "user_id": 34,
+      "error": "Errore verifica stato rete: Microservice call failed after 3 attempts. Last error: cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-19 17:56:07] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Il servizio di certificazione blockchain non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l'assistenza.
+
+File: app/Http/Controllers/MintController.php:1446
+
+Context {
+  {
+      "user_id": 34,
+      "egi_id": 29,
+      "payment_method": "stripe",
+      "error": "Il servizio di certificazione blockchain non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l'assistenza.",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 21:54:23] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MICROSERVICE_NOT_REACHABLE]
+
+Illuminate\Http\Client\ConnectionException:
+cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health
+
+File: app/Services/AlgorandService.php:453
+
+Context {
+  {
+      "url": "http://127.0.0.1:3001",
+      "error": "cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 21:54:26] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MICROSERVICE_AUTO_START_FAILED]
+
+Exception:
+Microservice auto-start completed but health check failed
+
+File: app/Services/AlgorandService.php:483
+
+Context {
+  {
+      "pid": "262588",
+      "path": "/home/forge/florence-egi.157.245.20.197.sslip.io/releases/60961799/algokit-microservice"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 21:54:28] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_MICROSERVICE_UNAVAILABLE]
+
+Exception:
+Errore verifica stato rete: Microservice call failed after 3 attempts. Last error: cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health
+
+File: app/Http/Controllers/MintController.php:1437
+
+Context {
+  {
+      "egi_id": 37,
+      "user_id": 37,
+      "error": "Errore verifica stato rete: Microservice call failed after 3 attempts. Last error: cURL error 7: Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://127.0.0.1:3001/health"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 21:54:28] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Ultra\ErrorManager\Exceptions\UltraErrorException:
+Il servizio di certificazione blockchain non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l'assistenza.
+
+File: app/Http/Controllers/MintController.php:1446
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "payment_method": "stripe",
+      "error": "Il servizio di certificazione blockchain non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l'assistenza.",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:44:26] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:44:34] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [REAL_BLOCKCHAIN_MINT_FAILED]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "egi_blockchain_id": 15,
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "attempt": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:44:34] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "payment_method": "stripe",
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:44:58] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:45:04] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [REAL_BLOCKCHAIN_MINT_FAILED]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "egi_blockchain_id": 16,
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "attempt": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:45:04] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "payment_method": "stripe",
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:49:06] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:49:11] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [REAL_BLOCKCHAIN_MINT_FAILED]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "egi_blockchain_id": 17,
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "attempt": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:49:11] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "payment_method": "stripe",
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:51:39] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:51:44] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [REAL_BLOCKCHAIN_MINT_FAILED]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "egi_blockchain_id": 18,
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "attempt": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:51:44] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "payment_method": "stripe",
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:59:00] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:59:05] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [REAL_BLOCKCHAIN_MINT_FAILED]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "egi_blockchain_id": 19,
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "attempt": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 22:59:06] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "payment_method": "stripe",
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 23:04:34] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 23:04:40] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [REAL_BLOCKCHAIN_MINT_FAILED]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "egi_blockchain_id": 20,
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "attempt": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 23:04:40] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "payment_method": "stripe",
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 23:09:24] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 23:09:30] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [REAL_BLOCKCHAIN_MINT_FAILED]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "egi_blockchain_id": 21,
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "attempt": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 23:09:30] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "payment_method": "stripe",
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 23:13:20] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [MINT_BLOCKED_INSUFFICIENT_FUNDS]
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "balance_algo": 0,
+      "required_algo": 0,
+      "treasury_address": "error"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 23:13:28] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [REAL_BLOCKCHAIN_MINT_FAILED]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "egi_blockchain_id": 22,
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "attempt": 1
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-22 23:13:28] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Exception:
+Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token
+
+File: app/Services/EgiMintingService.php:176
+
+Context {
+  {
+      "user_id": 37,
+      "egi_id": 37,
+      "payment_method": "stripe",
+      "error": "Fallimento creazione EGI token ASA: Microservice call failed after 3 attempts. Last error: Unauthorized: Invalid or missing API Token",
+      "_original_code": "DIRECT_MINT_PROCESS_ERROR"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-23 09:54:04] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Illuminate\Database\QueryException:
+SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "transaction_type" of relation "egili_transactions" violates not-null constraint
+DETAIL:  Failing row contains (15, 22, 37, null, null, 30, 10000, 9970, null, null, ai_feature, ai_services, {"egi_id":34,"feature_code":"ai_description_generation","executi..., null, null, completed, null, null, null, 2025-12-23 09:54:04, 2025-12-23 09:54:04, lifetime, null, f, null, null, 0). (Connection: pgsql, SQL: insert into "egili_transactions" ("user_id", "wallet_id", "amount", "reason", "category", "metadata", "balance_before", "balance_after", "updated_at", "created_at") values (37, 22, 30, ai_feature, ai_services, {"egi_id":34,"feature_code":"ai_description_generation","execution_result":"success"}, 10000, 9970, 2025-12-23 09:54:04, 2025-12-23 09:54:04) returning "id")
+
+File: app/Services/EgiliTransactionService.php:75
+
+Context {
+  {
+      "user_id": 37,
+      "amount": 30,
+      "feature_code": "ai_description_generation",
+      "_original_code": "EGILI_DEBIT_FAILED"
+  }
+}
+--------------------------------------------------------------------------------
+[2025-12-23 20:18:37] UEM.CRITICAL: 
+--------------------------------------------------------------------------------
+✦ UEM [UNDEFINED_ERROR_CODE]
+
+Illuminate\Database\QueryException:
+SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "transaction_type" of relation "egili_transactions" violates not-null constraint
+DETAIL:  Failing row contains (17, 29, 40, null, null, 30, 10000, 9970, null, null, ai_feature, ai_services, {"egi_id":39,"feature_code":"ai_description_generation","executi..., null, null, completed, null, null, null, 2025-12-23 20:18:37, 2025-12-23 20:18:37, lifetime, null, f, null, null, 0). (Connection: pgsql, SQL: insert into "egili_transactions" ("user_id", "wallet_id", "amount", "reason", "category", "metadata", "balance_before", "balance_after", "updated_at", "created_at") values (40, 29, 30, ai_feature, ai_services, {"egi_id":39,"feature_code":"ai_description_generation","execution_result":"success"}, 10000, 9970, 2025-12-23 20:18:37, 2025-12-23 20:18:37) returning "id")
+
+File: app/Services/EgiliTransactionService.php:75
+
+Context {
+  {
+      "user_id": 40,
+      "amount": 30,
+      "feature_code": "ai_description_generation",
+      "_original_code": "EGILI_DEBIT_FAILED"
+  }
+}
+--------------------------------------------------------------------------------

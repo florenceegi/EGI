@@ -813,7 +813,8 @@
                                 }
 
                                 // If ready, reload page to show full data
-                                if (data.ready) {
+                                // P0 FIX: Strict check (BOTH must be ready) to prevent reload loop with partial data
+                                if (data.splits_ready && data.certificate_ready) {
                                     console.log('✅ All data ready! Reloading page...');
                                     clearInterval(pollTimer);
 

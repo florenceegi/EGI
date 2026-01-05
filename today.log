@@ -1,0 +1,97 @@
+[2026-01-05 00:53:39] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 00:53:39] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 01:53:42] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 01:53:42] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 02:53:44] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 02:53:44] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 03:53:47] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 03:53:47] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 04:53:50] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 04:53:50] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 05:53:53] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 05:53:53] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 06:53:56] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 06:53:56] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 07:53:59] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 07:53:59] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 08:54:03] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 08:54:03] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 09:54:06] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 09:54:06] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 10:54:08] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 10:54:08] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 11:00:28] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 11:00:28] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 11:00:29] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 11:00:29] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 11:00:29] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 11:00:29] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 11:00:30] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 11:00:30] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 11:00:33] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 11:00:33] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 11:00:33] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 11:00:33] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 11:54:13] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 11:54:13] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 12:54:16] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 12:54:16] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 13:54:20] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 13:54:20] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 14:54:23] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 14:54:23] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 15:54:27] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 15:54:27] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 16:54:30] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 16:54:30] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 17:01:28] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 17:01:28] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 17:01:29] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 17:01:29] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 17:01:29] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 17:01:29] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 17:01:30] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 17:01:30] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 17:01:32] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 17:01:32] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 17:01:33] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 17:01:33] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
+[2026-01-05 17:22:07] staging.DEBUG: [UTM Fetch] Key 'Loading settings...' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:07] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Loading settings...' even with fallback locale.  
+[2026-01-05 17:22:07] staging.DEBUG: [UTM Fetch] Key 'Error loading payment settings.' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:07] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Error loading payment settings.' even with fallback locale.  
+[2026-01-05 17:22:07] staging.DEBUG: [UTM Fetch] Key 'Try again' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:07] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Try again' even with fallback locale.  
+[2026-01-05 17:22:19] staging.DEBUG: [UTM Fetch] Key 'auth.login_page_title' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:19] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'auth.login_page_title' even with fallback locale.  
+[2026-01-05 17:22:19] staging.DEBUG: [UTM Fetch] Key 'auth.login_welcome_message' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:19] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'auth.login_welcome_message' even with fallback locale.  
+[2026-01-05 17:22:26] staging.DEBUG: [UTM Fetch] Key 'auth.gdpr_consent_required' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:26] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'auth.gdpr_consent_required' even with fallback locale.  
+[2026-01-05 17:22:27] staging.DEBUG: [UTM Fetch] Key 'Profile' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:27] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'Profile' even with fallback locale.  
+[2026-01-05 17:22:30] staging.DEBUG: [UTM Fetch] Key 'gdpr.consent.allow-personal-data-processing.description' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:30] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'gdpr.consent.allow-personal-data-processing.description' even with fallback locale.  
+[2026-01-05 17:22:30] staging.DEBUG: [UTM Fetch] Key 'gdpr.consent.platform-services.description' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:30] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'gdpr.consent.platform-services.description' even with fallback locale.  
+[2026-01-05 17:22:30] staging.DEBUG: [UTM Fetch] Key 'gdpr.consent.allow-payment-processing.description' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:30] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'gdpr.consent.allow-payment-processing.description' even with fallback locale.  
+[2026-01-05 17:22:30] staging.DEBUG: [UTM Fetch] Key 'gdpr.consent.allow-ai-processing.description' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:30] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'gdpr.consent.allow-ai-processing.description' even with fallback locale.  
+[2026-01-05 17:22:30] staging.DEBUG: [UTM Fetch] Key 'gdpr.consent.terms-of-service.description' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:30] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'gdpr.consent.terms-of-service.description' even with fallback locale.  
+[2026-01-05 17:22:30] staging.DEBUG: [UTM Fetch] Key 'gdpr.consent.privacy-policy.description' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:30] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'gdpr.consent.privacy-policy.description' even with fallback locale.  
+[2026-01-05 17:22:30] staging.DEBUG: [UTM Fetch] Key 'gdpr.consent.age-confirmation.description' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:30] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'gdpr.consent.age-confirmation.description' even with fallback locale.  
+[2026-01-05 17:22:30] staging.DEBUG: [UTM Fetch] Key 'gdpr.consent.collaboration_participation.description' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:30] staging.DEBUG: [UTM Fetch] Key 'gdpr.consent.personalization.description' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:30] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'gdpr.consent.personalization.description' even with fallback locale.  
+[2026-01-05 17:22:43] staging.DEBUG: [UTM Fetch] Key 'payment.errors.merchant_account_incomplete' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:43] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'payment.errors.merchant_account_incomplete' even with fallback locale.  
+[2026-01-05 17:22:43] staging.DEBUG: [UTM Fetch] Key 'payment.errors.paypal_not_configured' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:43] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'payment.errors.paypal_not_configured' even with fallback locale.  
+[2026-01-05 17:22:45] staging.DEBUG: [UTM Fetch] Key 'validation.values.payment_method.' not found in 'it', trying Laravel's fallback locale mechanism.  
+[2026-01-05 17:22:46] staging.WARNING: [UTM Fetch] Fallback failed to find key: 'validation.values.payment_method.' even with fallback locale.  
+[2026-01-05 17:54:34] staging.DEBUG: VersionManager initialized.  
+[2026-01-05 17:54:34] staging.DEBUG: DAO Lifecycle: EloquentConfigDao initialized.  
