@@ -755,7 +755,8 @@
             </script>
 
             {{-- Loading State Polling Script --}}
-            @if ($showLoadingState ?? false)
+            {{-- Loading State Polling Script: Run if EITHER component is missing --}}
+            @if (($showLoadingState ?? false) || is_null($certificate) || empty($paymentBreakdown))
                 <script>
                     (function() {
                         const blockchainId = {{ $blockchain->id }};
