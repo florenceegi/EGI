@@ -47,7 +47,6 @@ use Illuminate\Support\Facades\Request;
 use Livewire\Livewire;
 use Ultra\EgiModule\Http\Controllers\EgiUploadController;
 use Ultra\EgiModule\Http\Controllers\EgiUploadPageController;
-use Ultra\EgiModule\Http\Controllers\EgiUploadPageController;
 use App\Http\Controllers\Upload\Config\GlobalConfigController;
 use App\Http\Controllers\Payment\PspWebhookController; // Import Controller
 
