@@ -313,4 +313,33 @@ return [
         'click_to_view' => 'Clicca per aprire',
         'thumbnail_error' => 'Errore caricamento anteprima',
     ],
+
+    // Loading State (Polling for splits + certificate)
+    'loading' => [
+        'title' => 'Preparazione Dati in Corso',
+        'message' => 'Stiamo finalizzando la transazione blockchain e preparando il certificato...',
+        'mint_complete' => 'Mint blockchain completato',
+        'waiting_splits' => 'Attesa distribuzione pagamenti...',
+        'waiting_certificate' => 'Generazione certificato...',
+        'splits_ready' => 'Distribuzione pagamenti pronta',
+        'certificate_ready' => 'Certificato pronto',
+        'timeout_message' => 'L\'operazione sta richiedendo più tempo del previsto. Puoi aggiornare la pagina se i dati non compaiono.',
+    ],
+
+    // Commodity specific labels
+    'commodity' => [
+        'types' => [
+            'gold-bar' => 'Lingotto d\'Oro',
+            'goldbar' => 'Lingotto d\'Oro',
+            'silver-bar' => 'Lingotto d\'Argento',
+            'silverbar' => 'Lingotto d\'Argento',
+            'platinum-bar' => 'Lingotto di Platino',
+            'platinumbar' => 'Lingotto di Platino',
+        ],
+        'section_details' => 'Specifiche Fisiche',
+        'serial_number' => 'Numero Seriale',
+        'weight' => 'Peso',
+        'purity' => 'Purezza',
+        'value_at_mint' => 'Valore al Mint',
+    ],
 ];

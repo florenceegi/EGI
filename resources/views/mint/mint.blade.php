@@ -7,7 +7,52 @@
 <x-platform-layout :title="__('mint.minted_title', ['title' => $egi->title])">
     @php
         $isOwner = Auth::id() !== null && $blockchain && Auth::id() === $blockchain->buyer_user_id;
+
+        // Determine if we need to show loading state (splits or certificate missing)
+        $showLoadingState = empty($paymentBreakdown) || is_null($certificate);
     @endphp
+
+    {{-- LOADING OVERLAY - Shows while waiting for splits + certificate --}}
+    @if ($showLoadingState)
+        <div id="mint-loading-overlay"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm transition-opacity duration-500">
+            <div class="max-w-md px-8 text-center">
+                <div
+                    class="mb-8 inline-flex h-24 w-24 animate-pulse items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 shadow-xl">
+                    <svg class="h-12 w-12 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                            stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                </div>
+                <h2 class="mb-3 text-2xl font-bold text-gray-900">{{ __('mint.loading.title') }}</h2>
+                <p class="mb-4 text-gray-600">{{ __('mint.loading.message') }}</p>
+
+                {{-- Status indicators --}}
+                <div class="flex flex-col gap-2 rounded-xl bg-gray-50 p-4 text-left text-sm">
+                    <div id="status-mint" class="flex items-center gap-2">
+                        <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
+                        <span class="text-gray-700">{{ __('mint.loading.mint_complete') }}</span>
+                    </div>
+                    <div id="status-splits" class="flex items-center gap-2">
+                        <span id="splits-indicator" class="flex h-2 w-2 animate-pulse rounded-full bg-amber-400"></span>
+                        <span id="splits-text" class="text-gray-500">{{ __('mint.loading.waiting_splits') }}</span>
+                    </div>
+                    <div id="status-certificate" class="flex items-center gap-2">
+                        <span id="cert-indicator" class="flex h-2 w-2 animate-pulse rounded-full bg-amber-400"></span>
+                        <span id="cert-text" class="text-gray-500">{{ __('mint.loading.waiting_certificate') }}</span>
+                    </div>
+                </div>
+
+                <p id="loading-timeout-msg" class="mt-4 hidden text-xs text-amber-600">
+                    {{ __('mint.loading.timeout_message') }}
+                </p>
+            </div>
+        </div>
+    @endif
     <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
         <div class="container mx-auto max-w-7xl px-4">
 
@@ -670,7 +715,7 @@
                                     const downloadBtn = document.getElementById('download-cert-btn');
                                     if (downloadBtn && data.pdf_url) {
                                         downloadBtn.setAttribute('onclick',
-                                        `window.open('${data.pdf_url}', '_blank');`);
+                                            `window.open('${data.pdf_url}', '_blank');`);
                                     }
 
                                     // 2) Update "View Certificate" link href to new public_url
@@ -707,6 +752,108 @@
                 setupCertificateHandler('regenerate-cert-btn', 'regenerate-cert-form', 'regenerate-btn-text');
                 setupCertificateHandler('generate-cert-btn', 'generate-cert-form', 'generate-btn-text');
             </script>
+
+            {{-- Loading State Polling Script --}}
+            @if ($showLoadingState ?? false)
+                <script>
+                    (function() {
+                        const blockchainId = {{ $blockchain->id }};
+                        const pollInterval = 2000; // 2 seconds
+                        const maxPollingTime = 60000; // 60 seconds timeout
+                        let elapsedTime = 0;
+                        let pollTimer = null;
+
+                        const overlay = document.getElementById('mint-loading-overlay');
+                        const splitsIndicator = document.getElementById('splits-indicator');
+                        const splitsText = document.getElementById('splits-text');
+                        const certIndicator = document.getElementById('cert-indicator');
+                        const certText = document.getElementById('cert-text');
+                        const timeoutMsg = document.getElementById('loading-timeout-msg');
+
+                        if (!overlay) {
+                            console.log('No loading overlay - data already ready');
+                            return;
+                        }
+
+                        async function checkDataReady() {
+                            try {
+                                const response = await fetch(`/mint/${blockchainId}/data-ready`, {
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                });
+
+                                if (!response.ok) {
+                                    console.warn('Data ready check failed:', response.status);
+                                    return;
+                                }
+
+                                const data = await response.json();
+                                console.log('Mint data readiness:', data);
+
+                                // Update splits indicator
+                                if (data.splits_ready) {
+                                    splitsIndicator.classList.remove('bg-amber-400', 'animate-pulse');
+                                    splitsIndicator.classList.add('bg-green-500');
+                                    splitsText.textContent = `{{ __('mint.loading.splits_ready') }} (${data.splits_count})`;
+                                    splitsText.classList.remove('text-gray-500');
+                                    splitsText.classList.add('text-gray-700');
+                                }
+
+                                // Update certificate indicator
+                                if (data.certificate_ready) {
+                                    certIndicator.classList.remove('bg-amber-400', 'animate-pulse');
+                                    certIndicator.classList.add('bg-green-500');
+                                    certText.textContent = '{{ __('mint.loading.certificate_ready') }}';
+                                    certText.classList.remove('text-gray-500');
+                                    certText.classList.add('text-gray-700');
+                                }
+
+                                // If ready, reload page to show full data
+                                if (data.ready) {
+                                    console.log('✅ All data ready! Reloading page...');
+                                    clearInterval(pollTimer);
+
+                                    // Fade out overlay
+                                    overlay.classList.add('opacity-0');
+
+                                    // Reload after short delay for smooth transition
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 300);
+                                    return;
+                                }
+
+                                elapsedTime += pollInterval;
+
+                                // Show timeout message after 30 seconds
+                                if (elapsedTime >= 30000 && timeoutMsg) {
+                                    timeoutMsg.classList.remove('hidden');
+                                }
+
+                                // Stop polling after max time
+                                if (elapsedTime >= maxPollingTime) {
+                                    console.warn('Polling timeout reached');
+                                    clearInterval(pollTimer);
+
+                                    // Hide overlay anyway - let user see partial data
+                                    overlay.classList.add('opacity-0');
+                                    setTimeout(() => overlay.remove(), 500);
+                                }
+                            } catch (error) {
+                                console.error('Error checking data readiness:', error);
+                            }
+                        }
+
+                        // Start polling on page load
+                        pollTimer = setInterval(checkDataReady, pollInterval);
+
+                        // Initial check
+                        checkDataReady();
+                    })();
+                </script>
+            @endif
         @endpush
     @endonce
 

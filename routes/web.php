@@ -101,6 +101,10 @@ Route::post('/mint/{egiId}/certificate/pdf/check', [App\Http\Controllers\EgiRese
 Route::get('/mint/{egiBlockchainId}', [App\Http\Controllers\MintController::class, 'showMintResult'])
     ->name('mint.show');
 
+// Mint data readiness check (AJAX polling for loading state)
+Route::get('/mint/{egiBlockchainId}/data-ready', [App\Http\Controllers\MintController::class, 'checkMintDataReady'])
+    ->name('mint.data-ready');
+
 Route::middleware('auth')->group(function () {
     Route::get('/creator/onboarding-summary', [CreatorOnboardingSummaryController::class, 'show'])
         ->name('creator.onboarding.summary');

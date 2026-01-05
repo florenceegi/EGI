@@ -376,75 +376,114 @@ class StripePaymentSplitService {
         $collection = $wallets->first()->collection;
 
         // --- COMMODITY LOGIC CHECK ---
+        // Priority Order:
+        // 1. Metadata commodity_base_value override (highest priority - frozen cost from controller)
+        // 2. EGI-based strategy pattern detection (DB type detection)
         $isCommodity = false;
         $commodityBreakdown = null;
 
-        if ($egiId) {
+        // --- PRIORITY 1: METADATA OVERRIDE (Works even without $egiId) ---
+        // If the controller passed a frozen 'commodity_base_value', USE IT immediately.
+        // This bypasses any DB type detection issues or strategy failures.
+        //
+        // CRITICAL FIX: The commodity_base_value is based on GROSS payment, but we receive
+        // NET distributable (after Stripe fees + platform fees). We must calculate the
+        // margin PROPORTION from gross and apply it to the actual net amount.
+        if (isset($metadata['commodity_base_value']) && is_numeric($metadata['commodity_base_value'])) {
+            $baseValueFromGross = (float) $metadata['commodity_base_value'];
+            
+            // Get gross from metadata if available, otherwise estimate from net
+            // net_available_stripe is the pre-platform-fee net from Stripe
+            $grossAmount = (float) ($metadata['gross_amount'] ?? $metadata['net_available_stripe'] ?? $totalAmountEur * 1.035);
+            
+            // Calculate margin proportion from GROSS
+            // margin_proportion = (gross - base) / gross
+            // This tells us what % of the payment is margin vs. base cost
+            $grossMargin = max(0, $grossAmount - $baseValueFromGross);
+            $marginProportion = $grossAmount > 0 ? ($grossMargin / $grossAmount) : 0;
+            
+            // Apply proportion to NET DISTRIBUTABLE amount
+            // This ensures total distribution doesn't exceed available funds
+            $scaledMargin = $totalAmountEur * $marginProportion;
+            $scaledBase = $totalAmountEur - $scaledMargin;
+
+            $isCommodity = true;
+            $commodityBreakdown = [
+                'base_value' => $scaledBase,        // Scaled to net distributable
+                'margin_applied' => $scaledMargin,   // Scaled to net distributable
+                'final_value' => $totalAmountEur,
+                'currency' => 'EUR',
+                'source' => 'metadata_override',
+                // Keep original values for audit
+                'original_base_value' => $baseValueFromGross,
+                'original_gross' => $grossAmount,
+                'margin_proportion' => $marginProportion,
+            ];
+
+            $this->logger->info('Commodity Split: Using PROPORTIONAL SCALING from Gross to Net', [
+                'egi_id' => $egiId,
+                'original_base_value' => $baseValueFromGross,
+                'gross_amount' => $grossAmount,
+                'gross_margin' => $grossMargin,
+                'margin_proportion_pct' => round($marginProportion * 100, 2) . '%',
+                'net_distributable' => $totalAmountEur,
+                'scaled_base' => $scaledBase,
+                'scaled_margin' => $scaledMargin,
+            ]);
+        }
+        // --- PRIORITY 2: EGI-BASED STRATEGY PATTERN (requires $egiId) ---
+        elseif ($egiId) {
             // OS3 Robustness: Eager load traits
             $egi = \App\Models\Egi::with(['traits.traitType'])->find($egiId);
 
-            // --- COST OVERRIDE LOGIC (PRIORITY) ---
-            // If the controller passed a frozen 'commodity_base_value', USE IT immediately.
-            // This bypasses any DB type detection issues or strategy failures.
-            if (isset($metadata['commodity_base_value']) && is_numeric($metadata['commodity_base_value'])) {
-                $baseValueOverride = (float) $metadata['commodity_base_value'];
-                $marginOverride = max(0, $totalAmountEur - $baseValueOverride);
+            // STRATEGY PATTERN: Detect commodity type and resolve strategy
+            $commodityType = $egi ? ($egi->commodity_type ?? ($egi->getTraitByTypeSlug('commodity-type')?->value)) : null;
 
-                $isCommodity = true;
-                $commodityBreakdown = [
-                    'base_value' => $baseValueOverride,
-                    'margin_applied' => $marginOverride,
-                    'final_value' => $totalAmountEur,
-                    'currency' => 'EUR',
-                    'source' => 'metadata_override'
-                ];
+            // Fallback for Backward Compatibility
+            if (!$commodityType && $egi && $egi->isGoldBar()) {
+                $commodityType = 'goldbar';
+            }
 
-                $this->logger->info('Commodity Split: Using FROZEN COST from Metadata (Global Override)', [
-                    'egi_id' => $egiId,
-                    'base_value_override' => $baseValueOverride,
-                    'margin_override' => $marginOverride,
-                    'total' => $totalAmountEur
-                ]);
-            } else {
-                // STRATEGY PATTERN: Detect commodity type and resolve strategy
-                $commodityType = $egi ? ($egi->commodity_type ?? ($egi->getTraitByTypeSlug('commodity-type')?->value)) : null;
+            if ($commodityType) {
+                try {
+                    // RESOLVE STRATEGY
+                    $commodityStrategy = \App\Egi\Commodity\CommodityFactory::make($commodityType);
 
-                // Fallback for Backward Compatibility
-                if (!$commodityType && $egi && $egi->isGoldBar()) {
-                    $commodityType = 'goldbar';
-                }
+                    $isCommodity = true;
 
-                if ($commodityType) {
-                    try {
-                        // RESOLVE STRATEGY
-                        $commodityStrategy = \App\Egi\Commodity\CommodityFactory::make($commodityType);
+                    // CALCULATE VALUE USING STRATEGY RECALCULATION
+                    $commodityBreakdown = $commodityStrategy->calculateValue($egi, 'EUR');
 
-                        $isCommodity = true;
-
-                        // CALCULATE VALUE USING STRATEGY RECALCULATION
-                        $commodityBreakdown = $commodityStrategy->calculateValue($egi, 'EUR');
-
-                        $this->logger->info('Commodity Split Logic Activated (DB Strategy Pattern)', [
-                            'egi_id' => $egiId,
-                            'commodity_type' => $commodityType,
-                            'strategy' => get_class($commodityStrategy),
-                            'total_price' => $totalAmountEur,
-                            'breakdown' => $commodityBreakdown
-                        ]);
-                    } catch (\Exception $e) {
-                        $this->logger->warning('Commodity Strategy Resolution Failed', [
-                            'egi_id' => $egiId,
-                            'type' => $commodityType,
-                            'error' => $e->getMessage()
-                        ]);
-                        $isCommodity = false;
-                    }
+                    $this->logger->info('Commodity Split Logic Activated (DB Strategy Pattern)', [
+                        'egi_id' => $egiId,
+                        'commodity_type' => $commodityType,
+                        'strategy' => get_class($commodityStrategy),
+                        'total_price' => $totalAmountEur,
+                        'breakdown' => $commodityBreakdown
+                    ]);
+                } catch (\Exception $e) {
+                    $this->logger->warning('Commodity Strategy Resolution Failed', [
+                        'egi_id' => $egiId,
+                        'type' => $commodityType,
+                        'error' => $e->getMessage()
+                    ]);
+                    $isCommodity = false;
                 }
             }
         }
 
         // Calcola la percentuale EPP effettiva (dinamica in base al profilo/collection)
         $effectiveEppPercentage = $collection->getEffectiveEppPercentage();
+
+        // DEBUG: Log commodity state BEFORE processing wallets
+        \Illuminate\Support\Facades\Log::info('COMMODITY_DEBUG: Before foreach', [
+            'isCommodity' => $isCommodity,
+            'hasBreakdown' => !empty($commodityBreakdown),
+            'breakdown' => $commodityBreakdown,
+            'totalAmountEur' => $totalAmountEur,
+            'activeWalletCount' => $activeWallets->count(),
+            'metadata_has_cbv' => isset($metadata['commodity_base_value']),
+        ]);
 
         foreach ($activeWallets as $index => $wallet) {
             $percentage = $wallet->royalty_mint;
@@ -471,6 +510,15 @@ class StripePaymentSplitService {
                 // Normalise role for comparison
                 $role = strtolower($wallet->platform_role ?? '');
 
+                // DEBUG: Log commodity split decision-making
+                $this->logger->info('Commodity Split: Evaluating wallet', [
+                    'wallet_id' => $wallet->id,
+                    'role_raw' => $wallet->platform_role,
+                    'role_normalized' => $role,
+                    'base_value' => $baseValue,
+                    'margin_applied' => $marginApplied,
+                    'is_commodity' => $isCommodity,
+                ]);
 
                 // Platform Roles: Natan, Collector, App, Admin
                 $isPlatform = in_array($role, [
@@ -485,6 +533,13 @@ class StripePaymentSplitService {
                     strtolower(WalletRoleEnum::COMPANY->value),
                     strtolower(WalletRoleEnum::CREATOR->value)
                 ]) || $wallet->user_id === $collection->collection_owner_id;
+
+                // DEBUG: Log role classification
+                $this->logger->info('Commodity Split: Role classification', [
+                    'wallet_id' => $wallet->id,
+                    'isPlatform' => $isPlatform,
+                    'isCompany' => $isCompany,
+                ]);
 
                 if ($isPlatform) {
                     // Platform takes configured percentage (default 10%) of MARGIN only
@@ -562,30 +617,43 @@ class StripePaymentSplitService {
             // Strategy:
             // - 9.5% of NET -> Transferred to Natan's Connected Account (Revenue)
             // - 0.5% of NET -> Retained in Platform Account (Reserve Fund)
+            // 
+            // CRITICAL FIX: For COMMODITIES, Natan's share is ALREADY calculated as
+            // 10% of MARGIN (not 10% of total). We MUST NOT overwrite this with 9.5% of total.
+            // The commodity logic correctly applies margin-only split at lines 489-502.
             if (($wallet->platform_role ?? '') === WalletRoleEnum::NATAN->value) {
-                 // Hardcoded split policy matching Architecture
-                 $transferPercentage = 9.5; 
-                 $reservePercentage = 0.5;
+                 // Skip re-calculation for commodities - margin-based fee is already correct
+                 if ($isCommodity && $commodityBreakdown) {
+                     $this->logger->info('Natan Fee Split SKIPPED for Commodity (margin-based already applied)', [
+                         'commodity_margin' => $commodityBreakdown['margin_applied'] ?? 0,
+                         'natan_share_eur' => $amountEur,
+                         'note' => 'Using 10% of margin, not 9.5% of total'
+                     ]);
+                 } else {
+                     // Standard (non-commodity) logic: 9.5% transfer / 0.5% retained
+                     $transferPercentage = 9.5; 
+                     $reservePercentage = 0.5;
 
-                 // Calculate Transfer Amount (9.5% of NET)
-                 $transferAmountEur = ($totalAmountEur * $transferPercentage) / 100;
-                 
-                 // Calculate Reserve Amount (0.5% of NET)
-                 $reserveAmountEur = ($totalAmountEur * $reservePercentage) / 100;
-                 
-                 // Update the main distribution entry to be ONLY the Transfer part
-                 $distributions[count($distributions) - 1]['amount_eur'] = $transferAmountEur;
-                 $distributions[count($distributions) - 1]['amount_cents'] = (int) round($transferAmountEur * 100);
-                 $distributions[count($distributions) - 1]['percentage'] = $transferPercentage;
-                 
-                 // Log explicitly the reserve part (it won't generate a transfer, but is tracked)
-                 $this->logger->info('Natan Fee Split Applied', [
-                    'total_net_eur' => $totalAmountEur,
-                    'original_fee_eur' => $amountEur,
-                    'transfer_to_natan_eur' => $transferAmountEur,
-                    'retained_reserve_eur' => $reserveAmountEur,
-                    'note' => '0.5% Reserve retained implicitly'
-                 ]);
+                     // Calculate Transfer Amount (9.5% of NET)
+                     $transferAmountEur = ($totalAmountEur * $transferPercentage) / 100;
+                     
+                     // Calculate Reserve Amount (0.5% of NET)
+                     $reserveAmountEur = ($totalAmountEur * $reservePercentage) / 100;
+                     
+                     // Update the main distribution entry to be ONLY the Transfer part
+                     $distributions[count($distributions) - 1]['amount_eur'] = $transferAmountEur;
+                     $distributions[count($distributions) - 1]['amount_cents'] = (int) round($transferAmountEur * 100);
+                     $distributions[count($distributions) - 1]['percentage'] = $transferPercentage;
+                     
+                     // Log explicitly the reserve part (it won't generate a transfer, but is tracked)
+                     $this->logger->info('Natan Fee Split Applied', [
+                        'total_net_eur' => $totalAmountEur,
+                        'original_fee_eur' => $amountEur,
+                        'transfer_to_natan_eur' => $transferAmountEur,
+                        'retained_reserve_eur' => $reserveAmountEur,
+                        'note' => '0.5% Reserve retained implicitly'
+                     ]);
+                 }
             }
         }
 

@@ -126,5 +126,54 @@ return [
         'view_certificate' => 'View Certificate',
         'my_certificates' => 'My Certificates',
         'click_to_view' => 'Click to view full certificate',
+        'thumbnail_error' => 'Could not load preview',
+        // Page header
+        'congratulations' => 'Congratulations!',
+        'title_guest' => 'EGI Details',
+        'success_message' => 'Your EGI has been successfully minted on the blockchain.',
+        'message_guest' => 'This EGI has been successfully minted on the blockchain.',
+        'current_owner' => 'Current owner',
+        'sale_price' => 'Sale Price',
+        'view_egi' => 'View My EGI',
+        // Blockchain section
+        'blockchain_info' => 'Blockchain Info',
+        'asa_id' => 'ASA ID',
+        'tx_id' => 'Transaction ID',
+        'minted_at' => 'Minted At',
+        'view_pera_explorer' => 'View on Pera Explorer',
+        // Payment breakdown
+        'payment_breakdown' => 'Payment Distribution',
+        'recipient' => 'Recipient',
+        'role' => 'Role',
+        'amount' => 'Amount',
+    ],
+
+    // Loading State (Polling for splits + certificate)
+    'loading' => [
+        'title' => 'Preparing Your Data',
+        'message' => 'We are finalizing your blockchain transaction and preparing the certificate...',
+        'mint_complete' => 'Blockchain mint complete',
+        'waiting_splits' => 'Waiting for payment distribution...',
+        'waiting_certificate' => 'Generating certificate...',
+        'splits_ready' => 'Payment distribution ready',
+        'certificate_ready' => 'Certificate ready',
+        'timeout_message' => 'This is taking longer than expected. You can refresh the page if the data does not appear.',
+    ],
+
+    // Commodity specific labels
+    'commodity' => [
+        'types' => [
+            'gold-bar' => 'Gold Bar',
+            'goldbar' => 'Gold Bar',
+            'silver-bar' => 'Silver Bar',
+            'silverbar' => 'Silver Bar',
+            'platinum-bar' => 'Platinum Bar',
+            'platinumbar' => 'Platinum Bar',
+        ],
+        'section_details' => 'Physical Specifications',
+        'serial_number' => 'Serial Number',
+        'weight' => 'Weight',
+        'purity' => 'Purity',
+        'value_at_mint' => 'Value at Mint',
     ],
 ];

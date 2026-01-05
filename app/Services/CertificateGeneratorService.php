@@ -428,21 +428,33 @@ class CertificateGeneratorService {
                 'verification_url' => (string) route('egi-certificates.show', $certificate->certificate_uuid)
             ];
 
-            // 🔍 DEBUG: Log certificate data before PDF generation
-            $this->logger->debug('Certificate data prepared for PDF', [
-                'egi_id' => $egi->id,
-                'blockchain_id' => $egiBlockchain->id,
-                'asa_id' => $egiBlockchain->asa_id,
-                'tx_id' => $egiBlockchain->blockchain_tx_id,
-                'paid_amount_raw' => $egiBlockchain->paid_amount,
-                'paid_amount_used' => $paidAmount,
-                'egi_price' => $egi->price,
-                'final_purchase_amount' => $certificateData['purchase_amount'],
-                'certificate_data' => $certificateData,
-            ]);
-
-            // Generate PDF content
-            $pdfContent = $this->generateBlockchainCertificatePdf($certificateData);
+            // ---------------------------------------------------------
+            // OS3.5 COMMODITY LOGIC (Generic)
+            // ---------------------------------------------------------
+            $pdfContent = null;
+            if (!empty($egi->commodity_type)) {
+                $this->logger->info('Generating COMMODITY certificate', [
+                    'type' => $egi->commodity_type,
+                    'serial' => $egi->serial_number
+                ]);
+                
+                // Populate generic commodity data
+                $certificateData['is_commodity'] = true;
+                $certificateData['commodity_type'] = $egi->commodity_type; // e.g. 'gold-bar', 'silver-bar'
+                $certificateData['serial_number'] = $egi->serial_number;
+                
+                // Metadata handling safely
+                $meta = $egi->commodity_metadata ?? [];
+                $certificateData['commodity_weight'] = $meta['weight'] ?? null;
+                $certificateData['commodity_unit'] = $meta['unit'] ?? null;
+                $certificateData['commodity_purity'] = $meta['purity'] ?? null;
+                
+                // Use generic method for commodity PDF
+                $pdfContent = $this->generateCommodityCertificatePdf($certificateData);
+            } else {
+                // Standard Art Certificate
+                $pdfContent = $this->generateBlockchainCertificatePdf($certificateData);
+            }
 
             // Store certificate file
             Storage::put($certificatePath, $pdfContent);
@@ -843,6 +855,255 @@ class CertificateGeneratorService {
                 <p style="margin-top: 6px; font-size: 7pt;">
                     {$t['footer_generated']}
                 </p>
+            </div>
+        </body>
+        </html>
+        HTML;
+
+        $pdf = Pdf::loadHTML($html);
+        $pdf->setPaper('A4', 'portrait');
+        return $pdf->output();
+    }
+
+    /**
+     * Generate COMMODITY certificate PDF - Dynamic for Gold/Silver/etc.
+     * Specific layout showing weight, purity, serial number instead of artistic traits.
+     *
+     * @param array $certificateData Certificate data
+     * @return string Binary PDF content
+     */
+    private function generateCommodityCertificatePdf(array $certificateData): string {
+        $asaId = htmlspecialchars($certificateData['asa_id']);
+        $txId = htmlspecialchars($certificateData['blockchain_tx_id']);
+        $amount = number_format($certificateData['purchase_amount'], 2, ',', '.') . ' ' . htmlspecialchars($certificateData['purchase_currency'] ?? 'EUR');
+
+        // Explorer Config
+        $network = config('algorand.algorand.network', 'testnet');
+        $explorerBaseUrl = config("algorand.algorand.{$network}.explorer_url", 'https://testnet.explorer.perawallet.app');
+        $asaExplorerUrl = "{$explorerBaseUrl}/asset/{$asaId}";
+        $txExplorerUrl = "{$explorerBaseUrl}/tx/{$txId}";
+
+        // Commodity Specific Data
+        $typeSlug = $certificateData['commodity_type'] ?? 'gold-bar';
+        // Translate Title dynamically: commodity.types.gold-bar => "Lingotto d'Oro"
+        $headerTitle = __("mint.commodity.types.{$typeSlug}", [], 'Commodity Asset'); 
+        
+        // Identifier Logic: Priority to Serial Number
+        $hasSerial = !empty($certificateData['serial_number']);
+        $identifierLabel = $hasSerial ? __('mint.commodity.serial_number') : __('certificate_pdf.label_artwork_id');
+        $identifierValue = $hasSerial ? htmlspecialchars($certificateData['serial_number']) : '#' . htmlspecialchars($certificateData['egi_id']);
+
+        // Physical Specs
+        $weight = $certificateData['commodity_weight'] ?? '-';
+        $unit = $certificateData['commodity_unit'] ?? '';
+        $purity = $certificateData['commodity_purity'] ?? '-';
+
+        // Escaped Data
+        $certificateUuid = htmlspecialchars($certificateData['certificate_uuid']);
+        $mintedAt = htmlspecialchars($certificateData['minted_at']);
+        $egiTitle = htmlspecialchars($certificateData['egi_title']);
+        $buyerName = htmlspecialchars($certificateData['buyer_name']);
+        $buyerWallet = htmlspecialchars($certificateData['buyer_wallet']);
+        $verificationUrl = htmlspecialchars($certificateData['verification_url']);
+        $generatedAt = now()->format('d/m/Y H:i:s');
+        $currentYear = date('Y');
+
+        // Translations
+        $t = [
+            'header_subtitle' => __('certificate_pdf.header_subtitle'), // "Certificato di Autenticità Blockchain"
+            'section_details' => __('mint.commodity.section_details'),
+            'label_title' => __('certificate_pdf.label_title'),
+            'label_weight' => __('mint.commodity.weight'),
+            'label_purity' => __('mint.commodity.purity'),
+            'section_owner' => __('certificate_pdf.section_owner'),
+            'label_name' => __('certificate_pdf.label_name'),
+            'label_wallet' => __('certificate_pdf.label_wallet'),
+            'section_blockchain' => __('certificate_pdf.section_blockchain'),
+            'label_asset_id' => __('certificate_pdf.label_asset_id'),
+            'label_transaction_id' => __('certificate_pdf.label_transaction_id'),
+            'label_value' => __('mint.commodity.value_at_mint'),
+            'section_verification' => __('certificate_pdf.section_verification'),
+            'verification_text' => __('certificate_pdf.verification_text'),
+            'footer_brand' => __('certificate_pdf.footer_brand'),
+            'footer_tagline' => __('certificate_pdf.footer_tagline'),
+        ];
+
+        $html = <<<HTML
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                @page { margin: 12mm; size: A4 portrait; }
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { font-family: "DejaVu Sans", sans-serif; color: #3E2723; line-height: 1.3; font-size: 9pt; }
+                
+                /* COMMODITY THEME: GOLD/METALLIC COLORS */
+                .header {
+                    text-align: center;
+                    padding: 20px 0;
+                    margin-bottom: 20px;
+                    background: linear-gradient(to bottom, #FFF8E1 0%, #FFECB3 100%);
+                    border-top: 6px solid #FFC107;
+                    border-bottom: 2px solid #FFC107;
+                }
+                .header h1 { color: #3E2723; font-size: 20pt; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
+                .header .subtitle { color: #8D6E63; font-size: 10pt; font-weight: 600; font-style: italic; }
+
+                .grid { display: table; width: 100%; margin-bottom: 15px; border-spacing: 15px 0; }
+                .col { display: table-cell; width: 50%; vertical-align: top; }
+
+                .box {
+                    background: #FFFDE7;
+                    border: 1px solid #FFC107;
+                    border-radius: 4px;
+                    padding: 12px;
+                    margin-bottom: 15px;
+                }
+                .box-title {
+                    color: #5D4037;
+                    font-size: 11pt;
+                    font-weight: 700;
+                    margin-bottom: 10px;
+                    border-bottom: 1px solid #FFE082;
+                    padding-bottom: 4px;
+                }
+                
+                .info-row { margin-bottom: 6px; }
+                .label { display: inline-block; width: 35%; color: #795548; font-weight: 600; font-size: 8.5pt; }
+                .value { display: inline-block; width: 63%; color: #3E2723; font-weight: 700; font-size: 9pt; font-family: "DejaVu Sans Mono", monospace; }
+
+                /* SPEC HIGHLIGHT */
+                .spec-highlight {
+                    background: #FFECB3;
+                    padding: 8px;
+                    border-radius: 4px;
+                    margin-top: 8px;
+                    text-align: center;
+                    border: 1px solid #FFC107;
+                }
+                .spec-highlight .value { width: 100%; font-size: 11pt; color: #3E2723; }
+
+                /* BLOCKCHAIN */
+                .blockchain {
+                    background: #263238;
+                    color: #ECEFF1;
+                    padding: 15px;
+                    border-radius: 4px;
+                    border: 2px solid #455A64;
+                }
+                .blockchain .box-title { color: #FFC107; border-bottom-color: #546E7A; }
+                .blockchain .label { color: #B0BEC5; }
+                .blockchain .value { color: #ECEFF1; }
+                .blockchain a { color: #FFC107; text-decoration: none; }
+
+                /* VERIFICATION */
+                .verify {
+                    text-align: center;
+                    margin-top: 20px;
+                    padding: 15px;
+                    border: 1px dashed #A1887F;
+                    background: #FAFAFA;
+                }
+                .verify .url { 
+                    margin-top: 5px; padding: 5px; background: #EEE; 
+                    font-family: monospace; font-size: 7pt; color: #333;
+                }
+                
+                .footer { text-align: center; margin-top: 30px; border-top: 1px solid #D7CCC8; padding-top: 10px; color: #8D6E63; font-size: 7pt; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>{$headerTitle}</h1>
+                <div class="subtitle">{$t['header_subtitle']}</div>
+            </div>
+
+            <div class="grid">
+                <div class="col">
+                    <!-- COMMODITY SPECS -->
+                    <div class="box">
+                        <div class="box-title">{$t['section_details']}</div>
+                        
+                        <div class="info-row">
+                            <span class="label">{$t['label_title']}</span>
+                            <span class="value">{$egiTitle}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">{$identifierLabel}</span>
+                            <span class="value">{$identifierValue}</span>
+                        </div>
+
+                        <!-- Highlights -->
+                        <div class="spec-highlight">
+                            <div class="info-row" style="margin:0;">
+                                <span class="label">{$t['label_weight']}</span>
+                                <span class="value">{$weight} {$unit}</span>
+                            </div>
+                        </div>
+                        <div class="spec-highlight">
+                            <div class="info-row" style="margin:0;">
+                                <span class="label">{$t['label_purity']}</span>
+                                <span class="value">{$purity}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="box">
+                        <div class="box-title">Certificate Info</div>
+                        <div class="info-row">
+                            <span class="label">UUID</span>
+                            <span class="value" style="font-size:7pt">{$certificateUuid}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Date</span>
+                            <span class="value">{$mintedAt}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <!-- OWNER -->
+                    <div class="box">
+                        <div class="box-title">{$t['section_owner']}</div>
+                        <div class="info-row">
+                            <span class="label">{$t['label_name']}</span>
+                            <span class="value">{$buyerName}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">{$t['label_wallet']}</span>
+                            <span class="value" style="font-size:7pt">{$buyerWallet}</span>
+                        </div>
+                    </div>
+
+                    <!-- BLOCKCHAIN -->
+                    <div class="blockchain">
+                        <div class="box-title">{$t['section_blockchain']}</div>
+                        <div class="info-row">
+                            <span class="label">{$t['label_asset_id']}</span>
+                            <span class="value"><a href="{$asaExplorerUrl}">{$asaId}</a></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">{$t['label_transaction_id']}</span>
+                            <span class="value" style="font-size:7pt"><a href="{$txExplorerUrl}">{$txId}</a></span>
+                        </div>
+                        <div class="info-row" style="margin-top:10px;">
+                            <span class="label">{$t['label_value']}</span>
+                            <span class="value">{$amount}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="verify">
+                <div style="font-weight:bold; color:#5D4037; margin-bottom:5px;">{$t['section_verification']}</div>
+                <div style="font-size:8pt; color:#795548;">{$t['verification_text']}</div>
+                <div class="url">{$verificationUrl}</div>
+            </div>
+
+            <div class="footer">
+                <p><strong>{$t['footer_brand']}</strong> - {$t['footer_tagline']}</p>
+                <p>Generated: {$generatedAt}</p>
             </div>
         </body>
         </html>

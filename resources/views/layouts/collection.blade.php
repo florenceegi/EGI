@@ -48,13 +48,13 @@
 <x-wallet-connect-modal />
 <x-real-wallet-connect-modal />
 
-{{-- Egili Purchase Modal (global - accessible for subscriptions) --}
-    <x-egili-purchase-modal />
+{{-- Egili Purchase Modal (global - accessible for subscriptions) --}}
+<x-egili-purchase-modal />
 
-    <!-- Create Collection Modal (OS1 Integration) -->
-    @include('components.create-collection-modal')
+<!-- Create Collection Modal (OS1 Integration) -->
+@include('components.create-collection-modal')
 
-    {{-- Asset JS (Vite) --}}
+{{-- Asset JS (Vite) --}}
 @vite(['resources/js/guest.js', 'resources/js/polyfills.js', 'resources/ts/main.ts', 'resources/js/app.js', 'resources/css/reservation-history.css', 'resources/js/reservation-history.js'])
 
 {{-- Stack per script specifici della pagina --}}

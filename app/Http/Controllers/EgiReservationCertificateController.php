@@ -83,6 +83,34 @@ class EgiReservationCertificateController extends Controller {
             // Check if this is a newly created certificate (coming from reservation flow)
             $showSuccess = $request->session()->has('success');
 
+            // OS3.5: COMMODITY LOGIC
+            // Detect if EGI is a commodity to adjust view rendering
+            $isCommodity = !empty($certificate->egi->commodity_type);
+            $commodityData = [];
+            
+            if ($isCommodity) {
+                $meta = $certificate->egi->commodity_metadata ?? [];
+                $commodityData = [
+                    'type_slug' => $certificate->egi->commodity_type,
+                    'weight' => $meta['weight'] ?? null,
+                    'unit' => $meta['unit'] ?? null,
+                    'purity' => $meta['purity'] ?? null,
+                    'serial_number' => $certificate->egi->serial_number,
+                ];
+
+                return view('certificates.show-commodity', [
+                    'certificate' => $certificate,
+                    'showSuccess' => $showSuccess,
+                    'isCommodity' => true,
+                    'commodityData' => $commodityData,
+                    'title' => __('mint.commodity.types.' . $certificate->egi->commodity_type, [], 'Commodity Asset'),
+                    'metaDescription' => __('certificate.meta_description', [
+                        'type' => 'Commodity',
+                        'title' => $certificate->egi->title
+                    ])
+                ]);
+            }
+
             return view('certificates.show', [
                 'certificate' => $certificate,
                 'showSuccess' => $showSuccess,

@@ -2112,6 +2112,76 @@ class MintController extends Controller {
     }
 
     /**
+     * Check if mint data is ready for display (AJAX endpoint for loading state polling)
+     *
+     * @param int $egiBlockchainId EgiBlockchain record ID
+     * @return JsonResponse
+     *
+     * @purpose Called by frontend polling to check if splits + certificate are ready
+     * @returns JSON with ready status, splits count, and certificate availability
+     */
+    public function checkMintDataReady(int $egiBlockchainId): JsonResponse {
+        try {
+            // Load blockchain record
+            $blockchain = EgiBlockchain::find($egiBlockchainId);
+
+            if (!$blockchain) {
+                return response()->json([
+                    'ready' => false,
+                    'error' => 'record_not_found'
+                ], 404);
+            }
+
+            // Check if payment splits exist
+            $splitsCount = \App\Models\PaymentDistribution::where('source_type', 'mint')
+                ->where('egi_blockchain_id', $blockchain->id)
+                ->where('amount_eur', '>', 0)
+                ->count();
+
+            $splitsReady = $splitsCount > 0;
+
+            // Check if certificate exists
+            $certificate = \App\Models\EgiReservationCertificate::where('egi_blockchain_id', $blockchain->id)
+                ->first();
+
+            $certificateReady = !is_null($certificate);
+
+            // Ready if both splits and certificate are available
+            // OR if mint is complete (minted status) regardless of splits/cert
+            $isMinted = $blockchain->mint_status === 'minted';
+            $ready = $isMinted && ($splitsReady || $certificateReady);
+
+            $this->logger->debug('Mint data readiness check', [
+                'blockchain_id' => $egiBlockchainId,
+                'mint_status' => $blockchain->mint_status,
+                'splits_count' => $splitsCount,
+                'splits_ready' => $splitsReady,
+                'certificate_ready' => $certificateReady,
+                'overall_ready' => $ready
+            ]);
+
+            return response()->json([
+                'ready' => $ready,
+                'mint_status' => $blockchain->mint_status,
+                'splits_ready' => $splitsReady,
+                'splits_count' => $splitsCount,
+                'certificate_ready' => $certificateReady,
+                'certificate_uuid' => $certificate?->certificate_uuid,
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to check mint data readiness', [
+                'blockchain_id' => $egiBlockchainId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'ready' => false,
+                'error' => 'check_failed'
+            ], 500);
+        }
+    }
+
+    /**
      * Regenerate blockchain certificate without new mint
      *
      * @package App\Http\Controllers
