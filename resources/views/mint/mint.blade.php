@@ -8,9 +8,9 @@
     @php
         $isOwner = Auth::id() !== null && $blockchain && Auth::id() === $blockchain->buyer_user_id;
 
-        // Determine if we need to show loading state (ONLY if BOTH splits and certificate are missing)
-        // This matches the controller logic which returns 'ready' if at least one is present.
-        $showLoadingState = empty($paymentBreakdown) && is_null($certificate);
+        // Determine if we need to show loading state (if EITHER is missing)
+        // Polling script in JS handles timeout protection.
+        $showLoadingState = empty($paymentBreakdown) || is_null($certificate);
     @endphp
 
     {{-- LOADING OVERLAY - Shows while waiting for splits + certificate --}}
