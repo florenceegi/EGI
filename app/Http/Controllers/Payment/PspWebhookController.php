@@ -71,7 +71,12 @@ class PspWebhookController extends Controller {
      * @gdpr-compliant Audit trail for payment events
      */
     public function handleStripeWebhook(Request $request): JsonResponse {
-        return $this->processWebhook($request, 'stripe');
+        \Illuminate\Support\Facades\Log::info('WEBHOOK DEBUG: handleStripeWebhook ENTERED via Redirect', [
+        'uri' => $request->getUri(),
+        'method' => $request->getMethod(),
+        'payload_preview' => substr($request->getContent(), 0, 200)
+    ]);
+    return $this->processWebhook($request, 'stripe');
     }
 
     /**
@@ -274,12 +279,26 @@ class PspWebhookController extends Controller {
      *
      * @param PspWebhookEvent $webhookEvent Event to update
      * @param string $status New status
+```php
      * @param string|null $errorMessage Error message if failed
      */
     private function updateWebhookEventStatus(PspWebhookEvent $webhookEvent, string $status, ?string $errorMessage = null): void {
         $updateData = ['status' => $status];
+        
+        // Extract data from stored payload for logging/logic
+        $payload = $webhookEvent->payload ?? [];
+        $type = $this->determineEventType($payload);
+        $object = $payload['data']['object'] ?? [];
 
-        if ($status === 'processed') {
+        // ULM DEBUG - Super Explicit
+        \Illuminate\Support\Facades\Log::channel('staging')->info('--- WEBHOOK HIT STRIPE SERVICE ---', [
+            'type' => $type,
+            'has_split_metadata' => isset($object['metadata']['requires_split']),
+            'split_value' => $object['metadata']['requires_split'] ?? 'NULL',
+            'raw_metadata' => $object['metadata'] ?? [],
+        ]);
+
+        if ($type === 'payment_intent.succeeded') {
             $updateData['processed_at'] = now();
             $updateData['retry_count'] = 0; // Reset on success
             $updateData['error_message'] = null;

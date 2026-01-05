@@ -817,14 +817,14 @@ class StripePaymentSplitService {
             // P0.5 FIX: No single large transaction - use short transactions per record
             foreach ($distributions as $distribution) {
                 try {
-                    // PLATFORM WALLET EXEMPTION (REMOVED):
-                    // Natan now receives a transfer, so we process it normally.
-                    /*
-                    if (($distribution['platform_role'] ?? '') === WalletRoleEnum::NATAN->value) {
-                        $executedTransfers[] = $this->handlePlatformRetention($paymentIntentId, $distribution);
+                    // P0 FIX: Skip 0-amount distributions (e.g. Commodity Platform Fee when margin is 0)
+                    if (($distribution['amount_cents'] ?? 0) <= 0) {
+                        $this->logger->info('Skipping 0-amount distribution', [
+                            'wallet_id' => $distribution['wallet_id'],
+                            'role' => $distribution['platform_role']
+                        ]);
                         continue;
                     }
-                    */
 
                     // P0.5 FIX: Check for existing terminal distribution FIRST (v2.4.1 hotfix)
                     $existingRecord = \App\Models\PaymentDistribution::where('payment_intent_id', $paymentIntentId)
