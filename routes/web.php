@@ -53,8 +53,6 @@ use App\Http\Controllers\Payment\PspWebhookController; // Import Controller
 // P0 FIX: Explicit Webhook Route in WEB to avoid Redirects/Middleware issues
 Route::post('/stripe/webhook', [PspWebhookController::class, 'handleStripeWebhook'])
     ->name('stripe.webhook.direct');
-
-use App\Http\Controllers\Upload\Config\GlobalConfigController;
 use App\Http\Controllers\Web\BiographyWebController;
 
 /*
