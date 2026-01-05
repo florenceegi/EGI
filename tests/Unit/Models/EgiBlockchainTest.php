@@ -102,7 +102,8 @@ class EgiBlockchainTest extends TestCase {
         $egiBlockchain = EgiBlockchain::create([
             'egi_id' => $egi->id,
             'mint_status' => 'unminted',
-            'ownership_type' => 'treasury'
+            'ownership_type' => 'treasury',
+            'platform_wallet' => 'TREASURY_WALLET_TEST'
         ]);
 
         $this->assertNotNull($egiBlockchain->certificate_uuid);
@@ -120,7 +121,8 @@ class EgiBlockchainTest extends TestCase {
             'egi_id' => $egi->id,
             'certificate_uuid' => $customUuid,
             'mint_status' => 'unminted',
-            'ownership_type' => 'treasury'
+            'ownership_type' => 'treasury',
+            'platform_wallet' => 'TREASURY_WALLET_TEST'
         ]);
 
         $this->assertEquals($customUuid, $egiBlockchain->certificate_uuid);
@@ -172,14 +174,16 @@ class EgiBlockchainTest extends TestCase {
         EgiBlockchain::create([
             'egi_id' => $egi->id,
             'mint_status' => 'minted',
-            'ownership_type' => 'treasury'
+            'ownership_type' => 'treasury',
+            'platform_wallet' => 'TREASURY_WALLET_TEST'
         ]);
 
         // Create unminted record
         EgiBlockchain::create([
             'egi_id' => $egi->id,
             'mint_status' => 'unminted',
-            'ownership_type' => 'treasury'
+            'ownership_type' => 'treasury',
+            'platform_wallet' => 'TREASURY_WALLET_TEST'
         ]);
 
         $mintedRecords = EgiBlockchain::minted()->count();
@@ -194,12 +198,12 @@ class EgiBlockchainTest extends TestCase {
         $egi = Egi::factory()->create();
 
         // Create pending records
-        EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'unminted', 'ownership_type' => 'treasury']);
-        EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'minting_queued', 'ownership_type' => 'treasury']);
-        EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'minting', 'ownership_type' => 'treasury']);
+        EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'unminted', 'ownership_type' => 'treasury', 'platform_wallet' => 'TREASURY_WALLET_TEST']);
+        EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'minting_queued', 'ownership_type' => 'treasury', 'platform_wallet' => 'TREASURY_WALLET_TEST']);
+        EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'minting', 'ownership_type' => 'treasury', 'platform_wallet' => 'TREASURY_WALLET_TEST']);
 
         // Create non-pending record
-        EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'minted', 'ownership_type' => 'treasury']);
+        EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'minted', 'ownership_type' => 'treasury', 'platform_wallet' => 'TREASURY_WALLET_TEST']);
 
         $pendingRecords = EgiBlockchain::pending()->count();
 
@@ -216,14 +220,16 @@ class EgiBlockchainTest extends TestCase {
         EgiBlockchain::create([
             'egi_id' => $egi->id,
             'mint_status' => 'failed',
-            'ownership_type' => 'treasury'
+            'ownership_type' => 'treasury',
+            'platform_wallet' => 'TREASURY_WALLET_TEST'
         ]);
 
         // Create non-failed record
         EgiBlockchain::create([
             'egi_id' => $egi->id,
             'mint_status' => 'minted',
-            'ownership_type' => 'treasury'
+            'ownership_type' => 'treasury',
+            'platform_wallet' => 'TREASURY_WALLET_TEST'
         ]);
 
         $failedRecords = EgiBlockchain::failed()->count();
@@ -241,14 +247,16 @@ class EgiBlockchainTest extends TestCase {
         EgiBlockchain::create([
             'egi_id' => $egi->id,
             'ownership_type' => 'treasury',
-            'mint_status' => 'unminted'
+            'mint_status' => 'unminted',
+            'platform_wallet' => 'TREASURY_WALLET_TEST'
         ]);
 
         // Create wallet record
         EgiBlockchain::create([
             'egi_id' => $egi->id,
             'ownership_type' => 'wallet',
-            'mint_status' => 'unminted'
+            'mint_status' => 'unminted',
+            'platform_wallet' => 'TREASURY_WALLET_TEST'
         ]);
 
         $treasuryRecords = EgiBlockchain::byOwnership('treasury')->count();
@@ -269,7 +277,8 @@ class EgiBlockchainTest extends TestCase {
             'egi_id' => $egi->id,
             'payment_method' => 'stripe',
             'mint_status' => 'unminted',
-            'ownership_type' => 'treasury'
+            'ownership_type' => 'treasury',
+            'platform_wallet' => 'TREASURY_WALLET_TEST'
         ]);
 
         // Create paypal payment record
@@ -277,7 +286,8 @@ class EgiBlockchainTest extends TestCase {
             'egi_id' => $egi->id,
             'payment_method' => 'paypal',
             'mint_status' => 'unminted',
-            'ownership_type' => 'treasury'
+            'ownership_type' => 'treasury',
+            'platform_wallet' => 'TREASURY_WALLET_TEST'
         ]);
 
         $stripeRecords = EgiBlockchain::byPaymentMethod('stripe')->count();
