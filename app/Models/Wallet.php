@@ -93,6 +93,16 @@ class Wallet extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Get all payment destinations for this wallet
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function destinations()
+    {
+        return $this->hasMany(WalletDestination::class);
+    }
+
     // /**
     //  * Relazione uno a molti con NotificationPayloadWallet
     //  *

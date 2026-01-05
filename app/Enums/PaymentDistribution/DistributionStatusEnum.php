@@ -15,9 +15,10 @@ namespace App\Enums\PaymentDistribution;
  */
 enum DistributionStatusEnum: string {
     case PENDING = 'pending';
-    case PROCESSED = 'processed';
-    case CONFIRMED = 'confirmed';
+    case COMPLETED = 'completed';
     case FAILED = 'failed';
+    case REVERSED = 'reversed';
+    case REVERSAL_FAILED = 'reversal_failed';
 
     /**
      * Get the display name for the status
@@ -26,8 +27,10 @@ enum DistributionStatusEnum: string {
     public function getDisplayName(): string {
         return match ($this) {
             self::PENDING => __('payment_distribution.status.pending'),
-            self::PROCESSED => __('payment_distribution.status.processed'),
-            self::CONFIRMED => __('payment_distribution.status.confirmed'),
+            self::COMPLETED => __('payment_distribution.status.completed'),
+            self::FAILED => __('payment_distribution.status.failed'),
+            self::REVERSED => __('payment_distribution.status.reversed'),
+            self::REVERSAL_FAILED => __('payment_distribution.status.reversal_failed'),
             self::FAILED => __('payment_distribution.status.failed'),
         };
     }
@@ -39,9 +42,10 @@ enum DistributionStatusEnum: string {
     public function getDescription(): string {
         return match ($this) {
             self::PENDING => __('payment_distribution.status_desc.pending'),
-            self::PROCESSED => __('payment_distribution.status_desc.processed'),
-            self::CONFIRMED => __('payment_distribution.status_desc.confirmed'),
+            self::COMPLETED => __('payment_distribution.status_desc.completed'),
             self::FAILED => __('payment_distribution.status_desc.failed'),
+            self::REVERSED => __('payment_distribution.status_desc.reversed'),
+            self::REVERSAL_FAILED => __('payment_distribution.status_desc.reversal_failed'),
         };
     }
 
@@ -52,9 +56,10 @@ enum DistributionStatusEnum: string {
     public function getColorClass(): string {
         return match ($this) {
             self::PENDING => 'text-yellow-600 bg-yellow-100',
-            self::PROCESSED => 'text-blue-600 bg-blue-100',
-            self::CONFIRMED => 'text-green-600 bg-green-100',
+            self::COMPLETED => 'text-green-600 bg-green-100',
             self::FAILED => 'text-red-600 bg-red-100',
+            self::REVERSED => 'text-purple-600 bg-purple-100',
+            self::REVERSAL_FAILED => 'text-red-800 bg-red-200',
         };
     }
 
@@ -75,7 +80,7 @@ enum DistributionStatusEnum: string {
      * @return array<DistributionStatusEnum>
      */
     public static function getSuccessStatuses(): array {
-        return [self::PROCESSED, self::CONFIRMED];
+        return [self::COMPLETED];
     }
 
     /**
@@ -107,7 +112,7 @@ enum DistributionStatusEnum: string {
      * @return array<DistributionStatusEnum>
      */
     public static function getFailureStatuses(): array {
-        return [self::FAILED];
+        return [self::FAILED, self::REVERSAL_FAILED];
     }
 
     /**
@@ -115,7 +120,7 @@ enum DistributionStatusEnum: string {
      * @return bool
      */
     public function isFailure(): bool {
-        return $this === self::FAILED;
+        return in_array($this, [self::FAILED, self::REVERSAL_FAILED]);
     }
 
     /**
@@ -123,6 +128,22 @@ enum DistributionStatusEnum: string {
      * @return bool
      */
     public function isFinal(): bool {
-        return in_array($this, [self::CONFIRMED, self::FAILED]);
+        return in_array($this, [self::COMPLETED, self::FAILED, self::REVERSED, self::REVERSAL_FAILED]);
+    }
+
+    /**
+     * Check if this status indicates a reversal state
+     * @return bool
+     */
+    public function isReversed(): bool {
+        return in_array($this, [self::REVERSED, self::REVERSAL_FAILED]);
+    }
+
+    /**
+     * Check if this status requires manual intervention
+     * @return bool
+     */
+    public function requiresManualIntervention(): bool {
+        return $this === self::REVERSAL_FAILED;
     }
 }

@@ -26,6 +26,7 @@ enum WalletRoleEnum: string {
     case NATAN = 'Natan';
     case FRANGETTE = 'Frangette';
     case COMPANY = 'Company';
+    case BUYER = 'Buyer';  // EGI purchaser - for claiming flow
 
     /**
      * Get mint royalty percentage for this role (Primary Market)
@@ -43,6 +44,7 @@ enum WalletRoleEnum: string {
             self::EPP => 20.0,
             self::NATAN => 10.0,
             self::FRANGETTE => 2.0,
+            self::BUYER => 0.0,  // Buyer doesn't receive royalties
         };
     }
 
@@ -62,6 +64,7 @@ enum WalletRoleEnum: string {
             self::EPP => 0.8,
             self::NATAN => 0.7,
             self::FRANGETTE => 0.1,
+            self::BUYER => 0.0,  // Buyer doesn't receive royalties
         };
     }
 
@@ -75,7 +78,7 @@ enum WalletRoleEnum: string {
             self::NATAN => config('app.natan_wallet_address'),
             self::EPP => config('app.epp_wallet_address'),
             self::FRANGETTE => config('app.frangette_wallet_address'),
-            self::CREATOR, self::COMPANY => null, // User's wallet - dynamic
+            self::CREATOR, self::COMPANY, self::BUYER => null, // User's wallet - dynamic
         };
     }
 
@@ -93,7 +96,7 @@ enum WalletRoleEnum: string {
             self::NATAN => config('app.natan_id', 1),
             self::EPP => null, // EPP is dynamic per-collection, not a fixed system account
             self::FRANGETTE => config('app.frangette_id', 3),
-            self::CREATOR, self::COMPANY => null, // Dynamic user
+            self::CREATOR, self::COMPANY, self::BUYER => null, // Dynamic user
         };
     }
 
@@ -116,10 +119,10 @@ enum WalletRoleEnum: string {
      * @return bool
      */
     public static function validateMintTotal(): bool {
-        // Exclude COMPANY from total - it's mutually exclusive with CREATOR
+        // Exclude COMPANY and BUYER from total - they're not royalty recipients
         $roles = array_filter(
             self::cases(),
-            fn($role) => $role !== self::COMPANY
+            fn($role) => !in_array($role, [self::COMPANY, self::BUYER], true)
         );
 
         $total = array_sum(array_map(
@@ -137,10 +140,10 @@ enum WalletRoleEnum: string {
      * @return float Total secondary market royalty (should be 6.1%)
      */
     public static function getTotalRebindPercentage(): float {
-        // Exclude COMPANY from total - it's mutually exclusive with CREATOR
+        // Exclude COMPANY and BUYER from total - they're not standard royalty recipients
         $roles = array_filter(
             self::cases(),
-            fn($role) => $role !== self::COMPANY
+            fn($role) => !in_array($role, [self::COMPANY, self::BUYER], true)
         );
 
         return array_sum(array_map(
@@ -173,6 +176,7 @@ enum WalletRoleEnum: string {
             self::EPP => 'EPP Association - Environmental impact partner',
             self::NATAN => 'Natan Platform - Technology & infrastructure',
             self::FRANGETTE => 'Frangette Association - Ecosystem development',
+            self::BUYER => 'Buyer - EGI purchaser and owner',
         };
     }
 
