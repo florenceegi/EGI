@@ -37,6 +37,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Stripe Payment Service
+    |--------------------------------------------------------------------------
+    |
+    | Stripe API credentials for payment processing and webhook handling.
+    | Used by StripePaymentSplitService and polling commands.
+    |
+    */
+    'stripe' => [
+        'key' => env('STRIPE_PUBLISHABLE_KEY'),
+        'secret' => env('STRIPE_SECRET_KEY'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Ollama AI Service (N.A.T.A.N.)
     |--------------------------------------------------------------------------
     |

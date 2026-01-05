@@ -113,3 +113,14 @@ Schedule::command('egili:batch-charge-consumption')
     ->withoutOverlapping()
     ->onOneServer()
     ->appendOutputTo(storage_path('logs/consumption-batch-charge.log'));
+
+### 📌 🔟 JOB AUTOMATICO: STRIPE EVENT POLLING (WEBHOOK BYPASS) ###
+// Poll Stripe for unprocessed payment events every minute
+// This bypasses webhook delivery issues caused by firewall/fail2ban blocking Stripe IPs
+Schedule::command('stripe:process-events --limit=20')
+    ->name('stripe-event-polling')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->appendOutputTo(storage_path('logs/stripe-polling.log'));
+
