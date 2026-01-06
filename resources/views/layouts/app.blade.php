@@ -166,6 +166,11 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
     {{-- Footer --}}
     @include('components.info-footer')
 
+    {{-- EGI Channel: Cross-tab refresh for EGI creation (OS3 Vanilla JS) --}}
+    @auth
+        <script src="{{ asset('js/egi-channel.js') }}"></script>
+    @endauth
+
     {{--
     Application Configuration
     Oracode 3.0: Contextually autonomous - provides necessary config to client-side

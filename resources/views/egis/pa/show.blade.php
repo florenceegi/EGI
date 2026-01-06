@@ -312,4 +312,22 @@
             size="md" disabled />
     </div>
 
+    {{-- OS3: Notify other tabs when new EGI is created (Vanilla JS, no Alpine/Livewire) --}}
+    @if (session('success') && str_contains(session('success'), 'creato'))
+        @push('scripts')
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Notify other tabs that a new EGI was created
+                    if (typeof EgiChannel !== 'undefined') {
+                        EgiChannel.notifyCreated(
+                            {{ $egi->id }},
+                            '{{ addslashes($egi->title) }}'
+                        );
+                        console.log('[EGI Show] Notified creation of EGI #{{ $egi->id }}');
+                    }
+                });
+            </script>
+        @endpush
+    @endif
+
 </x-pa-layout>

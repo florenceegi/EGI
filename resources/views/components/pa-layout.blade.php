@@ -249,6 +249,11 @@
     @endphp
     <x-create-collection-modal :terminology="$collectionTerms" />
 
+    {{-- EGI Channel: Cross-tab refresh for EGI creation (OS3 Vanilla JS) --}}
+    @auth
+        <script src="{{ asset('js/egi-channel.js') }}"></script>
+    @endauth
+
     @stack('scripts')
     {{ $scripts ?? '' }}
 </body>
