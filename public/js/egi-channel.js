@@ -286,6 +286,38 @@ const EgiChannel = (function() {
 // Auto-initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     EgiChannel.init();
+    
+    /**
+     * Listen for upload-completed event from Ultra Upload Manager
+     * This event is dispatched when file upload finishes successfully
+     * We check for EGI upload specifically and notify other tabs
+     */
+    document.addEventListener('upload-completed', function() {
+        console.log('[EgiChannel] Upload completed event received');
+        
+        // Check if this was an EGI upload by looking at the uploadType
+        const uploadType = window.uploadType || '';
+        
+        if (uploadType === 'egi' || window.location.pathname.includes('/upload/egi') || window.location.pathname.includes('uploading_files')) {
+            console.log('[EgiChannel] EGI upload detected, notifying other tabs');
+            
+            // We don't have the EGI ID here, so use a generic notification
+            // The receiving tabs will just refresh to get the new data
+            EgiChannel.notifyCreated('new', 'Nuovo EGI');
+        }
+    });
+    
+    /**
+     * Listen for custom 'egi:created' DOM event
+     * This can be triggered by any component that creates an EGI
+     * Example: document.dispatchEvent(new CustomEvent('egi:created', { detail: { id: 123, title: 'My EGI' }}))
+     */
+    document.addEventListener('egi:created', function(event) {
+        console.log('[EgiChannel] egi:created DOM event received', event.detail);
+        
+        var detail = event.detail || {};
+        EgiChannel.notifyCreated(detail.id || 'new', detail.title || '');
+    });
 });
 
 // Export for module systems if available
