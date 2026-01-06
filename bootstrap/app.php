@@ -60,14 +60,31 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', [SetLanguage::class]);
 
         // P0 FIX: Exclude Stripe Webhooks from CSRF to prevent 419 Errors & Redirects
+        // P1 FIX: Exclude logout routes to prevent 419 on expired sessions (safe - logout only destroys session)
         $middleware->validateCsrfTokens(except: [
             'stripe/*',
             'api/webhooks/*',
             'api/webhooks/stripe',
-            'stripe/webhook'
+            'stripe/webhook',
+            'logout',           // Main logout route
+            'custom-logout',    // Custom logout route  
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // definisci eventuali eccezioni qui
+        // P1 FIX: Handle 419 (Page Expired / CSRF Token Mismatch) gracefully
+        // Instead of showing error page, redirect to home with session refresh
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            // If user was trying to do something, redirect them gracefully
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Session expired. Please refresh the page.',
+                    'redirect' => route('home')
+                ], 419);
+            }
+            
+            // For web requests, redirect to home with a flash message
+            return redirect()->route('home')
+                ->with('info', __('auth.session_expired_please_login_again'));
+        });
     })
     ->create();

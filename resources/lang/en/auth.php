@@ -19,6 +19,6 @@ return [
     'logout_success' => 'You have been successfully logged out.',
     'wallet_disconnect_success' => 'Wallet has been successfully disconnected.',
     'already_logged_out' => 'You are already logged out.',
-
+    'session_expired_please_login_again' => 'Your session has expired. Please log in again.',
 
 ];
