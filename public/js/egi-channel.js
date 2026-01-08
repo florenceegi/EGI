@@ -28,12 +28,17 @@ const EgiChannel = (function() {
      * Initialize the broadcast channel
      */
     function init() {
+        console.log('[EgiChannel] Attempting to initialize...');
+        console.log('[EgiChannel] BroadcastChannel supported:', typeof BroadcastChannel !== 'undefined');
+        console.log('[EgiChannel] Current URL:', window.location.href);
+        
         if (typeof BroadcastChannel === 'undefined') {
             console.warn('[EgiChannel] BroadcastChannel not supported in this browser');
             return false;
         }
         
         if (channel) {
+            console.log('[EgiChannel] Already initialized, skipping');
             return true; // Already initialized
         }
         
@@ -41,6 +46,7 @@ const EgiChannel = (function() {
             channel = new BroadcastChannel(CHANNEL_NAME);
             
             channel.onmessage = function(event) {
+                console.log('[EgiChannel] RAW MESSAGE RECEIVED:', event);
                 handleMessage(event.data);
             };
             
@@ -48,7 +54,7 @@ const EgiChannel = (function() {
                 console.error('[EgiChannel] Message error:', error);
             };
             
-            console.log('[EgiChannel] Initialized successfully');
+            console.log('[EgiChannel] ✅ Initialized successfully on channel:', CHANNEL_NAME);
             return true;
         } catch (e) {
             console.error('[EgiChannel] Failed to initialize:', e);
@@ -60,11 +66,14 @@ const EgiChannel = (function() {
      * Handle incoming messages from other tabs
      */
     function handleMessage(data) {
+        console.log('[EgiChannel] handleMessage called with:', data);
+        
         if (!data || !data.type) {
+            console.log('[EgiChannel] Invalid data, ignoring');
             return;
         }
         
-        console.log('[EgiChannel] Received:', data);
+        console.log('[EgiChannel] Processing message type:', data.type);
         
         switch (data.type) {
             case EVENTS.CREATED:
@@ -285,6 +294,9 @@ const EgiChannel = (function() {
 
 // Auto-initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('[EgiChannel] DOM loaded, initializing...');
+    console.log('[EgiChannel] window.uploadType at init:', window.uploadType);
+    
     EgiChannel.init();
     
     /**
@@ -292,18 +304,31 @@ document.addEventListener('DOMContentLoaded', function() {
      * This event is dispatched when file upload finishes successfully
      * We check for EGI upload specifically and notify other tabs
      */
-    document.addEventListener('upload-completed', function() {
-        console.log('[EgiChannel] Upload completed event received');
+    document.addEventListener('upload-completed', function(e) {
+        console.log('[EgiChannel] 🎯 upload-completed event RECEIVED!');
+        console.log('[EgiChannel] Event details:', e);
+        console.log('[EgiChannel] window.uploadType:', window.uploadType);
+        console.log('[EgiChannel] window.location.pathname:', window.location.pathname);
         
         // Check if this was an EGI upload by looking at the uploadType
         const uploadType = window.uploadType || '';
         
-        if (uploadType === 'egi' || window.location.pathname.includes('/upload/egi') || window.location.pathname.includes('uploading_files')) {
-            console.log('[EgiChannel] EGI upload detected, notifying other tabs');
+        const isEgiUpload = uploadType === 'egi' || 
+            window.location.pathname.includes('/upload/egi') || 
+            window.location.pathname.includes('uploading_files') ||
+            window.location.pathname.includes('egi-upload');
+            
+        console.log('[EgiChannel] Is EGI upload?', isEgiUpload);
+        
+        if (isEgiUpload) {
+            console.log('[EgiChannel] ✅ EGI upload detected, notifying other tabs NOW!');
             
             // We don't have the EGI ID here, so use a generic notification
             // The receiving tabs will just refresh to get the new data
             EgiChannel.notifyCreated('new', 'Nuovo EGI');
+            console.log('[EgiChannel] Notification sent!');
+        } else {
+            console.log('[EgiChannel] ❌ Not an EGI upload, skipping notification');
         }
     });
     
@@ -318,6 +343,8 @@ document.addEventListener('DOMContentLoaded', function() {
         var detail = event.detail || {};
         EgiChannel.notifyCreated(detail.id || 'new', detail.title || '');
     });
+    
+    console.log('[EgiChannel] All event listeners registered');
 });
 
 // Export for module systems if available
