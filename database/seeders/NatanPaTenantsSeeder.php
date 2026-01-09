@@ -111,13 +111,14 @@ class NatanPaTenantsSeeder extends Seeder
                     'name' => $userData['name'],
                     'password' => Hash::make('password'),
                     'tenant_id' => $firenzeId,
+                    'usertype' => $userData['role'], // ✅ Fix: Explicit usertype
                 ]
             );
 
             // Assign role using Spatie (if available)
             if (method_exists($user, 'assignRole')) {
                 $user->syncRoles([$userData['role']]);
-                $this->command->info("    ✓ {$user->name} - role: {$userData['role']}");
+                $this->command->info("    ✓ {$user->name} - role: {$userData['role']} (usertype: {$userData['role']})");
             } else {
                 $this->command->info("    ✓ {$user->name}");
             }
@@ -138,6 +139,7 @@ class NatanPaTenantsSeeder extends Seeder
                 'name' => 'Paolo Marchetti',
                 'password' => Hash::make('password'),
                 'tenant_id' => $sestoId,
+                'usertype' => 'pa_entity', // ✅ Fix: Explicit usertype
             ]
         );
 
@@ -165,6 +167,19 @@ class NatanPaTenantsSeeder extends Seeder
     {
         try {
             if (\Schema::hasTable('user_consents')) {
+                // ✅ Fix: Get or Create Consent Version to avoid NOT NULL violation
+                $versionId = DB::table('consent_versions')->max('id');
+                
+                if (!$versionId) {
+                    $versionId = DB::table('consent_versions')->insertGetId([
+                        'version' => '1.0',
+                        'effective_date' => now(),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                        'consent_types' => json_encode([]) // Empty defaults
+                    ]);
+                }
+
                 DB::table('user_consents')->updateOrInsert(
                     [
                         'user_id' => $user->id,
@@ -172,15 +187,18 @@ class NatanPaTenantsSeeder extends Seeder
                     ],
                     [
                         'granted' => true,
-                        'legal_basis' => 'consent',
-                        'status' => 'active',
+                        'legal_basis' => 'contract', // ✅ Correct legal basis
+                        'consent_version_id' => $versionId, // ✅ Fix: Required field
+                        'ip_address' => '127.0.0.1',
+                        'user_agent' => 'Seeder/CLI',
+                        'metadata' => json_encode(['source' => 'seeder']),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]
                 );
             }
         } catch (\Exception $e) {
-            // Silently skip if consent table doesn't exist or has different structure
+            $this->command->warn("  ⚠ Failed to add consent: " . $e->getMessage());
         }
     }
 }
