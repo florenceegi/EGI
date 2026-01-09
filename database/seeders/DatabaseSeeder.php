@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder {
 
         // === PA/ENTERPRISE FEATURES ===
         PaWebScraperSeeder::class,              // 10. web scrapers PA (demo Firenze)
+        NatanPaTenantsSeeder::class,            // 11. NATAN PA tenants e utenti (Sesto, Firenze)
 
         // === OPTIONAL DEMO DATA ===
         // FakeUserSeeder::class,               // OPZIONALE - solo per development
