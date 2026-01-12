@@ -42,11 +42,14 @@ class ActivityLogService {
     /**
      * Log a GDPR activity with tamper-proof protection.
      *
-     * @param  string  $action
-     * @param  string  $legalBasis
-     * @param  array  $details
-     * @param  int|null  $userId
-     * @param  string|null  $complianceNote
+     * Aligned with GdprAuditLog model and gdpr_audit_logs table schema.
+     * Maps: action → action_type, details → context_data, record_hash → checksum
+     *
+     * @param  string  $action  The action type (stored as action_type)
+     * @param  string  $legalBasis  Legal basis for processing
+     * @param  array  $details  Context data (stored as context_data JSON)
+     * @param  int|null  $userId  User performing the action
+     * @param  string|null  $complianceNote  Compliance note (stored in context_data)
      * @return \App\Models\GdprAuditLog|null
      */
     public function log(
@@ -65,7 +68,7 @@ class ActivityLogService {
                 return null;
             }
 
-            // Prepare request metadata
+            // Prepare request metadata to include in context_data
             $requestMetadata = [
                 'method' => Request::method(),
                 'path' => Request::path(),
@@ -76,39 +79,30 @@ class ActivityLogService {
 
             // Calculate retention period based on action type
             $retentionDays = $this->getRetentionPeriod($action);
-            $retentionUntil = now()->addDays($retentionDays);
 
             // Set compliance note if not provided
             if ($complianceNote === null) {
                 $complianceNote = $this->getComplianceNote($action, $legalBasis);
             }
 
-            // Create the audit log
-            $log = new GdprAuditLog();
-            $log->user_id = $userId;
-            $log->action = $action;
-            $log->legal_basis = $legalBasis;
-            $log->details = json_encode($details);
-            $log->request_metadata = json_encode($requestMetadata);
-            $log->ip_address = Request::ip();
-            $log->user_agent = Request::userAgent();
-            $log->timestamp = now();
-            $log->retention_until = $retentionUntil;
-            $log->compliance_note = $complianceNote;
-            $log->is_verified = true;
-
-            // Create a hash of the record before saving to ensure immutability
-            $recordData = json_encode([
-                'user_id' => $log->user_id,
-                'action' => $log->action,
-                'legal_basis' => $log->legal_basis,
-                'details' => $log->details,
-                'ip_address' => $log->ip_address,
-                'user_agent' => $log->user_agent,
-                'timestamp' => $log->timestamp->toIso8601String(),
+            // Build context_data combining details, metadata, and compliance info
+            $contextData = array_merge($details, [
+                'request_metadata' => $requestMetadata,
+                'compliance_note' => $complianceNote,
+                'retention_days' => $retentionDays,
             ]);
 
-            $log->record_hash = hash('sha256', $recordData);
+            // Create the audit log - aligned with GdprAuditLog model
+            $log = new GdprAuditLog();
+            $log->user_id = $userId;
+            $log->action_type = $action;  // Model uses action_type
+            $log->legal_basis = $legalBasis;
+            $log->context_data = $contextData;  // Model uses context_data (cast to array)
+            $log->ip_address = Request::ip();
+            $log->user_agent = Request::userAgent();
+
+            // Generate checksum for immutability (model uses checksum, not record_hash)
+            // Note: checksum is auto-generated in model boot() via generateChecksum()
             $log->save();
 
             return $log;
@@ -412,30 +406,17 @@ class ActivityLogService {
         foreach ($logs as $log) {
             $results['checked']++;
 
-            // Recreate the hash from the stored data
-            $recordData = json_encode([
-                'user_id' => $log->user_id,
-                'action' => $log->action,
-                'legal_basis' => $log->legal_basis,
-                'details' => $log->details,
-                'ip_address' => $log->ip_address,
-                'user_agent' => $log->user_agent,
-                'timestamp' => $log->timestamp->toIso8601String(),
-            ]);
-
-            $calculatedHash = hash('sha256', $recordData);
-
-            if ($calculatedHash === $log->record_hash) {
+            // Use model's verifyIntegrity method (uses checksum)
+            if ($log->verifyIntegrity()) {
                 $results['valid']++;
             } else {
                 $results['invalid']++;
-                $log->is_verified = false;
-                $log->save();
+                // Note: model is immutable, cannot update
 
                 $results['invalid_logs'][] = [
                     'id' => $log->id,
-                    'action' => $log->action,
-                    'timestamp' => $log->timestamp->toIso8601String()
+                    'action_type' => $log->action_type,
+                    'created_at' => $log->created_at->toIso8601String()
                 ];
             }
         }
@@ -453,35 +434,37 @@ class ActivityLogService {
         try {
             $startDate = now()->subDays($days);
 
-            // Get activity counts by type
-            $activityCounts = GdprAuditLog::where('timestamp', '>=', $startDate)
-                ->selectRaw('action, COUNT(*) as count')
-                ->groupBy('action')
-                ->pluck('count', 'action')
+            // Get activity counts by type (use action_type and created_at)
+            $activityCounts = GdprAuditLog::where('created_at', '>=', $startDate)
+                ->selectRaw('action_type, COUNT(*) as count')
+                ->groupBy('action_type')
+                ->pluck('count', 'action_type')
                 ->toArray();
 
             // Get legal basis distribution
-            $legalBasisCounts = GdprAuditLog::where('timestamp', '>=', $startDate)
+            $legalBasisCounts = GdprAuditLog::where('created_at', '>=', $startDate)
                 ->selectRaw('legal_basis, COUNT(*) as count')
                 ->groupBy('legal_basis')
                 ->pluck('count', 'legal_basis')
                 ->toArray();
 
             // Get unique users
-            $uniqueUsers = GdprAuditLog::where('timestamp', '>=', $startDate)
+            $uniqueUsers = GdprAuditLog::where('created_at', '>=', $startDate)
                 ->whereNotNull('user_id')
                 ->distinct('user_id')
                 ->count('user_id');
 
             // Get daily activity counts
-            $dailyActivity = GdprAuditLog::where('timestamp', '>=', $startDate)
-                ->selectRaw(\App\Helpers\DatabaseHelper::dateOnly('timestamp') . ' as date, COUNT(*) as count')
+            $dailyActivity = GdprAuditLog::where('created_at', '>=', $startDate)
+                ->selectRaw(\App\Helpers\DatabaseHelper::dateOnly('created_at') . ' as date, COUNT(*) as count')
                 ->groupBy('date')
                 ->pluck('count', 'date')
                 ->toArray();
 
-            // Check for tampered records
-            $tamperedCount = GdprAuditLog::where('is_verified', false)->count();
+            // High risk activities count
+            $highRiskCount = GdprAuditLog::where('created_at', '>=', $startDate)
+                ->highRisk()
+                ->count();
 
             return [
                 'period_days' => $days,
@@ -490,8 +473,7 @@ class ActivityLogService {
                 'activities_by_type' => $activityCounts,
                 'legal_basis_distribution' => $legalBasisCounts,
                 'daily_activity' => $dailyActivity,
-                'tampered_records' => $tamperedCount,
-                'earliest_retention' => GdprAuditLog::min('retention_until')
+                'high_risk_activities' => $highRiskCount,
             ];
         } catch (\Throwable $e) {
             $this->errorManager->handle('GDPR_AUDIT_STATS_ERROR', [
@@ -506,8 +488,7 @@ class ActivityLogService {
                 'activities_by_type' => [],
                 'legal_basis_distribution' => [],
                 'daily_activity' => [],
-                'tampered_records' => 0,
-                'earliest_retention' => null
+                'high_risk_activities' => 0,
             ];
         }
     }
@@ -515,11 +496,23 @@ class ActivityLogService {
     /**
      * Find logs that have passed their retention period.
      *
+     * Note: retention_period is stored as string in the table.
+     * This method checks context_data.retention_days against created_at.
+     *
      * @param int $limit
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function findExpiredLogs(int $limit = 1000) {
-        return GdprAuditLog::where('retention_until', '<', now())
+        // Default retention is 730 days (2 years)
+        $defaultRetentionDays = 730;
+
+        return GdprAuditLog::whereRaw(
+            "created_at < NOW() - INTERVAL COALESCE(
+                CAST(JSON_UNQUOTE(JSON_EXTRACT(context_data, '$.retention_days')) AS UNSIGNED),
+                ?
+            ) DAY",
+            [$defaultRetentionDays]
+        )
             ->limit($limit)
             ->get();
     }
