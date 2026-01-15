@@ -89,6 +89,7 @@ class User extends Authenticatable implements HasMedia {
         'ai_subscription_tier',
         'ai_subscription_ends_at',
         'stripe_account_id',
+        'system_project_id', // ✅ ADDED
     ];
 
     protected $casts = [

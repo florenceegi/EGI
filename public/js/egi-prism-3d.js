@@ -35,17 +35,17 @@ class EgiPrism3D {
     mergeConfig(userConfig) {
         // EXACT values from shapes-gallery that work perfectly
         const defaultConfig = {
-            // Glass material - from shapes-gallery line 552-563
-            glassColor: '#ffdd44',  // User requested default
-            metalness: 0.05,
-            roughness: 0.02,
-            opacity: 0.7,           // User requested default
-            envMapIntensity: 0.8,
-            clearcoat: 0.8,
-            clearcoatRoughness: 0.1,
-            emissiveIntensity: 0,   // User requested default
+            // Glass material - Updated to match React "Vibrant Monolith" style
+            glassColor: '#ffdd44', 
+            metalness: 0.3,         // Shinier
+            roughness: 0.0,         // Perfect polish
+            opacity: 0.92,          // Solid vibrant color
+            envMapIntensity: 1.5,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.0,
+            emissiveIntensity: 0.4, // Inner glow
             
-            // Bloom - from shapes-gallery line 344-351
+            // Bloom
             bloomStrength: 0,
             bloomRadius: 0.2,
             bloomThreshold: 0.85,
@@ -55,20 +55,19 @@ class EgiPrism3D {
             
             // Animation
             autoRotate: true,
-            rotationSpeed: 0.02,    // User requested default
+            rotationSpeed: 0.02,
             showRings: false,
             
-            // Edges (New)
-            showEdges: false, // Default FALSE to avoid ugly wireframe on rounded box
+            // Edges
+            showEdges: false,
             edgeColor: '#ffffff',
-            edgeColor: '#ffffff',
-            edgeOpacity: 0.05,
+            edgeOpacity: 0.3,
             
-            // Missing Defaults (Crucial for Glass)
-            transmission: 1.0,
+            // Glass Physics
+            transmission: 0.1, // Low transmission for solid color
             ior: 1.5,
-            thickness: 0.5,
-            depth: 0.55 // If used elsewhere
+            thickness: 2.5,    // Thicker volume
+            depth: 0.55
         };
         return { ...defaultConfig, ...userConfig };
     }
@@ -158,77 +157,68 @@ class EgiPrism3D {
         });
     }
     
-    // Create text texture - exact from shapes-gallery line 446-513
+    // Create text texture - MULTI-LINE WRAPPED (Matched to React)
     createTextTexture(title, egiInfo) {
         const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 800;
+        canvas.width = 1024;
+        canvas.height = 2048; // Vertical aspect ratio 1:2
         const ctx = canvas.getContext('2d');
 
-        // DARK background - proper contrast
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, '#0a1828');
-        gradient.addColorStop(0.5, '#0d1f2d');
-        gradient.addColorStop(1, '#071018');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Clear - Transparent background
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Outer border - gold accent
-        ctx.strokeStyle = '#ffaa00';
-        ctx.lineWidth = 6;
-        ctx.strokeRect(16, 16, canvas.width - 32, canvas.height - 32);
-
-        // Inner border - subtle
-        ctx.strokeStyle = 'rgba(255, 170, 0, 0.4)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(28, 28, canvas.width - 56, canvas.height - 56);
-
-        // Title - GOLD, bold, large
-        ctx.fillStyle = '#ffaa00';
-        ctx.font = 'bold 42px "Segoe UI", Arial, sans-serif';
+        // Text Config
         ctx.textAlign = 'center';
-        ctx.fillText(title.substring(0, 20), canvas.width / 2, 110);
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#ffffff'; 
+        ctx.shadowColor = "rgba(0,0,0,0.8)";
+        ctx.shadowBlur = 15;
 
-        // Title underline
-        ctx.strokeStyle = '#ffaa00';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(80, 135);
-        ctx.lineTo(canvas.width - 80, 135);
-        ctx.stroke();
+        // WORD WRAP LOGIC - Aggressive Split
+        // Treat title as the main label
+        const text = (title || 'EGI ASSET').toUpperCase();
+        const words = text.split(' ');
+        // Force one word per line for maximum size/verticality
+        const lines = words; 
+        
+        // Dynamic font sizing
+        let longestWord = "";
+        lines.forEach(l => { if(l.length > longestWord.length) longestWord = l; });
+        
+        // Calculate font size to fit 900px width
+        ctx.font = 'bold 300px "Rajdhani", "Segoe UI", sans-serif'; 
+        const measure = ctx.measureText(longestWord).width;
+        let fontSize = 300;
+        if (measure > 900) {
+            fontSize = Math.floor(300 * (900 / measure));
+        }
+        
+        ctx.font = `bold ${fontSize}px "Rajdhani", "Segoe UI", sans-serif`;
+        
+        // Draw Text Lines (Centered Vertically)
+        const lineHeight = fontSize * 0.85; 
+        const totalHeight = lines.length * lineHeight;
+        let startY = (canvas.height / 2) - (totalHeight / 2);
+        
+        // If we have subtext (Collection/ID), shift up
+        const subtext = egiInfo.collection || egiInfo.id ? `#${egiInfo.id || ''} ${egiInfo.collection || ''}` : null;
+        if (subtext) startY -= 150;
 
-        // Info lines
-        const lines = [
-            `Token ID: #${egiInfo.id || 'N/A'}`,
-            `Collection: ${(egiInfo.collection || 'N/A').substring(0, 18)}`,
-            '---',
-            'Powered by Algorand',
-            'Florence EGI Platform'
-        ];
-
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '26px "Segoe UI", Arial, sans-serif';
-        let yPos = 210;
-        const lineHeight = 55;
-
-        lines.forEach((line) => {
-            if (line === '---') {
-                ctx.strokeStyle = 'rgba(255, 170, 0, 0.5)';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(100, yPos - 15);
-                ctx.lineTo(canvas.width - 100, yPos - 15);
-                ctx.stroke();
-            } else {
-                ctx.fillText(line, canvas.width / 2, yPos);
-            }
-            yPos += lineHeight;
+        lines.forEach((line, index) => {
+            ctx.fillText(line, canvas.width / 2, startY + (index * lineHeight) + (lineHeight/2));
         });
-
-        // Bottom decoration
-        ctx.fillStyle = '#00ddff';
-        ctx.font = 'bold 20px "Segoe UI", monospace';
-        ctx.fillText('◆ BLOCKCHAIN VERIFIED ◆', canvas.width / 2, canvas.height - 55);
+        
+        // Subtext (Below main block)
+        if(subtext) {
+            ctx.font = '80px "Share Tech Mono", monospace';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            const subY = startY + totalHeight + 100;
+            ctx.fillText(subtext.substring(0, 40).toUpperCase(), canvas.width / 2, subY);
+            
+            // Decorative line
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.fillRect((canvas.width/2)-150, subY - 80, 300, 6);
+        }
 
         const texture = new THREE.CanvasTexture(canvas);
         texture.colorSpace = THREE.SRGBColorSpace;

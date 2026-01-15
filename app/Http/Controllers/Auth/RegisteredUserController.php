@@ -318,6 +318,7 @@ class RegisteredUserController extends Controller {
                 'password' => Hash::make($validated['password']),
                 'usertype' => $validated['user_type'],
                 'platform_role' => $platformRole, // ✅ Set platform_role based on user_type
+                'system_project_id' => $florenceEgiTenant->system_project_id, // ✅ Inherit from tenant
 
                 // ═══ ALGORAND INTEGRATION (temporary placeholder) ═══
                 'wallet' => 'PENDING', // Will be updated with real address

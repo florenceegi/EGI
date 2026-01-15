@@ -599,7 +599,7 @@ Route::group(['prefix' => 'egis'], function () {
             ->name('egis.master.toggle');
         Route::post('/{egi}/master/toggle-buyer', [\App\Http\Controllers\EgiMasterController::class, 'toggleBuyerCloning'])
             ->name('egis.master.toggle-buyer');
-        
+
         Route::post('/{egi}/master/clone', [\App\Http\Controllers\EgiMasterController::class, 'clone'])
             ->name('egis.master.clone');
     });

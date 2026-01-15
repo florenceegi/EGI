@@ -21,7 +21,8 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @sustainability-factor High - compliance with Art. 30 GDPR
  * @narrative-coherence Emphasizes FlorenceEGI's commitment to transparency
  */
-class ActivityLogService {
+class ActivityLogService
+{
     /**
      * The error manager instance.
      *
@@ -35,7 +36,8 @@ class ActivityLogService {
      * @param  \Ultra\ErrorManager\Interfaces\ErrorManagerInterface  $errorManager
      * @return void
      */
-    public function __construct(ErrorManagerInterface $errorManager) {
+    public function __construct(ErrorManagerInterface $errorManager)
+    {
         $this->errorManager = $errorManager;
     }
 
@@ -124,7 +126,8 @@ class ActivityLogService {
      * @param  array  $headers
      * @return array
      */
-    protected function sanitizeHeaders(array $headers): array {
+    protected function sanitizeHeaders(array $headers): array
+    {
         $sensitiveHeaders = [
             'authorization',
             'cookie',
@@ -151,7 +154,8 @@ class ActivityLogService {
      * @param  string  $action
      * @return int
      */
-    protected function getRetentionPeriod(string $action): int {
+    protected function getRetentionPeriod(string $action): int
+    {
         $periods = config('gdpr.audit_log.retention_periods', [
             'default' => 730, // 2 years
             'consent_updated' => 1825, // 5 years
@@ -169,7 +173,8 @@ class ActivityLogService {
      * @param  string  $legalBasis
      * @return string
      */
-    protected function getComplianceNote(string $action, string $legalBasis): string {
+    protected function getComplianceNote(string $action, string $legalBasis): string
+    {
         $notes = [
             'consent_updated' => 'Art. 7 GDPR - Conditions for consent',
             'data_exported' => 'Art. 20 GDPR - Right to data portability',
@@ -191,7 +196,8 @@ class ActivityLogService {
      * @param  int  $limit
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getUserLogs(?int $userId = null, ?string $actionType = null, int $limit = 50) {
+    public function getUserLogs(?int $userId = null, ?string $actionType = null, int $limit = 50)
+    {
         $query = GdprAuditLog::query();
 
         // Apply user filter if specified
@@ -218,7 +224,8 @@ class ActivityLogService {
      * @param  int|null  $userId
      * @return \App\Models\GdprAuditLog|null
      */
-    public function logConsentUpdated(int $consentId, array $changes, ?int $userId = null): ?GdprAuditLog {
+    public function logConsentUpdated(int $consentId, array $changes, ?int $userId = null): ?GdprAuditLog
+    {
         return $this->log(
             'consent_updated',
             'consent',
@@ -239,7 +246,8 @@ class ActivityLogService {
      * @param  int|null  $userId
      * @return \App\Models\GdprAuditLog|null
      */
-    public function logDataExportRequested(int $exportId, array $exportDetails, ?int $userId = null): ?GdprAuditLog {
+    public function logDataExportRequested(int $exportId, array $exportDetails, ?int $userId = null): ?GdprAuditLog
+    {
         return $this->log(
             'data_export_requested',
             'user_request',
@@ -261,7 +269,8 @@ class ActivityLogService {
      * @param  int|null  $userId
      * @return \App\Models\GdprAuditLog|null
      */
-    public function logDataExportCompleted(int $exportId, array $completionDetails, ?int $userId = null): ?GdprAuditLog {
+    public function logDataExportCompleted(int $exportId, array $completionDetails, ?int $userId = null): ?GdprAuditLog
+    {
         return $this->log(
             'data_export_completed',
             'user_request',
@@ -283,7 +292,8 @@ class ActivityLogService {
      * @param  int|null  $userId
      * @return \App\Models\GdprAuditLog|null
      */
-    public function logProcessingRestrictionRequested(int $restrictionId, array $restrictionDetails, ?int $userId = null): ?GdprAuditLog {
+    public function logProcessingRestrictionRequested(int $restrictionId, array $restrictionDetails, ?int $userId = null): ?GdprAuditLog
+    {
         return $this->log(
             'processing_restriction_requested',
             'user_request',
@@ -306,7 +316,8 @@ class ActivityLogService {
      * @param  int|null  $userId
      * @return \App\Models\GdprAuditLog|null
      */
-    public function logBreachReportSubmitted(int $reportId, array $reportDetails, ?int $userId = null): ?GdprAuditLog {
+    public function logBreachReportSubmitted(int $reportId, array $reportDetails, ?int $userId = null): ?GdprAuditLog
+    {
         return $this->log(
             'breach_report_submitted',
             'legal_obligation',
@@ -328,7 +339,8 @@ class ActivityLogService {
      * @param  int|null  $userId
      * @return \App\Models\GdprAuditLog|null
      */
-    public function logAccountDeletionRequested(int $requestId, array $requestDetails, ?int $userId = null): ?GdprAuditLog {
+    public function logAccountDeletionRequested(int $requestId, array $requestDetails, ?int $userId = null): ?GdprAuditLog
+    {
         return $this->log(
             'account_deletion_requested',
             'user_request',
@@ -349,7 +361,8 @@ class ActivityLogService {
      * @param  int|null  $userId
      * @return \App\Models\GdprAuditLog|null
      */
-    public function logPersonalDataUpdated(array $updatedFields, ?int $userId = null): ?GdprAuditLog {
+    public function logPersonalDataUpdated(array $updatedFields, ?int $userId = null): ?GdprAuditLog
+    {
         // Only log the field names that were updated, not their values
         return $this->log(
             'personal_data_updated',
@@ -371,7 +384,8 @@ class ActivityLogService {
      * @param  int|null  $userId
      * @return \App\Models\GdprAuditLog|null
      */
-    public function logDataAccess(string $dataType, int $dataId, string $accessType, ?int $userId = null): ?GdprAuditLog {
+    public function logDataAccess(string $dataType, int $dataId, string $accessType, ?int $userId = null): ?GdprAuditLog
+    {
         return $this->log(
             'data_access',
             'user_request',
@@ -391,7 +405,8 @@ class ActivityLogService {
      * @param  int  $limit
      * @return array
      */
-    public function verifyLogsIntegrity(int $limit = 1000): array {
+    public function verifyLogsIntegrity(int $limit = 1000): array
+    {
         $logs = GdprAuditLog::orderBy('id', 'desc')
             ->limit($limit)
             ->get();
@@ -430,7 +445,8 @@ class ActivityLogService {
      * @param  int  $days
      * @return array
      */
-    public function getActivityStatistics(int $days = 30): array {
+    public function getActivityStatistics(int $days = 30): array
+    {
         try {
             $startDate = now()->subDays($days);
 
@@ -502,7 +518,8 @@ class ActivityLogService {
      * @param int $limit
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function findExpiredLogs(int $limit = 1000) {
+    public function findExpiredLogs(int $limit = 1000)
+    {
         // Default retention is 730 days (2 years)
         $defaultRetentionDays = 730;
 
@@ -523,7 +540,8 @@ class ActivityLogService {
      * @param int $limit
      * @return int Number of logs deleted
      */
-    public function purgeExpiredLogs(int $limit = 1000): int {
+    public function purgeExpiredLogs(int $limit = 1000): int
+    {
         try {
             $expiredLogs = $this->findExpiredLogs($limit);
             $count = $expiredLogs->count();
