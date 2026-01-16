@@ -297,7 +297,9 @@ $isEppCollection = $collection->creator && in_array($collection->creator->userty
     @include('collections.partials.edit-meta-modal', ['collection' => $collection])
 
     {{-- Dashboard Monetization Modal (partial) --}}
-    @include('collections.partials.dashboard-modal', ['collection' => $collection])
+    @if($collection)
+        @include('collections.partials.dashboard-modal', ['collection' => $collection])
+    @endif
 
     {{-- 🌱 EPP PROJECT SELECTION MODAL --}}
     <div id="eppProjectSelectionModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/80 backdrop-blur-sm"
