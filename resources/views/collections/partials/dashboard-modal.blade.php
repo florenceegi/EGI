@@ -777,7 +777,7 @@
                             @php
                                 $user = auth()->user();
                                 $userMethods = $user?->paymentMethods?->keyBy('method') ?? collect();
-                                $collectionMethods = $collection->paymentMethods->keyBy('method');
+                                $collectionMethods = $collection?->paymentMethods?->keyBy('method') ?? collect();
                                 $availableMethods = \App\Http\Controllers\PaymentSettingsController::AVAILABLE_METHODS;
                             @endphp
 
