@@ -775,7 +775,8 @@
                         {{-- Methods List --}}
                         <div class="space-y-4">
                             @php
-                                $userMethods = auth()->user()->paymentMethods->keyBy('method');
+                                $user = auth()->user();
+                                $userMethods = $user?->paymentMethods?->keyBy('method') ?? collect();
                                 $collectionMethods = $collection->paymentMethods->keyBy('method');
                                 $availableMethods = \App\Http\Controllers\PaymentSettingsController::AVAILABLE_METHODS;
                             @endphp
