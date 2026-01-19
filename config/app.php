@@ -451,4 +451,21 @@ return [
 
     'redirect_to_url_after_register' => env('REDIRECT_TO_URL_AFTER_REGISTER', 'home'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Critical Alerts Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for multi-channel admin alerts for critical platform errors
+    | (e.g. missing Stripe accounts for platform wallets).
+    |
+    */
+
+    'critical_alerts' => [
+        'admin_email' => env('CRITICAL_ALERT_EMAIL', 'admin@florenceegi.it'),
+        'admin_phone' => env('CRITICAL_ALERT_PHONE', '+393331234567'), // Format: E.164
+        'sms_provider' => env('SMS_PROVIDER', null), // 'twilio', 'nexmo', etc.
+        'sms_enabled' => env('SMS_ALERTS_ENABLED', false),
+    ],
+
 ];

@@ -25,6 +25,7 @@ return [
         'trader_pro' => 'Professioneller Trader',
         'pa_entity' => 'Öffentliche Verwaltung',
         'natan' => 'Natan',
+        'frangette' => 'Frangette',
     ],
 
     'fegi_user_type_short' => [
@@ -39,6 +40,7 @@ return [
         'pa_entity' => 'ÖV',
         'natan' => 'Natan',
         'inspector' => 'Inspektor',
+        'frangette' => 'Frangette',
     ],
 
     // Header/Navbar

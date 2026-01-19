@@ -181,6 +181,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | AWS SNS (Simple Notification Service)
+    |--------------------------------------------------------------------------
+    |
+    | AWS SNS configuration for sending SMS alerts to admin.
+    | Used by CriticalAlertService for multi-channel notifications.
+    |
+    | Region: eu-north-1 (Stockholm) - production SMS
+    |
+    */
+    'sns' => [
+        'key' => env('AWS_ACCESS_KEY_ID'),
+        'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        'region' => env('AWS_DEFAULT_REGION', 'eu-north-1'),
+        'version' => 'latest',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Gold Price API Services
     |--------------------------------------------------------------------------
     |

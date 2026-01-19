@@ -10,6 +10,7 @@ use App\Enums\Wallet\WalletRoleEnum; // Added for Enum refactoring
 use App\Enums\PaymentDistribution\UserTypeEnum; // Added for Enum refactoring
 use App\Services\Gdpr\AuditLogService;
 use App\Services\Gdpr\ConsentService;
+use App\Services\CriticalAlertService;
 use Illuminate\Support\Collection as LaravelCollection;
 use Illuminate\Support\Facades\DB;
 use Stripe\Exception\ApiErrorException;
@@ -30,13 +31,15 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @date 2025-11-17
  * @purpose Split payment automatico per mint EGI con distribuzione multi-wallet GDPR-compliant
  */
-class StripePaymentSplitService {
+class StripePaymentSplitService
+{
     protected StripeClient $stripeClient;
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditService;
     protected ConsentService $consentService;
     protected \App\Services\PaymentDistributionService $distributionService;
+    protected CriticalAlertService $criticalAlertService;
     // protected \App\Contracts\GoldPriceServiceInterface $goldPriceService; // REMOVED FOR STRATEGY PATTERN
 
     /**
@@ -45,19 +48,22 @@ class StripePaymentSplitService {
      * @param AuditLogService $auditService
      * @param ConsentService $consentService
      * @param \App\Services\PaymentDistributionService $distributionService
+     * @param CriticalAlertService $criticalAlertService
      */
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
         AuditLogService $auditService,
         ConsentService $consentService,
-        \App\Services\PaymentDistributionService $distributionService
+        \App\Services\PaymentDistributionService $distributionService,
+        CriticalAlertService $criticalAlertService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
         $this->consentService = $consentService;
         $this->distributionService = $distributionService;
+        $this->criticalAlertService = $criticalAlertService;
 
         $secretKey = config('algorand.payments.stripe.secret_key');
 
@@ -295,16 +301,16 @@ class StripePaymentSplitService {
         // Handle case where latest_charge is ID string (not expanded correctly?) - unlikely with client lib but safe
         $charge = $pi->latest_charge;
         if (is_string($charge)) {
-             $charge = $this->stripeClient->charges->retrieve($charge, ['expand' => ['balance_transaction']]);
+            $charge = $this->stripeClient->charges->retrieve($charge, ['expand' => ['balance_transaction']]);
         }
 
         if (empty($charge->balance_transaction)) {
-             throw new \Exception("Charge {$charge->id} has no balance_transaction");
+            throw new \Exception("Charge {$charge->id} has no balance_transaction");
         }
 
         $txn = $charge->balance_transaction;
         if (is_string($txn)) {
-             $txn = $this->stripeClient->balanceTransactions->retrieve($txn);
+            $txn = $this->stripeClient->balanceTransactions->retrieve($txn);
         }
 
         // Net amount is in cents
@@ -318,7 +324,8 @@ class StripePaymentSplitService {
      * @return LaravelCollection<Wallet>
      * @throws \Exception If no wallets or invalid percentages
      */
-    protected function getValidatedCollectionWallets(Collection $collection): LaravelCollection {
+    protected function getValidatedCollectionWallets(Collection $collection): LaravelCollection
+    {
         $wallets = $collection->wallets()->with('user')->get();
 
         if ($wallets->isEmpty()) {
@@ -360,7 +367,8 @@ class StripePaymentSplitService {
      * @param float $totalAmountEur
      * @return array
      */
-    protected function calculateDistributions(LaravelCollection $wallets, float $totalAmountEur, ?int $egiId = null, array $metadata = []): array {
+    protected function calculateDistributions(LaravelCollection $wallets, float $totalAmountEur, ?int $egiId = null, array $metadata = []): array
+    {
         $distributions = [];
         $totalAmountCents = (int) round($totalAmountEur * 100);
         $distributedCents = 0;
@@ -391,17 +399,17 @@ class StripePaymentSplitService {
         // margin PROPORTION from gross and apply it to the actual net amount.
         if (isset($metadata['commodity_base_value']) && is_numeric($metadata['commodity_base_value'])) {
             $baseValueFromGross = (float) $metadata['commodity_base_value'];
-            
+
             // Get gross from metadata if available, otherwise estimate from net
             // net_available_stripe is the pre-platform-fee net from Stripe
             $grossAmount = (float) ($metadata['gross_amount'] ?? $metadata['net_available_stripe'] ?? $totalAmountEur * 1.035);
-            
+
             // Calculate margin proportion from GROSS
             // margin_proportion = (gross - base) / gross
             // This tells us what % of the payment is margin vs. base cost
             $grossMargin = max(0, $grossAmount - $baseValueFromGross);
             $marginProportion = $grossAmount > 0 ? ($grossMargin / $grossAmount) : 0;
-            
+
             // Apply proportion to NET DISTRIBUTABLE amount
             // This ensures total distribution doesn't exceed available funds
             $scaledMargin = $totalAmountEur * $marginProportion;
@@ -597,11 +605,11 @@ class StripePaymentSplitService {
                 // LOGIC VARIANT FOR DEFAULT ACCOUNTS:
                 // If user type is 'natan', 'epp', 'frangette' -> read from USERS table (as they are system accounts)
                 // Otherwise -> read from WALLET_DESTINATIONS table (per collection specific)
-                'stripe_account_id' => in_array($wallet->user?->usertype, ['natan', 'epp', 'frangette']) 
+                'stripe_account_id' => in_array($wallet->user?->usertype, ['natan', 'epp', 'frangette'])
                     ? ($wallet->user?->stripe_account_id ?? $wallet->stripe_account_id)
                     : \App\Models\WalletDestination::where('wallet_id', $wallet->id)
-                        ->where('payment_type', \App\Enums\Payment\PaymentTypeEnum::STRIPE->value)
-                        ->value('destination_value'), 
+                    ->where('payment_type', \App\Enums\Payment\PaymentTypeEnum::STRIPE->value)
+                    ->value('destination_value'),
                 'user_id' => $wallet->user_id,
                 'user_type' => $this->distributionService->determineUserType($wallet), // P0 FIX: Required for DB
                 'platform_role' => $wallet->platform_role,
@@ -611,7 +619,7 @@ class StripePaymentSplitService {
                 'amount_eur' => $amountEur,
                 'amount_cents' => $amountCents,
             ];
-            
+
             // --- NATAN FEE SPLIT RE-CALCULATION (9.5% Transfer / 0.5% Retained) ---
             // Natan Wallet represents the Platform Fee (usually 10%).
             // Strategy:
@@ -622,38 +630,38 @@ class StripePaymentSplitService {
             // 10% of MARGIN (not 10% of total). We MUST NOT overwrite this with 9.5% of total.
             // The commodity logic correctly applies margin-only split at lines 489-502.
             if (($wallet->platform_role ?? '') === WalletRoleEnum::NATAN->value) {
-                 // Skip re-calculation for commodities - margin-based fee is already correct
-                 if ($isCommodity && $commodityBreakdown) {
-                     $this->logger->info('Natan Fee Split SKIPPED for Commodity (margin-based already applied)', [
-                         'commodity_margin' => $commodityBreakdown['margin_applied'] ?? 0,
-                         'natan_share_eur' => $amountEur,
-                         'note' => 'Using 10% of margin, not 9.5% of total'
-                     ]);
-                 } else {
-                     // Standard (non-commodity) logic: 9.5% transfer / 0.5% retained
-                     $transferPercentage = 9.5; 
-                     $reservePercentage = 0.5;
+                // Skip re-calculation for commodities - margin-based fee is already correct
+                if ($isCommodity && $commodityBreakdown) {
+                    $this->logger->info('Natan Fee Split SKIPPED for Commodity (margin-based already applied)', [
+                        'commodity_margin' => $commodityBreakdown['margin_applied'] ?? 0,
+                        'natan_share_eur' => $amountEur,
+                        'note' => 'Using 10% of margin, not 9.5% of total'
+                    ]);
+                } else {
+                    // Standard (non-commodity) logic: 9.5% transfer / 0.5% retained
+                    $transferPercentage = 9.5;
+                    $reservePercentage = 0.5;
 
-                     // Calculate Transfer Amount (9.5% of NET)
-                     $transferAmountEur = ($totalAmountEur * $transferPercentage) / 100;
-                     
-                     // Calculate Reserve Amount (0.5% of NET)
-                     $reserveAmountEur = ($totalAmountEur * $reservePercentage) / 100;
-                     
-                     // Update the main distribution entry to be ONLY the Transfer part
-                     $distributions[count($distributions) - 1]['amount_eur'] = $transferAmountEur;
-                     $distributions[count($distributions) - 1]['amount_cents'] = (int) round($transferAmountEur * 100);
-                     $distributions[count($distributions) - 1]['percentage'] = $transferPercentage;
-                     
-                     // Log explicitly the reserve part (it won't generate a transfer, but is tracked)
-                     $this->logger->info('Natan Fee Split Applied', [
+                    // Calculate Transfer Amount (9.5% of NET)
+                    $transferAmountEur = ($totalAmountEur * $transferPercentage) / 100;
+
+                    // Calculate Reserve Amount (0.5% of NET)
+                    $reserveAmountEur = ($totalAmountEur * $reservePercentage) / 100;
+
+                    // Update the main distribution entry to be ONLY the Transfer part
+                    $distributions[count($distributions) - 1]['amount_eur'] = $transferAmountEur;
+                    $distributions[count($distributions) - 1]['amount_cents'] = (int) round($transferAmountEur * 100);
+                    $distributions[count($distributions) - 1]['percentage'] = $transferPercentage;
+
+                    // Log explicitly the reserve part (it won't generate a transfer, but is tracked)
+                    $this->logger->info('Natan Fee Split Applied', [
                         'total_net_eur' => $totalAmountEur,
                         'original_fee_eur' => $amountEur,
                         'transfer_to_natan_eur' => $transferAmountEur,
                         'retained_reserve_eur' => $reserveAmountEur,
                         'note' => '0.5% Reserve retained implicitly'
-                     ]);
-                 }
+                    ]);
+                }
             }
         }
 
@@ -679,7 +687,8 @@ class StripePaymentSplitService {
      * @param array $distributions
      * @throws \Exception If any wallet missing Stripe account or capabilities
      */
-    protected function validateStripeAccounts(array $distributions): void {
+    protected function validateStripeAccounts(array $distributions): void
+    {
         $missingAccounts = [];
         $insufficientCapabilities = [];
 
@@ -760,10 +769,23 @@ class StripePaymentSplitService {
 
         // Error handling: Missing accounts
         if (!empty($missingAccounts)) {
+            // Log error via UEM
             $this->errorManager->handle('MINT_MISSING_STRIPE_ACCOUNTS', [
                 'missing_accounts' => json_encode($missingAccounts),
                 'missing_count' => count($missingAccounts),
             ]);
+
+            // 🚨 CRITICAL ALERT: Multi-channel notification to admin
+            $this->criticalAlertService->sendCriticalAlert(
+                'MINT_MISSING_STRIPE_ACCOUNTS',
+                [
+                    'missing_accounts' => $missingAccounts,
+                    'missing_count' => count($missingAccounts),
+                    'platform_wallets_affected' => array_column($missingAccounts, 'platform_role'),
+                    'timestamp' => now()->toIso8601String(),
+                ],
+                'critical'
+            );
 
             throw new \Exception(
                 'Cannot process split payment: ' . count($missingAccounts) .
@@ -988,18 +1010,18 @@ class StripePaymentSplitService {
         // Stripe API 2022-11-15+: Use 'latest_charge' instead of deprecated 'charges.data'
         // Fallback to old method for backward compatibility
         $chargeId = null;
-        
+
         // Method 1: Use latest_charge (modern API)
         if (!empty($paymentIntent->latest_charge)) {
-            $chargeId = is_string($paymentIntent->latest_charge) 
-                ? $paymentIntent->latest_charge 
+            $chargeId = is_string($paymentIntent->latest_charge)
+                ? $paymentIntent->latest_charge
                 : $paymentIntent->latest_charge->id;
         }
         // Method 2: Fallback to deprecated charges.data (legacy API)
         elseif (!empty($paymentIntent->charges) && !empty($paymentIntent->charges->data)) {
             $chargeId = $paymentIntent->charges->data[0]->id;
         }
-        
+
         if (!$chargeId) {
             throw new \Exception("No charge found for PaymentIntent {$paymentIntentId}");
         }
@@ -1040,7 +1062,8 @@ class StripePaymentSplitService {
      * @param array $executedTransfers
      * @param string $paymentIntentId
      */
-    protected function reverseExecutedTransfers(array $executedTransfers, string $paymentIntentId): void {
+    protected function reverseExecutedTransfers(array $executedTransfers, string $paymentIntentId): void
+    {
         if (empty($executedTransfers)) {
             return;
         }
@@ -1094,7 +1117,8 @@ class StripePaymentSplitService {
      *
      * @privacy-safe Verifies consent before processing financial transactions
      */
-    protected function validateWalletOwnersConsents(LaravelCollection $wallets): void {
+    protected function validateWalletOwnersConsents(LaravelCollection $wallets): void
+    {
         $missingConsents = [];
 
         foreach ($wallets as $wallet) {
@@ -1503,7 +1527,8 @@ class StripePaymentSplitService {
      * @param string|null $platformRole
      * @return \App\Enums\PaymentDistribution\UserTypeEnum
      */
-    protected function mapPlatformRoleToUserType(?string $platformRole): \App\Enums\PaymentDistribution\UserTypeEnum {
+    protected function mapPlatformRoleToUserType(?string $platformRole): \App\Enums\PaymentDistribution\UserTypeEnum
+    {
         return match ($platformRole) {
             WalletRoleEnum::NATAN->value => UserTypeEnum::NATAN,
             WalletRoleEnum::FRANGETTE->value => UserTypeEnum::FRANGETTE,
@@ -1556,7 +1581,8 @@ class StripePaymentSplitService {
     /**
      * Handle platform fee retention (no actual transfer)
      */
-    private function handlePlatformRetention(string $paymentIntentId, array $distribution): array {
+    private function handlePlatformRetention(string $paymentIntentId, array $distribution): array
+    {
         // Create distribution record for platform retention
         $distributionRecord = $this->distributionService->createPaymentDistribution([
             'payment_intent_id' => $paymentIntentId,
@@ -1594,7 +1620,8 @@ class StripePaymentSplitService {
      * Create pending distribution record BEFORE Stripe call
      * P0.5 FIX v2.4.1: NEVER degrade completed records during retry
      */
-    private function createPendingDistribution(string $paymentIntentId, array $distribution, Collection $collection) { // Added Collection arg
+    private function createPendingDistribution(string $paymentIntentId, array $distribution, Collection $collection)
+    { // Added Collection arg
         $idempotencyKey = $this->generateIdempotencyKey($paymentIntentId, $distribution['wallet_id']);
 
         // CRITICAL v2.4.1: Check existing record and protect terminal states
@@ -1649,7 +1676,8 @@ class StripePaymentSplitService {
     /**
      * Mark distribution as completed after successful Stripe transfer
      */
-    private function completeDistribution($distributionRecord, string $transferId): void {
+    private function completeDistribution($distributionRecord, string $transferId): void
+    {
         $distributionRecord->update([
             'transfer_id' => $transferId,
             'distribution_status' => 'completed', // P0 FIX: Correct column name
@@ -1660,7 +1688,8 @@ class StripePaymentSplitService {
     /**
      * Mark distribution as failed
      */
-    private function failDistribution($distributionRecord, string $errorMessage): void {
+    private function failDistribution($distributionRecord, string $errorMessage): void
+    {
         if ($distributionRecord) {
             $distributionRecord->update([
                 'distribution_status' => 'failed', // P0 FIX: Correct column name
@@ -1673,7 +1702,8 @@ class StripePaymentSplitService {
     /**
      * Generate deterministic idempotency key for safe retries
      */
-    private function generateIdempotencyKey(string $paymentIntentId, int $walletId): string {
+    private function generateIdempotencyKey(string $paymentIntentId, int $walletId): string
+    {
         return "pi_{$paymentIntentId}_w_{$walletId}_v2"; // v2 for new implementation
     }
 }

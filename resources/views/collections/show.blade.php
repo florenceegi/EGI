@@ -297,7 +297,7 @@ $isEppCollection = $collection->creator && in_array($collection->creator->userty
     @include('collections.partials.edit-meta-modal', ['collection' => $collection])
 
     {{-- Dashboard Monetization Modal (partial) --}}
-    @if($collection)
+    @if ($collection)
         @include('collections.partials.dashboard-modal', ['collection' => $collection])
     @endif
 
@@ -1011,30 +1011,30 @@ if (auth()->check()) {
                                                     'function') {
                                                     console.log(
                                                         '✅ openEgiliPurchaseModal found, calling...'
-                                                        );
+                                                    );
                                                     window.openEgiliPurchaseModal();
                                                 } else if (attempts < 10) {
                                                     console.log(
                                                         `⏳ Waiting for openEgiliPurchaseModal... attempt ${attempts + 1}/10`
-                                                        );
+                                                    );
                                                     setTimeout(() => tryOpenModal(attempts + 1), 100);
                                                 } else {
                                                     console.error(
                                                         '❌ openEgiliPurchaseModal() not found after 10 attempts!'
-                                                        );
+                                                    );
                                                     // Fallback: try to show the modal directly
                                                     const modal = document.getElementById(
                                                         'egili-purchase-modal');
                                                     if (modal) {
                                                         console.log(
                                                             '🔧 Fallback: directly showing modal element'
-                                                            );
+                                                        );
                                                         modal.classList.remove('hidden');
                                                         modal.style.display = '';
                                                     } else {
                                                         console.error(
                                                             '❌ Modal element #egili-purchase-modal not found in DOM'
-                                                            );
+                                                        );
                                                         Swal.fire({
                                                             icon: 'error',
                                                             title: 'Errore',
