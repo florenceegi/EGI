@@ -15,4 +15,9 @@ return [
     'description' => 'Descrizione',
     'quantity' => 'Quantità',
     'unit_price' => 'Prezzo Unitario',
+
+    // Tab switcher
+    'tab_collections' => 'Collezioni',
+    'tab_creators' => 'Creatori',
+    'tab_collectors' => 'Collezionisti',
 ];

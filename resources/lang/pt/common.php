@@ -20,4 +20,9 @@ return [
     'updated_at' => 'Atualizado em',
     'back' => 'Voltar',
     'back_to_egi' => 'Voltar ao EGI',
+
+    // Tab switcher
+    'tab_collections' => 'Coleções',
+    'tab_creators' => 'Criadores',
+    'tab_collectors' => 'Colecionadores',
 ];

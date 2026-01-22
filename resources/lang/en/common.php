@@ -15,4 +15,9 @@ return [
     'description' => 'Description',
     'quantity' => 'Quantity',
     'unit_price' => 'Unit Price',
+
+    // Tab switcher
+    'tab_collections' => 'Collections',
+    'tab_creators' => 'Creators',
+    'tab_collectors' => 'Collectors',
 ];

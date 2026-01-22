@@ -3,29 +3,29 @@
 <div class="w-full mt-4 mb-4" id="main-list-switcher">
 
     <!-- Tab Navigation -->
-    <div class="flex justify-center mb-6 space-x-8">
+    <div class="flex justify-center mb-6 space-x-4 sm:space-x-8">
         <!-- Collezioni -->
         <button type="button"
-                class="text-3xl transition-all duration-200 tab-button hover:scale-110"
+                class="px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg tab-button sm:px-4 sm:text-base hover:bg-gray-700"
                 data-tab="collections"
-                title="Collezioni">
-            🖼️
+                title="{{ __('common.tab_collections') }}">
+            {{ __('common.tab_collections') }}
         </button>
 
         <!-- Creatori -->
         <button type="button"
-                class="text-3xl transition-all duration-200 tab-button hover:scale-110"
+                class="px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg tab-button sm:px-4 sm:text-base hover:bg-gray-700"
                 data-tab="creators"
-                title="Creatori">
-            🎨
+                title="{{ __('common.tab_creators') }}">
+            {{ __('common.tab_creators') }}
         </button>
 
         <!-- Collezionisti -->
         <button type="button"
-                class="text-3xl transition-all duration-200 tab-button hover:scale-110"
+                class="px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg tab-button sm:px-4 sm:text-base hover:bg-gray-700"
                 data-tab="collectors"
-                title="Collezionisti">
-            📚
+                title="{{ __('common.tab_collectors') }}">
+            {{ __('common.tab_collectors') }}
         </button>
     </div>
 
@@ -44,13 +44,8 @@
 
         <!-- Collectors Tab -->
         <div id="main-content-collectors" class="hidden tab-content-panel">
-            <x-user-list userType="activator" />
+            <x-user-list userType="collector" />
         </div>
-
-        <!-- EPP Tab -->
-        {{-- <div id="main-content-epp" class="hidden tab-content-panel">
-            <x-user-list userType="epp" />
-        </div> --}}
     </div>
 </div>
 
@@ -96,12 +91,10 @@ document.addEventListener('DOMContentLoaded', function() {
         tabButtons.forEach(button => {
             const tabName = button.getAttribute('data-tab');
             if (tabName === targetTab) {
-                button.style.opacity = '1';
-                button.style.filter = 'brightness(1.2)';
+                button.classList.add('active');
                 console.log('🔵 Attivato bottone:', tabName);
             } else {
-                button.style.opacity = '0.5';
-                button.style.filter = 'brightness(0.7)';
+                button.classList.remove('active');
             }
         });
     }
@@ -148,7 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .tab-button {
-    transition: transform 0.2s ease-in-out !important;
+    color: rgba(255, 255, 255, 0.6);
+    border: 1px solid transparent;
+    transition: all 0.2s ease-in-out;
 }
 
 .tab-button:focus {
@@ -157,11 +152,15 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .tab-button:hover {
-    transform: scale(1.18) !important;
+    color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(55, 65, 81, 0.5);
 }
 
-.tab-button:active {
-    transform: scale(1.10) !important;
+.tab-button.active,
+.tab-button[style*="opacity: 1"] {
+    color: #fff;
+    background-color: rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.5);
 }
 
 /* Forza visibilità del contenuto */

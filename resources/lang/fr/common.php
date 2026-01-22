@@ -18,4 +18,9 @@ return [
     'delete' => 'Supprimer',
     'created_at' => 'Créé le',
     'updated_at' => 'Mis à jour le',
+
+    // Tab switcher
+    'tab_collections' => 'Collections',
+    'tab_creators' => 'Créateurs',
+    'tab_collectors' => 'Collectionneurs',
 ];
