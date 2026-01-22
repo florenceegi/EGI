@@ -15,7 +15,8 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Collection extends Model implements HasMedia {
+class Collection extends Model implements HasMedia
+{
     use HasFactory;
     use SoftDeletes; // Gestione SoftDeletes
     use InteractsWithMedia;
@@ -76,21 +77,24 @@ class Collection extends Model implements HasMedia {
     /**
      * Relazione con il creator.
      */
-    public function creator() {
+    public function creator()
+    {
         return $this->belongsTo(User::class, 'creator_id');
     }
 
     /**
      * Relazione con l'owner.
      */
-    public function owner() {
+    public function owner()
+    {
         return $this->belongsTo(User::class, 'owner_id');
     }
 
     /**
      * Relazione con gli EGI.
      */
-    public function egis() {
+    public function egis()
+    {
         return $this->hasMany(Egi::class);
     }
 
@@ -98,7 +102,8 @@ class Collection extends Model implements HasMedia {
      * Relazione con gli EGI originali (esclude i cloni).
      * Gli EGI clonati hanno parent_id != null
      */
-    public function originalEgis() {
+    public function originalEgis()
+    {
         return $this->hasMany(Egi::class)->whereNull('parent_id');
     }
 
@@ -120,7 +125,8 @@ class Collection extends Model implements HasMedia {
     /**
      * Relazione con gli utenti tramite la tabella pivot collection_user.
      */
-    public function users() {
+    public function users()
+    {
         return $this->belongsToMany(User::class, 'collection_user')
             ->withPivot('role', 'is_owner')
             ->withTimestamps();
@@ -129,7 +135,8 @@ class Collection extends Model implements HasMedia {
     /**
      * Relazione con i wallet.
      */
-    public function wallets() {
+    public function wallets()
+    {
         return $this->hasMany(Wallet::class);
     }
 
@@ -138,7 +145,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return bool
      */
-    public function isPublished(): bool {
+    public function isPublished(): bool
+    {
         return $this->status === 'published';
     }
 
@@ -149,7 +157,8 @@ class Collection extends Model implements HasMedia {
      * @param string $permission Permission name to check
      * @return bool
      */
-    public function userHasPermission($user, string $permission): bool {
+    public function userHasPermission($user, string $permission): bool
+    {
         $userId = is_numeric($user) ? (int) $user : ($user->id ?? null);
         if (!$userId) {
             return false;
@@ -189,7 +198,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return bool
      */
-    public function canBePublished(): bool {
+    public function canBePublished(): bool
+    {
         $hasPendingWalletProposals = NotificationPayloadWallet::whereHas('walletModel', function ($query) {
             $query->where('collection_id', $this->id);
         })
@@ -204,7 +214,8 @@ class Collection extends Model implements HasMedia {
      * Relazione con EppProject (progetto ambientale selezionato).
      * Una Collection supporta UN singolo EppProject.
      */
-    public function eppProject() {
+    public function eppProject()
+    {
         return $this->belongsTo(EppProject::class, 'epp_project_id');
     }
 
@@ -213,7 +224,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return bool
      */
-    public function isCreatorCompany(): bool {
+    public function isCreatorCompany(): bool
+    {
         if (!$this->relationLoaded('creator')) {
             $this->load('creator');
         }
@@ -225,7 +237,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return bool
      */
-    public function hasVoluntaryEpp(): bool {
+    public function hasVoluntaryEpp(): bool
+    {
         return $this->is_epp_voluntary === true;
     }
 
@@ -234,7 +247,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return bool
      */
-    public function hasEppDonation(): bool {
+    public function hasEppDonation(): bool
+    {
         return $this->epp_project_id !== null && $this->epp_donation_percentage > 0;
     }
 
@@ -245,7 +259,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return float
      */
-    public function getEffectiveEppPercentage(): float {
+    public function getEffectiveEppPercentage(): float
+    {
         // Logica basata sui NUOVI Profili Collection (Contributor vs Normal)
         $profile = $this->profile_type ?? 'contributor'; // Default per retrocompatibilità
         $mode = $this->royalty_mode ?? 'standard';
@@ -278,7 +293,8 @@ class Collection extends Model implements HasMedia {
      * DEPRECATED: Old EPP relationship - use eppProject() instead
      * @deprecated Use eppProject() relationship
      */
-    public function epp() {
+    public function epp()
+    {
         return $this->belongsTo(Epp::class, 'epp_id');
     }
 
@@ -287,7 +303,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
-    public function likes(): MorphMany {
+    public function likes(): MorphMany
+    {
         // Il secondo argomento 'likeable' deve corrispondere al nome usato
         // nel metodo morphs() nella migration della tabella likes.
         return $this->morphMany(Like::class, 'likeable');
@@ -299,7 +316,8 @@ class Collection extends Model implements HasMedia {
      * @param User|null $user
      * @return bool
      */
-    public function isLikedBy(?User $user = null): bool {
+    public function isLikedBy(?User $user = null): bool
+    {
         if (!$user) {
             $user = auth()->user();
         }
@@ -318,7 +336,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return int
      */
-    public function getLikesCountAttribute(): int {
+    public function getLikesCountAttribute(): int
+    {
         return $this->likes()->count();
     }
 
@@ -327,7 +346,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return bool
      */
-    public function getIsLikedAttribute(): bool {
+    public function getIsLikedAttribute(): bool
+    {
         return $this->isLikedBy();
     }
 
@@ -336,7 +356,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
-    public function reservations(): HasManyThrough {
+    public function reservations(): HasManyThrough
+    {
         // Spiegazione parametri:
         // 1°: Modello finale che vogliamo ottenere (Reservation)
         // 2°: Modello intermedio attraverso cui passiamo (Egi)
@@ -358,7 +379,8 @@ class Collection extends Model implements HasMedia {
      * Payment distributions for this collection
      * @return HasMany
      */
-    public function paymentDistributions(): HasMany {
+    public function paymentDistributions(): HasMany
+    {
         return $this->hasMany(PaymentDistribution::class);
     }
 
@@ -368,7 +390,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return MorphMany
      */
-    public function paymentMethods(): MorphMany {
+    public function paymentMethods(): MorphMany
+    {
         return $this->morphMany(UserPaymentMethod::class, 'payable');
     }
 
@@ -378,14 +401,15 @@ class Collection extends Model implements HasMedia {
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getEffectivePaymentMethods(): \Illuminate\Database\Eloquent\Collection {
+    public function getEffectivePaymentMethods(): \Illuminate\Database\Eloquent\Collection
+    {
         // Check if collection has its own payment methods configured
         $collectionMethods = $this->paymentMethods()->where('is_enabled', true)->get();
-        
+
         if ($collectionMethods->isNotEmpty()) {
             return $collectionMethods;
         }
-        
+
         // Fall back to creator's enabled payment methods
         return $this->creator?->enabledPaymentMethods()->get() ?? collect();
     }
@@ -393,7 +417,8 @@ class Collection extends Model implements HasMedia {
     /**
      * Spatie Media: definizione della media collection per il banner (head)
      */
-    public function registerMediaCollections(): void {
+    public function registerMediaCollections(): void
+    {
         $this->addMediaCollection('head')
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif'])
             ->singleFile();
@@ -405,7 +430,8 @@ class Collection extends Model implements HasMedia {
      * - card: formato scheda
      * - thumb: miniatura quadrata
      */
-    public function registerMediaConversions(?Media $media = null): void {
+    public function registerMediaConversions(?Media $media = null): void
+    {
         // Banner ampio per hero
         $this->addMediaConversion('banner')
             ->width(1920)
@@ -437,7 +463,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return float L'impatto stimato totale in EUR
      */
-    public function getEstimatedImpactAttribute(): float {
+    public function getEstimatedImpactAttribute(): float
+    {
         // Solo prenotazioni attive per performance
         return $this->egis()
             ->whereHas('reservations', function ($query) {
@@ -469,7 +496,8 @@ class Collection extends Model implements HasMedia {
      * @param int $limit Numero massimo di risultati (default: 10)
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFeaturedForGuest($query, int $limit = 10) {
+    public function scopeFeaturedForGuest($query, int $limit = 10)
+    {
         return $query->where('is_published', true)
             ->where('featured_in_guest', true)
             ->with(['creator', 'egis.reservations' => function ($query) {
@@ -487,7 +515,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return string|null 'subscription', 'epp', or null
      */
-    public function getMonetizationTypeAttribute(): ?string {
+    public function getMonetizationTypeAttribute(): ?string
+    {
         // If monetization_type is explicitly set in DB (future-proof), use it
         if (array_key_exists('monetization_type', $this->attributes) && $this->attributes['monetization_type']) {
             return $this->attributes['monetization_type'];
@@ -507,7 +536,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return string 'active', 'inactive', 'expired'
      */
-    public function getSubscriptionStatusAttribute(): string {
+    public function getSubscriptionStatusAttribute(): string
+    {
         // If subscription_status is explicitly set in DB (future-proof), use it
         if (array_key_exists('subscription_status', $this->attributes) && $this->attributes['subscription_status']) {
             return $this->attributes['subscription_status'];
@@ -518,16 +548,16 @@ class Collection extends Model implements HasMedia {
             /** @var \App\Services\CollectionSubscriptionService $service */
             $service = app(\App\Services\CollectionSubscriptionService::class);
             $statusData = $service->getSubscriptionStatus($this);
-            
+
             if ($statusData['is_active']) {
                 return 'active';
             }
-            
+
             // If has subscription but expired
             if ($statusData['has_subscription'] && !$statusData['is_active']) {
                 return 'expired';
             }
-            
+
             return 'inactive';
         } catch (\Throwable $e) {
             // Service might not be available in all contexts (e.g. tests)
@@ -540,7 +570,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return string|null
      */
-    public function getSubscriptionTierAttribute(): ?string {
+    public function getSubscriptionTierAttribute(): ?string
+    {
         if (array_key_exists('subscription_tier', $this->attributes) && $this->attributes['subscription_tier']) {
             return $this->attributes['subscription_tier'];
         }
@@ -549,7 +580,7 @@ class Collection extends Model implements HasMedia {
             /** @var \App\Services\CollectionSubscriptionService $service */
             $service = app(\App\Services\CollectionSubscriptionService::class);
             $statusData = $service->getSubscriptionStatus($this);
-            
+
             return $statusData['transaction']?->subscription_tier ?? null;
         } catch (\Throwable $e) {
             return null;
@@ -561,7 +592,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return string|null
      */
-    public function getSubscriptionExpiresAtAttribute(): ?string {
+    public function getSubscriptionExpiresAtAttribute(): ?string
+    {
         if (array_key_exists('subscription_expires_at', $this->attributes) && $this->attributes['subscription_expires_at']) {
             return $this->attributes['subscription_expires_at'];
         }
@@ -570,7 +602,7 @@ class Collection extends Model implements HasMedia {
             /** @var \App\Services\CollectionSubscriptionService $service */
             $service = app(\App\Services\CollectionSubscriptionService::class);
             $statusData = $service->getSubscriptionStatus($this);
-            
+
             return $statusData['expires_at'] ? $statusData['expires_at']->toDateTimeString() : null;
         } catch (\Throwable $e) {
             return null;
@@ -582,7 +614,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return string|null
      */
-    public function getSubscriptionStartedAtAttribute(): ?string {
+    public function getSubscriptionStartedAtAttribute(): ?string
+    {
         if (array_key_exists('subscription_started_at', $this->attributes) && $this->attributes['subscription_started_at']) {
             return $this->attributes['subscription_started_at'];
         }
@@ -591,7 +624,7 @@ class Collection extends Model implements HasMedia {
             /** @var \App\Services\CollectionSubscriptionService $service */
             $service = app(\App\Services\CollectionSubscriptionService::class);
             $statusData = $service->getSubscriptionStatus($this);
-            
+
             return $statusData['transaction']?->created_at?->toDateTimeString() ?? null;
         } catch (\Throwable $e) {
             return null;
@@ -603,12 +636,13 @@ class Collection extends Model implements HasMedia {
      *
      * @return string|null
      */
-    public function getSubscriptionStripeIdAttribute(): ?string {
+    public function getSubscriptionStripeIdAttribute(): ?string
+    {
         try {
             /** @var \App\Services\CollectionSubscriptionService $service */
             $service = app(\App\Services\CollectionSubscriptionService::class);
             $statusData = $service->getSubscriptionStatus($this);
-            
+
             // Assuming payment_transaction_id might store this, or we verify payment_method
             if ($statusData['transaction'] && $statusData['transaction']->payment_method === 'stripe') {
                 return $statusData['transaction']->payment_transaction_id;
@@ -623,7 +657,8 @@ class Collection extends Model implements HasMedia {
      *
      * @return bool
      */
-    public function getIsAutoRenewActiveAttribute(): bool {
+    public function getIsAutoRenewActiveAttribute(): bool
+    {
         try {
             /** @var \App\Services\RecurringPaymentService $service */
             $service = app(\App\Services\RecurringPaymentService::class);

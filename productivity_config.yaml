@@ -1,0 +1,66 @@
+# EGI Productivity System v7.0 - Configuration
+
+# GitHub Settings
+github:
+  # Get token from: https://github.com/settings/tokens
+  # Scopes needed: repo (for private repos)
+  token: ${GITHUB_TOKEN}  # Use environment variable
+  
+  # Repositories to track (owner/repo format)
+  repositories:
+    - AutobookNft/EGI
+    - AutobookNft/EGI-HUB
+    - AutobookNft/EGI-HUB-HOME-REACT
+    - AutobookNft/EGI-INFO
+    - AutobookNft/NATAN_LOC
+
+# Time Tracking
+time_tracking:
+  # Primary source: wakatime (automatic IDE tracking)
+  wakatime:
+    enabled: true
+    api_key: ${WAKATIME_API_KEY}  # Optional, will prompt if not set
+    
+  # Fallback: git timestamp inference
+  git_inference:
+    enabled: true
+    max_commit_time_hours: 4  # Cap single commit time
+    exclude_gaps_hours: 8      # Ignore overnight gaps
+    
+  # Optional: RescueTime (background tracking)
+  rescuetime:
+    enabled: false
+    api_key: ${RESCUETIME_API_KEY}
+
+# Auto-Tagging
+auto_tagging:
+  # LLM provider for historical correction
+  llm:
+    provider: "claude"  # or "openai"
+    api_key: ${ANTHROPIC_API_KEY}
+    model: "claude-3-5-sonnet-20241022"
+    confidence_threshold: 0.90  # Auto-apply if >= 90%
+    
+  # Rule-based for new commits (always enabled)
+  rules_enabled: true
+
+# Cache Settings
+cache:
+  directory: ~/.egi_productivity_cache
+  max_age_hours: 24  # Refresh GitHub data after 24h
+  
+# Output Settings
+output:
+  excel_path: ./productivity_{date}.xlsx
+  terminal_colors: true
+  include_charts: true
+
+# Analysis Settings  
+analysis:
+  default_start_date: "2025-08-19"  # Project start
+  exclude_patterns:
+    - node_modules/
+    - vendor/
+    - "*.lock"
+    - .history/
+    - storage/testing/

@@ -8,14 +8,21 @@
         @if (auth()->check() && auth()->id() === $creator->id)
             {{-- DESKTOP: Bottone completo con carta di credito --}}
             <div class="absolute bottom-4 right-4 z-30 hidden md:block">
-                <button onclick="window.paymentModal.open()" class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-600 via-yellow-500 to-orange-600 p-[2px] shadow-xl shadow-amber-500/40 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(251,191,36,0.6)]">
-                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 opacity-30"></div>
+                <button onclick="window.paymentModal.open()"
+                    class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-600 via-yellow-500 to-orange-600 p-[2px] shadow-xl shadow-amber-500/40 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(251,191,36,0.6)]">
+                    <div
+                        class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transition-transform duration-700 group-hover:translate-x-full">
+                    </div>
                     <div class="relative rounded-xl bg-gradient-to-br from-gray-900 to-black px-4 py-2.5">
                         <div class="flex items-center gap-3">
                             <!-- CARTA REALISTICA COMPATTA -->
-                            <div class="relative h-8 w-12 rounded-md bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 shadow-lg shadow-amber-500/40 transition-all duration-500 group-hover:rotate-6 group-hover:scale-110 overflow-hidden">
-                                <div class="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-black/20"></div>
-                                <div class="absolute left-1 top-1 h-2.5 w-3 rounded-sm bg-gradient-to-br from-yellow-200 via-amber-300 to-yellow-600 shadow-inner">
+                            <div
+                                class="relative h-8 w-12 overflow-hidden rounded-md bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 shadow-lg shadow-amber-500/40 transition-all duration-500 group-hover:rotate-6 group-hover:scale-110">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-black/20">
+                                </div>
+                                <div
+                                    class="absolute left-1 top-1 h-2.5 w-3 rounded-sm bg-gradient-to-br from-yellow-200 via-amber-300 to-yellow-600 shadow-inner">
                                     <div class="grid h-full w-full grid-cols-3 gap-[0.5px] p-[1px]">
                                         <div class="rounded-[0.5px] bg-amber-600/40"></div>
                                         <div class="rounded-[0.5px] bg-amber-600/40"></div>
@@ -25,15 +32,22 @@
                                         <div class="rounded-[0.5px] bg-amber-600/40"></div>
                                     </div>
                                 </div>
-                                <div class="absolute bottom-1 left-1 text-[6px] font-bold text-white/90 tracking-wide drop-shadow">•••• 4242</div>
+                                <div
+                                    class="absolute bottom-1 left-1 text-[6px] font-bold tracking-wide text-white/90 drop-shadow">
+                                    •••• 4242</div>
                                 <div class="absolute bottom-1 right-1 flex gap-[1px]">
                                     <div class="h-1 w-1 rounded-full bg-red-500/80"></div>
                                     <div class="h-1 w-1 rounded-full bg-yellow-500/80"></div>
                                 </div>
-                                <div class="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800"></div>
+                                <div
+                                    class="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800">
+                                </div>
                             </div>
-                            <span class="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 bg-clip-text text-sm font-bold text-transparent">{{ __('payment.settings_title') }}</span>
-                            <div class="ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400 shadow-lg shadow-amber-400/80"></div>
+                            <span
+                                class="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 bg-clip-text text-sm font-bold text-transparent">{{ __('payment.settings_title') }}</span>
+                            <div
+                                class="ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400 shadow-lg shadow-amber-400/80">
+                            </div>
                         </div>
                     </div>
                 </button>
@@ -41,15 +55,20 @@
 
             {{-- MOBILE: FAB compatto - Vanilla JS (NO Alpine!) --}}
             <div id="payment-fab-mobile" class="fixed bottom-20 right-4 z-50 md:hidden">
-                <button onclick="window.paymentModal.open()" 
+                <button onclick="window.paymentModal.open()"
                     class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 via-yellow-500 to-orange-500 shadow-lg shadow-amber-500/50 transition-all duration-300 active:scale-95">
                     {{-- Icona carta stilizzata --}}
-                    <div class="relative h-7 w-10 rounded bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 shadow-inner">
-                        <div class="absolute left-1 top-1 h-2 w-2.5 rounded-sm bg-gradient-to-br from-yellow-200 to-amber-400"></div>
+                    <div
+                        class="relative h-7 w-10 rounded bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 shadow-inner">
+                        <div
+                            class="absolute left-1 top-1 h-2 w-2.5 rounded-sm bg-gradient-to-br from-yellow-200 to-amber-400">
+                        </div>
                         <div class="absolute bottom-1 left-1 text-[5px] font-bold text-white/80">••••</div>
                     </div>
                     {{-- Indicatore attivo --}}
-                    <div class="absolute -top-1 -right-1 h-3 w-3 animate-pulse rounded-full bg-green-400 shadow-lg shadow-green-400/80"></div>
+                    <div
+                        class="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full bg-green-400 shadow-lg shadow-green-400/80">
+                    </div>
                 </button>
             </div>
         @endif
@@ -66,7 +85,8 @@
                         class="h-full w-full object-cover">
                 @else
                     {{-- Mobile: sfondo più scuro per contrasto con card --}}
-                    <div class="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 md:hidden"></div>
+                    <div class="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 md:hidden">
+                    </div>
                     <div class="absolute inset-0 hidden md:block"
                         style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
                     </div>
@@ -87,14 +107,16 @@
                 <div class="flex items-center gap-4">
                     {{-- Avatar iOS size (80pt) - Circular per creator --}}
                     <div class="relative flex-shrink-0">
-                        <div class="h-20 w-20 overflow-hidden rounded-full ring-2 ring-oro-fiorentino/40">
+                        <div class="ring-oro-fiorentino/40 h-20 w-20 overflow-hidden rounded-full ring-2">
                             <img src="{{ $creator->profile_photo_url }}" alt="{{ $creator->name }}"
                                 class="h-full w-full object-cover" loading="lazy">
                         </div>
                         @if ($creator->is_verified)
                             <div class="absolute -bottom-1 -right-1 rounded-full bg-verde-rinascita p-1.5 shadow-lg">
                                 <svg class="h-3.5 w-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
                                 </svg>
                             </div>
                         @endif
@@ -104,7 +126,7 @@
                     <div class="min-w-0 flex-1">
                         <h1 class="truncate text-xl font-bold text-white">{{ $creator->name }}</h1>
                         @if ($creator->tagline)
-                            <p class="truncate text-sm italic text-oro-fiorentino/80">"{{ $creator->tagline }}"</p>
+                            <p class="text-oro-fiorentino/80 truncate text-sm italic">"{{ $creator->tagline }}"</p>
                         @endif
                         <p class="mt-1 text-xs text-gray-400">
                             {{ __('creator.home.member_since', ['year' => $creator->created_at->format('Y')]) }}
@@ -119,15 +141,20 @@
                 <div class="grid grid-cols-3 gap-2">
                     <div class="rounded-xl bg-white/5 px-3 py-2.5 text-center">
                         <p class="text-lg font-bold text-white">{{ number_format($stats['total_egis'] ?? 0) }}</p>
-                        <p class="text-[10px] uppercase tracking-wider text-gray-400">{{ __('creator.home.stats.works') }}</p>
+                        <p class="text-[10px] uppercase tracking-wider text-gray-400">
+                            {{ __('creator.home.stats.works') }}</p>
                     </div>
                     <div class="rounded-xl bg-white/5 px-3 py-2.5 text-center">
-                        <p class="text-lg font-bold text-white">{{ number_format($stats['total_collections'] ?? 0) }}</p>
-                        <p class="text-[10px] uppercase tracking-wider text-gray-400">{{ __('creator.home.stats.collections') }}</p>
+                        <p class="text-lg font-bold text-white">{{ number_format($stats['total_collections'] ?? 0) }}
+                        </p>
+                        <p class="text-[10px] uppercase tracking-wider text-gray-400">
+                            {{ __('creator.home.stats.collections') }}</p>
                     </div>
                     <div class="rounded-xl bg-white/5 px-3 py-2.5 text-center">
-                        <p class="text-lg font-bold text-white">{{ number_format($stats['total_supporters'] ?? 0) }}</p>
-                        <p class="text-[10px] uppercase tracking-wider text-gray-400">{{ __('creator.home.stats.patrons') }}</p>
+                        <p class="text-lg font-bold text-white">{{ number_format($stats['total_supporters'] ?? 0) }}
+                        </p>
+                        <p class="text-[10px] uppercase tracking-wider text-gray-400">
+                            {{ __('creator.home.stats.patrons') }}</p>
                     </div>
                 </div>
             </div>
@@ -167,7 +194,8 @@
                         @endif
                         <div class="mt-3">
                             <p class="text-gray-400">{{ $creator->name }} &middot;
-                                {{ __('creator.home.member_since', ['year' => $creator->created_at->format('Y')]) }}</p>
+                                {{ __('creator.home.member_since', ['year' => $creator->created_at->format('Y')]) }}
+                            </p>
                         </div>
                     </div>
                 </div>

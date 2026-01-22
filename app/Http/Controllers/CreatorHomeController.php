@@ -28,7 +28,8 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @version 2.0.0 (Usertype Architecture Compliant)
  * @date 2025-08-10
  */
-class CreatorHomeController extends Controller {
+class CreatorHomeController extends Controller
+{
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
 
@@ -47,7 +48,8 @@ class CreatorHomeController extends Controller {
      * @return User
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    private function resolveCreator($identifier): User {
+    private function resolveCreator($identifier): User
+    {
         if (is_numeric($identifier)) {
             return User::findOrFail($identifier);
         } else {
@@ -65,7 +67,8 @@ class CreatorHomeController extends Controller {
      * - Include statistiche di vendita/prenotazioni per ogni EGI
      * - Differente dal portfolio Collector che mostra EGI acquistati
      */
-    public function portfolio($id, Request $request) {
+    public function portfolio($id, Request $request)
+    {
         $creator = $this->resolveCreator($id);
         if (!$creator->hasRole('creator')) {
             abort(404);
@@ -186,7 +189,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Redirect to portfolio (default section)
      * 📤 Output: Redirect to creator.portfolio
      */
-    public function home($id) {
+    public function home($id)
+    {
         // Redirect to portfolio as default view
         return redirect()->route('creator.portfolio', $id);
     }
@@ -200,7 +204,8 @@ class CreatorHomeController extends Controller {
      * @param Request $request La richiesta HTTP contenente i parametri di filtro.
      * @return View La vista 'creators.index' con i dati dei Creator.
      */
-    public function index(Request $request): View {
+    public function index(Request $request): View
+    {
         $query = $request->input('query');
         $category = $request->input('category'); // Esempio di filtro per categoria
         $sort = $request->input('sort', 'latest'); // Ordine di default: 'latest'
@@ -261,7 +266,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Show collections in new SPA layout
      * 📤 Output: Collections view or partial
      */
-    public function collections($id, Request $request) {
+    public function collections($id, Request $request)
+    {
         return $this->collectionsSection($id, $request);
     }
 
@@ -270,7 +276,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Display specific collection details
      * 📤 Output: Redirect to existing collection show route
      */
-    public function showCollection($id) {
+    public function showCollection($id)
+    {
         $creator = $this->resolveCreator($id);
 
         // La query ora cerca per ID della collezione, garantendo anche che appartenga al creator corretto.
@@ -288,7 +295,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Display creator's collections
      * 📤 Output: Collections view or partial
      */
-    public function collectionsSection($id, Request $request) {
+    public function collectionsSection($id, Request $request)
+    {
         $creator = $this->resolveCreator($id);
         if (!$creator->hasRole('creator')) {
             abort(404);
@@ -320,7 +328,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Display creator's biography
      * 📤 Output: Biography view or partial
      */
-    public function biography($id, Request $request) {
+    public function biography($id, Request $request)
+    {
         $creator = $this->resolveCreator($id);
         if (!$creator->hasRole('creator')) {
             abort(404);
@@ -346,7 +355,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Display creator's environmental impact
      * 📤 Output: Impact view or partial
      */
-    public function impact($id, Request $request) {
+    public function impact($id, Request $request)
+    {
         $creator = $this->resolveCreator($id);
         if (!$creator->hasRole('creator')) {
             abort(404);
@@ -373,7 +383,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Display creator's community/supporters
      * 📤 Output: Community view or partial
      */
-    public function community($id, Request $request) {
+    public function community($id, Request $request)
+    {
         $creator = $this->resolveCreator($id);
         if (!$creator->hasRole('creator')) {
             abort(404);
@@ -399,7 +410,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Placeholder for future sections
      * 📤 Output: Coming soon page with back navigation
      */
-    public function underConstruction($id): View {
+    public function underConstruction($id): View
+    {
         $creator = $this->resolveCreator($id);
 
         if (!$creator->hasRole('creator')) {
@@ -422,7 +434,8 @@ class CreatorHomeController extends Controller {
      * @param string $sort
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    private function applyPortfolioSorting($query, string $sort) {
+    private function applyPortfolioSorting($query, string $sort)
+    {
         switch ($sort) {
             case 'title':
                 return $query->orderBy('title');
@@ -445,7 +458,8 @@ class CreatorHomeController extends Controller {
      * @param int $creatorCollectionsCount
      * @return array<string, int|float>
      */
-    private function buildPortfolioStats(SupportCollection $egis, string $mode, int $creatorCollectionsCount): array {
+    private function buildPortfolioStats(SupportCollection $egis, string $mode, int $creatorCollectionsCount): array
+    {
         $stats = [
             'total_egis' => $egis->count(),
             'total_collections' => $mode === 'owned'

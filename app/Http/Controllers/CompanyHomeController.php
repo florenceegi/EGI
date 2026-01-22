@@ -30,7 +30,8 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @version 1.0.0
  * @date 2025-12-05
  */
-class CompanyHomeController extends Controller {
+class CompanyHomeController extends Controller
+{
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
 
@@ -44,7 +45,8 @@ class CompanyHomeController extends Controller {
     /**
      * Risolve una company da ID numerico o nick_name
      */
-    private function resolveCompany($identifier): User {
+    private function resolveCompany($identifier): User
+    {
         if (is_numeric($identifier)) {
             $user = User::findOrFail($identifier);
         } else {
@@ -63,7 +65,8 @@ class CompanyHomeController extends Controller {
     /**
      * Portfolio della Company: mostra tutti gli EGI CREATI dalla company
      */
-    public function portfolio($id, Request $request) {
+    public function portfolio($id, Request $request)
+    {
         $company = $this->resolveCompany($id);
 
         $query = $request->input('query');
@@ -176,14 +179,16 @@ class CompanyHomeController extends Controller {
     /**
      * Home page della company - redirect to portfolio
      */
-    public function home($id) {
+    public function home($id)
+    {
         return redirect()->route('company.portfolio', $id);
     }
 
     /**
      * Pagina indice delle Company
      */
-    public function index(Request $request): View {
+    public function index(Request $request): View
+    {
         $query = $request->input('query');
         $sort = $request->input('sort', 'latest');
 
@@ -223,7 +228,8 @@ class CompanyHomeController extends Controller {
     /**
      * Collections della company
      */
-    public function collections($id, Request $request) {
+    public function collections($id, Request $request)
+    {
         $company = $this->resolveCompany($id);
 
         $collections = $company->collections()
@@ -249,7 +255,8 @@ class CompanyHomeController extends Controller {
     /**
      * About della company
      */
-    public function about($id, Request $request) {
+    public function about($id, Request $request)
+    {
         $company = $this->resolveCompany($id);
 
         $stats = [
@@ -269,7 +276,8 @@ class CompanyHomeController extends Controller {
     /**
      * Impact della company (EPP)
      */
-    public function impact($id, Request $request) {
+    public function impact($id, Request $request)
+    {
         $company = $this->resolveCompany($id);
 
         $stats = [
@@ -290,7 +298,8 @@ class CompanyHomeController extends Controller {
     /**
      * Applica ordinamento
      */
-    private function applyPortfolioSorting($query, string $sort) {
+    private function applyPortfolioSorting($query, string $sort)
+    {
         switch ($sort) {
             case 'title':
                 return $query->orderBy('title');
@@ -307,7 +316,8 @@ class CompanyHomeController extends Controller {
     /**
      * Costruisce statistiche portfolio
      */
-    private function buildPortfolioStats(SupportCollection $egis, string $mode, int $companyCollectionsCount): array {
+    private function buildPortfolioStats(SupportCollection $egis, string $mode, int $companyCollectionsCount): array
+    {
         return [
             'total_egis' => $egis->count(),
             'total_collections' => $mode === 'owned'

@@ -201,15 +201,21 @@ EMAIL;
     }
 
     /**
-     * Format SMS message (max 160 chars for standard SMS)
+     * Format SMS message with ALL useful info (max 160 chars for standard SMS)
      */
     protected function formatSmsMessage(string $errorCode, array $context, string $severity): string
     {
-        $missingCount = $context['missing_count'] ?? 'N/A';
+        $missingCount = $context['missing_count'] ?? 0;
+        $missingAccounts = $context['missing_accounts'] ?? [];
+        
+        // Estrai i nomi dei wallet mancanti
+        $walletNames = array_map(fn($a) => $a['platform_role'] ?? 'Unknown', $missingAccounts);
+        $walletList = implode(', ', $walletNames);
 
         return match ($errorCode) {
-            'MINT_MISSING_STRIPE_ACCOUNTS' => "🚨 EGI: {$missingCount} wallet(s) senza Stripe. AZIONE IMMEDIATA. [{$severity}]",
-            default => "🚨 EGI: {$errorCode}. Controlla email per dettagli. [{$severity}]",
+            'MINT_MISSING_STRIPE_ACCOUNTS',
+            'TEST_MINT_MISSING_STRIPE_ACCOUNTS' => "🚨 EGI CRITICO: Stripe mancante su {$walletList}. Mint BLOCCATO. Configura subito stripe_account_id!",
+            default => "🚨 EGI [{$severity}]: {$errorCode}. Verifica immediata richiesta.",
         };
     }
 

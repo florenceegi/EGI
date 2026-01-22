@@ -16,24 +16,24 @@ bash scripts/install-git-hooks.sh
 
 ## 📋 Hook Disponibili
 
-- **pre-commit** - Previene eliminazione accidentale di codice
-- **pre-push** - Doppia verifica prima del push
+-   **pre-commit** - Previene eliminazione accidentale di codice
+-   **pre-push** - Doppia verifica prima del push
 
 ## 🔒 Regole di Protezione
 
 ### Pre-Commit Hook
 
-| Regola | Trigger | Azione |
-|--------|---------|--------|
-| **R1** | File rimuove >100 righe | 🛑 BLOCCA commit |
-| **R2** | File rimuove 50-100 righe | ⚠️ WARNING |
-| **R3** | File rimuove >50% contenuto | 🛑 BLOCCA commit |
+| Regola | Trigger                          | Azione           |
+| ------ | -------------------------------- | ---------------- |
+| **R1** | File rimuove >100 righe          | 🛑 BLOCCA commit |
+| **R2** | File rimuove 50-100 righe        | ⚠️ WARNING       |
+| **R3** | File rimuove >50% contenuto      | 🛑 BLOCCA commit |
 | **R4** | Commit rimuove >500 righe totali | 🛑 BLOCCA commit |
 
 ### Pre-Push Hook
 
-| Regola | Trigger | Azione |
-|--------|---------|--------|
+| Regola | Trigger                   | Azione         |
+| ------ | ------------------------- | -------------- |
 | **R5** | Commit rimuove >500 righe | 🛑 BLOCCA push |
 
 ## 🔧 Bypass Temporaneo
@@ -50,46 +50,51 @@ git push --no-verify
 I commit message devono iniziare con un tag valido. **16 tags disponibili** con pesi per analytics:
 
 ### Tags Principali (Development)
-| Tag | Peso | Uso | Icona |
-|-----|------|-----|-------|
-| `[FEAT]` | 1.0 | Nuova funzionalità | ✨ |
-| `[FIX]` | 1.5 | Bug fix | 🐛 |
-| `[REFACTOR]` | 2.0 | Refactoring (debt repayment) | ♻️ |
+
+| Tag          | Peso | Uso                          | Icona |
+| ------------ | ---- | ---------------------------- | ----- |
+| `[FEAT]`     | 1.0  | Nuova funzionalità           | ✨    |
+| `[FIX]`      | 1.5  | Bug fix                      | 🐛    |
+| `[REFACTOR]` | 2.0  | Refactoring (debt repayment) | ♻️    |
 
 ### Tags Quality & Testing
-| Tag | Peso | Uso | Icona |
-|-----|------|-----|-------|
-| `[TEST]` | 1.2 | Test code | 🧪 |
-| `[DEBUG]` | 1.3 | Sessione debugging | 🔍 |
+
+| Tag       | Peso | Uso                | Icona |
+| --------- | ---- | ------------------ | ----- |
+| `[TEST]`  | 1.2  | Test code          | 🧪    |
+| `[DEBUG]` | 1.3  | Sessione debugging | 🔍    |
 
 ### Tags Documentation & Config
-| Tag | Peso | Uso | Icona |
-|-----|------|-----|-------|
-| `[DOC]` | 0.8 | Documentazione | 📚 |
-| `[CONFIG]` | 0.7 | Configurazione | 🔧 |
+
+| Tag        | Peso | Uso            | Icona |
+| ---------- | ---- | -------------- | ----- |
+| `[DOC]`    | 0.8  | Documentazione | 📚    |
+| `[CONFIG]` | 0.7  | Configurazione | 🔧    |
 
 ### Tags Maintenance
-| Tag | Peso | Uso | Icona |
-|-----|------|-----|-------|
-| `[CHORE]` | 0.6 | Maintenance tasks | 🔨 |
-| `[I18N]` | 0.7 | Traduzioni/locale | 🌍 |
+
+| Tag       | Peso | Uso               | Icona |
+| --------- | ---- | ----------------- | ----- |
+| `[CHORE]` | 0.6  | Maintenance tasks | 🔨    |
+| `[I18N]`  | 0.7  | Traduzioni/locale | 🌍    |
 
 ### Tags Special Categories
-| Tag | Peso | Uso | Icona |
-|-----|------|-----|-------|
-| `[PERF]` | 1.4 | Performance optimization | ⚡ |
-| `[SECURITY]` | 1.8 | Security fix/enhancement | 🔒 |
-| `[WIP]` | 0.3 | Work in progress | 🚧 |
-| `[REVERT]` | 0.5 | Revert commit | ⏪ |
-| `[MERGE]` | 0.4 | Merge commit | 🔀 |
-| `[DEPLOY]` | 0.8 | Deployment | 🚀 |
-| `[UPDATE]` | 0.6 | Generic update | 📦 |
+
+| Tag          | Peso | Uso                      | Icona |
+| ------------ | ---- | ------------------------ | ----- |
+| `[PERF]`     | 1.4  | Performance optimization | ⚡    |
+| `[SECURITY]` | 1.8  | Security fix/enhancement | 🔒    |
+| `[WIP]`      | 0.3  | Work in progress         | 🚧    |
+| `[REVERT]`   | 0.5  | Revert commit            | ⏪    |
+| `[MERGE]`    | 0.4  | Merge commit             | 🔀    |
+| `[DEPLOY]`   | 0.8  | Deployment               | 🚀    |
+| `[UPDATE]`   | 0.6  | Generic update           | 📦    |
 
 ### Alias Supportati
 
-- **Bracket**: `[FEAT]`, `[FIX]`, `[REFACTOR]`
-- **Conventional**: `feat:`, `fix:`, `refactor:`
-- **Emoji**: ✨, 🐛, ♻️
+-   **Bracket**: `[FEAT]`, `[FIX]`, `[REFACTOR]`
+-   **Conventional**: `feat:`, `fix:`, `refactor:`
+-   **Emoji**: ✨, 🐛, ♻️
 
 ### Esempi
 
@@ -123,4 +128,3 @@ O apri: `/home/fabio/EGI/docs/git-hooks/README.md`
 ## 🆘 Supporto
 
 Se gli hook causano problemi, consulta la sezione Troubleshooting nella documentazione completa.
-

@@ -76,16 +76,17 @@
     $canCreateEgi = $user && $user->can('create_EGI');
     $navLinkClasses = 'text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition px-3 py-2 rounded-md text-sm font-medium
     hover:bg-gray-100/40 dark:hover:bg-gray-800/40';
-    
+
     // Routing dinamico basato su usertype
-    $userHomeRoute = $user && $user->id 
-        ? match ($user->usertype ?? 'creator') {
-            'creator' => route('creator.home', $user->id),
-            'collector' => route('collector.home', $user->id),
-            'company' => route('company.home', $user->id),
-            default => route('creator.home', $user->id),
-        }
-        : '#';
+    $userHomeRoute =
+        $user && $user->id
+            ? match ($user->usertype ?? 'creator') {
+                'creator' => route('creator.home', $user->id),
+                'collector' => route('collector.home', $user->id),
+                'company' => route('company.home', $user->id),
+                default => route('creator.home', $user->id),
+            }
+            : '#';
 @endphp
 
 <div data-mobile-menu class="fixed inset-0 hidden sm:hidden" style="z-index: 999999 !important;">

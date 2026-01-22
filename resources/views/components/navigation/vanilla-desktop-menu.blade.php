@@ -2,16 +2,17 @@
 
 @php
     $user = App\Helpers\FegiAuth::user();
-    
+
     // Routing dinamico basato su usertype
-    $userHomeRoute = $user && $user->id 
-        ? match ($user->usertype ?? 'creator') {
-            'creator' => route('creator.home', $user->id),
-            'collector' => route('collector.home', $user->id),
-            'company' => route('company.home', $user->id),
-            default => route('creator.home', $user->id),
-        }
-        : '#';
+    $userHomeRoute =
+        $user && $user->id
+            ? match ($user->usertype ?? 'creator') {
+                'creator' => route('creator.home', $user->id),
+                'collector' => route('collector.home', $user->id),
+                'company' => route('company.home', $user->id),
+                default => route('creator.home', $user->id),
+            }
+            : '#';
 @endphp
 
 {{-- Component-specific styles --}}

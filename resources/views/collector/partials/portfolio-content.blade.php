@@ -1,7 +1,7 @@
 {{-- Collector Portfolio Content --}}
 @php
     /** @var \Illuminate\Support\Collection<int, \App\Models\Egi> $currentEgis */
-    $currentEgis = $purchasedEgis ?? $egis ?? collect();
+    $currentEgis = $purchasedEgis ?? ($egis ?? collect());
     $viewMode = $view ?? 'grid';
 @endphp
 
@@ -10,7 +10,8 @@
 
         {{-- Controls --}}
         <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div class="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm font-semibold text-purple-200">
+            <div
+                class="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm font-semibold text-purple-200">
                 <span class="flex h-2 w-2 rounded-full bg-purple-400"></span>
                 {{ __('collector.portfolio.owned') }}
             </div>
@@ -39,8 +40,8 @@
             {{-- MOBILE: Sempre List View (iOS-first) --}}
             <div class="space-y-3 md:hidden">
                 @foreach ($currentEgis as $egi)
-                    <x-egi-card-list :egi="$egi" context="collector" :portfolioOwner="$collector"
-                        :showPurchasePrice="true" :showOwnershipBadge="true" />
+                    <x-egi-card-list :egi="$egi" context="collector" :portfolioOwner="$collector" :showPurchasePrice="true"
+                        :showOwnershipBadge="true" />
                 @endforeach
             </div>
 
@@ -48,16 +49,16 @@
             @if ($viewMode === 'grid')
                 <div class="hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     @foreach ($currentEgis as $egi)
-                        <x-egi-card :egi="$egi" :collection="$egi->collection" :portfolioContext="true"
-                            :portfolioOwner="$collector" :hideReserveButton="false" />
+                        <x-egi-card :egi="$egi" :collection="$egi->collection" :portfolioContext="true" :portfolioOwner="$collector"
+                            :hideReserveButton="false" />
                     @endforeach
                 </div>
             @else
                 {{-- Desktop List View --}}
                 <div class="hidden space-y-3 md:block">
                     @foreach ($currentEgis as $egi)
-                        <x-egi-card-list :egi="$egi" context="collector" :portfolioOwner="$collector"
-                            :showPurchasePrice="true" :showOwnershipBadge="true" />
+                        <x-egi-card-list :egi="$egi" context="collector" :portfolioOwner="$collector" :showPurchasePrice="true"
+                            :showOwnershipBadge="true" />
                     @endforeach
                 </div>
             @endif
