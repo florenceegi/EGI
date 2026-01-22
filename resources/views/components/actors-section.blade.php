@@ -9,15 +9,15 @@
 <!-- @if (!$showOnHomepageOnly || request()->routeIs('home'))
 -->
 
-<section id="ecosystem-actors" class="border-b border-t border-gray-700 bg-gray-800 py-16 md:py-24"
+<section id="ecosystem-actors" class="py-16 bg-gray-800 border-t border-b border-gray-700 md:py-24"
     aria-labelledby="ecosystem-actors-heading">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="container px-4 mx-auto sm:px-6 lg:px-8">
         <div class="text-center">
             <h2 id="ecosystem-actors-heading"
-                class="mb-4 font-display text-3xl font-bold text-white md:text-4xl lg:text-5xl">
+                class="mb-4 text-3xl font-bold text-white font-display md:text-4xl lg:text-5xl">
                 {{ __('guest_layout.actors_section_title') }} {{-- Chiave di traduzione generica per guest layout --}}
             </h2>
-            <p class="mx-auto mb-12 max-w-3xl font-body text-lg text-gray-300 md:mb-16 lg:mb-20">
+            <p class="max-w-3xl mx-auto mb-12 text-lg text-gray-300 font-body md:mb-16 lg:mb-20">
                 {{ __('guest_layout.actors_section_subtitle') }}
             </p>
         </div>
@@ -59,12 +59,12 @@
                 ctaBgColorClass="bg-verde-trading" ctaTextColorClass="text-white"
                 ctaHoverBgColorClass="hover:bg-green-600" />
 
-            {{-- Card 6: Commissioner --}}
+            {{-- Card 6: Commissioner
             <x-actor-card icon="star" :title="__('guest_home.actor_commissioner_title')" :message="__('guest_home.actor_commissioner_message')" :ctaText="__('guest_home.actor_commissioner_cta')"
                 ctaLink="{{ route('archetypes.collector') }}" ctaIcon="workspace_premium"
                 accentColorClass="border-t-4 border-purple-500" iconColorClass="text-purple-500"
                 ctaBgColorClass="bg-purple-500" ctaTextColorClass="text-white"
-                ctaHoverBgColorClass="hover:bg-purple-600" />
+                ctaHoverBgColorClass="hover:bg-purple-600" /> --}}
 
             {{-- Card 7: PA (Pubbliche Amministrazioni) --}}
             <x-actor-card icon="account_balance" :title="__('guest_home.actor_pa_title')" :message="__('guest_home.actor_pa_message')" :ctaText="__('guest_home.actor_pa_cta')"
