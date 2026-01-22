@@ -297,9 +297,10 @@
     }
 
     .subtitle-container {
-        height: 40px;
+        min-height: 40px;
+        height: auto;
         margin-bottom: 40px;
-        overflow: hidden;
+        overflow: visible;
     }
 
     .collector-subtitle {
@@ -608,11 +609,15 @@
         .collector-subtitle {
             font-size: 0.95rem;
             margin-bottom: 10px;
+            line-height: 1.4;
+            padding: 0 10px;
         }
 
         .subtitle-container {
-            height: 28px;
+            min-height: 32px;
+            height: auto;
             margin-bottom: 20px;
+            overflow: visible;
         }
 
         /* Stats su una riga - design compatto */
@@ -688,12 +693,15 @@
 
         .collector-subtitle {
             font-size: 0.8rem;
-            padding: 0 5px;
+            padding: 0 8px;
+            line-height: 1.4;
         }
 
         .subtitle-container {
-            height: 22px;
+            min-height: 28px;
+            height: auto;
             margin-bottom: 15px;
+            overflow: visible;
         }
 
         .content-overlay {
@@ -744,11 +752,15 @@
 
         .collector-subtitle {
             font-size: 0.7rem;
+            line-height: 1.3;
+            padding: 0 6px;
         }
 
         .subtitle-container {
-            height: 18px;
-            margin-bottom: 10px;
+            min-height: 24px;
+            height: auto;
+            margin-bottom: 12px;
+            overflow: visible;
         }
 
         .interactive-elements {
@@ -787,12 +799,15 @@
         }
 
         .subtitle-container {
-            height: 16px;
-            margin-bottom: 8px;
+            min-height: 22px;
+            height: auto;
+            margin-bottom: 10px;
+            overflow: visible;
         }
 
         .collector-subtitle {
             font-size: 0.65rem;
+            line-height: 1.3;
         }
 
         .interactive-elements {
