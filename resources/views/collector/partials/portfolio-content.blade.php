@@ -6,24 +6,7 @@
 @endphp
 
 <div class="min-h-screen bg-gray-900">
-    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        {{-- Collector Summary - Compact horizontal on mobile --}}
-        <div class="mb-6 flex items-center justify-center gap-4 text-center md:mb-8 md:gap-8">
-            <div>
-                <span class="block text-lg font-bold text-oro-fiorentino md:text-xl">{{ $stats['total_owned_egis'] ?? 0 }}</span>
-                <span class="text-[10px] text-gray-300 md:text-sm">{{ __('collector.home.owned_egis') }}</span>
-            </div>
-            <div class="h-8 w-px bg-gray-700"></div>
-            <div>
-                <span class="block text-lg font-bold text-oro-fiorentino md:text-xl">{{ $stats['collections_represented'] ?? 0 }}</span>
-                <span class="text-[10px] text-gray-300 md:text-sm">{{ __('collector.collections_represented') }}</span>
-            </div>
-            <div class="h-8 w-px bg-gray-700"></div>
-            <div>
-                <span class="block text-base font-bold text-oro-fiorentino md:text-xl">€{{ number_format($stats['total_spent_eur'] ?? 0, 0) }}</span>
-                <span class="text-[10px] text-gray-300 md:text-sm">{{ __('collector.home.total_spent') }}</span>
-            </div>
-        </div>
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
         {{-- Controls --}}
         <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

@@ -27,19 +27,6 @@
 <div class="min-h-screen bg-gray-800">
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
-        {{-- Portfolio Summary - Compact horizontal on mobile --}}
-        <div class="mb-6 flex items-center justify-center gap-6 text-center md:mb-8 md:gap-8">
-            <div>
-                <span class="block text-lg font-bold text-[#C9A227] md:text-xl">{{ $currentStats['total_collections'] ?? 0 }}</span>
-                <span class="text-xs text-gray-300 md:text-sm">{{ $summaryLabels['collections'] }}</span>
-            </div>
-            <div class="h-8 w-px bg-gray-700"></div>
-            <div>
-                <span class="block text-lg font-bold text-[#C9A227] md:text-xl">{{ $currentStats['total_egis'] ?? 0 }}</span>
-                <span class="text-xs text-gray-300 md:text-sm">{{ $summaryLabels['egis'] }}</span>
-            </div>
-        </div>
-
         {{-- Mode & View Toggles --}}
         <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             @if ($canSwitchModes)
