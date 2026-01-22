@@ -63,7 +63,7 @@
                 </div>
             @endif
 
-            <div class="flex justify-end">
+            <div class="hidden justify-end md:flex">
                 <div class="flex space-x-1">
                     <button data-view="grid"
                         class="view-toggle {{ ($view ?? 'grid') == 'grid' ? 'bg-[#1E3A5F] text-[#C9A227]' : 'bg-gray-700 text-gray-300' }} rounded-l-lg border border-gray-600 p-2 transition-colors hover:bg-[#1E3A5F]/80"
@@ -87,15 +87,25 @@
         </div>
 
         @if ($currentEgis->count() > 0)
+            {{-- MOBILE: Sempre List View (iOS-first) --}}
+            <div class="space-y-3 md:hidden">
+                @foreach ($currentEgis as $egi)
+                    <x-egi-card-list :egi="$egi" context="company" :portfolioOwner="$company" :showPurchasePrice="false"
+                        :showOwnershipBadge="true" />
+                @endforeach
+            </div>
+
+            {{-- DESKTOP: Grid/List basato su toggle --}}
             @if (($view ?? 'grid') == 'grid')
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div class="hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     @foreach ($currentEgis as $egi)
                         <x-egi-card :egi="$egi" :collection="$egi->collection" :portfolioContext="true" :portfolioOwner="$company"
                             :creatorPortfolioContext="true" :hideReserveButton="false" />
                     @endforeach
                 </div>
             @else
-                <div class="space-y-3">
+                {{-- Desktop List View --}}
+                <div class="hidden space-y-3 md:block">
                     @foreach ($currentEgis as $egi)
                         <x-egi-card-list :egi="$egi" context="company" :portfolioOwner="$company" :showPurchasePrice="false"
                             :showOwnershipBadge="true" />

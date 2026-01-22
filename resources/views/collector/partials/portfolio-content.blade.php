@@ -29,7 +29,8 @@
                 <span class="flex h-2 w-2 rounded-full bg-purple-400"></span>
                 {{ __('collector.portfolio.owned') }}
             </div>
-            <div class="flex space-x-1">
+            {{-- Toggle solo su Desktop --}}
+            <div class="hidden space-x-1 md:flex">
                 <a href="{{ route('collector.portfolio', $collector->id) }}?{{ http_build_query(array_merge(request()->query(), ['view' => 'grid'])) }}"
                     class="{{ $viewMode === 'grid' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300' }} rounded-l-lg border border-gray-700 p-2 transition-colors hover:bg-purple-500">
                     <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -50,15 +51,25 @@
 
         {{-- Portfolio Grid/List --}}
         @if ($currentEgis->count() > 0)
+            {{-- MOBILE: Sempre List View (iOS-first) --}}
+            <div class="space-y-3 md:hidden">
+                @foreach ($currentEgis as $egi)
+                    <x-egi-card-list :egi="$egi" context="collector" :portfolioOwner="$collector"
+                        :showPurchasePrice="true" :showOwnershipBadge="true" />
+                @endforeach
+            </div>
+
+            {{-- DESKTOP: Grid/List basato su toggle --}}
             @if ($viewMode === 'grid')
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div class="hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     @foreach ($currentEgis as $egi)
                         <x-egi-card :egi="$egi" :collection="$egi->collection" :portfolioContext="true"
                             :portfolioOwner="$collector" :hideReserveButton="false" />
                     @endforeach
                 </div>
             @else
-                <div class="space-y-3">
+                {{-- Desktop List View --}}
+                <div class="hidden space-y-3 md:block">
                     @foreach ($currentEgis as $egi)
                         <x-egi-card-list :egi="$egi" context="collector" :portfolioOwner="$collector"
                             :showPurchasePrice="true" :showOwnershipBadge="true" />
