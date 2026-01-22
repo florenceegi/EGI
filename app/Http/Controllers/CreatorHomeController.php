@@ -296,13 +296,13 @@ class CreatorHomeController extends Controller {
 
         $collections = $creator->collections()
             ->where('is_published', true)
-            ->withCount('egis')
+            ->withCount('originalEgis')
             ->latest()
             ->get();
 
         $stats = [
             'total_collections' => $collections->count(),
-            'total_egis' => $collections->sum('egis_count'),
+            'total_egis' => $collections->sum('original_egis_count'),
             'total_supporters' => 0,
         ];
 

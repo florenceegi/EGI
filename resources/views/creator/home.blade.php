@@ -279,7 +279,7 @@
                                     class="block p-4 transition-colors bg-gray-800 rounded-lg hover:bg-gray-700">
                                     <h4 class="font-medium text-white">{{ $collection->collection_name }}</h4>
                                     <p class="text-sm text-gray-400">
-                                        {{ __('creator.home.collection_works_count', ['count' => $collection->egis_count ?? 0]) }}
+                                        {{ __('creator.home.collection_works_count', ['count' => $collection->original_egis_count]) }}
                                     </p>
                                 </a>
                             @endforeach

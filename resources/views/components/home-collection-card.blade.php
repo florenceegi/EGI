@@ -125,8 +125,12 @@
                                 </p>
                             @endif
                             <div class="mt-3 text-xs">
+                                @php
+                                    // Usa original_egis_count se disponibile (esclude cloni), altrimenti egis_count
+                                    $egiCount = $collection->original_egis_count ?? $collection->egis_count ?? 0;
+                                @endphp
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-florence-gold/20 text-florence-gold font-semibold">
-                                    {{ $collection->egis_count ?? 0 }} {{ trans_choice('EGI|EGIs', $collection->egis_count ?? 0) }}
+                                    {{ $egiCount }} {{ trans_choice('EGI|EGIs', $egiCount) }}
                                 </span>
                             </div>
                         </div>

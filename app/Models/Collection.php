@@ -94,6 +94,28 @@ class Collection extends Model implements HasMedia {
         return $this->hasMany(Egi::class);
     }
 
+    /**
+     * Relazione con gli EGI originali (esclude i cloni).
+     * Gli EGI clonati hanno parent_id != null
+     */
+    public function originalEgis() {
+        return $this->hasMany(Egi::class)->whereNull('parent_id');
+    }
+
+    /**
+     * Accessor: conta gli EGI originali (esclude i cloni).
+     * Usato quando non c'è withCount() esplicito.
+     * Priorità: original_egis_count (da withCount) > calcolo dinamico
+     */
+    public function getOriginalEgisCountAttribute(): int
+    {
+        // Se già calcolato da withCount, usa quello
+        if (isset($this->attributes['original_egis_count'])) {
+            return (int) $this->attributes['original_egis_count'];
+        }
+        // Altrimenti calcola dinamicamente
+        return $this->originalEgis()->count();
+    }
 
     /**
      * Relazione con gli utenti tramite la tabella pivot collection_user.
