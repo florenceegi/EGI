@@ -27,18 +27,16 @@
 <div class="min-h-screen bg-gray-800">
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
-        {{-- Portfolio Summary --}}
-        <div class="mb-8 text-center">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                    <span
-                        class="block text-xl font-bold text-[#C9A227]">{{ $currentStats['total_collections'] ?? 0 }}</span>
-                    <span class="text-sm text-gray-300">{{ $summaryLabels['collections'] }}</span>
-                </div>
-                <div>
-                    <span class="block text-xl font-bold text-[#C9A227]">{{ $currentStats['total_egis'] ?? 0 }}</span>
-                    <span class="text-sm text-gray-300">{{ $summaryLabels['egis'] }}</span>
-                </div>
+        {{-- Portfolio Summary - Compact horizontal on mobile --}}
+        <div class="mb-6 flex items-center justify-center gap-6 text-center md:mb-8 md:gap-8">
+            <div>
+                <span class="block text-lg font-bold text-[#C9A227] md:text-xl">{{ $currentStats['total_collections'] ?? 0 }}</span>
+                <span class="text-xs text-gray-300 md:text-sm">{{ $summaryLabels['collections'] }}</span>
+            </div>
+            <div class="h-8 w-px bg-gray-700"></div>
+            <div>
+                <span class="block text-lg font-bold text-[#C9A227] md:text-xl">{{ $currentStats['total_egis'] ?? 0 }}</span>
+                <span class="text-xs text-gray-300 md:text-sm">{{ $summaryLabels['egis'] }}</span>
             </div>
         </div>
 

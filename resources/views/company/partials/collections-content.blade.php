@@ -8,21 +8,21 @@
             <p class="text-lg text-gray-400">{{ __('company.collections.subtitle') }}</p>
         </div>
 
-        {{-- Stats --}}
-        <div class="mb-8">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div class="rounded-lg border border-[#1E3A5F]/50 bg-gray-900/50 p-4">
-                    <span class="block text-2xl font-bold text-[#C9A227]">{{ $stats['total_collections'] ?? 0 }}</span>
-                    <span class="text-sm text-gray-300">{{ __('company.collections.total_collections') }}</span>
-                </div>
-                <div class="rounded-lg border border-[#1E3A5F]/50 bg-gray-900/50 p-4">
-                    <span class="block text-2xl font-bold text-[#C9A227]">{{ $stats['total_egis'] ?? 0 }}</span>
-                    <span class="text-sm text-gray-300">{{ __('company.collections.total_egis') }}</span>
-                </div>
-                <div class="rounded-lg border border-[#1E3A5F]/50 bg-gray-900/50 p-4">
-                    <span class="block text-2xl font-bold text-[#C9A227]">{{ $stats['total_supporters'] ?? 0 }}</span>
-                    <span class="text-sm text-gray-300">{{ __('company.collections.total_supporters') }}</span>
-                </div>
+        {{-- Stats - Compact horizontal on mobile --}}
+        <div class="mb-6 flex items-center justify-center gap-4 rounded-xl border border-[#1E3A5F]/30 bg-gray-900/40 px-4 py-3 text-center md:mb-8 md:gap-8 md:px-6 md:py-4">
+            <div>
+                <span class="block text-lg font-bold text-[#C9A227] md:text-2xl">{{ $stats['total_collections'] ?? 0 }}</span>
+                <span class="text-[10px] text-gray-300 md:text-sm">{{ __('company.collections.total_collections') }}</span>
+            </div>
+            <div class="h-10 w-px bg-gray-700"></div>
+            <div>
+                <span class="block text-lg font-bold text-[#C9A227] md:text-2xl">{{ $stats['total_egis'] ?? 0 }}</span>
+                <span class="text-[10px] text-gray-300 md:text-sm">{{ __('company.collections.total_egis') }}</span>
+            </div>
+            <div class="h-10 w-px bg-gray-700"></div>
+            <div>
+                <span class="block text-lg font-bold text-[#C9A227] md:text-2xl">{{ $stats['total_supporters'] ?? 0 }}</span>
+                <span class="text-[10px] text-gray-300 md:text-sm">{{ __('company.collections.total_supporters') }}</span>
             </div>
         </div>
 
