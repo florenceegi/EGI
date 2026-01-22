@@ -88,6 +88,8 @@ return [
         'meta_description' => 'Entdecken Sie die talentierten Schöpfer, die NFT-Sammlungen auf FlorenceEGI zum Leben erwecken. Nach Kategorie, Name oder Beliebtheit filtern.',
         'main_title' => 'Unsere Schöpfer',
         'subtitle' => 'Erkunden Sie die Gemeinschaft von Künstlern, Innovatoren und Visionären, die die Zukunft auf FlorenceEGI gestalten.',
+        'filter_button' => 'Filter & Suche',
+        'search_label' => 'Schöpfer Suchen',
         'search_placeholder' => 'Nach Name oder Beschreibung suchen...',
         'filter_category' => 'Nach Kategorie Filtern',
         'all_categories' => 'Alle Kategorien',

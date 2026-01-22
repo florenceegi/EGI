@@ -88,6 +88,8 @@ return [
         'meta_description' => 'Descubra os criadores talentosos que dão vida às coleções NFT na FlorenceEGI. Filtre por categoria, nome ou popularidade.',
         'main_title' => 'Nossos Criadores',
         'subtitle' => 'Explore a comunidade de artistas, inovadores e visionários moldando o futuro na FlorenceEGI.',
+        'filter_button' => 'Filtros e Pesquisa',
+        'search_label' => 'Pesquisar Criadores',
         'search_placeholder' => 'Pesquisar por nome ou descrição...',
         'filter_category' => 'Filtrar por Categoria',
         'all_categories' => 'Todas as Categorias',

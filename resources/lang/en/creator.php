@@ -181,6 +181,8 @@ return [
         'meta_description' => 'Discover the talented creators who bring NFT collections to life on FlorenceEGI. Filter by category, name or popularity.',
         'main_title' => 'Our Creators',
         'subtitle' => 'Explore the community of artists, innovators and visionaries shaping the future on FlorenceEGI.',
+        'filter_button' => 'Filters & Search',
+        'search_label' => 'Search Creators',
         'search_placeholder' => 'Search by name or description...',
         'filter_category' => 'Filter by Category',
         'all_categories' => 'All Categories',
