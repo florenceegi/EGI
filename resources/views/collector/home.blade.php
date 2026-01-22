@@ -32,7 +32,9 @@
                     <img src="{{ $bannerUrl }}" alt="Banner for {{ $collector->name }}"
                         class="h-full w-full object-cover">
                 @else
-                    <div class="absolute inset-0"
+                    {{-- Mobile: sfondo più scuro per contrasto con card --}}
+                    <div class="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 md:hidden"></div>
+                    <div class="absolute inset-0 hidden md:block"
                         style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
                 @endif
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
@@ -40,7 +42,93 @@
             </div>
         </div>
 
-        <div class="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
+        {{-- ═══════════════════════════════════════════════════════════════════
+             MOBILE: iOS-style Profile Header (iPhone-first)
+             Seguendo iOS Human Interface Guidelines
+        ═══════════════════════════════════════════════════════════════════ --}}
+        <div class="relative z-10 px-4 pb-4 pt-6 md:hidden">
+            {{-- Profile Card con glassmorphism iOS --}}
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
+                {{-- Row 1: Avatar + Info --}}
+                <div class="flex items-center gap-4">
+                    {{-- Avatar iOS size (80pt) - Circular per collector --}}
+                    <div class="relative flex-shrink-0">
+                        <div class="h-20 w-20 overflow-hidden rounded-full ring-2 ring-oro-fiorentino/40">
+                            <img src="{{ $collector->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($collector->name) . '&size=160&background=D4A574&color=2D5016' }}"
+                                alt="{{ __('collector.home.avatar_alt', ['name' => $collector->name]) }}"
+                                class="h-full w-full object-cover" loading="lazy">
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 rounded-full bg-blu-algoritmo p-1.5 shadow-lg"
+                            title="{{ __('collector.home.collector_badge_title') }}">
+                            <svg class="h-3.5 w-3.5 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    {{-- Info --}}
+                    <div class="min-w-0 flex-1">
+                        <h1 class="truncate text-xl font-bold text-white">{{ $collector->name }}</h1>
+                        @if ($collector->tagline)
+                            <p class="truncate text-sm italic text-oro-fiorentino/80">"{{ $collector->tagline }}"</p>
+                        @endif
+                        <p class="mt-1 text-xs text-gray-400">
+                            {{ __('collector.home.collector_title') }} · {{ __('collector.home.member_since', ['year' => $collector->created_at->format('Y')]) }}
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Action Buttons (Mobile) --}}
+                @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() !== $collector->id)
+                    <div class="mt-4 flex gap-2">
+                        <button type="button"
+                            class="flex-1 rounded-xl bg-oro-fiorentino px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-lg transition-all active:scale-95">
+                            <span class="flex items-center justify-center gap-1.5">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                {{ __('collector.home.follow_button') }}
+                            </span>
+                        </button>
+                        <button type="button"
+                            class="flex-1 rounded-xl bg-verde-rinascita px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-all active:scale-95">
+                            {{ __('collector.home.message_button') }}
+                        </button>
+                    </div>
+                @elseif (\App\Helpers\FegiAuth::guest())
+                    <div class="mt-4">
+                        <button type="button" onclick="window.location.href='{{ route('login') }}'"
+                            class="w-full rounded-xl bg-oro-fiorentino px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-lg transition-all active:scale-95">
+                            {{ __('collector.home.login_to_follow') }}
+                        </button>
+                    </div>
+                @endif
+
+                {{-- Divider --}}
+                <div class="my-4 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+                {{-- Row 2: Stats iOS-style (equal width columns) --}}
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="rounded-xl bg-white/5 px-2 py-2.5 text-center">
+                        <p class="text-lg font-bold text-oro-fiorentino">{{ $stats['total_owned_egis'] ?? 0 }}</p>
+                        <p class="text-[9px] uppercase tracking-wider text-gray-400">{{ __('collector.home.owned_egis') }}</p>
+                    </div>
+                    <div class="rounded-xl bg-white/5 px-2 py-2.5 text-center">
+                        <p class="text-lg font-bold text-oro-fiorentino">{{ $stats['collections_represented'] ?? 0 }}</p>
+                        <p class="text-[9px] uppercase tracking-wider text-gray-400">{{ __('collector.collections_represented') }}</p>
+                    </div>
+                    <div class="rounded-xl bg-white/5 px-2 py-2.5 text-center">
+                        <p class="text-base font-bold text-oro-fiorentino">€{{ number_format($stats['total_spent_eur'] ?? 0, 0) }}</p>
+                        <p class="text-[9px] uppercase tracking-wider text-gray-400">{{ __('collector.home.total_spent') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ═══════════════════════════════════════════════════════════════════
+             DESKTOP: Layout originale (md+)
+        ═══════════════════════════════════════════════════════════════════ --}}
+        <div class="relative z-10 mx-auto hidden max-w-7xl px-4 py-16 sm:px-6 md:block md:py-24 lg:px-8">
             <div class="grid grid-cols-1 items-end gap-12 md:grid-cols-12 md:gap-8">
                 <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:gap-8 md:col-span-8">
                     <div class="group relative flex-shrink-0">

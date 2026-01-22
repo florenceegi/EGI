@@ -65,7 +65,9 @@
                     <img src="{{ $bannerUrl }}" alt="Banner for {{ $creator->name }}"
                         class="h-full w-full object-cover">
                 @else
-                    <div class="absolute inset-0"
+                    {{-- Mobile: sfondo più scuro per contrasto con card --}}
+                    <div class="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 md:hidden"></div>
+                    <div class="absolute inset-0 hidden md:block"
                         style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
                     </div>
                 @endif
@@ -74,7 +76,67 @@
             </div>
         </div>
 
-        <div class="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
+        {{-- ═══════════════════════════════════════════════════════════════════
+             MOBILE: iOS-style Profile Header (iPhone-first)
+             Seguendo iOS Human Interface Guidelines
+        ═══════════════════════════════════════════════════════════════════ --}}
+        <div class="relative z-10 px-4 pb-4 pt-6 md:hidden">
+            {{-- Profile Card con glassmorphism iOS --}}
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
+                {{-- Row 1: Avatar + Info --}}
+                <div class="flex items-center gap-4">
+                    {{-- Avatar iOS size (80pt) - Circular per creator --}}
+                    <div class="relative flex-shrink-0">
+                        <div class="h-20 w-20 overflow-hidden rounded-full ring-2 ring-oro-fiorentino/40">
+                            <img src="{{ $creator->profile_photo_url }}" alt="{{ $creator->name }}"
+                                class="h-full w-full object-cover" loading="lazy">
+                        </div>
+                        @if ($creator->is_verified)
+                            <div class="absolute -bottom-1 -right-1 rounded-full bg-verde-rinascita p-1.5 shadow-lg">
+                                <svg class="h-3.5 w-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Info --}}
+                    <div class="min-w-0 flex-1">
+                        <h1 class="truncate text-xl font-bold text-white">{{ $creator->name }}</h1>
+                        @if ($creator->tagline)
+                            <p class="truncate text-sm italic text-oro-fiorentino/80">"{{ $creator->tagline }}"</p>
+                        @endif
+                        <p class="mt-1 text-xs text-gray-400">
+                            {{ __('creator.home.member_since', ['year' => $creator->created_at->format('Y')]) }}
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Divider --}}
+                <div class="my-4 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+                {{-- Row 2: Stats iOS-style (equal width columns) --}}
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="rounded-xl bg-white/5 px-3 py-2.5 text-center">
+                        <p class="text-lg font-bold text-white">{{ number_format($stats['total_egis'] ?? 0) }}</p>
+                        <p class="text-[10px] uppercase tracking-wider text-gray-400">{{ __('creator.home.stats.works') }}</p>
+                    </div>
+                    <div class="rounded-xl bg-white/5 px-3 py-2.5 text-center">
+                        <p class="text-lg font-bold text-white">{{ number_format($stats['total_collections'] ?? 0) }}</p>
+                        <p class="text-[10px] uppercase tracking-wider text-gray-400">{{ __('creator.home.stats.collections') }}</p>
+                    </div>
+                    <div class="rounded-xl bg-white/5 px-3 py-2.5 text-center">
+                        <p class="text-lg font-bold text-white">{{ number_format($stats['total_supporters'] ?? 0) }}</p>
+                        <p class="text-[10px] uppercase tracking-wider text-gray-400">{{ __('creator.home.stats.patrons') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ═══════════════════════════════════════════════════════════════════
+             DESKTOP: Layout originale (md+)
+        ═══════════════════════════════════════════════════════════════════ --}}
+        <div class="relative z-10 mx-auto hidden max-w-7xl px-4 py-16 sm:px-6 md:block md:py-24 lg:px-8">
             <div class="grid grid-cols-1 items-end gap-12 md:grid-cols-12 md:gap-8">
                 {{-- Avatar + Info --}}
                 <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:gap-8 md:col-span-8">
