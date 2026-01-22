@@ -8,24 +8,6 @@
             <p class="text-lg text-gray-400">{{ __('creator.collections.subtitle') }}</p>
         </div>
 
-        {{-- Stats - Compact horizontal on mobile --}}
-        <div class="mb-6 flex items-center justify-center gap-4 rounded-xl border border-gray-700/50 bg-gray-900/40 px-4 py-3 text-center md:mb-8 md:gap-8 md:px-6 md:py-4">
-            <div>
-                <span class="text-oro-fiorentino block text-lg font-bold md:text-2xl">{{ $stats['total_collections'] ?? 0 }}</span>
-                <span class="text-[10px] text-gray-300 md:text-sm">{{ __('creator.collections.total_collections') }}</span>
-            </div>
-            <div class="h-10 w-px bg-gray-700"></div>
-            <div>
-                <span class="text-oro-fiorentino block text-lg font-bold md:text-2xl">{{ $stats['total_egis'] ?? 0 }}</span>
-                <span class="text-[10px] text-gray-300 md:text-sm">{{ __('creator.collections.total_artworks') }}</span>
-            </div>
-            <div class="h-10 w-px bg-gray-700"></div>
-            <div>
-                <span class="text-oro-fiorentino block text-lg font-bold md:text-2xl">{{ $stats['total_supporters'] ?? 0 }}</span>
-                <span class="text-[10px] text-gray-300 md:text-sm">{{ __('creator.collections.total_supporters') }}</span>
-            </div>
-        </div>
-
         @if ($collections && $collections->count() > 0)
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 @foreach ($collections as $collection)
