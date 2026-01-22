@@ -194,4 +194,13 @@ return [
         'apply_filters' => 'Apply Filters',
         'no_creators_found' => 'No creators found with current search criteria.',
     ],
+
+    // 🎨 Collections Page
+    'collections' => [
+        'title' => 'My Collections',
+        'subtitle' => 'Explore all created collections',
+        'total_collections' => 'Total Collections',
+        'total_artworks' => 'Total Artworks',
+        'total_supporters' => 'Supporters',
+    ],
 ];

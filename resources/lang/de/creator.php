@@ -101,4 +101,13 @@ return [
         'apply_filters' => 'Filter Anwenden',
         'no_creators_found' => 'Keine Schöpfer mit den aktuellen Suchkriterien gefunden.',
     ],
+
+    // 🎨 Sammlungsseite
+    'collections' => [
+        'title' => 'Meine Sammlungen',
+        'subtitle' => 'Alle erstellten Sammlungen erkunden',
+        'total_collections' => 'Sammlungen Gesamt',
+        'total_artworks' => 'Werke Gesamt',
+        'total_supporters' => 'Unterstützer',
+    ],
 ];

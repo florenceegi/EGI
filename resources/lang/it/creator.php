@@ -198,4 +198,13 @@ return [
         'apply_filters' => 'Applica Filtri',
         'no_creators_found' => 'Nessun creator trovato con i criteri di ricerca attuali.',
     ],
+
+    // 🎨 Pagina Collezioni
+    'collections' => [
+        'title' => 'Le Mie Collezioni',
+        'subtitle' => 'Esplora tutte le collezioni create',
+        'total_collections' => 'Collezioni Totali',
+        'total_artworks' => 'Opere Totali',
+        'total_supporters' => 'Sostenitori',
+    ],
 ];
