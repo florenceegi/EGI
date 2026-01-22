@@ -109,6 +109,22 @@
                                     @enderror
                                 </div>
 
+                                {{-- About / Chi Siamo --}}
+                                <div>
+                                    <label for="about" class="block text-sm font-medium text-gray-700">
+                                        {{ __('organization_data.about') }}
+                                    </label>
+                                    <p class="mt-1 text-xs text-gray-500">
+                                        {{ __('organization_data.about_help') }}
+                                    </p>
+                                    <textarea name="about" id="about" rows="6"
+                                        class="@error('about') border-red-300 @enderror mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                        placeholder="{{ __('organization_data.about_placeholder') }}">{{ old('about', $organizationData->about) }}</textarea>
+                                    @error('about')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
                                 {{-- Business Type --}}
                                 <div>
                                     <label for="business_type" class="block text-sm font-medium text-gray-700">

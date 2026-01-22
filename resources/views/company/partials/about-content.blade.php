@@ -9,9 +9,9 @@
 
         {{-- Bio Content --}}
         <div class="mb-8 rounded-lg border border-[#1E3A5F]/50 bg-gray-900/50 p-6">
-            @if ($company->bio)
+            @if ($company->organizationData?->about)
                 <div class="prose prose-invert max-w-none">
-                    <p class="leading-relaxed text-gray-300">{{ $company->bio }}</p>
+                    <p class="leading-relaxed text-gray-300">{!! nl2br(e($company->organizationData->about)) !!}</p>
                 </div>
             @else
                 <p class="italic text-gray-500">{{ __('company.about.no_bio') }}</p>

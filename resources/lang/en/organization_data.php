@@ -16,6 +16,9 @@ return [
     // Fields
     'org_name' => 'Organization Name',
     'org_email' => 'Business Email',
+    'about' => 'About Us',
+    'about_help' => 'Describe your company, mission, values, and what you offer to customers',
+    'about_placeholder' => 'Tell the story of your company and what makes it unique...',
     'org_street' => 'Street Address',
     'org_city' => 'City',
     'org_region' => 'Province',

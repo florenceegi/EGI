@@ -447,7 +447,7 @@ return [
         'real_wallet_required' => 'Wallet address is required.',
         'real_wallet_invalid_length' => 'Address must be 58 characters.',
         'real_wallet_invalid_chars' => 'Address contains invalid characters. Use only A-Z and 2-7.',
-        
+
         // Wallet Types (for multi-wallet selection)
         'types' => [
             'stripe' => 'Stripe Connect',
@@ -461,7 +461,7 @@ return [
             'algorand_external' => 'Algorand Wallet (External)',
             'algorand_external_desc' => 'Connect your own Algorand wallet address',
         ],
-        
+
         // Wallet creation messages
         'configure_payments_first' => 'You must configure payment methods for this collection before adding wallets.',
         'configure_now' => 'Configure Payment Methods',

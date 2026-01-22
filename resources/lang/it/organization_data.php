@@ -16,6 +16,9 @@ return [
     // Fields
     'org_name' => 'Nome Organizzazione',
     'org_email' => 'Email Aziendale',
+    'about' => 'Chi Siamo',
+    'about_help' => 'Descrivi la tua azienda, la mission, i valori e cosa offrite ai clienti',
+    'about_placeholder' => 'Racconta la storia della tua azienda e cosa la rende unica...',
     'org_street' => 'Indirizzo',
     'org_city' => 'Città',
     'org_region' => 'Provincia',

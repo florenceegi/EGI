@@ -240,7 +240,7 @@ return [
         'royalty_rebind_placeholder' => 'Insira a porcentagem de royalties de rebind',
         'validation' => [
             'check_pending_wallet' => 'Não é possível executar a ação porque já existe uma carteira pendente.',
-            'check_pending_wallet_title' => 'Erro de validação',    
+            'check_pending_wallet_title' => 'Erro de validação',
             'address_required' => 'O endereço da carteira é obrigatório.',
             'mint_invalid' => 'Porcentagem de royalties de cunhagem inválida.',
             'rebind_invalid' => 'Porcentagem de royalties de rebind inválida.',

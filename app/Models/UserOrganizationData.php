@@ -18,6 +18,7 @@ class UserOrganizationData extends Model {
         'user_id',
         'org_name',
         'org_email',
+        'about',
         'pec',
         'org_street',
         'org_city',
