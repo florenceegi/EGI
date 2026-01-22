@@ -576,81 +576,24 @@
         100% { transform: rotate(360deg); }
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-        .collector-universe {
-            height: 500px;
-        }
-
-        .collector-title-wrapper {
-            height: 100px;
-            margin-bottom: 20px;
-        }
-
-        .collector-title {
-            font-size: clamp(2.2rem, 8vw, 3.5rem);
-        }
-
-        .collector-subtitle {
-            font-size: 1rem;
-            margin-bottom: 15px;
-        }
-
-        .subtitle-container {
-            height: 30px;
-            margin-bottom: 25px;
-        }
-
+    /* Responsive - iPhone First Design */
+    
+    /* Tablet landscape e sotto */
+    @media (max-width: 1024px) {
         .interactive-elements {
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            margin-top: 20px;
-            padding: 0 15px;
+            gap: 20px;
         }
-
+        
         .collection-counter {
-            min-width: 120px;
-            max-width: 140px;
-            padding: 12px 16px;
-            flex: 0 1 auto;
-        }
-
-        .counter-label {
-            font-size: 0.7rem;
-            margin-bottom: 6px;
-        }
-
-        .counter-number {
-            font-size: 1.4rem;
-        }
-
-        .gallery-grid {
-            opacity: 0.6;
-        }
-
-        .gallery-artwork-image {
-            opacity: 0.7;
-        }
-
-        .artwork-piece {        .artwork-frame {
-            border-width: 1px;
-        }
-
-        .artwork-frame::before {
-            border-width: 0.5px;
-        }
-
-        .content-overlay {
-            padding: 0 10px;
+            min-width: 150px;
+            padding: 15px 25px;
         }
     }
-
-    @media (max-width: 480px) {
+    
+    /* Tablet portrait */
+    @media (max-width: 768px) {
         .collector-universe {
-            height: 450px;
+            height: 420px;
         }
 
         .collector-title-wrapper {
@@ -659,70 +602,215 @@
         }
 
         .collector-title {
-            font-size: clamp(1.8rem, 9vw, 2.8rem);
+            font-size: clamp(2rem, 7vw, 3rem);
         }
 
         .collector-subtitle {
-            font-size: 0.9rem;
-            padding: 0 10px;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
         }
 
         .subtitle-container {
-            height: 25px;
+            height: 28px;
             margin-bottom: 20px;
         }
 
-        .content-overlay {
-            width: 98%;
-            padding: 0 5px;
-        }
-
+        /* Stats su una riga - design compatto */
         .interactive-elements {
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: stretch;
             gap: 8px;
             margin-top: 15px;
             padding: 0 10px;
+            width: 100%;
         }
 
         .collection-counter {
-            min-width: 100px;
-            max-width: 110px;
-            padding: 10px 12px;
+            min-width: 0;
+            max-width: none;
+            flex: 1 1 0;
+            padding: 10px 8px;
+            backdrop-filter: blur(8px);
         }
 
         .counter-label {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
             margin-bottom: 4px;
+            white-space: nowrap;
         }
 
         .counter-number {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+        }
+
+        .gallery-grid {
+            opacity: 0.5;
+        }
+
+        .gallery-artwork-image {
+            opacity: 0.6;
+        }
+
+        .artwork-piece {
+            opacity: 0.2;
+        }
+
+        .artwork-frame {
+            border-width: 1px;
+        }
+
+        .artwork-frame::before {
+            border-width: 0.5px;
+        }
+
+        .content-overlay {
+            padding: 0 8px;
         }
     }
 
-    @media (max-width: 360px) {
+    /* iPhone Plus / Large phones (414px-480px) */
+    @media (max-width: 480px) {
         .collector-universe {
-            height: 400px;
-        }
-
-        .collector-title {
-            font-size: clamp(1.5rem, 10vw, 2.2rem);
+            height: 360px;
         }
 
         .collector-title-wrapper {
-            height: 70px;
+            height: 60px;
+            margin-bottom: 8px;
+        }
+
+        .collector-title {
+            font-size: clamp(1.6rem, 8vw, 2.2rem);
+        }
+
+        .collector-subtitle {
+            font-size: 0.8rem;
+            padding: 0 5px;
+        }
+
+        .subtitle-container {
+            height: 22px;
+            margin-bottom: 15px;
+        }
+
+        .content-overlay {
+            width: 100%;
+            padding: 0 4px;
+        }
+
+        /* Stats compatte su una riga */
+        .interactive-elements {
+            gap: 6px;
+            margin-top: 12px;
+            padding: 0 6px;
+        }
+
+        .collection-counter {
+            min-width: 0;
+            max-width: none;
+            flex: 1 1 0;
+            padding: 8px 6px;
+            border-radius: 8px;
+        }
+
+        .counter-label {
+            font-size: 0.55rem;
+            letter-spacing: 0.08em;
+            margin-bottom: 3px;
+        }
+
+        .counter-number {
+            font-size: 1.1rem;
+        }
+    }
+
+    /* iPhone SE / Small phones (375px e sotto) */
+    @media (max-width: 390px) {
+        .collector-universe {
+            height: 340px;
+        }
+
+        .collector-title-wrapper {
+            height: 50px;
+            margin-bottom: 6px;
+        }
+
+        .collector-title {
+            font-size: clamp(1.4rem, 9vw, 1.9rem);
+        }
+
+        .collector-subtitle {
+            font-size: 0.7rem;
+        }
+
+        .subtitle-container {
+            height: 18px;
             margin-bottom: 10px;
         }
 
         .interactive-elements {
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 4px;
+            padding: 0 4px;
+            margin-top: 8px;
         }
 
         .collection-counter {
-            min-width: 200px;
-            max-width: 250px;
-            padding: 8px 15px;
+            padding: 6px 4px;
+        }
+
+        .counter-label {
+            font-size: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .counter-number {
+            font-size: 0.95rem;
+        }
+    }
+
+    /* Extra small phones (320px) */
+    @media (max-width: 360px) {
+        .collector-universe {
+            height: 320px;
+        }
+
+        .collector-title {
+            font-size: clamp(1.2rem, 10vw, 1.6rem);
+        }
+
+        .collector-title-wrapper {
+            height: 45px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle-container {
+            height: 16px;
+            margin-bottom: 8px;
+        }
+
+        .collector-subtitle {
+            font-size: 0.65rem;
+        }
+
+        .interactive-elements {
+            gap: 3px;
+            padding: 0 3px;
+            margin-top: 6px;
+        }
+
+        .collection-counter {
+            padding: 5px 3px;
+        }
+
+        .counter-label {
+            font-size: 0.45rem;
+        }
+
+        .counter-number {
+            font-size: 0.85rem;
         }
     }
 

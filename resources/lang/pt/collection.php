@@ -475,6 +475,8 @@ return [
         'main_title' => 'Todas as Coleções EGI',
         'subtitle' => 'Explore nossas coleções de arte digital sustentável, criadas pelos melhores talentos globais.',
         'search_placeholder' => 'Pesquisar por nome da coleção ou descrição...',
+        'search_label' => 'Pesquisar coleções',
+        'filter_button' => 'Filtrar',
         'filter_epp' => 'Projeto Ambiental (EPP):',
         'all_epps' => 'Todos os EPPs',
         'sort_by' => 'Ordenar por:',

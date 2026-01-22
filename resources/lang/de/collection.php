@@ -476,6 +476,8 @@ return [
         'main_title' => 'Alle EGI-Kollektionen',
         'subtitle' => 'Entdecken Sie unsere nachhaltigen digitalen Kunstkollektionen, geschaffen von den besten Talenten weltweit.',
         'search_placeholder' => 'Nach Name oder Beschreibung der Kollektion suchen...',
+        'search_label' => 'Kollektionen suchen',
+        'filter_button' => 'Filtern',
         'filter_epp' => 'Umweltprojekt (EPP):',
         'all_epps' => 'Alle EPPs',
         'sort_by' => 'Sortieren nach:',

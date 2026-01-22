@@ -579,6 +579,8 @@ return [
         'main_title' => 'All EGI Collections',
         'subtitle' => 'Explore our sustainable digital art collections created by top global talents.',
         'search_placeholder' => 'Search by collection name or description...',
+        'search_label' => 'Search collections',
+        'filter_button' => 'Filter',
         'filter_epp' => 'Environmental Project (EPP):',
         'all_epps' => 'All EPPs',
         'sort_by' => 'Sort by:',

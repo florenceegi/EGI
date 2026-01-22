@@ -36,7 +36,7 @@ if ($collection) {
 
 @if ($collection)
     <a href="{{ route('home.collections.show', $collection->id) }}"
-        class="{{ $isAvatarDisplay ? 'p-2' : 'relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 bg-gray-800' }} group block h-full w-full focus:outline-none focus:ring-2 focus:ring-florence-gold focus:ring-offset-2 focus:ring-offset-gray-800"
+        class="{{ $isAvatarDisplay ? 'p-2' : 'relative overflow-hidden rounded-lg sm:rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 bg-gray-800' }} group block h-full w-full focus:outline-none focus:ring-2 focus:ring-florence-gold focus:ring-offset-2 focus:ring-offset-gray-800"
         aria-label="{{ sprintf(__('View collection %s by %s'), $collection->collection_name, $collection->creator?->name) }}">
 
         @if ($isAvatarDisplay)
@@ -59,7 +59,7 @@ if ($collection) {
                 @endif
             </div>
         @else
-            {{-- Visualizzazione CARD (Desktop/Tablet) --}}
+            {{-- Visualizzazione CARD (Desktop/Tablet/Mobile) --}}
             {{-- FIX: Il contenitore ora ha 'relative' per contenere gli 'absolute' --}}
             <div
                 class="{{ $imageType === 'cover' ? 'aspect-[3/4]' : 'aspect-[4/5]' }} relative w-full overflow-hidden">
@@ -71,12 +71,12 @@ if ($collection) {
                     class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 transition-opacity group-hover:opacity-95">
                 </div>
 
-                {{-- Content Section --}}
-                <div class="absolute bottom-0 left-0 right-0 p-4 md:p-5">
-                    {{-- 🌱 EPP PROJECT INFO BAR con Banner + Avatar --}}
+                {{-- Content Section - Responsive per mobile --}}
+                <div class="absolute bottom-0 left-0 right-0 p-2 sm:p-3 md:p-4 lg:p-5">
+                    {{-- 🌱 EPP PROJECT INFO BAR con Banner + Avatar - nascosto su mobile piccolo --}}
                     @if ($eppProject)
                         <div
-                            class="relative mb-3 overflow-hidden rounded-lg border border-white/20 p-2 shadow-lg backdrop-blur-sm">
+                            class="relative hidden mb-2 overflow-hidden rounded-lg border border-white/20 p-1.5 shadow-lg backdrop-blur-sm sm:block sm:mb-3 sm:p-2">
                             {{-- Background Image Banner --}}
                             @if ($eppProject->getFirstMediaUrl('project_images'))
                                 <div class="absolute inset-0">
@@ -95,11 +95,11 @@ if ($collection) {
                                 @if ($eppProject->getFirstMediaUrl('project_avatar'))
                                     <img src="{{ $eppProject->getFirstMediaUrl('project_avatar') }}"
                                         alt="{{ $eppProject->name }}"
-                                        class="h-10 w-10 flex-shrink-0 rounded-full object-cover ring-2 ring-white/40">
+                                        class="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0 rounded-full object-cover ring-2 ring-white/40">
                                 @else
                                     <div
-                                        class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/20 ring-2 ring-white/40">
-                                        <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        class="flex h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/20 ring-2 ring-white/40">
+                                        <svg class="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
                                                 d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z"
                                                 clip-rule="evenodd" />
@@ -109,9 +109,9 @@ if ($collection) {
                                 @endif
 
                                 <div class="min-w-0 flex-1">
-                                    <p class="truncate text-xs text-white/90 drop-shadow">{{ __('egi.epp.supports') }}
+                                    <p class="truncate text-[10px] sm:text-xs text-white/90 drop-shadow">{{ __('egi.epp.supports') }}
                                     </p>
-                                    <p class="truncate text-sm font-bold text-white drop-shadow">
+                                    <p class="truncate text-xs sm:text-sm font-bold text-white drop-shadow">
                                         {{ $eppProject->name }}</p>
                                 </div>
                             </div>
@@ -120,30 +120,30 @@ if ($collection) {
 
                     <div class="flex items-start justify-between">
                         <div class="min-w-0 flex-1">
-                            <h3 class="truncate font-display text-lg font-bold text-white transition-colors group-hover:text-florence-gold md:text-xl"
+                            <h3 class="truncate font-display text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white transition-colors group-hover:text-florence-gold"
                                 title="{{ $collection->collection_name }}">
                                 {{ $collection->collection_name }}
                             </h3>
                             @if ($collection->creator)
                                 <p
-                                    class="mt-1 truncate font-body text-sm text-gray-300 transition-colors group-hover:text-gray-100">
+                                    class="mt-0.5 sm:mt-1 truncate font-body text-[11px] sm:text-xs md:text-sm text-gray-300 transition-colors group-hover:text-gray-100">
                                     {{ __('by') }} {{ $collection->creator->name }}
                                 </p>
                             @endif
-                            <div class="mt-3 text-xs">
+                            <div class="mt-1.5 sm:mt-2 md:mt-3 text-[10px] sm:text-xs">
                                 @php
                                     // Usa original_egis_count se disponibile (esclude cloni), altrimenti egis_count
                                     $egiCount = $collection->original_egis_count ?? ($collection->egis_count ?? 0);
                                 @endphp
                                 <span
-                                    class="inline-flex items-center rounded-full bg-florence-gold/20 px-2 py-0.5 font-semibold text-florence-gold">
+                                    class="inline-flex items-center rounded-full bg-florence-gold/20 px-1.5 sm:px-2 py-0.5 font-semibold text-florence-gold">
                                     {{ $egiCount }} {{ trans_choice('EGI|EGIs', $egiCount) }}
                                 </span>
                             </div>
                         </div>
 
-                        <!-- Like Button -->
-                        <div class="ml-2 flex-shrink-0">
+                        <!-- Like Button - nascosto su mobile piccolo per spazio -->
+                        <div class="hidden sm:block ml-2 flex-shrink-0">
                             <x-like-button :resourceType="'collection'" :resourceId="$collection->id" :isLiked="$collection->is_liked ?? false" :likesCount="$collection->likes_count ?? 0"
                                 size="small" />
                         </div>
