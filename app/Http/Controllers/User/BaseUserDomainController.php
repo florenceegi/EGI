@@ -234,8 +234,7 @@ abstract class BaseUserDomainController extends Controller {
      * @param string $category Action category for filtering (default: 'user_action')
      * @return void
      */
-    protected function logUserAction(string $action, array $context = [], string $category = 'user_action'): void
-    {
+    protected function logUserAction(string $action, array $context = [], string $category = 'user_action'): void {
         $this->auditDataAccess($action, array_merge($context, [
             'audit_category' => $category,
             'action_timestamp' => Carbon::now()->toISOString(),

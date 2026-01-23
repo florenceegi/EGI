@@ -39,6 +39,12 @@ Route::prefix('company')->name('company.')->group(function () {
         ->where('id', '[0-9]+')
         ->name('about');
 
+    // Update About (only owner)
+    Route::patch('/{id}/about', [CompanyHomeController::class, 'updateAbout'])
+        ->where('id', '[0-9]+')
+        ->name('about.update')
+        ->middleware('auth');
+
     // Impact (EPP)
     Route::get('/{id}/impact', [CompanyHomeController::class, 'impact'])
         ->where('id', '[0-9]+')

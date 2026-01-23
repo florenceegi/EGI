@@ -264,4 +264,3 @@ return [
         'gdpr_rights' => 'A organização tem direito de acessar, corrigir ou excluir os dados',
     ],
 ];
-

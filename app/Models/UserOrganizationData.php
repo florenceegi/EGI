@@ -11,8 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * 🛡️ Privacy: Business data with moderate sensitivity
  * 🧱 Core Logic: Handles seller verification and business compliance
  */
-class UserOrganizationData extends Model
-{
+class UserOrganizationData extends Model {
     protected $table = 'user_organization_data';
 
     protected $fillable = [
@@ -63,13 +62,11 @@ class UserOrganizationData extends Model
         'updated_at' => 'datetime'
     ];
 
-    public function user(): BelongsTo
-    {
+    public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
 
-    public function getFullOrganizationAddressAttribute(): ?string
-    {
+    public function getFullOrganizationAddressAttribute(): ?string {
         $parts = array_filter([
             $this->org_street,
             $this->org_city,
@@ -80,20 +77,17 @@ class UserOrganizationData extends Model
         return empty($parts) ? null : implode(', ', $parts);
     }
 
-    public function hasCompleteSellerData(): bool
-    {
+    public function hasCompleteSellerData(): bool {
         return !empty($this->org_name) &&
             (!empty($this->org_fiscal_code) || !empty($this->org_vat_number)) &&
             $this->hasCompleteAddress();
     }
 
-    public function hasCompleteAddress(): bool
-    {
+    public function hasCompleteAddress(): bool {
         return !empty($this->org_street) && !empty($this->org_city) && !empty($this->org_zip);
     }
 
-    public function getMissingSellerDataFields(): array
-    {
+    public function getMissingSellerDataFields(): array {
         $missing = [];
 
         if (empty($this->org_name)) $missing[] = 'org_name';

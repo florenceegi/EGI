@@ -9,13 +9,32 @@
 
         {{-- Bio Content --}}
         <div class="mb-8 rounded-lg border border-[#1E3A5F]/50 bg-gray-900/50 p-6">
-            @if ($company->organizationData?->about)
-                <div class="prose prose-invert max-w-none">
-                    <p class="leading-relaxed text-gray-300">{!! nl2br(e($company->organizationData->about)) !!}</p>
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    @if ($company->organizationData?->about)
+                        <div class="prose prose-invert max-w-none">
+                            <p class="leading-relaxed text-gray-300">{!! nl2br(e($company->organizationData->about)) !!}</p>
+                        </div>
+                    @else
+                        <p class="italic text-gray-500">{{ __('company.about.no_bio') }}</p>
+                    @endif
                 </div>
-            @else
-                <p class="italic text-gray-500">{{ __('company.about.no_bio') }}</p>
-            @endif
+                
+                {{-- Edit Button - Only for owner --}}
+                @auth
+                    @if (Auth::id() === $company->id)
+                        <button type="button" 
+                            onclick="openEditAboutModal()"
+                            class="ml-4 flex-shrink-0 rounded-lg bg-[#1E3A5F] p-2 text-white transition-all hover:bg-[#2a4d7a] focus:outline-none focus:ring-2 focus:ring-[#C9A227]"
+                            title="{{ __('company.about.edit_bio') }}">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                    @endif
+                @endauth
+            </div>
         </div>
 
         {{-- Company Info --}}
@@ -143,3 +162,87 @@
 
     </div>
 </div>
+
+{{-- Edit About Modal - Only for owner --}}
+@auth
+    @if (Auth::id() === $company->id)
+        <div id="edit-about-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+            {{-- Backdrop --}}
+            <div class="fixed inset-0 bg-black/70 transition-opacity" onclick="closeEditAboutModal()"></div>
+            
+            {{-- Modal Content --}}
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative w-full max-w-2xl transform rounded-xl bg-gray-900 shadow-2xl transition-all">
+                    {{-- Header --}}
+                    <div class="flex items-center justify-between border-b border-gray-700 px-6 py-4">
+                        <h3 class="text-xl font-semibold text-white">{{ __('company.about.edit_bio_title') }}</h3>
+                        <button type="button" onclick="closeEditAboutModal()" 
+                            class="rounded-lg p-1 text-gray-400 hover:bg-gray-800 hover:text-white">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    {{-- Body --}}
+                    <form id="edit-about-form" method="POST" action="{{ route('company.about.update', $company->id) }}">
+                        @csrf
+                        @method('PATCH')
+                        <div class="px-6 py-4">
+                            <label for="about-textarea" class="mb-2 block text-sm font-medium text-gray-300">
+                                {{ __('company.about.bio_label') }}
+                            </label>
+                            <textarea 
+                                id="about-textarea" 
+                                name="about" 
+                                rows="8"
+                                maxlength="5000"
+                                class="w-full rounded-lg border border-gray-600 bg-gray-800 px-4 py-3 text-gray-100 placeholder-gray-500 focus:border-[#C9A227] focus:outline-none focus:ring-2 focus:ring-[#C9A227]/50"
+                                placeholder="{{ __('company.about.bio_placeholder') }}"
+                            >{{ $company->organizationData?->about }}</textarea>
+                            <p class="mt-2 text-sm text-gray-500">
+                                <span id="about-char-count">{{ strlen($company->organizationData?->about ?? '') }}</span>/5000 {{ __('company.about.characters') }}
+                            </p>
+                        </div>
+                        
+                        {{-- Footer --}}
+                        <div class="flex items-center justify-end gap-3 border-t border-gray-700 px-6 py-4">
+                            <button type="button" onclick="closeEditAboutModal()" 
+                                class="rounded-lg border border-gray-600 px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800">
+                                {{ __('common.cancel') }}
+                            </button>
+                            <button type="submit" 
+                                class="rounded-lg bg-[#C9A227] px-4 py-2 text-sm font-medium text-gray-900 hover:bg-[#d4af37] focus:outline-none focus:ring-2 focus:ring-[#C9A227]">
+                                {{ __('common.save') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openEditAboutModal() {
+                document.getElementById('edit-about-modal').classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            }
+            
+            function closeEditAboutModal() {
+                document.getElementById('edit-about-modal').classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+            
+            // Character counter
+            document.getElementById('about-textarea')?.addEventListener('input', function() {
+                document.getElementById('about-char-count').textContent = this.value.length;
+            });
+            
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !document.getElementById('edit-about-modal').classList.contains('hidden')) {
+                    closeEditAboutModal();
+                }
+            });
+        </script>
+    @endif
+@endauth

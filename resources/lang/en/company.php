@@ -91,6 +91,13 @@ return [
         'total_collections' => 'Collections',
         'social_links' => 'Social Links',
         'website' => 'Website',
+        'edit_bio' => 'Edit description',
+        'edit_bio_title' => 'Edit About Us',
+        'bio_label' => 'Your company description',
+        'bio_placeholder' => 'Describe your company, your mission, your values...',
+        'characters' => 'characters',
+        'updated_success' => 'Description updated successfully!',
+        'unauthorized' => 'You are not authorized to edit this page.',
     ],
 
     // =========================================================================

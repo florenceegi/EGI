@@ -38,7 +38,7 @@ class UserOrganizationController extends BaseUserDomainController {
 
             // Load organization data (created at registration)
             $organizationData = $user->organizationData;
-            
+
             if (!$organizationData) {
                 $this->logger->error('[User Organization] Organization data not found for user', [
                     'user_id' => $user->id,
@@ -141,7 +141,7 @@ class UserOrganizationController extends BaseUserDomainController {
 
             // Get organization data (must exist from registration)
             $organizationData = $user->organizationData;
-            
+
             if (!$organizationData) {
                 $this->logger->error('[User Organization] Organization data not found for user', [
                     'user_id' => $user->id,

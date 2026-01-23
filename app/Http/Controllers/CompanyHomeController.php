@@ -274,6 +274,37 @@ class CompanyHomeController extends Controller
     }
 
     /**
+     * Update about field - Only for company owner
+     */
+    public function updateAbout($id, Request $request)
+    {
+        $company = $this->resolveCompany($id);
+
+        // Check if current user is the company owner
+        if (\Auth::id() !== $company->id) {
+            abort(403, __('company.about.unauthorized'));
+        }
+
+        $validated = $request->validate([
+            'about' => ['nullable', 'string', 'max:5000'],
+        ]);
+
+        // Update or create organization data
+        if ($company->organizationData) {
+            $company->organizationData->update([
+                'about' => $validated['about'],
+            ]);
+        } else {
+            $company->organizationData()->create([
+                'about' => $validated['about'],
+            ]);
+        }
+
+        return redirect()->route('company.about', $company->id)
+            ->with('success', __('company.about.updated_success'));
+    }
+
+    /**
      * Impact della company (EPP)
      */
     public function impact($id, Request $request)

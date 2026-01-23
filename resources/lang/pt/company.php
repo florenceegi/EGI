@@ -91,6 +91,13 @@ return [
         'total_collections' => 'Coleções',
         'social_links' => 'Links Sociais',
         'website' => 'Site',
+        'edit_bio' => 'Editar descrição',
+        'edit_bio_title' => 'Editar Sobre Nós',
+        'bio_label' => 'Descrição da sua empresa',
+        'bio_placeholder' => 'Descreva sua empresa, sua missão, seus valores...',
+        'characters' => 'caracteres',
+        'updated_success' => 'Descrição atualizada com sucesso!',
+        'unauthorized' => 'Você não está autorizado a editar esta página.',
     ],
 
     // =========================================================================
