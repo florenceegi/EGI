@@ -223,6 +223,26 @@ abstract class BaseUserDomainController extends Controller {
     }
 
     /**
+     * @Oracode Method: Log User Action for Audit Trail
+     * 🎯 Purpose: Log user actions with GDPR context for compliance and audit
+     * 📥 Input: Action name, context data, optional category
+     * 📤 Output: void
+     * 🛡️ Privacy: Creates GDPR-compliant audit entries for user actions
+     *
+     * @param string $action The action being performed (e.g., 'organization_data_updated')
+     * @param array<string, mixed> $context Additional context data for the audit log
+     * @param string $category Action category for filtering (default: 'user_action')
+     * @return void
+     */
+    protected function logUserAction(string $action, array $context = [], string $category = 'user_action'): void
+    {
+        $this->auditDataAccess($action, array_merge($context, [
+            'audit_category' => $category,
+            'action_timestamp' => Carbon::now()->toISOString(),
+        ]));
+    }
+
+    /**
      * @Oracode Method: Require Identity Verification for Sensitive Operations
      * 🎯 Purpose: Enforce identity re-verification for sensitive data changes
      * 📥 Input: No parameters (checks session verification status)
