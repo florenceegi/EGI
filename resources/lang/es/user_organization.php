@@ -206,6 +206,10 @@ return [
     'check_chamber_registration' => 'Comprobar Inscripción en la Cámara de Comercio',
 
     // MENSAJES DE ÉXITO Y ERROR
+    'update_success' => 'Datos de la organización actualizados correctamente',
+    'verification_reset_warning' => 'Los datos críticos han sido modificados, la verificación ha sido reiniciada.',
+    'data_not_found' => 'Datos de la organización no encontrados. Por favor contacte con soporte.',
+    'role_not_allowed' => 'No tienes permiso para acceder a los datos de la organización.',
     'organization_saved' => 'Datos de la organización guardados correctamente',
     'organization_error' => 'Error al guardar los datos de la organización',
     'legal_verification_success' => 'Datos legales verificados correctamente',

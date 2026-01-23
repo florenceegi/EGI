@@ -206,6 +206,10 @@ return [
     'check_chamber_registration' => 'Checar Registro na Junta Comercial',
 
     // MENSAGENS DE SUCESSO E ERRO
+    'update_success' => 'Dados da organização atualizados com sucesso',
+    'verification_reset_warning' => 'Dados críticos foram modificados, a verificação foi reiniciada.',
+    'data_not_found' => 'Dados da organização não encontrados. Por favor, entre em contato com o suporte.',
+    'role_not_allowed' => 'Você não tem permissão para acessar os dados da organização.',
     'organization_saved' => 'Dados da organização salvos com sucesso',
     'organization_error' => 'Erro ao salvar os dados da organização',
     'legal_verification_success' => 'Dados legais verificados com sucesso',

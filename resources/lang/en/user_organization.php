@@ -206,6 +206,10 @@ return [
     'check_chamber_registration' => 'Check Chamber of Commerce Registration',
 
     // SUCCESS AND ERROR MESSAGES
+    'update_success' => 'Organization data updated successfully',
+    'verification_reset_warning' => 'Critical data has been modified, verification has been reset.',
+    'data_not_found' => 'Organization data not found. Please contact support.',
+    'role_not_allowed' => 'You do not have permission to access organization data.',
     'organization_saved' => 'Organization data saved successfully',
     'organization_error' => 'Error saving organization data',
     'legal_verification_success' => 'Legal data successfully verified',

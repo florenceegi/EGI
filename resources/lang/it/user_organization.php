@@ -224,6 +224,10 @@ return [
     // ===================================================================
     // SUCCESS AND ERROR MESSAGES
     // ===================================================================
+    'update_success' => 'Dati organizzazione aggiornati con successo',
+    'verification_reset_warning' => 'I dati critici sono stati modificati, la verifica è stata resettata.',
+    'data_not_found' => 'Dati organizzazione non trovati. Contatta il supporto.',
+    'role_not_allowed' => 'Non hai i permessi per accedere ai dati organizzazione.',
     'organization_saved' => 'Dati organizzazione salvati con successo',
     'organization_error' => 'Errore durante il salvataggio dei dati organizzazione',
     'legal_verification_success' => 'Dati legali verificati correttamente',

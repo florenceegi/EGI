@@ -205,8 +205,10 @@ return [
     'validate_vat' => 'Valider le Numéro de TVA',
     'check_chamber_registration' => 'Vérifier l’Enregistrement à la Chambre de Commerce',
 
-    // MESSAGES DE SUCCÈS ET D’ERREUR
-    'organization_saved' => 'Données de l’organisation enregistrées avec succès',
+    // MESSAGES DE SUCCÈS ET D’ERREUR    'update_success' => 'Données de l'organisation mises à jour avec succès',
+    'verification_reset_warning' => 'Les données critiques ont été modifiées, la vérification a été réinitialisée.',
+    'data_not_found' => 'Données de l'organisation introuvables. Veuillez contacter le support.',
+    'role_not_allowed' => 'Vous n'avez pas la permission d'accéder aux données de l'organisation.',    'organization_saved' => 'Données de l’organisation enregistrées avec succès',
     'organization_error' => 'Erreur lors de l’enregistrement des données de l’organisation',
     'legal_verification_success' => 'Données légales vérifiées avec succès',
     'legal_verification_error' => 'Erreur lors de la vérification des données légales',

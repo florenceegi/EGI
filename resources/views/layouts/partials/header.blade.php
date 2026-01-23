@@ -31,7 +31,7 @@
     <meta name="description" content="{{ $metaDescription ?? __('collection.default_meta_description') }}">
     {!! $headMetaExtra ??
         '
-                        <meta name="robots" content="index, follow">' !!}
+                            <meta name="robots" content="index, follow">' !!}
 
     {{-- Favicon --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">

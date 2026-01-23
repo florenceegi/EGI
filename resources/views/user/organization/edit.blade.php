@@ -32,10 +32,10 @@
 
                     {{-- Success/Error Messages --}}
                     @if (session('success'))
-                        <div class="rounded-lg border border-green-200 bg-green-50 p-4">
+                        <div class="p-4 border border-green-200 rounded-lg bg-green-50">
                             <div class="flex">
                                 <div class="flex-shrink-0">
-                                    <svg class="h-5 w-5 text-green-400" fill="none" stroke="currentColor"
+                                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M5 13l4 4L19 7"></path>
@@ -49,10 +49,10 @@
                     @endif
 
                     @if (session('error'))
-                        <div class="rounded-lg border border-red-200 bg-red-50 p-4">
+                        <div class="p-4 border border-red-200 rounded-lg bg-red-50">
                             <div class="flex">
                                 <div class="flex-shrink-0">
-                                    <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor"
+                                    <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M6 18L18 6M6 6l12 12"></path>
@@ -67,7 +67,7 @@
 
                     {{-- Organization Data Form --}}
                     <div class="overflow-hidden bg-white shadow-xl sm:rounded-lg">
-                        <div class="border-b border-gray-200 bg-white px-6 py-4">
+                        <div class="px-6 py-4 bg-white border-b border-gray-200">
                             <h3 class="text-lg font-medium leading-6 text-gray-900">
                                 {{ __('organization_data.business_information') }}
                             </h3>
@@ -165,7 +165,7 @@
                                 </div>
 
                                 {{-- Address Section --}}
-                                <div class="border-t border-gray-200 pt-6">
+                                <div class="pt-6 border-t border-gray-200">
                                     <h4 class="mb-4 text-base font-medium text-gray-900">
                                         {{ __('organization_data.address_section') }}
                                     </h4>
@@ -239,7 +239,7 @@
                                 </div>
 
                                 {{-- Fiscal Data Section --}}
-                                <div class="border-t border-gray-200 pt-6">
+                                <div class="pt-6 border-t border-gray-200">
                                     <h4 class="mb-4 text-base font-medium text-gray-900">
                                         {{ __('organization_data.fiscal_data_section') }}
                                     </h4>
@@ -270,14 +270,14 @@
                                                     value="{{ old('org_vat_number', $organizationData->org_vat_number) }}"
                                                     class="@error('org_vat_number') border-red-300 @enderror block w-full rounded-l-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                                 <button type="button" id="validate-vat-btn"
-                                                    class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                                    class="inline-flex items-center px-3 py-2 text-gray-500 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                                     title="{{ __('organization_data.validate_vat') }}">
-                                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                     </svg>
                                                 </button>
                                             </div>
-                                            <p id="vat-validation-result" class="mt-1 text-sm hidden"></p>
+                                            <p id="vat-validation-result" class="hidden mt-1 text-sm"></p>
                                             @error('org_vat_number')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -340,7 +340,7 @@
                                 </div>
 
                                 {{-- Contact Section --}}
-                                <div class="border-t border-gray-200 pt-6">
+                                <div class="pt-6 border-t border-gray-200">
                                     <h4 class="mb-4 text-base font-medium text-gray-900">
                                         {{ __('organization_data.contact_section') }}
                                     </h4>
@@ -402,7 +402,7 @@
                                 </div>
 
                                 {{-- Submit Button --}}
-                                <div class="flex items-center justify-end border-t border-gray-200 pt-6">
+                                <div class="flex items-center justify-end pt-6 border-t border-gray-200">
                                     <x-button type="submit" class="bg-indigo-600 hover:bg-indigo-700">
                                         {{ __('organization_data.save_changes') }}
                                     </x-button>
@@ -416,15 +416,15 @@
                 <div class="space-y-6 lg:col-span-1">
                     {{-- Quick Navigation --}}
                     <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
                             <h4 class="text-sm font-medium text-gray-900">
                                 {{ __('organization_data.quick_navigation') }}
                             </h4>
                         </div>
                         <div class="px-6 py-4">
                             <a href="{{ route('user.domains.personal-data') }}"
-                                class="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
@@ -435,7 +435,7 @@
 
                     {{-- IBAN Management --}}
                     <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
                             <h4 class="text-sm font-medium text-gray-900">
                                 {{ __('organization_data.iban_management') }}
                             </h4>
@@ -445,8 +445,8 @@
                                 {{ __('organization_data.iban_description') }}
                             </p>
                             <button type="button" onclick="openIbanModal('organization')"
-                                class="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                 </svg>
@@ -457,9 +457,9 @@
 
                     {{-- Business Data Enrichment --}}
                     <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div class="border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4">
-                            <h4 class="text-sm font-medium text-gray-900 flex items-center">
-                                <svg class="mr-2 h-5 w-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                            <h4 class="flex items-center text-sm font-medium text-gray-900">
+                                <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
                                 </svg>
                                 {{ __('organization_data.auto_fill_title') }}
@@ -472,34 +472,34 @@
                             
                             {{-- Website URL Input --}}
                             <div class="mb-3">
-                                <label for="enrichment_url" class="block text-xs font-medium text-gray-500 mb-1">
+                                <label for="enrichment_url" class="block mb-1 text-xs font-medium text-gray-500">
                                     {{ __('organization_data.website_url_label') }}
                                 </label>
                                 <input type="url" id="enrichment_url" 
                                     value="{{ old('org_site_url', $organizationData->org_site_url) }}"
                                     placeholder="https://www.example.com"
-                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                    class="block w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
 
                             {{-- OR VAT Number Input --}}
                             <div class="mb-4">
-                                <label for="enrichment_vat" class="block text-xs font-medium text-gray-500 mb-1">
+                                <label for="enrichment_vat" class="block mb-1 text-xs font-medium text-gray-500">
                                     {{ __('organization_data.or_vat_number') }}
                                 </label>
                                 <input type="text" id="enrichment_vat" 
                                     value="{{ old('org_vat_number', $organizationData->org_vat_number) }}"
                                     placeholder="12345678901"
                                     maxlength="11"
-                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                    class="block w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
 
                             {{-- Extract Button --}}
                             <button type="button" id="extract-data-btn"
-                                class="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                                <svg id="extract-icon" class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <svg id="extract-icon" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                 </svg>
-                                <svg id="extract-spinner" class="mr-2 h-4 w-4 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+                                <svg id="extract-spinner" class="hidden w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
@@ -507,18 +507,18 @@
                             </button>
 
                             {{-- Result Message --}}
-                            <div id="enrichment-result" class="mt-3 hidden">
-                                <div id="enrichment-success" class="hidden p-3 rounded-md bg-green-50 border border-green-200">
+                            <div id="enrichment-result" class="hidden mt-3">
+                                <div id="enrichment-success" class="hidden p-3 border border-green-200 rounded-md bg-green-50">
                                     <div class="flex items-center">
-                                        <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
                                         <span id="enrichment-success-text" class="text-sm text-green-700"></span>
                                     </div>
                                 </div>
-                                <div id="enrichment-error" class="hidden p-3 rounded-md bg-red-50 border border-red-200">
+                                <div id="enrichment-error" class="hidden p-3 border border-red-200 rounded-md bg-red-50">
                                     <div class="flex items-center">
-                                        <svg class="h-4 w-4 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                         </svg>
                                         <span id="enrichment-error-text" class="text-sm text-red-700"></span>
@@ -527,8 +527,8 @@
                             </div>
 
                             {{-- Completeness Score --}}
-                            <div id="completeness-score" class="mt-3 hidden">
-                                <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+                            <div id="completeness-score" class="hidden mt-3">
+                                <div class="flex items-center justify-between mb-1 text-xs text-gray-500">
                                     <span>{{ __('organization_data.completeness') }}</span>
                                     <span id="completeness-value">0%</span>
                                 </div>
@@ -547,7 +547,7 @@
 
                     {{-- Help Section --}}
                     <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
                             <h4 class="text-sm font-medium text-gray-900">
                                 {{ __('organization_data.need_help') }}
                             </h4>

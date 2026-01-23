@@ -36,12 +36,15 @@ class UserOrganizationController extends BaseUserDomainController {
                 abort(403, __('user_organization.role_not_allowed'));
             }
 
-            // Load or create organization data
-            $organizationData = $user->organizationData ?? $user->organizationData()->create([
-                'organization_type' => $this->getDefaultOrganizationType($user),
-                'is_verified' => false,
-                'verification_level' => 'none',
-            ]);
+            // Load organization data (created at registration)
+            $organizationData = $user->organizationData;
+            
+            if (!$organizationData) {
+                $this->logger->error('[User Organization] Organization data not found for user', [
+                    'user_id' => $user->id,
+                ]);
+                abort(404, __('user_organization.data_not_found'));
+            }
 
             $organizationTypes = [
                 'sole_proprietorship' => __('user_organization.type_sole_proprietorship'),
@@ -136,41 +139,44 @@ class UserOrganizationController extends BaseUserDomainController {
 
             $validated = $request->validated();
 
-            // Get or create organization data
-            $organizationData = $user->organizationData ?? $user->organizationData()->create();
+            // Get organization data (must exist from registration)
+            $organizationData = $user->organizationData;
+            
+            if (!$organizationData) {
+                $this->logger->error('[User Organization] Organization data not found for user', [
+                    'user_id' => $user->id,
+                ]);
+                return redirect()->back()->with('error', __('user_organization.data_not_found'));
+            }
 
             // Track changes for audit
             $oldData = $organizationData->toArray();
 
-            // Update organization data
+            // Update organization data with correct field names
             $organizationData->update([
-                'organization_type' => $validated['organization_type'],
-                'company_name' => $validated['company_name'],
-                'vat_number' => $validated['vat_number'] ?? null,
-                'tax_code' => $validated['tax_code'] ?? null,
-                'chamber_of_commerce_number' => $validated['chamber_of_commerce_number'] ?? null,
-                'legal_representative_name' => $validated['legal_representative_name'] ?? null,
-                'legal_representative_surname' => $validated['legal_representative_surname'] ?? null,
-                'legal_representative_tax_code' => $validated['legal_representative_tax_code'] ?? null,
-                'business_sector' => $validated['business_sector'],
-                'company_size' => $validated['company_size'],
-                'foundation_year' => $validated['foundation_year'] ?? null,
-                'headquarters_address_line_1' => $validated['headquarters_address_line_1'],
-                'headquarters_address_line_2' => $validated['headquarters_address_line_2'] ?? null,
-                'headquarters_city' => $validated['headquarters_city'],
-                'headquarters_state' => $validated['headquarters_state'] ?? null,
-                'headquarters_postal_code' => $validated['headquarters_postal_code'],
-                'headquarters_country' => $validated['headquarters_country'],
-                'phone' => $validated['phone'] ?? null,
-                'website' => $validated['website'] ?? null,
-                'description' => $validated['description'] ?? null,
-                'certifications' => $validated['certifications'] ?? null,
-                'sustainability_goals' => $validated['sustainability_goals'] ?? null,
-                'epp_commitment_level' => $validated['epp_commitment_level'] ?? null,
+                'org_name' => $validated['org_name'],
+                'org_email' => $validated['org_email'] ?? null,
+                'about' => $validated['about'] ?? null,
+                'business_type' => $validated['business_type'] ?? null,
+                'org_street' => $validated['org_street'] ?? null,
+                'org_city' => $validated['org_city'] ?? null,
+                'org_zip' => $validated['org_zip'] ?? null,
+                'org_region' => $validated['org_region'] ?? null,
+                'org_state' => $validated['org_state'] ?? null,
+                'org_fiscal_code' => $validated['org_fiscal_code'] ?? null,
+                'org_vat_number' => $validated['org_vat_number'] ?? null,
+                'rea' => $validated['rea'] ?? null,
+                'ateco_code' => $validated['ateco_code'] ?? null,
+                'ateco_description' => $validated['ateco_description'] ?? null,
+                'pec' => $validated['pec'] ?? null,
+                'org_site_url' => $validated['org_site_url'] ?? null,
+                'org_phone_1' => $validated['org_phone_1'] ?? null,
+                'org_phone_2' => $validated['org_phone_2'] ?? null,
+                'org_phone_3' => $validated['org_phone_3'] ?? null,
             ]);
 
             // Reset verification if critical data changed
-            $criticalFields = ['company_name', 'vat_number', 'tax_code', 'chamber_of_commerce_number'];
+            $criticalFields = ['org_name', 'org_vat_number', 'org_fiscal_code'];
             $criticalChanged = false;
             foreach ($criticalFields as $field) {
                 if (($oldData[$field] ?? null) !== ($validated[$field] ?? null)) {
@@ -179,35 +185,31 @@ class UserOrganizationController extends BaseUserDomainController {
                 }
             }
 
-            if ($criticalChanged && $organizationData->is_verified) {
+            if ($criticalChanged && ($organizationData->is_seller_verified ?? false)) {
                 $organizationData->update([
-                    'is_verified' => false,
-                    'verification_level' => 'pending_reverification',
-                    'verification_notes' => __('user_organization.verification_reset_note')
+                    'is_seller_verified' => false,
                 ]);
             }
 
             // Log changes for audit trail
             $this->logUserAction('organization_data_updated', [
-                'organization_type' => $validated['organization_type'],
-                'company_name' => $validated['company_name'],
-                'has_vat_number' => !empty($validated['vat_number']),
-                'business_sector' => $validated['business_sector'],
+                'org_name' => $validated['org_name'],
+                'has_vat_number' => !empty($validated['org_vat_number']),
+                'business_type' => $validated['business_type'] ?? null,
                 'critical_data_changed' => $criticalChanged,
-                'verification_reset' => $criticalChanged && $oldData['is_verified'] ?? false,
                 'changes_count' => count(array_diff_assoc($validated, $oldData)),
             ], 'organization_management');
 
             $this->logger->info('[User Organization] Organization data updated successfully', [
                 'user_id' => $user->id,
                 'auth_type' => FegiAuth::getAuthType(),
-                'organization_type' => $validated['organization_type'],
-                'company_name' => $validated['company_name'],
+                'org_name' => $validated['org_name'],
+                'business_type' => $validated['business_type'] ?? null,
                 'verification_reset' => $criticalChanged
             ]);
 
             $message = __('user_organization.update_success');
-            if ($criticalChanged && ($oldData['is_verified'] ?? false)) {
+            if ($criticalChanged && ($oldData['is_seller_verified'] ?? false)) {
                 $message .= ' ' . __('user_organization.verification_reset_warning');
             }
 
@@ -216,8 +218,8 @@ class UserOrganizationController extends BaseUserDomainController {
         } catch (\Exception $e) {
             return $this->respondError('USER_ORGANIZATION_UPDATE_FAILED', $e, [
                 'action' => 'update',
-                'organization_type' => $request->input('organization_type'),
-                'company_name' => $request->input('company_name'),
+                'org_name' => $request->input('org_name'),
+                'business_type' => $request->input('business_type'),
             ]);
         }
     }

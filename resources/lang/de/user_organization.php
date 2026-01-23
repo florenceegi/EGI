@@ -206,6 +206,10 @@ return [
     'check_chamber_registration' => 'Handelsregister prüfen',
 
     // ERFOLGS- UND FEHLERMELDUNGEN
+    'update_success' => 'Organisationsdaten erfolgreich aktualisiert',
+    'verification_reset_warning' => 'Kritische Daten wurden geändert, die Verifizierung wurde zurückgesetzt.',
+    'data_not_found' => 'Organisationsdaten nicht gefunden. Bitte kontaktieren Sie den Support.',
+    'role_not_allowed' => 'Sie haben keine Berechtigung, auf Organisationsdaten zuzugreifen.',
     'organization_saved' => 'Organisationsdaten erfolgreich gespeichert',
     'organization_error' => 'Fehler beim Speichern der Organisationsdaten',
     'legal_verification_success' => 'Juristische Daten erfolgreich geprüft',
