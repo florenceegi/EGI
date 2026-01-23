@@ -9,10 +9,10 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">
+                <h2 class="text-2xl font-semibold leading-tight text-white">
                     {{ __('organization_data.management_title') }}
                 </h2>
-                <p class="mt-1 text-sm text-gray-600">
+                <p class="mt-1 text-base text-gray-300">
                     {{ __('organization_data.management_subtitle') }}
                 </p>
             </div>
