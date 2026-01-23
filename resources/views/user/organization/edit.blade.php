@@ -89,7 +89,7 @@
                                     </label>
                                     <input type="text" name="org_name" id="org_name"
                                         value="{{ old('org_name', $organizationData->org_name) }}"
-                                        class="@error('org_name') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                        class="@error('org_name') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                         required>
                                     @error('org_name')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -103,7 +103,7 @@
                                     </label>
                                     <input type="email" name="org_email" id="org_email"
                                         value="{{ old('org_email', $organizationData->org_email) }}"
-                                        class="@error('org_email') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        class="@error('org_email') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     @error('org_email')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
@@ -118,7 +118,7 @@
                                         {{ __('organization_data.about_help') }}
                                     </p>
                                     <textarea name="about" id="about" rows="6"
-                                        class="@error('about') border-red-300 @enderror mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                        class="@error('about') border-red-300 @enderror mt-2 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                         placeholder="{{ __('organization_data.about_placeholder') }}">{{ old('about', $organizationData->about) }}</textarea>
                                     @error('about')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -131,7 +131,7 @@
                                         {{ __('organization_data.business_type') }}
                                     </label>
                                     <select name="business_type" id="business_type"
-                                        class="@error('business_type') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        class="@error('business_type') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                         <option value="">{{ __('organization_data.select_business_type') }}
                                         </option>
                                         <option value="individual"
@@ -178,7 +178,7 @@
                                             </label>
                                             <input type="text" name="org_street" id="org_street"
                                                 value="{{ old('org_street', $organizationData->org_street) }}"
-                                                class="@error('org_street') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('org_street') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('org_street')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -191,7 +191,7 @@
                                             </label>
                                             <input type="text" name="org_city" id="org_city"
                                                 value="{{ old('org_city', $organizationData->org_city) }}"
-                                                class="@error('org_city') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('org_city') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('org_city')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -204,7 +204,7 @@
                                             </label>
                                             <input type="text" name="org_zip" id="org_zip"
                                                 value="{{ old('org_zip', $organizationData->org_zip) }}"
-                                                class="@error('org_zip') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('org_zip') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('org_zip')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -217,7 +217,7 @@
                                             </label>
                                             <input type="text" name="org_region" id="org_region"
                                                 value="{{ old('org_region', $organizationData->org_region) }}"
-                                                class="@error('org_region') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('org_region') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('org_region')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -230,7 +230,7 @@
                                             </label>
                                             <input type="text" name="org_state" id="org_state"
                                                 value="{{ old('org_state', $organizationData->org_state) }}"
-                                                class="@error('org_state') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('org_state') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('org_state')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -253,7 +253,7 @@
                                             </label>
                                             <input type="text" name="org_fiscal_code" id="org_fiscal_code"
                                                 value="{{ old('org_fiscal_code', $organizationData->org_fiscal_code) }}"
-                                                class="@error('org_fiscal_code') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('org_fiscal_code') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('org_fiscal_code')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -268,7 +268,7 @@
                                             <div class="flex mt-1">
                                                 <input type="text" name="org_vat_number" id="org_vat_number"
                                                     value="{{ old('org_vat_number', $organizationData->org_vat_number) }}"
-                                                    class="@error('org_vat_number') border-red-300 @enderror block w-full rounded-l-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                    class="@error('org_vat_number') border-red-300 @enderror block w-full rounded-l-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                                 <button type="button" id="validate-vat-btn"
                                                     class="inline-flex items-center px-3 py-2 text-gray-500 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                                     title="{{ __('organization_data.validate_vat') }}">
@@ -290,7 +290,7 @@
                                             </label>
                                             <input type="text" name="rea" id="rea"
                                                 value="{{ old('rea', $organizationData->rea) }}"
-                                                class="@error('rea') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('rea') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('rea')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -304,7 +304,7 @@
                                             <input type="text" name="ateco_code" id="ateco_code"
                                                 value="{{ old('ateco_code', $organizationData->ateco_code) }}"
                                                 placeholder="es. 62.01"
-                                                class="@error('ateco_code') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('ateco_code') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('ateco_code')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -317,7 +317,7 @@
                                             </label>
                                             <input type="text" name="ateco_description" id="ateco_description"
                                                 value="{{ old('ateco_description', $organizationData->ateco_description) }}"
-                                                class="@error('ateco_description') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('ateco_description') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('ateco_description')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -331,7 +331,7 @@
                                             <input type="email" name="pec" id="pec"
                                                 value="{{ old('pec', $organizationData->pec) }}"
                                                 placeholder="example@pec.it"
-                                                class="@error('pec') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('pec') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('pec')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -354,7 +354,7 @@
                                             <input type="url" name="org_site_url" id="org_site_url"
                                                 value="{{ old('org_site_url', $organizationData->org_site_url) }}"
                                                 placeholder="https://example.com"
-                                                class="@error('org_site_url') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('org_site_url') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('org_site_url')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -367,7 +367,7 @@
                                             </label>
                                             <input type="tel" name="org_phone_1" id="org_phone_1"
                                                 value="{{ old('org_phone_1', $organizationData->org_phone_1) }}"
-                                                class="@error('org_phone_1') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('org_phone_1') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('org_phone_1')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -380,7 +380,7 @@
                                             </label>
                                             <input type="tel" name="org_phone_2" id="org_phone_2"
                                                 value="{{ old('org_phone_2', $organizationData->org_phone_2) }}"
-                                                class="@error('org_phone_2') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('org_phone_2') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('org_phone_2')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -393,7 +393,7 @@
                                             </label>
                                             <input type="tel" name="org_phone_3" id="org_phone_3"
                                                 value="{{ old('org_phone_3', $organizationData->org_phone_3) }}"
-                                                class="@error('org_phone_3') border-red-300 @enderror mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="@error('org_phone_3') border-red-300 @enderror mt-1 block w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             @error('org_phone_3')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
