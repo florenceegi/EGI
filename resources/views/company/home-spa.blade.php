@@ -319,6 +319,7 @@
             const loader = document.getElementById('content-loader');
 
             initializePortfolioViewToggle();
+            initializeAboutModal();
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', function(e) {
@@ -364,6 +365,7 @@
                             url: url
                         }, '', url);
                         initializePortfolioViewToggle();
+                        initializeAboutModal();
                     })
                     .catch(error => {
                         console.error('Error loading content:', error);
@@ -454,6 +456,68 @@
                 });
 
                 contentContainer.dataset.viewToggleBound = 'true';
+            }
+
+            // About Modal - Event Delegation for dynamically loaded content
+            function initializeAboutModal() {
+                const modal = document.getElementById('edit-about-modal');
+                if (!modal) return;
+                
+                function openModal() {
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                    setTimeout(() => {
+                        document.getElementById('about-textarea')?.focus();
+                    }, 100);
+                }
+                
+                function closeModal() {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+                
+                // Open button
+                const openBtn = document.getElementById('open-edit-about-btn');
+                if (openBtn) {
+                    openBtn.addEventListener('click', openModal);
+                    openBtn.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        openModal();
+                    });
+                }
+                
+                // Close buttons
+                const closeBtn = document.getElementById('close-about-modal-btn');
+                const cancelBtn = document.getElementById('cancel-about-modal-btn');
+                const backdrop = document.getElementById('edit-about-backdrop');
+                
+                if (closeBtn) closeBtn.addEventListener('click', closeModal);
+                if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+                if (backdrop) backdrop.addEventListener('click', closeModal);
+                
+                // Prevent modal content click from closing
+                const modalContent = document.getElementById('edit-about-modal-content');
+                if (modalContent) {
+                    modalContent.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                }
+                
+                // Character counter
+                const textarea = document.getElementById('about-textarea');
+                const charCount = document.getElementById('about-char-count');
+                if (textarea && charCount) {
+                    textarea.addEventListener('input', function() {
+                        charCount.textContent = this.value.length;
+                    });
+                }
+                
+                // Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                        closeModal();
+                    }
+                });
             }
 
             window.addEventListener('popstate', function(e) {

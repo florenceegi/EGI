@@ -24,8 +24,8 @@
                 @auth
                     @if (Auth::id() === $company->id)
                         <button type="button" 
-                            onclick="openEditAboutModal()"
-                            class="ml-4 flex-shrink-0 rounded-lg bg-[#1E3A5F] p-2 text-white transition-all hover:bg-[#2a4d7a] focus:outline-none focus:ring-2 focus:ring-[#C9A227]"
+                            id="open-edit-about-btn"
+                            class="ml-4 flex-shrink-0 rounded-lg bg-[#1E3A5F] p-2 text-white transition-all hover:bg-[#2a4d7a] focus:outline-none focus:ring-2 focus:ring-[#C9A227] touch-manipulation"
                             title="{{ __('company.about.edit_bio') }}">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -168,16 +168,16 @@
     @if (Auth::id() === $company->id)
         <div id="edit-about-modal" class="fixed inset-0 z-[9999] hidden" style="position: fixed !important;">
             {{-- Backdrop --}}
-            <div class="fixed inset-0 bg-black/80" onclick="closeEditAboutModal()" style="position: fixed !important;"></div>
+            <div id="edit-about-backdrop" class="fixed inset-0 bg-black/80" style="position: fixed !important;"></div>
             
             {{-- Modal Content - Centered --}}
             <div class="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto" style="position: fixed !important;">
                 <div class="relative w-full max-w-2xl mx-auto my-8 transform rounded-xl bg-gray-900 shadow-2xl" 
-                     onclick="event.stopPropagation()">
+                     id="edit-about-modal-content">
                     {{-- Header --}}
                     <div class="flex items-center justify-between border-b border-gray-700 px-4 sm:px-6 py-4">
                         <h3 class="text-lg sm:text-xl font-semibold text-white">{{ __('company.about.edit_bio_title') }}</h3>
-                        <button type="button" onclick="closeEditAboutModal()" 
+                        <button type="button" id="close-about-modal-btn" 
                             class="rounded-lg p-2 text-gray-400 hover:bg-gray-800 hover:text-white touch-manipulation">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -208,7 +208,7 @@
                         
                         {{-- Footer --}}
                         <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t border-gray-700 px-4 sm:px-6 py-4">
-                            <button type="button" onclick="closeEditAboutModal()" 
+                            <button type="button" id="cancel-about-modal-btn"
                                 class="w-full sm:w-auto rounded-lg border border-gray-600 px-4 py-3 sm:py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 touch-manipulation">
                                 {{ __('common.cancel') }}
                             </button>
@@ -221,39 +221,5 @@
                 </div>
             </div>
         </div>
-
-        <script>
-            function openEditAboutModal() {
-                const modal = document.getElementById('edit-about-modal');
-                if (modal) {
-                    modal.classList.remove('hidden');
-                    document.body.style.overflow = 'hidden';
-                    // Focus textarea for better UX
-                    setTimeout(() => {
-                        document.getElementById('about-textarea')?.focus();
-                    }, 100);
-                }
-            }
-            
-            function closeEditAboutModal() {
-                const modal = document.getElementById('edit-about-modal');
-                if (modal) {
-                    modal.classList.add('hidden');
-                    document.body.style.overflow = '';
-                }
-            }
-            
-            // Character counter
-            document.getElementById('about-textarea')?.addEventListener('input', function() {
-                document.getElementById('about-char-count').textContent = this.value.length;
-            });
-            
-            // Close on Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && !document.getElementById('edit-about-modal').classList.contains('hidden')) {
-                    closeEditAboutModal();
-                }
-            });
-        </script>
     @endif
 @endauth
