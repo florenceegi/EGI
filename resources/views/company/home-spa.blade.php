@@ -463,6 +463,11 @@
                 const modal = document.getElementById('edit-about-modal');
                 if (!modal) return;
                 
+                // CRITICAL: Move modal to body to escape stacking context
+                if (modal.parentElement !== document.body) {
+                    document.body.appendChild(modal);
+                }
+                
                 function openModal() {
                     modal.classList.remove('hidden');
                     document.body.style.overflow = 'hidden';
