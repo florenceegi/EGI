@@ -78,7 +78,7 @@
                     <dt class="text-xs text-gray-500">{{ __('register.label_nick_name') }}</dt>
                     <dd class="text-sm font-medium text-gray-900 sm:text-base">
                         @if (!empty($wizardData['data']['nick_name']))
-                            @{{ $wizardData['data']['nick_name'] }}
+                            {{ $wizardData['data']['nick_name'] }}
                         @else
                             <span class="italic text-gray-400">Non impostato</span>
                         @endif
