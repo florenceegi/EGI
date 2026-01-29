@@ -116,14 +116,15 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
                 <div class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
             </div>
-            
+
             {{-- Edit Banner Button - Owner Only --}}
             @if (auth()->check() && auth()->id() === $company->id)
                 <button type="button" id="edit-banner-btn"
-                    class="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-black/80 touch-manipulation"
+                    class="absolute left-4 top-4 z-20 flex touch-manipulation items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-black/80"
                     title="{{ __('company.profile.edit_banner') }}">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     <span class="hidden sm:inline">{{ __('company.profile.edit_banner') }}</span>
                 </button>
@@ -148,11 +149,14 @@
                         {{-- Edit Avatar Button - Owner Only --}}
                         @if (auth()->check() && auth()->id() === $company->id)
                             <button type="button" id="edit-avatar-btn-mobile"
-                                class="absolute -bottom-1 -left-1 rounded-full bg-[#1E3A5F] p-1.5 shadow-lg ring-2 ring-gray-900 transition-all hover:bg-[#2a4d7a] touch-manipulation"
+                                class="absolute -bottom-1 -left-1 touch-manipulation rounded-full bg-[#1E3A5F] p-1.5 shadow-lg ring-2 ring-gray-900 transition-all hover:bg-[#2a4d7a]"
                                 title="{{ __('company.profile.edit_avatar') }}">
-                                <svg class="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <svg class="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                             </button>
                         @endif
@@ -228,11 +232,14 @@
                         {{-- Edit Avatar Button - Owner Only --}}
                         @if (auth()->check() && auth()->id() === $company->id)
                             <button type="button" id="edit-avatar-btn-desktop"
-                                class="absolute -bottom-2 -left-2 rounded-full bg-[#1E3A5F] p-2 shadow-lg ring-2 ring-gray-900 transition-all hover:bg-[#2a4d7a] hover:scale-110"
+                                class="absolute -bottom-2 -left-2 rounded-full bg-[#1E3A5F] p-2 shadow-lg ring-2 ring-gray-900 transition-all hover:scale-110 hover:bg-[#2a4d7a]"
                                 title="{{ __('company.profile.edit_avatar') }}">
-                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                             </button>
                         @endif
@@ -272,7 +279,8 @@
                 <div class="flex flex-col items-center gap-6 md:col-span-4 md:items-end">
                     <div class="flex gap-8 text-center">
                         <div>
-                            <p class="text-2xl font-bold text-white">{{ number_format($stats['total_egis'] ?? 0) }}</p>
+                            <p class="text-2xl font-bold text-white">{{ number_format($stats['total_egis'] ?? 0) }}
+                            </p>
                             <p class="text-sm uppercase tracking-wider text-gray-400">
                                 {{ __('company.home.stats.egis') }}</p>
                         </div>
@@ -496,12 +504,12 @@
             function initializeAboutModal() {
                 const modal = document.getElementById('edit-about-modal');
                 if (!modal) return;
-                
+
                 // CRITICAL: Move modal to body to escape stacking context
                 if (modal.parentElement !== document.body) {
                     document.body.appendChild(modal);
                 }
-                
+
                 function openModal() {
                     modal.classList.remove('hidden');
                     document.body.style.overflow = 'hidden';
@@ -509,12 +517,12 @@
                         document.getElementById('about-textarea')?.focus();
                     }, 100);
                 }
-                
+
                 function closeModal() {
                     modal.classList.add('hidden');
                     document.body.style.overflow = '';
                 }
-                
+
                 // Open button
                 const openBtn = document.getElementById('open-edit-about-btn');
                 if (openBtn) {
@@ -524,16 +532,16 @@
                         openModal();
                     });
                 }
-                
+
                 // Close buttons
                 const closeBtn = document.getElementById('close-about-modal-btn');
                 const cancelBtn = document.getElementById('cancel-about-modal-btn');
                 const backdrop = document.getElementById('edit-about-backdrop');
-                
+
                 if (closeBtn) closeBtn.addEventListener('click', closeModal);
                 if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
                 if (backdrop) backdrop.addEventListener('click', closeModal);
-                
+
                 // Prevent modal content click from closing
                 const modalContent = document.getElementById('edit-about-modal-content');
                 if (modalContent) {
@@ -541,7 +549,7 @@
                         e.stopPropagation();
                     });
                 }
-                
+
                 // Character counter
                 const textarea = document.getElementById('about-textarea');
                 const charCount = document.getElementById('about-char-count');
@@ -550,7 +558,7 @@
                         charCount.textContent = this.value.length;
                     });
                 }
-                
+
                 // Escape key
                 document.addEventListener('keydown', function(e) {
                     if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
@@ -569,241 +577,264 @@
          MODALS - Profile Image Management (Owner Only)
     ═══════════════════════════════════════════════════════════════════ --}}
     @if (auth()->check() && auth()->id() === $company->id)
-    
-    {{-- Avatar Upload Modal --}}
-    <div id="avatar-upload-modal" class="fixed inset-0 z-[9999] hidden">
-        <div id="avatar-modal-backdrop" class="fixed inset-0 bg-black/80"></div>
-        <div class="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
-            <div class="relative w-full max-w-lg mx-auto my-8 rounded-xl bg-gray-900 shadow-2xl" id="avatar-modal-content">
-                {{-- Header --}}
-                <div class="flex items-center justify-between border-b border-gray-700 px-4 sm:px-6 py-4">
-                    <h3 class="text-lg sm:text-xl font-semibold text-white">{{ __('company.profile.avatar_modal_title') }}</h3>
-                    <button type="button" id="close-avatar-modal-btn" 
-                        class="rounded-lg p-2 text-gray-400 hover:bg-gray-800 hover:text-white touch-manipulation">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                
-                {{-- Body --}}
-                <form id="avatar-upload-form" method="POST" action="{{ route('profile.upload-image') }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="px-4 sm:px-6 py-6">
-                        {{-- Current Avatar Preview --}}
-                        <div class="mb-6 flex justify-center">
-                            <div class="h-24 w-24 overflow-hidden rounded-2xl ring-4 ring-[#C9A227]/30">
-                                <img id="avatar-preview-img" src="{{ $company->profile_photo_url }}" alt="{{ $company->name }}"
-                                    class="h-full w-full object-cover">
+
+        {{-- Avatar Upload Modal --}}
+        <div id="avatar-upload-modal" class="fixed inset-0 z-[9999] hidden">
+            <div id="avatar-modal-backdrop" class="fixed inset-0 bg-black/80"></div>
+            <div class="fixed inset-0 flex items-center justify-center overflow-y-auto p-4">
+                <div class="relative mx-auto my-8 w-full max-w-lg rounded-xl bg-gray-900 shadow-2xl"
+                    id="avatar-modal-content">
+                    {{-- Header --}}
+                    <div class="flex items-center justify-between border-b border-gray-700 px-4 py-4 sm:px-6">
+                        <h3 class="text-lg font-semibold text-white sm:text-xl">
+                            {{ __('company.profile.avatar_modal_title') }}</h3>
+                        <button type="button" id="close-avatar-modal-btn"
+                            class="touch-manipulation rounded-lg p-2 text-gray-400 hover:bg-gray-800 hover:text-white">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {{-- Body --}}
+                    <form id="avatar-upload-form" method="POST" action="{{ route('profile.upload-image') }}"
+                        enctype="multipart/form-data">
+                        @csrf
+                        <div class="px-4 py-6 sm:px-6">
+                            {{-- Current Avatar Preview --}}
+                            <div class="mb-6 flex justify-center">
+                                <div class="h-24 w-24 overflow-hidden rounded-2xl ring-4 ring-[#C9A227]/30">
+                                    <img id="avatar-preview-img" src="{{ $company->profile_photo_url }}"
+                                        alt="{{ $company->name }}" class="h-full w-full object-cover">
+                                </div>
+                            </div>
+
+                            {{-- Upload Area --}}
+                            <div class="cursor-pointer rounded-lg border-2 border-dashed border-gray-600 p-6 text-center transition-colors hover:border-[#C9A227]"
+                                id="avatar-drop-zone">
+                                <input type="file" name="profile_image" id="avatar-file-input"
+                                    accept="image/jpeg,image/png,image/webp" class="sr-only">
+                                <label for="avatar-file-input" class="cursor-pointer">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                    <p class="mt-2 text-sm text-gray-300">{{ __('company.profile.drag_drop_avatar') }}
+                                    </p>
+                                    <p class="mt-1 text-xs text-gray-500">{{ __('company.profile.avatar_formats') }}
+                                    </p>
+                                </label>
                             </div>
                         </div>
-                        
-                        {{-- Upload Area --}}
-                        <div class="rounded-lg border-2 border-dashed border-gray-600 p-6 text-center hover:border-[#C9A227] transition-colors cursor-pointer"
-                             id="avatar-drop-zone">
-                            <input type="file" name="profile_image" id="avatar-file-input" accept="image/jpeg,image/png,image/webp" class="sr-only">
-                            <label for="avatar-file-input" class="cursor-pointer">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                </svg>
-                                <p class="mt-2 text-sm text-gray-300">{{ __('company.profile.drag_drop_avatar') }}</p>
-                                <p class="mt-1 text-xs text-gray-500">{{ __('company.profile.avatar_formats') }}</p>
-                            </label>
+
+                        {{-- Footer --}}
+                        <div
+                            class="flex flex-col-reverse items-center justify-end gap-3 border-t border-gray-700 px-4 py-4 sm:flex-row sm:px-6">
+                            <button type="button" id="cancel-avatar-modal-btn"
+                                class="w-full touch-manipulation rounded-lg border border-gray-600 px-4 py-3 text-sm font-medium text-gray-300 hover:bg-gray-800 sm:w-auto sm:py-2">
+                                {{ __('common.cancel') }}
+                            </button>
+                            <button type="submit" id="avatar-submit-btn" disabled
+                                class="w-full touch-manipulation rounded-lg bg-[#C9A227] px-4 py-3 text-sm font-medium text-gray-900 hover:bg-[#d4af37] focus:outline-none focus:ring-2 focus:ring-[#C9A227] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:py-2">
+                                {{ __('common.save') }}
+                            </button>
                         </div>
-                    </div>
-                    
-                    {{-- Footer --}}
-                    <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t border-gray-700 px-4 sm:px-6 py-4">
-                        <button type="button" id="cancel-avatar-modal-btn"
-                            class="w-full sm:w-auto rounded-lg border border-gray-600 px-4 py-3 sm:py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 touch-manipulation">
-                            {{ __('common.cancel') }}
-                        </button>
-                        <button type="submit" id="avatar-submit-btn" disabled
-                            class="w-full sm:w-auto rounded-lg bg-[#C9A227] px-4 py-3 sm:py-2 text-sm font-medium text-gray-900 hover:bg-[#d4af37] focus:outline-none focus:ring-2 focus:ring-[#C9A227] disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation">
-                            {{ __('common.save') }}
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    {{-- Banner Upload Modal --}}
-    <div id="banner-upload-modal" class="fixed inset-0 z-[9999] hidden">
-        <div id="banner-modal-backdrop" class="fixed inset-0 bg-black/80"></div>
-        <div class="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
-            <div class="relative w-full max-w-2xl mx-auto my-8 rounded-xl bg-gray-900 shadow-2xl" id="banner-modal-content">
-                {{-- Header --}}
-                <div class="flex items-center justify-between border-b border-gray-700 px-4 sm:px-6 py-4">
-                    <h3 class="text-lg sm:text-xl font-semibold text-white">{{ __('company.profile.banner_modal_title') }}</h3>
-                    <button type="button" id="close-banner-modal-btn" 
-                        class="rounded-lg p-2 text-gray-400 hover:bg-gray-800 hover:text-white touch-manipulation">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                
-                {{-- Body --}}
-                <form id="banner-upload-form" method="POST" action="{{ route('profile.upload-banner') }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="px-4 sm:px-6 py-6">
-                        {{-- Current Banner Preview --}}
-                        <div class="mb-6">
-                            <div class="h-32 w-full overflow-hidden rounded-lg ring-2 ring-[#C9A227]/30">
-                                @php
-                                    $currentBannerUrl = method_exists($company, 'getCreatorBannerUrl')
-                                        ? $company->getCreatorBannerUrl('banner_mobile')
-                                        : null;
-                                @endphp
-                                @if ($currentBannerUrl)
-                                    <img id="banner-preview-img" src="{{ $currentBannerUrl }}" alt="Current banner"
-                                        class="h-full w-full object-cover">
-                                @else
-                                    <div id="banner-preview-placeholder" class="h-full w-full bg-gradient-to-br from-[#1E3A5F] via-[#2A4A73] to-[#1E3A5F] flex items-center justify-center">
-                                        <span class="text-gray-400 text-sm">{{ __('company.profile.no_banner') }}</span>
-                                    </div>
-                                @endif
+        {{-- Banner Upload Modal --}}
+        <div id="banner-upload-modal" class="fixed inset-0 z-[9999] hidden">
+            <div id="banner-modal-backdrop" class="fixed inset-0 bg-black/80"></div>
+            <div class="fixed inset-0 flex items-center justify-center overflow-y-auto p-4">
+                <div class="relative mx-auto my-8 w-full max-w-2xl rounded-xl bg-gray-900 shadow-2xl"
+                    id="banner-modal-content">
+                    {{-- Header --}}
+                    <div class="flex items-center justify-between border-b border-gray-700 px-4 py-4 sm:px-6">
+                        <h3 class="text-lg font-semibold text-white sm:text-xl">
+                            {{ __('company.profile.banner_modal_title') }}</h3>
+                        <button type="button" id="close-banner-modal-btn"
+                            class="touch-manipulation rounded-lg p-2 text-gray-400 hover:bg-gray-800 hover:text-white">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {{-- Body --}}
+                    <form id="banner-upload-form" method="POST" action="{{ route('profile.upload-banner') }}"
+                        enctype="multipart/form-data">
+                        @csrf
+                        <div class="px-4 py-6 sm:px-6">
+                            {{-- Current Banner Preview --}}
+                            <div class="mb-6">
+                                <div class="h-32 w-full overflow-hidden rounded-lg ring-2 ring-[#C9A227]/30">
+                                    @php
+                                        $currentBannerUrl = method_exists($company, 'getCreatorBannerUrl')
+                                            ? $company->getCreatorBannerUrl('banner_mobile')
+                                            : null;
+                                    @endphp
+                                    @if ($currentBannerUrl)
+                                        <img id="banner-preview-img" src="{{ $currentBannerUrl }}"
+                                            alt="Current banner" class="h-full w-full object-cover">
+                                    @else
+                                        <div id="banner-preview-placeholder"
+                                            class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#1E3A5F] via-[#2A4A73] to-[#1E3A5F]">
+                                            <span
+                                                class="text-sm text-gray-400">{{ __('company.profile.no_banner') }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- Upload Area --}}
+                            <div class="cursor-pointer rounded-lg border-2 border-dashed border-gray-600 p-6 text-center transition-colors hover:border-[#C9A227]"
+                                id="banner-drop-zone">
+                                <input type="file" name="banner_image" id="banner-file-input"
+                                    accept="image/jpeg,image/png,image/webp" class="sr-only">
+                                <label for="banner-file-input" class="cursor-pointer">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <p class="mt-2 text-sm text-gray-300">{{ __('company.profile.drag_drop_banner') }}
+                                    </p>
+                                    <p class="mt-1 text-xs text-gray-500">{{ __('company.profile.banner_formats') }}
+                                    </p>
+                                </label>
                             </div>
                         </div>
-                        
-                        {{-- Upload Area --}}
-                        <div class="rounded-lg border-2 border-dashed border-gray-600 p-6 text-center hover:border-[#C9A227] transition-colors cursor-pointer"
-                             id="banner-drop-zone">
-                            <input type="file" name="banner_image" id="banner-file-input" accept="image/jpeg,image/png,image/webp" class="sr-only">
-                            <label for="banner-file-input" class="cursor-pointer">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <p class="mt-2 text-sm text-gray-300">{{ __('company.profile.drag_drop_banner') }}</p>
-                                <p class="mt-1 text-xs text-gray-500">{{ __('company.profile.banner_formats') }}</p>
-                            </label>
+
+                        {{-- Footer --}}
+                        <div
+                            class="flex flex-col-reverse items-center justify-end gap-3 border-t border-gray-700 px-4 py-4 sm:flex-row sm:px-6">
+                            <button type="button" id="cancel-banner-modal-btn"
+                                class="w-full touch-manipulation rounded-lg border border-gray-600 px-4 py-3 text-sm font-medium text-gray-300 hover:bg-gray-800 sm:w-auto sm:py-2">
+                                {{ __('common.cancel') }}
+                            </button>
+                            <button type="submit" id="banner-submit-btn" disabled
+                                class="w-full touch-manipulation rounded-lg bg-[#C9A227] px-4 py-3 text-sm font-medium text-gray-900 hover:bg-[#d4af37] focus:outline-none focus:ring-2 focus:ring-[#C9A227] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:py-2">
+                                {{ __('common.save') }}
+                            </button>
                         </div>
-                    </div>
-                    
-                    {{-- Footer --}}
-                    <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t border-gray-700 px-4 sm:px-6 py-4">
-                        <button type="button" id="cancel-banner-modal-btn"
-                            class="w-full sm:w-auto rounded-lg border border-gray-600 px-4 py-3 sm:py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 touch-manipulation">
-                            {{ __('common.cancel') }}
-                        </button>
-                        <button type="submit" id="banner-submit-btn" disabled
-                            class="w-full sm:w-auto rounded-lg bg-[#C9A227] px-4 py-3 sm:py-2 text-sm font-medium text-gray-900 hover:bg-[#d4af37] focus:outline-none focus:ring-2 focus:ring-[#C9A227] disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation">
-                            {{ __('common.save') }}
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    {{-- Image Upload Modals JavaScript --}}
-    <script>
-    (function() {
-        // Avatar Modal
-        const avatarModal = document.getElementById('avatar-upload-modal');
-        const avatarBackdrop = document.getElementById('avatar-modal-backdrop');
-        const avatarCloseBtn = document.getElementById('close-avatar-modal-btn');
-        const avatarCancelBtn = document.getElementById('cancel-avatar-modal-btn');
-        const avatarFileInput = document.getElementById('avatar-file-input');
-        const avatarPreviewImg = document.getElementById('avatar-preview-img');
-        const avatarSubmitBtn = document.getElementById('avatar-submit-btn');
-        const avatarBtnMobile = document.getElementById('edit-avatar-btn-mobile');
-        const avatarBtnDesktop = document.getElementById('edit-avatar-btn-desktop');
+        {{-- Image Upload Modals JavaScript --}}
+        <script>
+            (function() {
+                // Avatar Modal
+                const avatarModal = document.getElementById('avatar-upload-modal');
+                const avatarBackdrop = document.getElementById('avatar-modal-backdrop');
+                const avatarCloseBtn = document.getElementById('close-avatar-modal-btn');
+                const avatarCancelBtn = document.getElementById('cancel-avatar-modal-btn');
+                const avatarFileInput = document.getElementById('avatar-file-input');
+                const avatarPreviewImg = document.getElementById('avatar-preview-img');
+                const avatarSubmitBtn = document.getElementById('avatar-submit-btn');
+                const avatarBtnMobile = document.getElementById('edit-avatar-btn-mobile');
+                const avatarBtnDesktop = document.getElementById('edit-avatar-btn-desktop');
 
-        function openAvatarModal() {
-            if (avatarModal) {
-                document.body.appendChild(avatarModal);
-                avatarModal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-        }
-
-        function closeAvatarModal() {
-            if (avatarModal) {
-                avatarModal.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-        }
-
-        if (avatarBtnMobile) avatarBtnMobile.addEventListener('click', openAvatarModal);
-        if (avatarBtnDesktop) avatarBtnDesktop.addEventListener('click', openAvatarModal);
-        if (avatarBackdrop) avatarBackdrop.addEventListener('click', closeAvatarModal);
-        if (avatarCloseBtn) avatarCloseBtn.addEventListener('click', closeAvatarModal);
-        if (avatarCancelBtn) avatarCancelBtn.addEventListener('click', closeAvatarModal);
-
-        if (avatarFileInput) {
-            avatarFileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file && avatarPreviewImg) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        avatarPreviewImg.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                    if (avatarSubmitBtn) avatarSubmitBtn.disabled = false;
+                function openAvatarModal() {
+                    if (avatarModal) {
+                        document.body.appendChild(avatarModal);
+                        avatarModal.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden';
+                    }
                 }
-            });
-        }
 
-        // Banner Modal
-        const bannerModal = document.getElementById('banner-upload-modal');
-        const bannerBackdrop = document.getElementById('banner-modal-backdrop');
-        const bannerCloseBtn = document.getElementById('close-banner-modal-btn');
-        const bannerCancelBtn = document.getElementById('cancel-banner-modal-btn');
-        const bannerFileInput = document.getElementById('banner-file-input');
-        const bannerSubmitBtn = document.getElementById('banner-submit-btn');
-        const bannerBtn = document.getElementById('edit-banner-btn');
+                function closeAvatarModal() {
+                    if (avatarModal) {
+                        avatarModal.classList.add('hidden');
+                        document.body.style.overflow = '';
+                    }
+                }
 
-        function openBannerModal() {
-            if (bannerModal) {
-                document.body.appendChild(bannerModal);
-                bannerModal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-        }
+                if (avatarBtnMobile) avatarBtnMobile.addEventListener('click', openAvatarModal);
+                if (avatarBtnDesktop) avatarBtnDesktop.addEventListener('click', openAvatarModal);
+                if (avatarBackdrop) avatarBackdrop.addEventListener('click', closeAvatarModal);
+                if (avatarCloseBtn) avatarCloseBtn.addEventListener('click', closeAvatarModal);
+                if (avatarCancelBtn) avatarCancelBtn.addEventListener('click', closeAvatarModal);
 
-        function closeBannerModal() {
-            if (bannerModal) {
-                bannerModal.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-        }
-
-        if (bannerBtn) bannerBtn.addEventListener('click', openBannerModal);
-        if (bannerBackdrop) bannerBackdrop.addEventListener('click', closeBannerModal);
-        if (bannerCloseBtn) bannerCloseBtn.addEventListener('click', closeBannerModal);
-        if (bannerCancelBtn) bannerCancelBtn.addEventListener('click', closeBannerModal);
-
-        if (bannerFileInput) {
-            bannerFileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const previewImg = document.getElementById('banner-preview-img');
-                        const placeholder = document.getElementById('banner-preview-placeholder');
-                        if (previewImg) {
-                            previewImg.src = e.target.result;
-                        } else if (placeholder) {
-                            placeholder.innerHTML = '<img id="banner-preview-img" src="' + e.target.result + '" alt="Banner preview" class="h-full w-full object-cover">';
+                if (avatarFileInput) {
+                    avatarFileInput.addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        if (file && avatarPreviewImg) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                avatarPreviewImg.src = e.target.result;
+                            };
+                            reader.readAsDataURL(file);
+                            if (avatarSubmitBtn) avatarSubmitBtn.disabled = false;
                         }
-                    };
-                    reader.readAsDataURL(file);
-                    if (bannerSubmitBtn) bannerSubmitBtn.disabled = false;
+                    });
                 }
-            });
-        }
 
-        // Close on Escape
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                if (avatarModal && !avatarModal.classList.contains('hidden')) closeAvatarModal();
-                if (bannerModal && !bannerModal.classList.contains('hidden')) closeBannerModal();
-            }
-        });
-    })();
-    </script>
+                // Banner Modal
+                const bannerModal = document.getElementById('banner-upload-modal');
+                const bannerBackdrop = document.getElementById('banner-modal-backdrop');
+                const bannerCloseBtn = document.getElementById('close-banner-modal-btn');
+                const bannerCancelBtn = document.getElementById('cancel-banner-modal-btn');
+                const bannerFileInput = document.getElementById('banner-file-input');
+                const bannerSubmitBtn = document.getElementById('banner-submit-btn');
+                const bannerBtn = document.getElementById('edit-banner-btn');
+
+                function openBannerModal() {
+                    if (bannerModal) {
+                        document.body.appendChild(bannerModal);
+                        bannerModal.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden';
+                    }
+                }
+
+                function closeBannerModal() {
+                    if (bannerModal) {
+                        bannerModal.classList.add('hidden');
+                        document.body.style.overflow = '';
+                    }
+                }
+
+                if (bannerBtn) bannerBtn.addEventListener('click', openBannerModal);
+                if (bannerBackdrop) bannerBackdrop.addEventListener('click', closeBannerModal);
+                if (bannerCloseBtn) bannerCloseBtn.addEventListener('click', closeBannerModal);
+                if (bannerCancelBtn) bannerCancelBtn.addEventListener('click', closeBannerModal);
+
+                if (bannerFileInput) {
+                    bannerFileInput.addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const previewImg = document.getElementById('banner-preview-img');
+                                const placeholder = document.getElementById('banner-preview-placeholder');
+                                if (previewImg) {
+                                    previewImg.src = e.target.result;
+                                } else if (placeholder) {
+                                    placeholder.innerHTML = '<img id="banner-preview-img" src="' + e.target
+                                        .result + '" alt="Banner preview" class="h-full w-full object-cover">';
+                                }
+                            };
+                            reader.readAsDataURL(file);
+                            if (bannerSubmitBtn) bannerSubmitBtn.disabled = false;
+                        }
+                    });
+                }
+
+                // Close on Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        if (avatarModal && !avatarModal.classList.contains('hidden')) closeAvatarModal();
+                        if (bannerModal && !bannerModal.classList.contains('hidden')) closeBannerModal();
+                    }
+                });
+            })();
+        </script>
     @endif
 
     {{-- Payment Settings Modal --}}

@@ -19,16 +19,15 @@
                         <p class="italic text-gray-500">{{ __('company.about.no_bio') }}</p>
                     @endif
                 </div>
-                
+
                 {{-- Edit Button - Only for owner --}}
                 @auth
                     @if (Auth::id() === $company->id)
-                        <button type="button" 
-                            id="open-edit-about-btn"
-                            class="ml-4 flex-shrink-0 rounded-lg bg-[#1E3A5F] p-2 text-white transition-all hover:bg-[#2a4d7a] focus:outline-none focus:ring-2 focus:ring-[#C9A227] touch-manipulation"
+                        <button type="button" id="open-edit-about-btn"
+                            class="ml-4 flex-shrink-0 touch-manipulation rounded-lg bg-[#1E3A5F] p-2 text-white transition-all hover:bg-[#2a4d7a] focus:outline-none focus:ring-2 focus:ring-[#C9A227]"
                             title="{{ __('company.about.edit_bio') }}">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                         </button>
@@ -169,51 +168,53 @@
         <div id="edit-about-modal" class="fixed inset-0 z-[9999] hidden" style="position: fixed !important;">
             {{-- Backdrop --}}
             <div id="edit-about-backdrop" class="fixed inset-0 bg-black/80" style="position: fixed !important;"></div>
-            
+
             {{-- Modal Content - Centered --}}
-            <div class="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto" style="position: fixed !important;">
-                <div class="relative w-full max-w-2xl mx-auto my-8 transform rounded-xl bg-gray-900 shadow-2xl" 
-                     id="edit-about-modal-content">
+            <div class="fixed inset-0 flex items-center justify-center overflow-y-auto p-4"
+                style="position: fixed !important;">
+                <div class="relative mx-auto my-8 w-full max-w-2xl transform rounded-xl bg-gray-900 shadow-2xl"
+                    id="edit-about-modal-content">
                     {{-- Header --}}
-                    <div class="flex items-center justify-between border-b border-gray-700 px-4 sm:px-6 py-4">
-                        <h3 class="text-lg sm:text-xl font-semibold text-white">{{ __('company.about.edit_bio_title') }}</h3>
-                        <button type="button" id="close-about-modal-btn" 
-                            class="rounded-lg p-2 text-gray-400 hover:bg-gray-800 hover:text-white touch-manipulation">
+                    <div class="flex items-center justify-between border-b border-gray-700 px-4 py-4 sm:px-6">
+                        <h3 class="text-lg font-semibold text-white sm:text-xl">{{ __('company.about.edit_bio_title') }}
+                        </h3>
+                        <button type="button" id="close-about-modal-btn"
+                            class="touch-manipulation rounded-lg p-2 text-gray-400 hover:bg-gray-800 hover:text-white">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
-                    
+
                     {{-- Body --}}
-                    <form id="edit-about-form" method="POST" action="{{ route('company.about.update', $company->id) }}">
+                    <form id="edit-about-form" method="POST"
+                        action="{{ route('company.about.update', $company->id) }}">
                         @csrf
                         @method('PATCH')
-                        <div class="px-4 sm:px-6 py-4">
+                        <div class="px-4 py-4 sm:px-6">
                             <label for="about-textarea" class="mb-2 block text-sm font-medium text-gray-300">
                                 {{ __('company.about.bio_label') }}
                             </label>
-                            <textarea 
-                                id="about-textarea" 
-                                name="about" 
-                                rows="6"
-                                maxlength="5000"
-                                class="w-full rounded-lg border border-gray-600 bg-gray-800 px-4 py-3 text-gray-100 placeholder-gray-500 focus:border-[#C9A227] focus:outline-none focus:ring-2 focus:ring-[#C9A227]/50 text-base"
-                                placeholder="{{ __('company.about.bio_placeholder') }}"
-                            >{{ $company->organizationData?->about }}</textarea>
+                            <textarea id="about-textarea" name="about" rows="6" maxlength="5000"
+                                class="w-full rounded-lg border border-gray-600 bg-gray-800 px-4 py-3 text-base text-gray-100 placeholder-gray-500 focus:border-[#C9A227] focus:outline-none focus:ring-2 focus:ring-[#C9A227]/50"
+                                placeholder="{{ __('company.about.bio_placeholder') }}">{{ $company->organizationData?->about }}</textarea>
                             <p class="mt-2 text-sm text-gray-500">
-                                <span id="about-char-count">{{ strlen($company->organizationData?->about ?? '') }}</span>/5000 {{ __('company.about.characters') }}
+                                <span
+                                    id="about-char-count">{{ strlen($company->organizationData?->about ?? '') }}</span>/5000
+                                {{ __('company.about.characters') }}
                             </p>
                         </div>
-                        
+
                         {{-- Footer --}}
-                        <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t border-gray-700 px-4 sm:px-6 py-4">
+                        <div
+                            class="flex flex-col-reverse items-center justify-end gap-3 border-t border-gray-700 px-4 py-4 sm:flex-row sm:px-6">
                             <button type="button" id="cancel-about-modal-btn"
-                                class="w-full sm:w-auto rounded-lg border border-gray-600 px-4 py-3 sm:py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 touch-manipulation">
+                                class="w-full touch-manipulation rounded-lg border border-gray-600 px-4 py-3 text-sm font-medium text-gray-300 hover:bg-gray-800 sm:w-auto sm:py-2">
                                 {{ __('common.cancel') }}
                             </button>
-                            <button type="submit" 
-                                class="w-full sm:w-auto rounded-lg bg-[#C9A227] px-4 py-3 sm:py-2 text-sm font-medium text-gray-900 hover:bg-[#d4af37] focus:outline-none focus:ring-2 focus:ring-[#C9A227] touch-manipulation">
+                            <button type="submit"
+                                class="w-full touch-manipulation rounded-lg bg-[#C9A227] px-4 py-3 text-sm font-medium text-gray-900 hover:bg-[#d4af37] focus:outline-none focus:ring-2 focus:ring-[#C9A227] sm:w-auto sm:py-2">
                                 {{ __('common.save') }}
                             </button>
                         </div>

@@ -90,13 +90,15 @@ return [
         'total_egis' => 'EGI Totales',
         'total_collections' => 'Colecciones',
         'social_links' => 'Enlaces Sociales',
-        'website' => 'Sitio Web',        'edit_bio' => 'Editar descripción',
+        'website' => 'Sitio Web',
+        'edit_bio' => 'Editar descripción',
         'edit_bio_title' => 'Editar Acerca de Nosotros',
         'bio_label' => 'Descripción de tu empresa',
         'bio_placeholder' => 'Describe tu empresa, tu misión, tus valores...',
         'characters' => 'caracteres',
         'updated_success' => '¡Descripción actualizada con éxito!',
-        'unauthorized' => 'No estás autorizado para editar esta página.',    ],
+        'unauthorized' => 'No estás autorizado para editar esta página.',
+    ],
 
     // =========================================================================
     // IMPACT - Impacto Ambiental EPP
