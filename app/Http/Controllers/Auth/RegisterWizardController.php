@@ -3,14 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Models\User;
-use App\Models\UserOrganizationData;
 use App\Services\Gdpr\ConsentService;
 use App\Services\Gdpr\AuditLogService;
-use App\Enums\Gdpr\GdprActivityCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Ultra\UltraLogManager\UltraLogManager;
@@ -19,8 +16,8 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 /**
  * @Oracode Controller: Registration Wizard (Multi-Step)
  * 🎯 Purpose: Guided multi-step registration process for better UX
- * 🛡️ Security: GDPR compliant with full consent management
- * 📊 Steps: 1. User Type → 2. Consents → 3. Data → 4. Summary
+ * 🛡️ Security: Delegates to RegisteredUserController for full ecosystem setup
+ * 📊 Steps: 1. User Type → 2. Consents → 3. Data → 4. Summary → Delegate to store()
  * 
  * @package App\Http\Controllers\Auth
  * @author Padmin D. Curtis (AI Partner OS3.0)
@@ -271,7 +268,12 @@ class RegisterWizardController extends Controller {
     }
 
     /**
-     * Final: Create user account
+     * Final: Delegate to existing RegisteredUserController::store()
+     * 
+     * @Oracode Method: Wizard Completion via Delegation
+     * 🎯 Purpose: Build a proper Request and delegate to the existing registration flow
+     * 🛡️ Security: Uses the full 1006-line RegisteredUserController with all ecosystem setup
+     * 🧱 Core Logic: Merges wizard session data into Request, then calls existing store()
      */
     public function complete(Request $request) {
         $userType = session('register_wizard.user_type');
@@ -283,85 +285,48 @@ class RegisterWizardController extends Controller {
                 ->with('error', 'La sessione è scaduta. Riprova dall\'inizio.');
         }
 
-        try {
-            // Re-validate email uniqueness (in case someone registered in the meantime)
-            if (User::where('email', $data['email'])->exists()) {
-                return redirect()->route('register.wizard.step3')
-                    ->with('error', 'Questa email è già registrata.')
-                    ->withInput(['name' => $data['name'], 'nick_name' => $data['nick_name']]);
-            }
+        $this->logger->info('Wizard complete: delegating to RegisteredUserController', [
+            'user_type' => $userType,
+            'email' => $data['email'] ?? 'unknown',
+        ]);
 
-            // Create the user
-            $user = User::create([
-                'name' => $data['name'],
-                'nick_name' => $data['nick_name'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-                'user_type' => $userType,
-                'privacy_policy_accepted' => true,
-                'terms_accepted' => true,
-                'age_confirmation' => true,
-            ]);
+        // Build the request data matching RegistrationRequest expectations
+        $registrationData = [
+            'name' => $data['name'],
+            'nick_name' => $data['nick_name'] ?? null,
+            'email' => $data['email'],
+            'password' => $data['password'],
+            'password_confirmation' => $data['password'], // Already validated in step3
+            'user_type' => $userType,
+            
+            // GDPR Required (from step2)
+            'privacy_policy_accepted' => '1',
+            'terms_accepted' => '1', 
+            'age_confirmation' => '1',
+            
+            // GDPR Optional (from step2)
+            'consents' => [
+                'analytics' => ($consents['analytics'] ?? false) ? '1' : '0',
+                'marketing' => ($consents['marketing'] ?? false) ? '1' : '0',
+                'profiling' => ($consents['profiling'] ?? false) ? '1' : '0',
+            ],
+        ];
 
-            // If company and org_name provided, create organization data
-            if ($userType === 'company' && !empty($data['org_name'])) {
-                UserOrganizationData::create([
-                    'user_id' => $user->id,
-                    'org_name' => $data['org_name'],
-                ]);
-            }
-
-            // Store GDPR consents using verified method (P0-4 compliant)
-            $this->consentService->createDefaultConsents($user, [
-                'allow-personal-data-processing' => true,
-                'allow-analytics-tracking' => $consents['analytics'] ?? false,
-                'allow-marketing-communications' => $consents['marketing'] ?? false,
-                'allow-profiling' => $consents['profiling'] ?? false,
-            ]);
-
-            // Audit log
-            $this->auditService->logUserAction(
-                $user,
-                'user_registered_wizard',
-                [
-                    'user_type' => $userType,
-                    'registration_method' => 'wizard',
-                    'ip_address' => $request->ip(),
-                ],
-                GdprActivityCategory::ACCOUNT_MANAGEMENT
-            );
-
-            $this->logger->info('User registered via wizard', [
-                'user_id' => $user->id,
-                'user_type' => $userType,
-                'email' => $user->email,
-            ]);
-
-            // Clear wizard session
-            session()->forget('register_wizard');
-
-            // Log the user in
-            Auth::login($user);
-
-            // Redirect to wallet setup or dashboard based on user type
-            if (in_array($userType, ['creator', 'company', 'trader_pro'])) {
-                return redirect()->route('register.wallet.setup')
-                    ->with('success', 'Account creato! Ora configura il tuo wallet per iniziare.');
-            }
-
-            return redirect()->route('dashboard')
-                ->with('success', __('register.registration_success'));
-        } catch (\Exception $e) {
-            $this->logger->error('Registration wizard failed', [
-                'error' => $e->getMessage(),
-                'email' => $data['email'] ?? 'unknown',
-            ]);
-
-            return $this->errorManager->handle(
-                'REGISTRATION_FAILED',
-                ['email' => $data['email'] ?? ''],
-                $e
-            );
+        // Add org_name for company user type
+        if ($userType === 'company' && !empty($data['org_name'])) {
+            $registrationData['org_name'] = $data['org_name'];
         }
+
+        // Merge wizard data into the current request
+        $request->merge($registrationData);
+
+        // Clear wizard session BEFORE delegating (so if it fails, user can retry)
+        session()->forget('register_wizard');
+
+        // Delegate to the existing RegisteredUserController::store()
+        // This handles: Algorand wallet, ecosystem setup, domain separation, GDPR, audit, etc.
+        $registeredUserController = app(RegisteredUserController::class);
+        
+        return $registeredUserController->store($request);
     }
 }
