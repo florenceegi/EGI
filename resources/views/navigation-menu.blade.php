@@ -77,7 +77,7 @@
                             class="inline-flex items-center rounded-md border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             {{ __('collection.login') }}
                         </a>
-                        <a href="{{ route('register') }}" id="register-link-mobile"
+                        <a href="{{ route('register.wizard.step1') }}" id="register-link-mobile"
                             class="ml-2 inline-flex items-center rounded-md border border-gray-700 bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                             {{ __('collection.register') }}
                         </a>

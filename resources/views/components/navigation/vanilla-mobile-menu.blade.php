@@ -509,7 +509,7 @@
                         </svg>
                         <span>{{ __('collection.login') }}</span>
                     </a>
-                    <a href="{{ route('register') }}"
+                    <a href="{{ route('register.wizard.step1') }}"
                         class="flex items-center justify-center space-x-2 rounded-lg bg-gray-200 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
