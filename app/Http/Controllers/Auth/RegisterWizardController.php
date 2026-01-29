@@ -311,12 +311,12 @@ class RegisterWizardController extends Controller {
                 ]);
             }
 
-            // Store GDPR consents
-            $this->consentService->storeConsentsFromRegistration($user, [
+            // Store GDPR consents using verified method (P0-4 compliant)
+            $this->consentService->createDefaultConsents($user, [
                 'allow-personal-data-processing' => true,
-                'allow-analytics-tracking' => $consents['analytics'],
-                'allow-marketing-communications' => $consents['marketing'],
-                'allow-profiling' => $consents['profiling'],
+                'allow-analytics-tracking' => $consents['analytics'] ?? false,
+                'allow-marketing-communications' => $consents['marketing'] ?? false,
+                'allow-profiling' => $consents['profiling'] ?? false,
             ]);
 
             // Audit log
