@@ -22,13 +22,13 @@ Blockchain **layer-1** con consenso **Pure Proof-of-Stake (PPoS)**. Utilizzata d
 
 ### AMMk
 
-**Art Market Machinery**. Suite di 5 **engine specializzati** che gestiscono:
-
-1. **NATAN Market Engine**: Valuation e activation
-2. **Asset Management**: Mint, transfer, royalty
-3. **Distribution Engine**: Split trustless (Creator/EPP/Platform)
-4. **Co-Creation Engine**: Gestione collaborazioni multi-artista
-5. **Compliance Engine**: GDPR, MiCA, audit trail
+**Asset Market Maker**. Piattaforma che abilita la creazione e distribuzione di Asset Digitali (EGI).
+**Caratteristiche distintive**:
+- **Oggetto**: Asset (EGI) con valore reale, non semplici prodotti.
+- **Marketplace Personale**: Consente a un utente di generare il proprio Marketplace per la distribuzione degli EGI.
+- **Marketing AI**: Strumenti nativi per promozione e posizionamento.
+- **GDPR by design**: Privacy integrata dall'architettura.
+- **Native AI**: Intelligenza Artificiale (NATAN) integrata nel core.
 
 ### Anchor Hash
 
@@ -97,13 +97,12 @@ FlorenceEGI **NON è CASP** perché:
 
 ### Co-Creatore
 
-Ruolo nell'ecosistema **Co-Creazione**. Utente che:
+Ruolo centrale nell'ecosistema, rappresenta la **Causa Efficiente** dell'opera.
+Mentre l'artista è la sorgente creativa, il Co-Creatore è colui che **porta l'opera all'esistenza reale** tramite il prima atto di Mint (acquisto/creazione).
 
-- Contribuisce a progetto collettivo
-- Firma opera con **marca perpetua** (riconoscimento on-chain)
-- Riceve quota royalty (smart contract split)
-
-**Non è l'autore principale**, ma collaboratore certificato.
+- **Firma Perpetua**: Il suo nome rimane legato all'EGI per sempre (on-chain).
+- **Partecipazione**: Non è un semplice acquirente, ma parte attiva del processo generativo.
+- **Status**: Riceve riconoscimento pubblico come co-autore del valore dell'asset.
 
 ### CoA
 
@@ -227,9 +226,9 @@ NATAN può suggerire **timing ottimale** basato su dati mercato.
 
 ### EGI
 
-**Ethereal Goods Index**. Asset digitale unico composto da:
+**Environment Goods Invent**. Asset digitale unico composto da:
 
-- **EPP**: Ente Pubblico Protetto (impatto sociale)
+- **EPP**: Environmental Ptection Projects (impatto sociale)
 - **GOODS**: Opera/servizio/creatività (valore artistico)
 - **Creativity**: Origine umana (mai IA generativa pura)
 
@@ -242,13 +241,12 @@ NATAN può suggerire **timing ottimale** basato su dati mercato.
 
 ### Egili
 
-**Micro-token** per interazioni non-economiche nell'ecosistema:
+**Moneta interna** dell'ecosistema FlorenceEGI.
+Utilizzata in sostituzione della valuta FIAT per:
+- **Acquistare servizi** interni alla piattaforma (es. boost visibilità, tools avanzati).
+- **Reward**: Elargiti come premi per contributi alla community, promozioni o azioni virtuose.
 
-- Voting governance (Equilibrium)
-- Engagement community (like, commenti)
-- Partecipazione eventi
-
-**NON hanno valore monetario** (no speculazione).
+L'utente acquista Egili presso la piattaforma (valore stabile). Non sono token speculativi esterni.
 
 ### EMI
 
@@ -256,7 +254,7 @@ NATAN può suggerire **timing ottimale** basato su dati mercato.
 
 ### EPP
 
-**Ente Pubblico Protetto**. Organizzazione no-profit che riceve **donazione automatica** da ogni transazione EGI:
+**Environmet Protection Projects**. Organizzazione no-profit che riceve **donazione automatica** da ogni transazione EGI:
 
 - Default: **20%** vendita primaria, **1%** secondaria
 - Split trustless (smart contract)
@@ -267,13 +265,9 @@ NATAN può suggerire **timing ottimale** basato su dati mercato.
 
 ### Equilibrium
 
-**Token di governance** (non speculativo) per:
-
-- Votazioni community su decisioni piattaforma
-- Proposta nuovi EPP
-- Modifica fee dinamiche
-
-**Distribuzione**: Meritocratica (contributo community, non acquisto).
+Rappresenta concretamente i **Fondi** destinati al ripristino dell'ecosistema.
+Metaforicamente è la "Molecola" (Amore + Estetica) che permea il sistema.
+Il nome deriva dalla sua funzione: generare un **economia equilibrata** dove la produzione di ricchezza finanzia direttamente il ripristino ambientale (20% delle transazioni destinato agli EPP).
 
 ### ERP
 
@@ -833,11 +827,12 @@ Sistema token FlorenceEGI:
 - Piattaforma NON può accedere fondi
 - **Responsabilità**: Utente (backup seed phrase)
 
-**FlorenceEGI**:
+**FlorenceEGI** adotta un approccio ibrido **Non-Custodial by default**:
 
-- **Livello 1**: Wallet auto-generato (custodia tecnica limitata SOLO NFT, chiavi AES-256, export disponibile) → **MiCA-safe** (non CASP)
-- **Livello 2**: Wallet proprio (non-custodial, mint diretto)
-- **Livello 3**: Wallet crypto via PSP/CASP partner
+- **Wallet Utente (Non-Custodial)**: L'utente mantiene il controllo delle proprie chiavi o utilizza sistemi di firma remota sicura dove la piattaforma non ha accesso ai fondi.
+- **Integrazione PSP**: I fondi FIAT sono gestiti da PSP autorizzati (Custodial regolamentati), non dalla piattaforma direttamente.
+
+Questo garantisce la massima sicurezza e l'assenza di rischio di controparte per i fondi degli utenti (MiCA-safe).
 
 ---
 

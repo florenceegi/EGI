@@ -115,4 +115,21 @@ return [
         'tag_ocean' => 'Pulizia Oceani',
         'tag_biodiversity' => 'Biodiversità',
     ],
+
+    // =========================================================================
+    // PROFILE - Gestione Immagini Profilo
+    // =========================================================================
+    'profile' => [
+        'edit_avatar' => 'Modifica foto profilo',
+        'edit_banner' => 'Modifica banner',
+        'avatar_modal_title' => 'Cambia foto profilo',
+        'banner_modal_title' => 'Cambia immagine banner',
+        'drag_drop_avatar' => 'Trascina o clicca per caricare',
+        'drag_drop_banner' => 'Trascina o clicca per caricare',
+        'avatar_formats' => 'JPG, PNG o WebP. Max 2MB.',
+        'banner_formats' => 'JPG, PNG o WebP. Consigliato 1920x480. Max 5MB.',
+        'no_banner' => 'Nessun banner impostato',
+        'upload_success' => 'Immagine caricata con successo!',
+        'upload_error' => 'Errore durante il caricamento dell\'immagine.',
+    ],
 ];

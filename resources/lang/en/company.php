@@ -115,4 +115,21 @@ return [
         'tag_ocean' => 'Ocean Cleanup',
         'tag_biodiversity' => 'Biodiversity',
     ],
+
+    // =========================================================================
+    // PROFILE - Profile Image Management
+    // =========================================================================
+    'profile' => [
+        'edit_avatar' => 'Edit profile photo',
+        'edit_banner' => 'Edit banner',
+        'avatar_modal_title' => 'Change profile photo',
+        'banner_modal_title' => 'Change banner image',
+        'drag_drop_avatar' => 'Drag and drop or click to upload',
+        'drag_drop_banner' => 'Drag and drop or click to upload',
+        'avatar_formats' => 'JPG, PNG or WebP. Max 2MB.',
+        'banner_formats' => 'JPG, PNG or WebP. Recommended 1920x480. Max 5MB.',
+        'no_banner' => 'No banner set',
+        'upload_success' => 'Image uploaded successfully!',
+        'upload_error' => 'Error uploading image.',
+    ],
 ];

@@ -47,8 +47,6 @@ La rete concede visibilità effimera, ma non memoria. FlorenceEGI trasforma ques
    - L'autore originale dell'opera
    - Conserva SEMPRE i diritti morali (paternità, integrità)
    - Conserva SEMPRE i diritti patrimoniali (copyright)
-   - Riceve royalty automatiche 4.5% su ogni rivendita
-   - Può ricevere Diritto di Seguito legale (4%-0.25%) su rivendite >€3,000
 
 2. **✨ Co-Creatore (La Causa Efficiente)**
 
@@ -76,7 +74,7 @@ Creator → Co-Creatore (Minting) → Collector → Memoria Permanente Blockchai
 
 ## Cos'è un EGI
 
-### Definizione: Eco Goods Invent
+### Definizione: Environment Goods Invent
 
 Il certificato digitale che unisce **qualsiasi bene frutto dell'ingegno umano**, traccia blockchain immutabile e contributo ambientale verificato.
 
@@ -176,13 +174,14 @@ EGIZZARE crea una **prova di paternità robusta e riconosciuta**, ma **non crea 
 - Hash crittografico immutabile + timestamp
 - Prova di paternità e anteriorità
 
-### ROD (Right to Own Digital)
+### ROD (Registry Of Deeds)
 
-Certificazione che attesta il **diritto di possedere il digitale**, garantendo:
+Certificazione che attesta la **provenienza certa** dell'asset, garantendo:
 
 - Proprietà verificabile
 - Trasferibilità sicura
 - Autenticità permanente
+- Storico immutabile (Catasto Digitale)
 
 ---
 
@@ -192,20 +191,26 @@ Certificazione che attesta il **diritto di possedere il digitale**, garantendo:
 
 ### I Tre Pilastri
 
-1. **🏛️ Memoria**
-
    - Traccia permanente su blockchain di ogni contributo culturale
    - Immutabilità e verità storica
 
-2. **⚖️ Equilibrio**
+2.  **⚖️ Equilibrio**
 
    - Governance Duale che bilancia profitto e missione
-   - Fee dinamiche: economia rigenerativa
+   - **Equilibrium**: I fondi destinati al ripristino dell'ecosistema (Molecola Amore+Estetica)
    - Più utenti partecipano → Meno ciascuno paga
 
-3. **🌍 Impatto Reale**
+3.  **🌍 Impatto Reale**
    - Rigenerazione ambientale tramite EPP integrati
    - Ogni atto economico genera un atto rigenerativo
+
+### Pilastri Tecnologici
+
+1.  **AMMk (Asset Market Maker)**:
+    Piattaforma che abilita la creazione e distribuzione di Asset Digitali (EGI) con valore reale. Consente a ogni utente di generare il proprio Marketplace personale assistito da AI.
+
+2.  **Egili**:
+    Moneta interna dell'ecosistema, utilizzata per acquistare servizi e premiare il contributo alla community.
 
 ### FlorenceEGI È
 

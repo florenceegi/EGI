@@ -115,4 +115,21 @@ return [
         'tag_ocean' => 'Ozeanreinigung',
         'tag_biodiversity' => 'Artenvielfalt',
     ],
+
+    // =========================================================================
+    // PROFILE - Profilbild-Verwaltung
+    // =========================================================================
+    'profile' => [
+        'edit_avatar' => 'Profilfoto bearbeiten',
+        'edit_banner' => 'Banner bearbeiten',
+        'avatar_modal_title' => 'Profilfoto ändern',
+        'banner_modal_title' => 'Bannerbild ändern',
+        'drag_drop_avatar' => 'Ziehen und ablegen oder klicken zum Hochladen',
+        'drag_drop_banner' => 'Ziehen und ablegen oder klicken zum Hochladen',
+        'avatar_formats' => 'JPG, PNG oder WebP. Max 2MB.',
+        'banner_formats' => 'JPG, PNG oder WebP. Empfohlen 1920x480. Max 5MB.',
+        'no_banner' => 'Kein Banner festgelegt',
+        'upload_success' => 'Bild erfolgreich hochgeladen!',
+        'upload_error' => 'Fehler beim Hochladen des Bildes.',
+    ],
 ];
