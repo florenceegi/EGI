@@ -320,20 +320,15 @@ class RegisterWizardController extends Controller {
         // Clear wizard session BEFORE delegating (so if it fails, user can retry)
         session()->forget('register_wizard');
 
-        // Create a RegistrationRequest from the wizard data
-        // We need to create a new request and validate it through the FormRequest
-        $registrationRequest = \App\Http\Requests\RegistrationRequest::create(
-            $request->url(),
-            'POST',
-            $registrationData,
-            $request->cookies->all(),
-            [],
-            $request->server->all()
-        );
+        // Merge wizard data into the current request
+        $request->merge($registrationData);
         
-        // Set the session and user resolver from the original request
-        $registrationRequest->setLaravelSession($request->session());
-        $registrationRequest->setUserResolver($request->getUserResolver());
+        // Create a RegistrationRequest from the modified request
+        $registrationRequest = \App\Http\Requests\RegistrationRequest::createFrom($request);
+        
+        // Set container and redirector for FormRequest validation
+        $registrationRequest->setContainer(app());
+        $registrationRequest->setRedirector(app(\Illuminate\Routing\Redirector::class));
         
         // Validate the request (this will throw ValidationException if invalid)
         $registrationRequest->validateResolved();
