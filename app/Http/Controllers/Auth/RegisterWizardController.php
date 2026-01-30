@@ -271,9 +271,9 @@ class RegisterWizardController extends Controller {
      * Final: Delegate to existing RegisteredUserController::store()
      * 
      * @Oracode Method: Wizard Completion via Delegation
-     * 🎯 Purpose: Build a proper Request and delegate to the existing registration flow
+     * 🎯 Purpose: Build a proper RegistrationRequest and delegate to the existing registration flow
      * 🛡️ Security: Uses the full 1006-line RegisteredUserController with all ecosystem setup
-     * 🧱 Core Logic: Merges wizard session data into Request, then calls existing store()
+     * 🧱 Core Logic: Creates RegistrationRequest from wizard session, then calls existing store()
      */
     public function complete(Request $request) {
         $userType = session('register_wizard.user_type');
@@ -317,16 +317,31 @@ class RegisterWizardController extends Controller {
             $registrationData['org_name'] = $data['org_name'];
         }
 
-        // Merge wizard data into the current request
-        $request->merge($registrationData);
-
         // Clear wizard session BEFORE delegating (so if it fails, user can retry)
         session()->forget('register_wizard');
+
+        // Create a RegistrationRequest from the wizard data
+        // We need to create a new request and validate it through the FormRequest
+        $registrationRequest = \App\Http\Requests\RegistrationRequest::create(
+            $request->url(),
+            'POST',
+            $registrationData,
+            $request->cookies->all(),
+            [],
+            $request->server->all()
+        );
+        
+        // Set the session and user resolver from the original request
+        $registrationRequest->setLaravelSession($request->session());
+        $registrationRequest->setUserResolver($request->getUserResolver());
+        
+        // Validate the request (this will throw ValidationException if invalid)
+        $registrationRequest->validateResolved();
 
         // Delegate to the existing RegisteredUserController::store()
         // This handles: Algorand wallet, ecosystem setup, domain separation, GDPR, audit, etc.
         $registeredUserController = app(RegisteredUserController::class);
         
-        return $registeredUserController->store($request);
+        return $registeredUserController->store($registrationRequest);
     }
 }
