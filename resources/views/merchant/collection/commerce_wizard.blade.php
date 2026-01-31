@@ -1,8 +1,5 @@
-@extends('layouts.app')
+<x-app-layout page-title="Collection Commerce Setup - {{ $collection->collection_name }}">
 
-@section('title', 'Collection Commerce Setup - ' . $collection->collection_name)
-
-@section('content')
     <div class="container mx-auto px-4 py-8">
         <div class="mx-auto max-w-4xl">
             {{-- Header --}}
@@ -104,7 +101,8 @@
                             <ul class="space-y-2">
                                 @foreach ($paymentMethods as $method)
                                     <li class="flex items-center text-sm">
-                                        <svg class="mr-2 h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="mr-2 h-5 w-5 text-green-500" fill="currentColor"
+                                            viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
                                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                                 clip-rule="evenodd" />
@@ -132,7 +130,8 @@
                                 @if (old('impact_mode', $collection->impact_mode) === 'EPP') checked @endif>
                             <div class="flex-1">
                                 <div class="font-medium text-gray-900">EPP Donation</div>
-                                <div class="mb-2 text-sm text-gray-600">Support an Environmental Protection Project</div>
+                                <div class="mb-2 text-sm text-gray-600">Support an Environmental Protection Project
+                                </div>
                                 <select name="epp_project_id"
                                     class="mt-2 w-full rounded-md border-gray-300 text-sm shadow-sm">
                                     <option value="">Select EPP Project...</option>
@@ -153,7 +152,8 @@
                                 <div class="mb-2 text-sm text-gray-600">Require subscription for access</div>
                                 <input type="number" name="subscription_plan_id"
                                     value="{{ old('subscription_plan_id', $collection->subscription_plan_id) }}"
-                                    placeholder="Plan ID" class="mt-2 w-full rounded-md border-gray-300 text-sm shadow-sm">
+                                    placeholder="Plan ID"
+                                    class="mt-2 w-full rounded-md border-gray-300 text-sm shadow-sm">
                             </div>
                         </label>
                     </div>
@@ -161,7 +161,8 @@
 
                 {{-- Actions --}}
                 <div class="flex items-center justify-between border-t pt-6">
-                    <a href="{{ route('home.collections.show', $collection) }}" class="text-gray-600 hover:text-gray-900">
+                    <a href="{{ route('home.collections.show', $collection) }}"
+                        class="text-gray-600 hover:text-gray-900">
                         ← Back to Collection
                     </a>
 
@@ -195,4 +196,4 @@
             </div>
         </div>
     </div>
-@endsection
+</x-app-layout>

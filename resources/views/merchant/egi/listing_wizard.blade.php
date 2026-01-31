@@ -1,8 +1,5 @@
-@extends('layouts.app')
+<x-app-layout page-title="EGI Listing Setup - {{ $egi->title }}">
 
-@section('title', 'EGI Listing Setup - ' . $egi->title)
-
-@section('content')
     <div class="container mx-auto px-4 py-8">
         <div class="mx-auto max-w-4xl">
             {{-- Header --}}
@@ -13,7 +10,7 @@
             </div>
 
             {{-- Collection Status Check --}}
-            @if ($collection->commercial_status !== 'commercial_enabled')
+            @if ($collection->commercial_status?->value !== 'commercial_enabled')
                 <div class="mb-6 rounded border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800">
                     ⚠️ <strong>Collection not enabled for commerce.</strong>
                     <a href="{{ route('collections.commerce.wizard', $collection) }}" class="underline">
@@ -109,7 +106,8 @@
                             <ul class="space-y-2">
                                 @foreach ($paymentMethods as $method)
                                     <li class="flex items-center text-sm">
-                                        <svg class="mr-2 h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="mr-2 h-5 w-5 text-green-500" fill="currentColor"
+                                            viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
                                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                                 clip-rule="evenodd" />
@@ -151,7 +149,8 @@
 
                                 <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                                     <div>
-                                        <label class="mb-1 block text-sm font-medium text-gray-700">Weight (grams)</label>
+                                        <label class="mb-1 block text-sm font-medium text-gray-700">Weight
+                                            (grams)</label>
                                         <input type="number" name="shipping_profile[weight_g]"
                                             value="{{ old('shipping_profile.weight_g', $egi->shipping_profile['weight_g'] ?? '') }}"
                                             class="w-full rounded-md border-gray-300 text-sm shadow-sm"
@@ -206,7 +205,7 @@
                             Save Changes
                         </button>
 
-                        @if ($collection->commercial_status === 'commercial_enabled')
+                        @if ($collection->commercial_status?->value === 'commercial_enabled')
                             <form method="POST" action="{{ route('egi.listing.publish', $egi) }}" class="inline">
                                 @csrf
                                 <button type="submit"
@@ -222,10 +221,11 @@
             {{-- Policy Enforcement Info --}}
             @if ($collection->delivery_policy)
                 <div class="mt-6 rounded border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-                    <strong>Collection Policy:</strong> {{ ucfirst(str_replace('_', ' ', $collection->delivery_policy)) }}
-                    @if ($collection->delivery_policy === 'DIGITAL_ONLY' && $egi->is_physical)
+                    <strong>Collection Policy:</strong>
+                    {{ ucfirst(str_replace('_', ' ', $collection->delivery_policy?->value ?? '')) }}
+                    @if ($collection->delivery_policy?->value === 'DIGITAL_ONLY' && $egi->is_physical)
                         <span class="font-bold text-red-600">⚠️ Conflict: Collection only allows digital items</span>
-                    @elseif($collection->delivery_policy === 'PHYSICAL_REQUIRED' && !$egi->is_physical)
+                    @elseif($collection->delivery_policy?->value === 'PHYSICAL_REQUIRED' && !$egi->is_physical)
                         <span class="font-bold text-red-600">⚠️ Conflict: Collection requires physical items</span>
                     @endif
                 </div>
@@ -267,4 +267,4 @@
             }
         </script>
     @endpush
-@endsection
+</x-app-layout>
