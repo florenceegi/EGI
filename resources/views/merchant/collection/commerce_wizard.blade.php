@@ -9,7 +9,8 @@
             <div class="mb-8">
                 <h1 class="text-3xl font-bold text-gray-900">Collection Commerce Setup</h1>
                 <p class="mt-2 text-gray-600">Enable commercial features for:
-                    <strong>{{ $collection->collection_name }}</strong></p>
+                    <strong>{{ $collection->collection_name }}</strong>
+                </p>
             </div>
 
             {{-- Progress Indicator --}}
@@ -17,9 +18,9 @@
                 <div class="mb-2 flex items-center justify-between">
                     <span class="text-sm font-medium text-gray-700">Progress</span>
                     <span class="text-sm font-medium text-gray-700">
-                        @if ($collection->commercial_status === 'draft')
+                        @if ($collection->commercial_status?->value === 'draft')
                             Step 1/3
-                        @elseif($collection->commercial_status === 'configured')
+                        @elseif($collection->commercial_status?->value === 'configured')
                             Step 3/3
                         @else
                             Completed
@@ -28,7 +29,7 @@
                 </div>
                 <div class="h-2 w-full rounded-full bg-gray-200">
                     <div class="h-2 rounded-full bg-blue-600 transition-all duration-300"
-                        style="width: {{ $collection->commercial_status === 'draft' ? '33%' : ($collection->commercial_status === 'configured' ? '100%' : '100%') }}">
+                        style="width: {{ $collection->commercial_status?->value === 'draft' ? '33%' : ($collection->commercial_status?->value === 'configured' ? '100%' : '100%') }}">
                     </div>
                 </div>
             </div>
@@ -170,7 +171,7 @@
                             Save Settings
                         </button>
 
-                        @if ($collection->commercial_status === 'configured')
+                        @if ($collection->commercial_status?->value === 'configured')
                             <form method="POST" action="{{ route('collections.commerce.enable', $collection) }}"
                                 class="inline">
                                 @csrf
@@ -186,8 +187,9 @@
 
             {{-- Status Info --}}
             <div class="mt-6 rounded border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-                <strong>Current Status:</strong> {{ ucfirst(str_replace('_', ' ', $collection->commercial_status)) }}
-                @if ($collection->commercial_status === 'commercial_enabled')
+                <strong>Current Status:</strong>
+                {{ ucfirst(str_replace('_', ' ', $collection->commercial_status?->value ?? 'draft')) }}
+                @if ($collection->commercial_status?->value === 'commercial_enabled')
                     ✓ This collection is enabled for commerce
                 @endif
             </div>
