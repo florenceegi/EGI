@@ -9,8 +9,34 @@ use App\Enums\Commerce\ImpactModeEnum;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+
 class CollectionCommercialService
 {
+    /**
+     * Ultra Log Manager instance
+     */
+    protected UltraLogManager $logger;
+
+    /**
+     * Ultra Error Manager instance
+     */
+    protected ErrorManagerInterface $errorManager;
+
+    /**
+     * Constructor - Dependency Injection
+     *
+     * @param UltraLogManager $logger
+     * @param ErrorManagerInterface $errorManager
+     */
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
     /**
      * Validate the collection setup for commerce enablement.
      *
@@ -59,13 +85,33 @@ class CollectionCommercialService
      */
     public function enableCommercial(Collection $collection): Collection
     {
-        $this->validateSetup($collection);
+        try {
+            $this->logger->info('COMMERCE_ENABLE_START', [
+                'collection_id' => $collection->id,
+                'current_status' => $collection->commercial_status,
+                'user_id' => auth()->id(),
+            ]);
 
-        $collection->update([
-            'commercial_status' => CommercialStatusEnum::COMMERCIAL_ENABLED
-        ]);
+            $this->validateSetup($collection);
 
-        return $collection;
+            $collection->update([
+                'commercial_status' => CommercialStatusEnum::COMMERCIAL_ENABLED
+            ]);
+
+            $this->logger->info('COMMERCE_ENABLE_SUCCESS', [
+                'collection_id' => $collection->id,
+                'new_status' => $collection->commercial_status,
+            ]);
+
+            return $collection;
+        } catch (\Exception $e) {
+            $this->logger->error('COMMERCE_ENABLE_ERROR', [
+                'collection_id' => $collection->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
     }
 
     /**
@@ -77,40 +123,59 @@ class CollectionCommercialService
      */
     public function updateSettings(Collection $collection, array $data): Collection
     {
-        $validator = Validator::make($data, [
-            'delivery_policy' => ['required', 'string'], // Enum validation handled by model casting or Rule::enum
-            'impact_mode' => ['required', 'string'],
-            'epp_project_id' => ['required_if:impact_mode,EPP', 'nullable', 'integer'],
-            'subscription_plan_id' => ['required_if:impact_mode,SUBSCRIPTION', 'nullable', 'integer'],
-        ]);
+        try {
+            $this->logger->info('COMMERCE_SETTINGS_UPDATE_START', [
+                'collection_id' => $collection->id,
+                'data_keys' => array_keys($data),
+                'user_id' => auth()->id(),
+            ]);
 
-        if ($validator->fails()) {
-             throw new ValidationException($validator);
+            $validator = Validator::make($data, [
+                'delivery_policy' => ['required', 'string'], // Enum validation handled by model casting or Rule::enum
+                'impact_mode' => ['required', 'string'],
+                'epp_project_id' => ['required_if:impact_mode,EPP', 'nullable', 'integer'],
+                'subscription_plan_id' => ['required_if:impact_mode,SUBSCRIPTION', 'nullable', 'integer'],
+            ]);
+
+            if ($validator->fails()) {
+                 throw new ValidationException($validator);
+            }
+
+            // Determine status: preserve ENABLED if already enabled, otherwise set to CONFIGURED
+            $currentStatus = $collection->commercial_status;
+            $newStatus = CommercialStatusEnum::CONFIGURED;
+
+            if ($currentStatus === CommercialStatusEnum::COMMERCIAL_ENABLED || 
+                ($currentStatus instanceof CommercialStatusEnum && $currentStatus === CommercialStatusEnum::COMMERCIAL_ENABLED)) {
+                $newStatus = CommercialStatusEnum::COMMERCIAL_ENABLED;
+            }
+
+            $collection->update([
+                'delivery_policy' => $data['delivery_policy'],
+                'impact_mode' => $data['impact_mode'],
+                'commercial_status' => $newStatus,
+            ]);
+
+            // Optional: Update EPP/Plan IDs if passed, though they might be separate steps
+            if (isset($data['epp_project_id'])) {
+                $collection->update(['epp_project_id' => $data['epp_project_id']]);
+            }
+            if (isset($data['subscription_plan_id'])) {
+                $collection->update(['subscription_plan_id' => $data['subscription_plan_id']]);
+            }
+
+            $this->logger->info('COMMERCE_SETTINGS_UPDATE_SUCCESS', [
+                'collection_id' => $collection->id,
+                'status' => $newStatus,
+            ]);
+
+            return $collection;
+        } catch (\Exception $e) {
+            $this->logger->error('COMMERCE_SETTINGS_UPDATE_ERROR', [
+                'collection_id' => $collection->id,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
         }
-
-        // Determine status: preserve ENABLED if already enabled, otherwise set to CONFIGURED
-        $currentStatus = $collection->commercial_status;
-        $newStatus = CommercialStatusEnum::CONFIGURED;
-
-        if ($currentStatus === CommercialStatusEnum::COMMERCIAL_ENABLED || 
-            ($currentStatus instanceof CommercialStatusEnum && $currentStatus === CommercialStatusEnum::COMMERCIAL_ENABLED)) {
-            $newStatus = CommercialStatusEnum::COMMERCIAL_ENABLED;
-        }
-
-        $collection->update([
-            'delivery_policy' => $data['delivery_policy'],
-            'impact_mode' => $data['impact_mode'],
-            'commercial_status' => $newStatus,
-        ]);
-
-        // Optional: Update EPP/Plan IDs if passed, though they might be separate steps
-        if (isset($data['epp_project_id'])) {
-            $collection->update(['epp_project_id' => $data['epp_project_id']]);
-        }
-        if (isset($data['subscription_plan_id'])) {
-            $collection->update(['subscription_plan_id' => $data['subscription_plan_id']]);
-        }
-
-        return $collection;
     }
 }
