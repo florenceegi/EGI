@@ -84,10 +84,19 @@ class CollectionCommercialService
              throw new ValidationException($validator);
         }
 
+        // Determine status: preserve ENABLED if already enabled, otherwise set to CONFIGURED
+        $currentStatus = $collection->commercial_status;
+        $newStatus = CommercialStatusEnum::CONFIGURED;
+
+        if ($currentStatus === CommercialStatusEnum::COMMERCIAL_ENABLED || 
+            ($currentStatus instanceof CommercialStatusEnum && $currentStatus === CommercialStatusEnum::COMMERCIAL_ENABLED)) {
+            $newStatus = CommercialStatusEnum::COMMERCIAL_ENABLED;
+        }
+
         $collection->update([
             'delivery_policy' => $data['delivery_policy'],
             'impact_mode' => $data['impact_mode'],
-            'commercial_status' => CommercialStatusEnum::CONFIGURED, // Mark as configured, user must explicitly enable
+            'commercial_status' => $newStatus,
         ]);
 
         // Optional: Update EPP/Plan IDs if passed, though they might be separate steps
