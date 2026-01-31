@@ -105,10 +105,11 @@ class CollectionCommercialService
 
             return $collection;
         } catch (\Exception $e) {
-            $this->logger->error('COMMERCE_ENABLE_ERROR', [
+            // UEM: Handle error via standard ErrorManager
+            $this->errorManager->handleException($e, [
+                'user_id' => auth()->id(),
                 'collection_id' => $collection->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'action' => 'enableCommercial'
             ]);
             throw $e;
         }
@@ -171,9 +172,12 @@ class CollectionCommercialService
 
             return $collection;
         } catch (\Exception $e) {
-            $this->logger->error('COMMERCE_SETTINGS_UPDATE_ERROR', [
+            // UEM: Handle error via standard ErrorManager
+            $this->errorManager->handleException($e, [
+                'user_id' => auth()->id(),
                 'collection_id' => $collection->id,
-                'error' => $e->getMessage(),
+                'data_keys' => array_keys($data),
+                'action' => 'updateSettings'
             ]);
             throw $e;
         }
