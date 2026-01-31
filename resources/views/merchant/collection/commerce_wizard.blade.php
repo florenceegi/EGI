@@ -1,11 +1,11 @@
-<x-app-layout page-title="Collection Commerce Setup - {{ $collection->collection_name }}">
+<x-app-layout page-title="{{ __('commerce.setup.title') }} - {{ $collection->collection_name }}">
 
     <div class="container mx-auto px-4 py-8">
         <div class="mx-auto max-w-4xl">
             {{-- Header --}}
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900">Collection Commerce Setup</h1>
-                <p class="mt-2 text-gray-600">Enable commercial features for:
+                <h1 class="text-3xl font-bold text-gray-900">{{ __('commerce.setup.title') }}</h1>
+                <p class="mt-2 text-gray-600">{{ __('commerce.setup.subtitle') }}
                     <strong>{{ $collection->collection_name }}</strong>
                 </p>
             </div>
@@ -13,14 +13,14 @@
             {{-- Progress Indicator --}}
             <div class="mb-8">
                 <div class="mb-2 flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-700">Progress</span>
+                    <span class="text-sm font-medium text-gray-700">{{ __('commerce.setup.progress') }}</span>
                     <span class="text-sm font-medium text-gray-700">
                         @if ($collection->commercial_status?->value === 'draft')
-                            Step 1/3
+                            {{ __('commerce.setup.step_1') }}
                         @elseif($collection->commercial_status?->value === 'configured')
-                            Step 3/3
+                            {{ __('commerce.setup.step_3') }}
                         @else
-                            Completed
+                            {{ __('commerce.setup.completed') }}
                         @endif
                     </span>
                 </div>
@@ -55,37 +55,42 @@
 
                 {{-- Step 1: Delivery Policy --}}
                 <div class="mb-8">
-                    <h2 class="mb-4 text-xl font-semibold text-gray-800">1. Delivery Policy</h2>
-                    <p class="mb-4 text-sm text-gray-600">Choose what type of items can be sold in this collection</p>
+                    <h2 class="mb-4 text-xl font-semibold text-gray-800">
+                        {{ __('commerce.setup.delivery_policy_title') }}</h2>
+                    <p class="mb-4 text-sm text-gray-600">{{ __('commerce.setup.delivery_policy_desc') }}</p>
 
                     <div class="space-y-3">
                         <label
-                            class="@if (old('delivery_policy', $collection->delivery_policy) === 'DIGITAL_ONLY') border-blue-500 bg-blue-50 @endif flex cursor-pointer items-start rounded-lg border p-4 transition hover:bg-gray-50">
+                            class="@if (old('delivery_policy', $collection->delivery_policy?->value) === 'DIGITAL_ONLY') border-blue-500 bg-blue-50 @endif flex cursor-pointer items-start rounded-lg border p-4 transition hover:bg-gray-50">
                             <input type="radio" name="delivery_policy" value="DIGITAL_ONLY" class="mr-3 mt-1"
-                                @if (old('delivery_policy', $collection->delivery_policy) === 'DIGITAL_ONLY') checked @endif>
+                                @if (old('delivery_policy', $collection->delivery_policy?->value) === 'DIGITAL_ONLY') checked @endif>
                             <div>
-                                <div class="font-medium text-gray-900">Digital Only</div>
-                                <div class="text-sm text-gray-600">Only digital items (no physical shipping)</div>
+                                <div class="font-medium text-gray-900">{{ __('commerce.setup.digital_only') }}</div>
+                                <div class="text-sm text-gray-600">{{ __('commerce.setup.digital_only_desc') }}</div>
                             </div>
                         </label>
 
                         <label
-                            class="@if (old('delivery_policy', $collection->delivery_policy) === 'PHYSICAL_ALLOWED') border-blue-500 bg-blue-50 @endif flex cursor-pointer items-start rounded-lg border p-4 transition hover:bg-gray-50">
+                            class="@if (old('delivery_policy', $collection->delivery_policy?->value) === 'PHYSICAL_ALLOWED') border-blue-500 bg-blue-50 @endif flex cursor-pointer items-start rounded-lg border p-4 transition hover:bg-gray-50">
                             <input type="radio" name="delivery_policy" value="PHYSICAL_ALLOWED" class="mr-3 mt-1"
-                                @if (old('delivery_policy', $collection->delivery_policy) === 'PHYSICAL_ALLOWED') checked @endif>
+                                @if (old('delivery_policy', $collection->delivery_policy?->value) === 'PHYSICAL_ALLOWED') checked @endif>
                             <div>
-                                <div class="font-medium text-gray-900">Physical Allowed</div>
-                                <div class="text-sm text-gray-600">Both digital and physical items allowed</div>
+                                <div class="font-medium text-gray-900">{{ __('commerce.setup.physical_allowed') }}
+                                </div>
+                                <div class="text-sm text-gray-600">{{ __('commerce.setup.physical_allowed_desc') }}
+                                </div>
                             </div>
                         </label>
 
                         <label
-                            class="@if (old('delivery_policy', $collection->delivery_policy) === 'PHYSICAL_REQUIRED') border-blue-500 bg-blue-50 @endif flex cursor-pointer items-start rounded-lg border p-4 transition hover:bg-gray-50">
+                            class="@if (old('delivery_policy', $collection->delivery_policy?->value) === 'PHYSICAL_REQUIRED') border-blue-500 bg-blue-50 @endif flex cursor-pointer items-start rounded-lg border p-4 transition hover:bg-gray-50">
                             <input type="radio" name="delivery_policy" value="PHYSICAL_REQUIRED" class="mr-3 mt-1"
-                                @if (old('delivery_policy', $collection->delivery_policy) === 'PHYSICAL_REQUIRED') checked @endif>
+                                @if (old('delivery_policy', $collection->delivery_policy?->value) === 'PHYSICAL_REQUIRED') checked @endif>
                             <div>
-                                <div class="font-medium text-gray-900">Physical Required</div>
-                                <div class="text-sm text-gray-600">Only physical items (shipping required)</div>
+                                <div class="font-medium text-gray-900">{{ __('commerce.setup.physical_required') }}
+                                </div>
+                                <div class="text-sm text-gray-600">{{ __('commerce.setup.physical_required_desc') }}
+                                </div>
                             </div>
                         </label>
                     </div>
@@ -93,8 +98,9 @@
 
                 {{-- Step 2: Payment Methods --}}
                 <div class="mb-8">
-                    <h2 class="mb-4 text-xl font-semibold text-gray-800">2. Payment Methods</h2>
-                    <p class="mb-4 text-sm text-gray-600">Current payment methods (configured in settings)</p>
+                    <h2 class="mb-4 text-xl font-semibold text-gray-800">
+                        {{ __('commerce.setup.payment_methods_title') }}</h2>
+                    <p class="mb-4 text-sm text-gray-600">{{ __('commerce.setup.payment_methods_desc') }}</p>
 
                     <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
                         @if ($paymentMethods->count() > 0)
@@ -112,47 +118,50 @@
                                 @endforeach
                             </ul>
                         @else
-                            <p class="text-sm text-red-600">⚠️ No payment methods enabled. Configure payment methods in
-                                settings.</p>
+                            <p class="text-sm text-red-600">{{ __('commerce.setup.no_payment_methods') }}</p>
                         @endif
                     </div>
                 </div>
 
                 {{-- Step 3: Impact Mode --}}
                 <div class="mb-8">
-                    <h2 class="mb-4 text-xl font-semibold text-gray-800">3. Impact Mode</h2>
-                    <p class="mb-4 text-sm text-gray-600">Choose how this collection creates impact</p>
+                    <h2 class="mb-4 text-xl font-semibold text-gray-800">{{ __('commerce.setup.impact_mode_title') }}
+                    </h2>
+                    <p class="mb-4 text-sm text-gray-600">{{ __('commerce.setup.impact_mode_desc') }}</p>
 
                     <div class="space-y-3">
                         <label
-                            class="@if (old('impact_mode', $collection->impact_mode) === 'EPP') border-blue-500 bg-blue-50 @endif flex cursor-pointer items-start rounded-lg border p-4 transition hover:bg-gray-50">
+                            class="@if (old('impact_mode', $collection->impact_mode?->value) === 'EPP') border-blue-500 bg-blue-50 @endif flex cursor-pointer items-start rounded-lg border p-4 transition hover:bg-gray-50">
                             <input type="radio" name="impact_mode" value="EPP" class="mr-3 mt-1"
-                                @if (old('impact_mode', $collection->impact_mode) === 'EPP') checked @endif>
+                                @if (old('impact_mode', $collection->impact_mode?->value) === 'EPP') checked @endif>
                             <div class="flex-1">
-                                <div class="font-medium text-gray-900">EPP Donation</div>
-                                <div class="mb-2 text-sm text-gray-600">Support an Environmental Protection Project
+                                <div class="font-medium text-gray-900">{{ __('commerce.setup.epp_donation') }}</div>
+                                <div class="mb-2 text-sm text-gray-600">{{ __('commerce.setup.epp_donation_desc') }}
                                 </div>
                                 <select name="epp_project_id"
                                     class="mt-2 w-full rounded-md border-gray-300 text-sm shadow-sm">
-                                    <option value="">Select EPP Project...</option>
+                                    <option value="">{{ __('commerce.setup.select_epp_project') }}</option>
                                     @if ($collection->epp_project_id)
-                                        <option value="{{ $collection->epp_project_id }}" selected>Current Project (ID:
-                                            {{ $collection->epp_project_id }})</option>
+                                        <option value="{{ $collection->epp_project_id }}" selected>
+                                            {{ __('commerce.setup.current_project', ['id' => $collection->epp_project_id]) }}
+                                        </option>
                                     @endif
                                 </select>
                             </div>
                         </label>
 
                         <label
-                            class="@if (old('impact_mode', $collection->impact_mode) === 'SUBSCRIPTION') border-blue-500 bg-blue-50 @endif flex cursor-pointer items-start rounded-lg border p-4 transition hover:bg-gray-50">
+                            class="@if (old('impact_mode', $collection->impact_mode?->value) === 'SUBSCRIPTION') border-blue-500 bg-blue-50 @endif flex cursor-pointer items-start rounded-lg border p-4 transition hover:bg-gray-50">
                             <input type="radio" name="impact_mode" value="SUBSCRIPTION" class="mr-3 mt-1"
-                                @if (old('impact_mode', $collection->impact_mode) === 'SUBSCRIPTION') checked @endif>
+                                @if (old('impact_mode', $collection->impact_mode?->value) === 'SUBSCRIPTION') checked @endif>
                             <div class="flex-1">
-                                <div class="font-medium text-gray-900">Subscription Plan</div>
-                                <div class="mb-2 text-sm text-gray-600">Require subscription for access</div>
+                                <div class="font-medium text-gray-900">{{ __('commerce.setup.subscription_plan') }}
+                                </div>
+                                <div class="mb-2 text-sm text-gray-600">
+                                    {{ __('commerce.setup.subscription_plan_desc') }}</div>
                                 <input type="number" name="subscription_plan_id"
                                     value="{{ old('subscription_plan_id', $collection->subscription_plan_id) }}"
-                                    placeholder="Plan ID"
+                                    placeholder="{{ __('commerce.setup.plan_id_placeholder') }}"
                                     class="mt-2 w-full rounded-md border-gray-300 text-sm shadow-sm">
                             </div>
                         </label>
@@ -163,13 +172,13 @@
                 <div class="flex items-center justify-between border-t pt-6">
                     <a href="{{ route('home.collections.show', $collection) }}"
                         class="text-gray-600 hover:text-gray-900">
-                        ← Back to Collection
+                        {{ __('commerce.setup.back_to_collection') }}
                     </a>
 
                     <div class="space-x-3">
                         <button type="submit"
                             class="rounded-lg bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700">
-                            Save Settings
+                            {{ __('commerce.setup.save_settings') }}
                         </button>
 
                         @if ($collection->commercial_status?->value === 'configured')
@@ -178,7 +187,7 @@
                                 @csrf
                                 <button type="submit"
                                     class="rounded-lg bg-green-600 px-6 py-2 text-white transition hover:bg-green-700">
-                                    ✓ Enable Commerce
+                                    {{ __('commerce.setup.enable_commerce') }}
                                 </button>
                             </form>
                         @endif
@@ -188,10 +197,10 @@
 
             {{-- Status Info --}}
             <div class="mt-6 rounded border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-                <strong>Current Status:</strong>
+                <strong>{{ __('commerce.setup.current_status') }}</strong>
                 {{ ucfirst(str_replace('_', ' ', $collection->commercial_status?->value ?? 'draft')) }}
                 @if ($collection->commercial_status?->value === 'commercial_enabled')
-                    ✓ This collection is enabled for commerce
+                    {{ __('commerce.setup.enabled_message') }}
                 @endif
             </div>
         </div>

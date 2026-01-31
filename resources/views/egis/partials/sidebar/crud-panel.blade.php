@@ -78,7 +78,7 @@
                 <a href="{{ route('egi.listing.wizard', $egi) }}"
                     class="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-green-500/50 bg-gradient-to-r from-green-600/30 to-emerald-600/30 px-3 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:border-green-500 hover:from-green-600/40 hover:to-emerald-600/40">
                     <span class="material-symbols-outlined text-base">storefront</span>
-                    <span>Configure Listing</span>
+                    <span>{{ __('commerce.listing.configure_button') }}</span>
                 </a>
             @endif
 
