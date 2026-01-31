@@ -678,4 +678,20 @@ class Collection extends Model implements HasMedia
             return false;
         }
     }
+
+    /**
+     * Check if the collection is enabled for commerce.
+     * Robust check handling Enum casting or raw values.
+     *
+     * @return bool
+     */
+    public function isCommercialEnabled(): bool
+    {
+        if ($this->commercial_status instanceof \App\Enums\Commerce\CommercialStatusEnum) {
+            return $this->commercial_status === \App\Enums\Commerce\CommercialStatusEnum::COMMERCIAL_ENABLED;
+        }
+
+        return $this->commercial_status === 'commercial_enabled' 
+            || $this->commercial_status === \App\Enums\Commerce\CommercialStatusEnum::COMMERCIAL_ENABLED->value;
+    }
 }

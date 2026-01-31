@@ -199,7 +199,7 @@
             <div class="mt-6 rounded border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
                 <strong>{{ __('commerce.setup.current_status') }}</strong>
                 {{ ucfirst(str_replace('_', ' ', $collection->commercial_status?->value ?? 'draft')) }}
-                @if ($collection->commercial_status?->value === 'commercial_enabled')
+                @if ($collection->isCommercialEnabled())
                     {{ __('commerce.setup.enabled_message') }}
                 @endif
             </div>

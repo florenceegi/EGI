@@ -12,7 +12,7 @@
             </div>
 
             {{-- Collection Status Check --}}
-            @if ($collection->commercial_status?->value !== 'commercial_enabled')
+            @if (!$collection->isCommercialEnabled())
                 <div class="mb-6 rounded border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800">
                     {{ __('commerce.listing.not_enabled_warning') }}
                     <a href="{{ route('collections.commerce.wizard', $collection) }}" class="underline">
@@ -220,7 +220,7 @@
                             {{ __('commerce.listing.save_changes') }}
                         </button>
 
-                        @if ($collection->commercial_status?->value === 'commercial_enabled')
+                        @if ($collection->isCommercialEnabled())
                             <form method="POST" action="{{ route('egi.listing.publish', $egi) }}" class="inline">
                                 @csrf
                                 <button type="submit"
