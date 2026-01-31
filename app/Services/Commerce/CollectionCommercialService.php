@@ -106,11 +106,11 @@ class CollectionCommercialService
             return $collection;
         } catch (\Exception $e) {
             // UEM: Handle error via standard ErrorManager
-            $this->errorManager->handleException($e, [
+            $this->errorManager->handle('COMMERCE_ENABLE_FAILED', [
                 'user_id' => auth()->id(),
                 'collection_id' => $collection->id,
                 'action' => 'enableCommercial'
-            ]);
+            ], $e);
             throw $e;
         }
     }
@@ -173,12 +173,12 @@ class CollectionCommercialService
             return $collection;
         } catch (\Exception $e) {
             // UEM: Handle error via standard ErrorManager
-            $this->errorManager->handleException($e, [
+            $this->errorManager->handle('COMMERCE_SETTINGS_UPDATE_FAILED', [
                 'user_id' => auth()->id(),
                 'collection_id' => $collection->id,
                 'data_keys' => array_keys($data),
                 'action' => 'updateSettings'
-            ]);
+            ], $e);
             throw $e;
         }
     }
