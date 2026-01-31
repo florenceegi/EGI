@@ -49,7 +49,8 @@
             @endif
 
             {{-- Wizard Form --}}
-            <form method="POST" action="{{ route('collections.commerce.wizard.update', $collection) }}"
+            <form id="commerce-setup-form" method="POST"
+                action="{{ route('collections.commerce.wizard.update', $collection) }}"
                 class="rounded-lg bg-white p-6 shadow-md">
                 @csrf
 
@@ -167,33 +168,35 @@
                         </label>
                     </div>
                 </div>
-
-                {{-- Actions --}}
-                <div class="flex items-center justify-between border-t pt-6">
-                    <a href="{{ route('home.collections.show', $collection) }}"
-                        class="text-gray-600 hover:text-gray-900">
-                        {{ __('commerce.setup.back_to_collection') }}
-                    </a>
-
-                    <div class="space-x-3">
-                        <button type="submit"
-                            class="rounded-lg bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700">
-                            {{ __('commerce.setup.save_settings') }}
-                        </button>
-
-                        @if ($collection->commercial_status?->value === 'configured')
-                            <form method="POST" action="{{ route('collections.commerce.enable', $collection) }}"
-                                class="inline">
-                                @csrf
-                                <button type="submit"
-                                    class="rounded-lg bg-green-600 px-6 py-2 text-white transition hover:bg-green-700">
-                                    {{ __('commerce.setup.enable_commerce') }}
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </div>
             </form>
+
+            {{-- Actions (Outside Form to prevent nesting) --}}
+            <div
+                class="-mt-2 flex items-center justify-between rounded-b-lg border-t border-gray-200 bg-white px-6 py-4 shadow-md">
+                <a href="{{ route('home.collections.show', $collection) }}" class="text-gray-600 hover:text-gray-900">
+                    {{ __('commerce.setup.back_to_collection') }}
+                </a>
+
+                <div class="space-x-3">
+                    {{-- Save Button links to form via ID --}}
+                    <button type="submit" form="commerce-setup-form"
+                        class="rounded-lg bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700">
+                        {{ __('commerce.setup.save_settings') }}
+                    </button>
+
+                    @if ($collection->commercial_status?->value === 'configured')
+                        {{-- Independent Enable Form --}}
+                        <form method="POST" action="{{ route('collections.commerce.enable', $collection) }}"
+                            class="inline">
+                            @csrf
+                            <button type="submit"
+                                class="rounded-lg bg-green-600 px-6 py-2 text-white transition hover:bg-green-700">
+                                {{ __('commerce.setup.enable_commerce') }}
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
 
             {{-- Status Info --}}
             <div class="mt-6 rounded border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">

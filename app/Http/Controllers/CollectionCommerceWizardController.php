@@ -23,6 +23,7 @@ class CollectionCommerceWizardController extends Controller
      */
     public function show(Collection $collection)
     {
+        app('Ultra\UltraLogManager\UltraLogManager')->info('COMMERCE_WIZARD_SHOW', ['collection_id' => $collection->id, 'user_id' => auth()->id()]);
         $this->authorize('update', $collection);
 
         return view('merchant.collection.commerce_wizard', [
@@ -36,6 +37,7 @@ class CollectionCommerceWizardController extends Controller
      */
     public function update(Collection $collection, Request $request)
     {
+        app('Ultra\UltraLogManager\UltraLogManager')->info('COMMERCE_WIZARD_UPDATE_REQUEST', ['collection_id' => $collection->id, 'data_keys' => array_keys($request->all())]);
         $this->authorize('update', $collection);
 
         try {
@@ -54,6 +56,7 @@ class CollectionCommerceWizardController extends Controller
      */
     public function enable(Collection $collection)
     {
+        app('Ultra\UltraLogManager\UltraLogManager')->info('COMMERCE_WIZARD_ENABLE_REQUEST', ['collection_id' => $collection->id]);
         $this->authorize('update', $collection);
 
         try {
@@ -63,7 +66,7 @@ class CollectionCommerceWizardController extends Controller
                 ->route('home.collections.show', $collection)
                 ->with('success', __('commerce.setup.messages.enabled_success'));
         } catch (ValidationException $e) {
-            return back()->withErrors($e->errors());
+             return back()->withErrors($e->errors());
         }
     }
 }
