@@ -358,7 +358,27 @@ Route::middleware(['auth'])
             Route::post('/bank-transfer/config', [App\Http\Controllers\PaymentSettingsController::class, 'updateBankConfigCollection'])
                 ->name('bank-config');
         });
+
+        // P0 Commerce: Collection Commercial Setup Wizard
+        Route::prefix('{collection}/commerce')->name('commerce.')->group(function () {
+            Route::get('/wizard', [\App\Http\Controllers\CollectionCommerceWizardController::class, 'show'])
+                ->name('wizard');
+            Route::post('/wizard/update', [\App\Http\Controllers\CollectionCommerceWizardController::class, 'update'])
+                ->name('wizard.update');
+            Route::post('/enable', [\App\Http\Controllers\CollectionCommerceWizardController::class, 'enable'])
+                ->name('enable');
+        });
     });
+
+// P0 Commerce: EGI Listing Wizard (separate prefix for clarity)
+Route::middleware(['auth'])->prefix('egis/{egi}/listing')->name('egi.listing.')->group(function () {
+    Route::get('/wizard', [\App\Http\Controllers\EgiListingWizardController::class, 'show'])
+        ->name('wizard');
+    Route::post('/wizard/update', [\App\Http\Controllers\EgiListingWizardController::class, 'update'])
+        ->name('wizard.update');
+    Route::post('/publish', [\App\Http\Controllers\EgiListingWizardController::class, 'publish'])
+        ->name('publish');
+});
 
 // Notification Center (ex-Dashboard)
 Route::get('/dashboard', function () {
