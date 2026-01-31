@@ -26,15 +26,19 @@ class CollectionCommercialService
         }
 
         // 2. Check Impact Mode configuration
-        if (!$collection->impact_mode) {
+        $impactMode = $collection->impact_mode;
+        // Normalize to string value for comparison
+        $impactVal = $impactMode instanceof ImpactModeEnum ? $impactMode->value : $impactMode;
+
+        if (!$impactVal) {
              throw ValidationException::withMessages(['impact_mode' => 'Impact mode is required.']);
         }
 
-        if ($collection->impact_mode === ImpactModeEnum::EPP && !$collection->epp_project_id) {
+        if ($impactVal === ImpactModeEnum::EPP->value && !$collection->epp_project_id) {
             throw ValidationException::withMessages(['epp_project_id' => 'EPP Project is required for EPP impact mode.']);
         }
 
-        if ($collection->impact_mode === ImpactModeEnum::SUBSCRIPTION && !$collection->subscription_plan_id) {
+        if ($impactVal === ImpactModeEnum::SUBSCRIPTION->value && !$collection->subscription_plan_id) {
             throw ValidationException::withMessages(['subscription_plan_id' => 'Subscription plan is required for Subscription impact mode.']);
         }
 
