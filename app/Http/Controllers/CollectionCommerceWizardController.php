@@ -42,7 +42,7 @@ class CollectionCommerceWizardController extends Controller
             $this->commerceService->updateSettings($collection, $request->all());
 
             return redirect()
-                ->route('collection.commerce.wizard', $collection)
+                ->route('collections.commerce.wizard', $collection)
                 ->with('success', 'Commercial settings updated successfully.');
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
@@ -60,7 +60,7 @@ class CollectionCommerceWizardController extends Controller
             $this->commerceService->enableCommercial($collection);
 
             return redirect()
-                ->route('collection.show', $collection)
+                ->route('home.collections.show', $collection)
                 ->with('success', 'Collection is now enabled for commerce!');
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors());

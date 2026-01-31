@@ -66,7 +66,7 @@ class EgiListingWizardController extends Controller
                 $egi->update(['is_sellable' => true]);
 
                 return redirect()
-                    ->route('egi.show', $egi)
+                    ->route('egis.show', $egi)
                     ->with('success', 'EGI is now listed for sale!');
             }
         } catch (ValidationException $e) {
