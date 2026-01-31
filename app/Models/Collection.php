@@ -35,6 +35,10 @@ class Collection extends Model implements HasMedia
         'description',
         'type',
         'status',
+        'commercial_status', // P0 Commerce
+        'delivery_policy',   // P0 Commerce
+        'impact_mode',       // P0 Commerce
+        'subscription_plan_id', // P0 Commerce
         'profile_type',    // NEW: 'contributor' or 'normal'
         'royalty_mode',    // NEW: 'standard' or 'subscriber'
         'is_published',
@@ -72,6 +76,9 @@ class Collection extends Model implements HasMedia
         'is_epp_voluntary' => 'boolean',
         'epp_donation_percentage' => 'decimal:2',
         'metadata' => 'array', // PA/Enterprise JSON metadata
+        'commercial_status' => \App\Enums\Commerce\CommercialStatusEnum::class,
+        'delivery_policy' => \App\Enums\Commerce\DeliveryPolicyEnum::class,
+        'impact_mode' => \App\Enums\Commerce\ImpactModeEnum::class,
     ];
 
     /**

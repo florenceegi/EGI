@@ -188,6 +188,9 @@ class Egi extends Model {
         // 3D Prism Display
         'display_mode',
         'prism_config',
+        // P0 Commerce Listing Fields
+        'is_physical',
+        'shipping_profile',
         // Note: 'id', 'created_at', 'updated_at', 'deleted_at' are typically not fillable
     ];
 
@@ -203,6 +206,8 @@ class Egi extends Model {
         'media'          => 'boolean',      // Cast 'media' to boolean
         'bind'           => 'integer',      // Cast 'bind' to integer (as per migration)
         'paired'         => 'integer',      // Cast 'paired' to integer (as per migration)
+        'shipping_profile' => 'array',      // P0 Commerce: Structured shipping data
+        'is_physical'    => 'boolean',      // P0 Commerce: Physical item flag
         'price'          => 'decimal:2',    // Cast 'price' to float/decimal with 2 places
         'payment_by_egili' => 'boolean',
         'floorDropPrice' => 'decimal:2',    // Cast 'floorDropPrice' to float/decimal with 2 places

@@ -72,7 +72,9 @@ class Utility extends Model implements HasMedia {
         'max_uses',
         'current_uses',
         'activation_instructions',
-        'metadata'
+        'activation_instructions',
+        'metadata',
+        'requires_fulfillment', // P0 Commerce: Fulfillment flag (deprecates requires_shipping)
     ];
 
     protected $casts = [
@@ -81,6 +83,7 @@ class Utility extends Model implements HasMedia {
         'fragile' => 'boolean',
         'insurance_recommended' => 'boolean',
         'requires_shipping' => 'boolean',
+        'requires_fulfillment' => 'boolean', // P0 Commerce
         'valid_from' => 'date',
         'valid_until' => 'date'
     ];
