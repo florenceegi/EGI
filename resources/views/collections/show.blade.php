@@ -173,6 +173,16 @@ $isEppCollection = $collection->creator && in_array($collection->creator->userty
             {{-- Like Button - New Component --}}
             <x-like-button :resourceType="'collection'" :resourceId="$collection->id" :isLiked="$collection->is_liked ?? false" :likesCount="$collection->likes_count ?? 0" size="medium" />
 
+            {{-- Commerce Setup Button - P0 NEW --}}
+            @if ($collection->userHasPermission(Auth::id(), 'create_collection'))
+                <a href="{{ route('collections.commerce.wizard', $collection) }}"
+                    class="flex h-10 w-10 items-center justify-center rounded-lg border border-green-500/40 bg-green-600/80 text-sm font-medium text-white backdrop-blur-sm transition-all duration-300 hover:bg-green-600 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
+                    title="Commerce Setup">
+                    <span class="material-symbols-outlined mr-0 text-lg sm:mr-1 sm:text-base">storefront</span>
+                    <span class="hidden text-sm sm:inline">Commerce</span>
+                </a>
+            @endif
+
             {{-- Dashboard Button - NEW --}}
             @if ($collection->userHasPermission(Auth::id(), 'create_collection'))
                 <button id="openDashboardBtn"

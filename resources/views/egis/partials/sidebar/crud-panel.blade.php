@@ -73,6 +73,15 @@
                 @endif
             </div>
 
+            {{-- P0 Commerce: EGI Listing Wizard Button --}}
+            @if (($isCreator ?? false) || ($isOwner ?? false))
+                <a href="{{ route('egi.listing.wizard', $egi) }}"
+                    class="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-green-500/50 bg-gradient-to-r from-green-600/30 to-emerald-600/30 px-3 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:border-green-500 hover:from-green-600/40 hover:to-emerald-600/40">
+                    <span class="material-symbols-outlined text-base">storefront</span>
+                    <span>Configure Listing</span>
+                </a>
+            @endif
+
             {{-- ============================================ --}}
             {{-- DUAL ARCHITECTURE PANELS (Feature-flagged) --}}
             {{-- ============================================ --}}
@@ -327,19 +336,19 @@ $isSmartContract = $egi->egi_type === 'SmartContract';
                         </div>
 
                         {{-- 🥇 COMMODITY FIELDS (Dynamic Partial) --}}
-                        @if($egi->isGoldBar() || $egi->commodity_type)
+                        @if ($egi->isGoldBar() || $egi->commodity_type)
                             @php
                                 $cType = $egi->commodity_type;
                                 if (!$cType && $egi->isGoldBar()) {
-                                     $cType = 'goldbar';
+                                    $cType = 'goldbar';
                                 }
                                 if ($cType) {
                                     $cType = str_replace('-', '', $cType);
                                 }
                                 $commData = $egi->commodity_metadata ?? [];
                             @endphp
-                            
-                            @if($cType)
+
+                            @if ($cType)
                                 @includeIf("egis.commodity.{$cType}", ['data' => $commData])
                             @endif
                         @endif
@@ -735,7 +744,7 @@ $isSmartContract = $egi->egi_type === 'SmartContract';
                         const parts = key.split('[');
                         const mainKey = parts[0];
                         const subKey = parts[1].replace(']', '');
-                        
+
                         if (!formObject[mainKey]) {
                             formObject[mainKey] = {};
                         }
