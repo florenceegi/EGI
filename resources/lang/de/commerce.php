@@ -33,6 +33,11 @@ return [
         'enable_commerce' => '✓ Handel aktivieren',
         'current_status' => 'Aktueller Status:',
         'enabled_message' => '✓ Diese Sammlung ist für den Handel aktiviert',
+        'messages' => [
+            'settings_updated' => 'Einstellungen aktualisiert. Bitte Handel aktivieren.',
+            'enabled_success' => 'Sammlung ist nun für den Handel aktiviert!',
+            'settings_saved' => 'Einstellungen erfolgreich gespeichert.',
+        ],
     ],
     'listing' => [
         'title' => 'EGI Listing Setup',
@@ -70,5 +75,9 @@ return [
         'conflict_digital' => '⚠️ Konflikt: Sammlung erlaubt nur digitale Artikel',
         'conflict_physical' => '⚠️ Konflikt: Sammlung erfordert physische Artikel',
         'configure_button' => 'Listing konfigurieren',
+        'messages' => [
+            'updated' => 'Listing erfolgreich aktualisiert.',
+            'published' => 'EGI ist nun zum Verkauf gelistet!',
+        ],
     ],
 ];

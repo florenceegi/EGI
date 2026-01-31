@@ -33,6 +33,11 @@ return [
         'enable_commerce' => '✓ Enable Commerce',
         'current_status' => 'Current Status:',
         'enabled_message' => '✓ This collection is enabled for commerce',
+        'messages' => [
+            'settings_updated' => 'Commercial settings updated. Please enable commerce to proceed.',
+            'enabled_success' => 'Collection is now enabled for commerce!',
+            'settings_saved' => 'Settings saved successfully.',
+        ],
     ],
     'listing' => [
         'title' => 'EGI Listing Setup',
@@ -70,5 +75,9 @@ return [
         'conflict_digital' => '⚠️ Conflict: Collection only allows digital items',
         'conflict_physical' => '⚠️ Conflict: Collection requires physical items',
         'configure_button' => 'Configure Listing',
+        'messages' => [
+            'updated' => 'Listing updated successfully.',
+            'published' => 'EGI is now listed for sale!',
+        ],
     ],
 ];

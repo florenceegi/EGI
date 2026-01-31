@@ -43,7 +43,7 @@ class CollectionCommerceWizardController extends Controller
 
             return redirect()
                 ->route('collections.commerce.wizard', $collection)
-                ->with('success', 'Commercial settings updated successfully.');
+                ->with('success', __('commerce.setup.messages.settings_updated'));
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         }
@@ -61,7 +61,7 @@ class CollectionCommerceWizardController extends Controller
 
             return redirect()
                 ->route('home.collections.show', $collection)
-                ->with('success', 'Collection is now enabled for commerce!');
+                ->with('success', __('commerce.setup.messages.enabled_success'));
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors());
         }

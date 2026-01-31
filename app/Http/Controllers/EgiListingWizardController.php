@@ -48,7 +48,7 @@ class EgiListingWizardController extends Controller
 
             return redirect()
                 ->route('egi.listing.wizard', $egi)
-                ->with('success', 'Listing updated successfully.');
+                ->with('success', __('commerce.listing.messages.updated'));
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         }
@@ -67,7 +67,7 @@ class EgiListingWizardController extends Controller
 
                 return redirect()
                     ->route('egis.show', $egi)
-                    ->with('success', 'EGI is now listed for sale!');
+                    ->with('success', __('commerce.listing.messages.published'));
             }
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors());

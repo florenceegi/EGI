@@ -33,6 +33,11 @@ return [
         'enable_commerce' => '✓ Habilitar Comercio',
         'current_status' => 'Estado Actual:',
         'enabled_message' => '✓ Esta colección está habilitada para el comercio',
+        'messages' => [
+            'settings_updated' => 'Ajustes actualizados. Por favor habilite el comercio.',
+            'enabled_success' => '¡La colección ahora está habilitada para el comercio!',
+            'settings_saved' => 'Ajustes guardados correctamente.',
+        ],
     ],
     'listing' => [
         'title' => 'Configuración de Listado EGI',
@@ -70,5 +75,9 @@ return [
         'conflict_digital' => '⚠️ Conflicto: La colección solo permite artículos digitales',
         'conflict_physical' => '⚠️ Conflicto: La colección requiere artículos físicos',
         'configure_button' => 'Configurar Listado',
+        'messages' => [
+            'updated' => 'Listado actualizado correctamente.',
+            'published' => '¡EGI ahora está listado para la venta!',
+        ],
     ],
 ];
