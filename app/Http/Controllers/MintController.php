@@ -1420,6 +1420,26 @@ class MintController extends Controller {
                 }
             }
 
+            // SHIPPING LOGIC (Direct Mint)
+            $shippingRequired = $this->listingService->shippingRequiredForEgi($egi);
+            $shippingAddresses = [];
+            if ($shippingRequired) {
+                $shippingAddresses = Auth::user()->shippingAddresses()->orderBy('is_default', 'desc')->get();
+            }
+
+            // Get countries for the modal
+            $availableCountries = trans('countries');
+            if (!is_array($availableCountries)) {
+                $availableCountries = [
+                    'it' => 'Italia',
+                    'en' => 'Inghilterra',
+                    'fr' => 'Francia',
+                    'de' => 'Germania',
+                    'es' => 'Spagna',
+                    'pt' => 'Portogallo'
+                ];
+            }
+
             return view('mint.payment-form', compact(
                 'egi',
                 'availability',
@@ -1439,6 +1459,9 @@ class MintController extends Controller {
                 'goldBarData',
                 'goldPriceRefreshedAt',
                 'goldPriceValidUntil',
+                'shippingRequired',
+                'shippingAddresses',
+                'availableCountries',
                 'shippingRequired',
                 'shippingAddresses',
                 'availableCountries'
