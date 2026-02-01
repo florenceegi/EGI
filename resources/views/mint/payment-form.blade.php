@@ -210,12 +210,7 @@
                         <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
                     @endif
 
-                    {{-- DEBUG INFO --}}
-                    <div class="mb-4 rounded bg-red-500 p-4 text-center font-bold text-white">
-                        DEPLOY DEBUG: {{ now() }} <br>
-                        Shipping Required: {{ $shippingRequired ?? false ? 'YES' : 'NO' }} <br>
-                        Addresses: {{ $shippingAddresses ? $shippingAddresses->count() : 'NULL' }}
-                    </div>
+
 
                     {{-- SHIPPING ADDRESS SECTION (New) --}}
                     {{-- FORCE RENDER FOR DEBUGGING --}}

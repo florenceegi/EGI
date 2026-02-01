@@ -215,6 +215,7 @@ class MintController extends Controller {
                 // Shipping Data
                 'shippingRequired' => $shippingRequired,
                 'shippingAddresses' => $shippingAddresses,
+                'availableCountries' => is_array(trans('countries')) ? trans('countries') : ['it'=>'Italia'], // Fallback added
             ]);
             }
 
@@ -1437,7 +1438,10 @@ class MintController extends Controller {
                 'isGoldBar',
                 'goldBarData',
                 'goldPriceRefreshedAt',
-                'goldPriceValidUntil'
+                'goldPriceValidUntil',
+                'shippingRequired',
+                'shippingAddresses',
+                'availableCountries'
             ));
         } catch (\Exception $e) {
             $this->errorManager->handle('DIRECT_MINT_VALIDATION_ERROR', [
