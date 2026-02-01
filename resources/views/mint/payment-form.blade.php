@@ -210,81 +210,89 @@
                         <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
                     @endif
 
-                    {{-- SHIPPING ADDRESS SECTION (New) --}}
-                    @if ($shippingRequired ?? false)
-                        <div class="mb-8 rounded-xl border border-gray-700 bg-gray-800 p-5">
-                            <div class="mb-4 flex items-center border-b border-gray-700 pb-2">
-                                <span class="mr-2 rounded-lg bg-indigo-900 p-2 text-xl">🚚</span>
-                                <h3 class="text-lg font-bold text-gray-100">
-                                    {{ __('mint.shipping.title') ?? 'Dati di Spedizione' }}
-                                </h3>
-                            </div>
+                    {{-- DEBUG INFO --}}
+                    <div class="mb-4 rounded bg-red-500 p-4 text-center font-bold text-white">
+                        DEPLOY DEBUG: {{ now() }} <br>
+                        Shipping Required: {{ $shippingRequired ?? false ? 'YES' : 'NO' }} <br>
+                        Addresses: {{ $shippingAddresses ? $shippingAddresses->count() : 'NULL' }}
+                    </div>
 
-                            @if ($shippingAddresses->count() > 0)
-                                <div class="space-y-3">
-                                    <p class="mb-2 text-sm text-indigo-300">
-                                        {{ __('mint.shipping.select_address') ?? 'Seleziona un indirizzo per la consegna del bene fisico:' }}
-                                    </p>
-                                    @foreach ($shippingAddresses as $address)
-                                        <label
-                                            class="flex cursor-pointer items-start rounded-lg border border-gray-600 bg-gray-700 p-3 shadow-sm transition-all hover:border-indigo-400 hover:shadow-md">
-                                            <div class="flex h-5 items-center">
-                                                <input type="radio" name="shipping_address_id"
-                                                    value="{{ $address->id }}" {{ $loop->first ? 'checked' : '' }}
-                                                    class="h-4 w-4 border-gray-500 bg-gray-600 text-indigo-500 focus:ring-indigo-400">
-                                            </div>
-                                            <div class="ml-3 text-sm">
-                                                <div class="font-bold text-gray-100">
-                                                    {{ $address->full_name }}
-                                                    @if ($address->is_default)
-                                                        <span
-                                                            class="ml-2 inline-flex items-center rounded-full bg-indigo-900 px-2.5 py-0.5 text-xs font-medium text-indigo-200">
-                                                            Default
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                                <div class="text-gray-300">{{ $address->address_line_1 }}</div>
-                                                <div class="text-gray-300">
-                                                    {{ $address->city }}, {{ $address->postal_code }}
-                                                    ({{ $address->country }})
-                                                </div>
-                                                @if ($address->phone)
-                                                    <div class="mt-1 text-xs text-gray-400">📞 {{ $address->phone }}
-                                                    </div>
+                    {{-- SHIPPING ADDRESS SECTION (New) --}}
+                    {{-- FORCE RENDER FOR DEBUGGING --}}
+                    {{-- @if ($shippingRequired ?? false) --}}
+                    <div class="mb-8 rounded-xl border border-gray-700 bg-gray-800 p-5">
+                        <div class="mb-4 flex items-center border-b border-gray-700 pb-2">
+                            <span class="mr-2 rounded-lg bg-indigo-900 p-2 text-xl">🚚</span>
+                            <h3 class="text-lg font-bold text-gray-100">
+                                {{ __('mint.shipping.title') ?? 'Dati di Spedizione' }}
+                            </h3>
+                        </div>
+
+                        @if ($shippingAddresses->count() > 0)
+                            <div class="space-y-3">
+                                <p class="mb-2 text-sm text-indigo-300">
+                                    {{ __('mint.shipping.select_address') ?? 'Seleziona un indirizzo per la consegna del bene fisico:' }}
+                                </p>
+                                @foreach ($shippingAddresses as $address)
+                                    <label
+                                        class="flex cursor-pointer items-start rounded-lg border border-gray-600 bg-gray-700 p-3 shadow-sm transition-all hover:border-indigo-400 hover:shadow-md">
+                                        <div class="flex h-5 items-center">
+                                            <input type="radio" name="shipping_address_id"
+                                                value="{{ $address->id }}" {{ $loop->first ? 'checked' : '' }}
+                                                class="h-4 w-4 border-gray-500 bg-gray-600 text-indigo-500 focus:ring-indigo-400">
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <div class="font-bold text-gray-100">
+                                                {{ $address->full_name }}
+                                                @if ($address->is_default)
+                                                    <span
+                                                        class="ml-2 inline-flex items-center rounded-full bg-indigo-900 px-2.5 py-0.5 text-xs font-medium text-indigo-200">
+                                                        Default
+                                                    </span>
                                                 @endif
                                             </div>
-                                        </label>
-                                    @endforeach
-                                    <div class="mt-4 border-t border-gray-700 pt-4">
-                                        <button type="button" data-action="open-shipping-modal"
-                                            data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
-                                            data-method="POST"
-                                            class="inline-flex items-center text-sm font-semibold text-indigo-400 hover:text-indigo-300">
-                                            ➕
-                                            {{ __('mint.shipping.add_new_address') ?? 'Aggiungi un altro indirizzo' }}
-                                        </button>
-                                    </div>
-                                </div>
-                            @else
-                                <div class="rounded-lg border border-yellow-700 bg-yellow-900/30 p-4 text-center">
-                                    <p class="mb-3 text-sm text-yellow-200">
-                                        ⚠️
-                                        {{ __('mint.shipping.no_address') ?? 'Non hai ancora salvato un indirizzo di spedizione.' }}
-                                    </p>
+                                            <div class="text-gray-300">{{ $address->address_line_1 }}</div>
+                                            <div class="text-gray-300">
+                                                {{ $address->city }}, {{ $address->postal_code }}
+                                                ({{ $address->country }})
+                                            </div>
+                                            @if ($address->phone)
+                                                <div class="mt-1 text-xs text-gray-400">📞 {{ $address->phone }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </label>
+                                @endforeach
+                                <div class="mt-4 border-t border-gray-700 pt-4">
                                     <button type="button" data-action="open-shipping-modal"
                                         data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
                                         data-method="POST"
-                                        class="inline-flex items-center rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600">
-                                        ➕ {{ __('mint.shipping.add_address') ?? 'Aggiungi Indirizzo' }}
+                                        class="inline-flex items-center text-sm font-semibold text-indigo-400 hover:text-indigo-300">
+                                        ➕
+                                        {{ __('mint.shipping.add_new_address') ?? 'Aggiungi un altro indirizzo' }}
                                     </button>
-                                    <p class="mt-2 text-xs text-gray-400">
-                                        Dopo aver aggiunto l'indirizzo, ricarica questa pagina.
-                                    </p>
                                 </div>
-                            @endif
+                            </div>
+                        @else
+                            <div class="rounded-lg border border-yellow-700 bg-yellow-900/30 p-4 text-center">
+                                <p class="mb-3 text-sm text-yellow-200">
+                                    ⚠️
+                                    {{ __('mint.shipping.no_address') ?? 'Non hai ancora salvato un indirizzo di spedizione.' }}
+                                </p>
+                                <button type="button" data-action="open-shipping-modal"
+                                    data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
+                                    data-method="POST"
+                                    class="inline-flex items-center rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600">
+                                    ➕ {{ __('mint.shipping.add_address') ?? 'Aggiungi Indirizzo' }}
+                                </button>
+                                <p class="mt-2 text-xs text-gray-400">
+                                    Dopo aver aggiunto l'indirizzo, ricarica questa pagina.
+                                </p>
+                            </div>
+                        @endif
 
-                            <input type="hidden" name="shipping_required" value="1">
-                        </div>
+                        <input type="hidden" name="shipping_required" value="1">
+                    </div>
                     @endif
 
                     @push('scripts')
@@ -512,9 +520,14 @@
 
             // Form submission con MODALE DI PROGRESS
             document.getElementById('mint-payment-form').addEventListener('submit', function(e) {
+                console.log('Payment form submitted');
                 e.preventDefault(); // Previeni submit default
 
                 try {
+                    console.log('Inside try block');
+                    // alert('Debug: Payment Initiated'); // Uncomment if needed, but console is safer for now unless user confirms.
+                    // Actually, let's execute the logic.
+
                     const form = this;
                     const btn = document.getElementById('submit-mint-btn');
 
@@ -523,6 +536,7 @@
                     if (timerElement) {
                         const validUntil = new Date(timerElement.dataset.validUntil);
                         if (new Date() > validUntil) {
+                            console.log('Timer expired');
                             // Show expired modal
                             document.getElementById('gold-bar-expired-modal').classList.remove('hidden');
                             document.getElementById('gold-bar-expired-modal').classList.add('flex');
@@ -532,6 +546,7 @@
 
                     // Disabilita button e mostra spinner
                     if (btn) {
+                        console.log('Disabling button');
                         btn.disabled = true;
                         btn.innerHTML =
                             '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> {{ __('mint.payment.processing') }}';
@@ -539,6 +554,7 @@
 
                     // Mostra modale di progress
                     if (window.Swal) {
+                        console.log('SweetAlert found');
                         Swal.fire({
                             title: '⏳ Elaborazione Mint',
                             html: `
@@ -558,11 +574,13 @@
                             showConfirmButton: false,
                             didOpen: () => {
                                 // Submit form DOPO aver mostrato la modale
+                                console.log('Submitting form via Swal didOpen');
                                 form.submit();
                             }
                         });
                     } else {
                         // Se SweetAlert non disponibile, submit normale
+                        console.log('SweetAlert NOT found, submitting standard');
                         form.submit();
                     }
                 } catch (error) {
