@@ -94,6 +94,7 @@ class EgiListingService
                 'shipping_profile.dimensions_mm.l' => 'required|numeric|min:1',
                 'shipping_profile.dimensions_mm.w' => 'required|numeric|min:1',
                 'shipping_profile.dimensions_mm.h' => 'required|numeric|min:1',
+                'shipping_profile.price' => 'nullable|numeric|min:0',
             ];
         }
 

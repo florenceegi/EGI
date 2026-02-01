@@ -132,7 +132,7 @@
                 </div>
 
                 {{-- Step 3: Shipping (Conditional) --}}
-                @if ($shippingRequired || old('is_physical'))
+                @if ($collection->delivery_policy?->value !== 'DIGITAL_ONLY')
                     <div class="mb-8">
                         <h2 class="mb-4 text-xl font-semibold text-gray-800">
                             {{ __('commerce.listing.shipping_title') }}</h2>
@@ -166,6 +166,15 @@
                                             value="{{ old('shipping_profile.weight_g', $egi->shipping_profile['weight_g'] ?? '') }}"
                                             class="w-full rounded-md border-gray-300 text-sm shadow-sm"
                                             placeholder="e.g., 500">
+                                    </div>
+
+                                    <div>
+                                        <label
+                                            class="mb-1 block text-sm font-medium text-gray-700">{{ __('commerce.listing.shipping_cost_label') ?? 'Shipping Cost (€)' }}</label>
+                                        <input type="number" step="0.01" name="shipping_profile[price]"
+                                            value="{{ old('shipping_profile.price', $egi->shipping_profile['price'] ?? '') }}"
+                                            class="w-full rounded-md border-gray-300 text-sm shadow-sm"
+                                            placeholder="0.00">
                                     </div>
 
                                     <div>
