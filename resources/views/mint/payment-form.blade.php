@@ -303,56 +303,57 @@
                                     shipping_edit_address: "{{ __('user_personal_data.shipping.edit_address') }}"
                                 }
                             };
-                            });
+                            };
 
-            // MODAL GLOBAL HANDLERS - Nuclear Option
-            window.closeShippingModal = function() {
-                const modal = document.getElementById('shipping-address-modal');
-                if (modal) modal.classList.add('hidden');
-            };
+                            // MODAL GLOBAL HANDLERS - Nuclear Option
+                            window.closeShippingModal = function() {
+                                const modal = document.getElementById('shipping-address-modal');
+                                if (modal) modal.classList.add('hidden');
+                            };
 
-            window.saveShippingAddress = function(e) {
-                console.log('🔘 Save Address Clicked');
-                if (e) e.preventDefault();
+                            window.saveShippingAddress = function(e) {
+                                console.log('🔘 Save Address Clicked');
+                                if (e) e.preventDefault();
 
-                const form = document.getElementById('shipping-address-form');
-                if (!form) return;
+                                const form = document.getElementById('shipping-address-form');
+                                if (!form) return;
 
-                const btn = e.target;
-                const originalText = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML = 'Salvataggio...';
+                                const btn = e.target;
+                                const originalText = btn.innerHTML;
+                                btn.disabled = true;
+                                btn.innerHTML = 'Salvataggio...';
 
-                const formData = new FormData(form);
-                const url = btn.getAttribute('data-url') || form.getAttribute('action') || '{{ route('user.domains.personal-data.shipping-address.store') }}';
+                                const formData = new FormData(form);
+                                const url = btn.getAttribute('data-url') || form.getAttribute('action') ||
+                                    '{{ route('user.domains.personal-data.shipping-address.store') }}';
 
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success || data.id) {
-                        alert('Indirizzo salvato con successo!');
-                        window.location.reload();
-                    } else {
-                        alert('Errore: ' + (data.message || 'Errore sconosciuto'));
-                        btn.disabled = false;
-                        btn.innerHTML = originalText;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Errore di comunicazione col server.');
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                });
-            };
-        </script>
+                                fetch(url, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                            'Accept': 'application/json'
+                                        },
+                                        body: formData
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success || data.id) {
+                                            alert('Indirizzo salvato con successo!');
+                                            window.location.reload();
+                                        } else {
+                                            alert('Errore: ' + (data.message || 'Errore sconosciuto'));
+                                            btn.disabled = false;
+                                            btn.innerHTML = originalText;
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        alert('Errore di comunicazione col server.');
+                                        btn.disabled = false;
+                                        btn.innerHTML = originalText;
+                                    });
+                            };
+                        </script>
                     @endpush
                     <x-personal-data.shipping-address-modal :countries="$availableCountries ?? []" />
 
@@ -586,22 +587,32 @@
         }
 
         // Form submission logic
-        ensureElement('#mint-payment-form', (form) => {
-            form.addEventListener('submit', function(e) {
-                console.log('Payment form submission intercepted');
-                e.preventDefault();
+            // DIRECT GLOBAL HANDLER - Nuclear Option for reliability
+            window.submitMintForm = function(e) {
+                console.log('🔘 Submit Button Clicked (Direct Handler)');
+                if (e) e.preventDefault();
 
+                const form = document.getElementById('mint-payment-form');
                 const btn = document.getElementById('submit-mint-btn');
 
+                if (!form) {
+                    console.error('❌ Form mint-payment-form not found');
+                    alert('Errore tecnico: Modulo non trovato. Ricarica la pagina.');
+                    return;
+                }
+
                 try {
-                    // Check Gold Bar Timer
+                     // Check Gold Bar Timer
                     const timerElement = document.getElementById('gold-bar-timer');
                     if (timerElement) {
                         const validUntil = new Date(timerElement.dataset.validUntil);
                         if (new Date() > validUntil) {
                             console.warn('Timer expired during submit');
-                            document.getElementById('gold-bar-expired-modal').classList.remove('hidden');
-                            document.getElementById('gold-bar-expired-modal').classList.add('flex');
+                            const expiredModal = document.getElementById('gold-bar-expired-modal');
+                            if(expiredModal) {
+                                expiredModal.classList.remove('hidden');
+                                expiredModal.classList.add('flex');
+                            }
                             return;
                         }
                     }
@@ -609,34 +620,31 @@
                     // UI Feedback
                     if (btn) {
                         btn.disabled = true;
-                        btn.innerHTML =
-                            '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Elaborazione...';
+                        btn.innerHTML = '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Elaborazione...';
                     }
 
                     // SweetAlert Logic
                     if (window.Swal) {
-                        Swal.fire({
+                         Swal.fire({
                             title: '⏳ Elaborazione Mint',
-                            html: '<p class="text-gray-700">Attendere prego...</p>',
+                            html: '<div class="space-y-4"><p class="text-lg">Caricamento...</p><p class="text-sm text-gray-500">Non chiudere la finestra.</p></div>',
                             allowOutsideClick: false,
                             showConfirmButton: false,
                             didOpen: () => {
-                                console.log('Submitting via Swal...');
+                                console.log('🚀 Submitting form via Swal...');
                                 form.submit();
                             }
                         });
                     } else {
-                        console.log('Submitting directly...');
+                        console.log('🚀 Submitting form directly...');
                         form.submit();
                     }
                 } catch (err) {
                     console.error('Critical Error in Submit Handler:', err);
-                    // Emergency fallback
-                    form.submit();
+                    alert('Errore durante l\'invio. Riprovare.');
+                    if(btn) btn.disabled = false;
                 }
-            });
-            console.log('Paid event listener attached.');
-        });
+            };
 
         // Gold Bar Timer Logic
         ensureElement('#gold-bar-timer', (goldBarTimer) => {
