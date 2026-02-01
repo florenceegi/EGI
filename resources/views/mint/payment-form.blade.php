@@ -293,7 +293,7 @@
 
                         <input type="hidden" name="shipping_required" value="1">
                     </div>
-                    @endif
+                    {{-- @endif --}}
 
                     @push('scripts')
                         {{-- Load Personal Data Logic for Shipping Modal --}}
