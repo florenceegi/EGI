@@ -212,76 +212,72 @@
 
                     {{-- SHIPPING ADDRESS SECTION (New) --}}
                     @if ($shippingRequired ?? false)
-                        <div
-                            class="mb-8 rounded-xl border border-indigo-100 bg-indigo-50 p-5 dark:border-gray-700 dark:bg-gray-800">
-                            <div class="mb-4 flex items-center border-b border-indigo-100 pb-2 dark:border-gray-700">
-                                <span class="mr-2 rounded-lg bg-indigo-100 p-2 text-xl dark:bg-indigo-900">🚚</span>
-                                <h3 class="text-lg font-bold text-indigo-900 dark:text-indigo-100">
+                        <div class="mb-8 rounded-xl border border-gray-700 bg-gray-800 p-5">
+                            <div class="mb-4 flex items-center border-b border-gray-700 pb-2">
+                                <span class="mr-2 rounded-lg bg-indigo-900 p-2 text-xl">🚚</span>
+                                <h3 class="text-lg font-bold text-gray-100">
                                     {{ __('mint.shipping.title') ?? 'Dati di Spedizione' }}
                                 </h3>
                             </div>
 
                             @if ($shippingAddresses->count() > 0)
                                 <div class="space-y-3">
-                                    <p class="mb-2 text-sm text-indigo-800 dark:text-indigo-300">
+                                    <p class="mb-2 text-sm text-indigo-300">
                                         {{ __('mint.shipping.select_address') ?? 'Seleziona un indirizzo per la consegna del bene fisico:' }}
                                     </p>
                                     @foreach ($shippingAddresses as $address)
                                         <label
-                                            class="flex cursor-pointer items-start rounded-lg border border-indigo-200 bg-white p-3 shadow-sm transition-all hover:border-indigo-400 hover:shadow-md dark:border-gray-600 dark:bg-gray-700">
+                                            class="flex cursor-pointer items-start rounded-lg border border-gray-600 bg-gray-700 p-3 shadow-sm transition-all hover:border-indigo-400 hover:shadow-md">
                                             <div class="flex h-5 items-center">
                                                 <input type="radio" name="shipping_address_id"
                                                     value="{{ $address->id }}" {{ $loop->first ? 'checked' : '' }}
-                                                    class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-500 dark:bg-gray-600">
+                                                    class="h-4 w-4 border-gray-500 bg-gray-600 text-indigo-500 focus:ring-indigo-400">
                                             </div>
                                             <div class="ml-3 text-sm">
-                                                <div class="font-bold text-gray-900 dark:text-gray-100">
+                                                <div class="font-bold text-gray-100">
                                                     {{ $address->full_name }}
                                                     @if ($address->is_default)
                                                         <span
-                                                            class="ml-2 inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                                                            class="ml-2 inline-flex items-center rounded-full bg-indigo-900 px-2.5 py-0.5 text-xs font-medium text-indigo-200">
                                                             Default
                                                         </span>
                                                     @endif
                                                 </div>
-                                                <div class="text-gray-500 dark:text-gray-300">
-                                                    {{ $address->address_line_1 }}</div>
-                                                <div class="text-gray-500 dark:text-gray-300">
+                                                <div class="text-gray-300">{{ $address->address_line_1 }}</div>
+                                                <div class="text-gray-300">
                                                     {{ $address->city }}, {{ $address->postal_code }}
                                                     ({{ $address->country }})
                                                 </div>
                                                 @if ($address->phone)
-                                                    <div class="mt-1 text-xs text-gray-400 dark:text-gray-400">📞
-                                                        {{ $address->phone }}
+                                                    <div class="mt-1 text-xs text-gray-400">📞 {{ $address->phone }}
                                                     </div>
                                                 @endif
                                             </div>
                                         </label>
                                     @endforeach
-                                    <div class="mt-4 border-t border-indigo-100 pt-4 dark:border-gray-700">
+                                    <div class="mt-4 border-t border-gray-700 pt-4">
                                         <button type="button" data-action="open-shipping-modal"
                                             data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
                                             data-method="POST"
-                                            class="inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                            class="inline-flex items-center text-sm font-semibold text-indigo-400 hover:text-indigo-300">
                                             ➕
                                             {{ __('mint.shipping.add_new_address') ?? 'Aggiungi un altro indirizzo' }}
                                         </button>
                                     </div>
                                 </div>
                             @else
-                                <div
-                                    class="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-center dark:border-yellow-700 dark:bg-yellow-900/30">
-                                    <p class="mb-3 text-sm text-yellow-800 dark:text-yellow-200">
+                                <div class="rounded-lg border border-yellow-700 bg-yellow-900/30 p-4 text-center">
+                                    <p class="mb-3 text-sm text-yellow-200">
                                         ⚠️
                                         {{ __('mint.shipping.no_address') ?? 'Non hai ancora salvato un indirizzo di spedizione.' }}
                                     </p>
                                     <button type="button" data-action="open-shipping-modal"
                                         data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
                                         data-method="POST"
-                                        class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
+                                        class="inline-flex items-center rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600">
                                         ➕ {{ __('mint.shipping.add_address') ?? 'Aggiungi Indirizzo' }}
                                     </button>
-                                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                    <p class="mt-2 text-xs text-gray-400">
                                         Dopo aver aggiunto l'indirizzo, ricarica questa pagina.
                                     </p>
                                 </div>
