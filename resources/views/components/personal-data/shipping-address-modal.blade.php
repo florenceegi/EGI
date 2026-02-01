@@ -1,5 +1,10 @@
 @props(['countries' => []])
 
+@php
+    $routeStore = route('user.domains.personal-data.shipping-address.store');
+    $routeUpdate = route('user.domains.personal-data.shipping-address.update', ['id' => 'ID_PLACEHOLDER']);
+@endphp
+
 <div x-data="{
     isOpen: false,
     mode: 'create', // 'create' or 'edit'
@@ -18,8 +23,8 @@
 
     // Store routes in JS variables using @json to be safe
     routes: {
-        store: @json(route('user.domains.personal-data.shipping-address.store')),
-        update: @json(route('user.domains.personal-data.shipping-address.update', ['id' => 'ID_PLACEHOLDER']))
+        store: @json($routeStore),
+        update: @json($routeUpdate)
     },
 
     openCreate() {
