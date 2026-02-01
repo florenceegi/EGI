@@ -16,16 +16,22 @@
         is_default: false
     },
 
+    // Store routes in JS variables using @json to be safe
+    routes: {
+        store: @json(route('user.domains.personal-data.shipping-address.store')),
+        update: @json(route('user.domains.personal-data.shipping-address.update', ['id' => 'ID_PLACEHOLDER']))
+    },
+
     openCreate() {
         this.mode = 'create';
-        this.actionUrl = '{{ route('user.domains.personal-data.shipping-address.store') }}';
+        this.actionUrl = this.routes.store;
         this.resetForm();
         this.isOpen = true;
     },
 
     openEdit(data) {
         this.mode = 'edit';
-        this.actionUrl = '{{ route('user.domains.personal-data.shipping-address.update', ['id' => 'ID_PLACEHOLDER']) }}'.replace('ID_PLACEHOLDER', data.id);
+        this.actionUrl = this.routes.update.replace('ID_PLACEHOLDER', data.id);
         this.address = { ...data };
         this.isOpen = true;
     },
@@ -52,7 +58,7 @@
     if($event.detail.mode === 'create') openCreate();
     else openEdit($event.detail.data);
 "
-    class="relative z-50">
+    class="relative z-50" x-cloak>
 
     {{-- Modal Backdrop --}}
     <div x-show="isOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
