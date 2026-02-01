@@ -344,10 +344,22 @@ class MintController extends Controller {
             $shippingAddresses = [];
 
             if ($shippingRequired) {
-                // Fetch user's shipping addresses
                 $shippingAddresses = UserShippingAddress::where('user_id', Auth::id())
                     ->orderBy('is_default', 'desc')
                     ->get();
+            }
+
+            // Get countries for the modal
+            $availableCountries = trans('countries');
+            if (!is_array($availableCountries)) {
+                $availableCountries = [
+                    'it' => 'Italia',
+                    'en' => 'Inghilterra',
+                    'fr' => 'Francia',
+                    'de' => 'Germania',
+                    'es' => 'Spagna',
+                    'pt' => 'Portogallo'
+                ];
             }
 
             return view('mint.payment-form', compact(
@@ -367,7 +379,8 @@ class MintController extends Controller {
                 'commodityRefreshedAt',
                 'commodityValidUntil',
                 'shippingRequired', // Added
-                'shippingAddresses' // Added
+                'shippingAddresses', // Added
+                'availableCountries' // Added for modal
             ));
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_CHECKOUT_ERROR', [

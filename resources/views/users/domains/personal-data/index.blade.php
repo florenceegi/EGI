@@ -114,7 +114,9 @@
                             <h4 class="text-sm font-medium text-gray-900">
                                 {{ __('user_personal_data.shipping.title') ?? 'Indirizzi di Spedizione' }}
                             </h4>
-                            <button type="button" @click="$dispatch('open-shipping-address-modal', { mode: 'create' })"
+                            <button type="button" data-action="open-shipping-modal"
+                                data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
+                                data-method="POST"
                                 class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                 + {{ __('common.add') ?? 'Aggiungi' }}
                             </button>
@@ -146,8 +148,9 @@
                                                 </div>
                                             </div>
                                             <div class="flex flex-none items-center gap-x-4">
-                                                <button type="button"
-                                                    @click="$dispatch('open-shipping-address-modal', { mode: 'edit', data: {{ json_encode($address) }} })"
+                                                <button type="button" data-action="open-shipping-modal"
+                                                    data-url="{{ route('user.domains.personal-data.shipping-address.update', $address->id) }}"
+                                                    data-method="PUT" data-payload="{{ json_encode($address) }}"
                                                     class="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block">
                                                     {{ __('common.edit') ?? 'Modifica' }}
                                                 </button>
@@ -177,9 +180,9 @@
                             @else
                                 <div class="py-6 text-center">
                                     <p class="text-sm text-gray-500">Nessun indirizzo di spedizione salvato.</p>
-                                    <button type="button"
-                                        @click="$dispatch('open-shipping-address-modal', { mode: 'create' })"
-                                        class="mt-2 text-sm text-indigo-600 hover:text-indigo-500">
+                                    <button type="button" data-action="open-shipping-modal"
+                                        data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
+                                        data-method="POST" class="mt-2 text-sm text-indigo-600 hover:text-indigo-500">
                                         Aggiungi il primo indirizzo
                                     </button>
                                 </div>
@@ -230,6 +233,8 @@
                 'validationError' => __('user_personal_data.validation_error'),
                 'exportStarted' => __('user_personal_data.export_started'),
                 'processing' => __('user_personal_data.processing_update'),
+                'shipping_add_new' => __('user_personal_data.shipping.add_new'),
+                'shipping_edit_address' => __('user_personal_data.shipping.edit_address'),
             ],
         ];
     @endphp

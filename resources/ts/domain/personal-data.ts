@@ -22,17 +22,21 @@
 // }
 
 // Configuration interface
-interface PersonalDataConfig {
-    canEdit: boolean;
-    authType: 'strong' | 'weak' | 'guest';
-    userCountry: string;
-    availableCountries: Record<string, string>;
-    validationConfig: ValidationConfig;
+// Configuration interface
+interface PersonalDataManagerConfig {
+    canEdit?: boolean;
+    authType?: 'strong' | 'weak' | 'guest';
+    userCountry?: string;
+    availableCountries?: Record<string, string>;
+    validationConfig?: ValidationConfig;
     csrfToken: string;
-    updateUrl: string;
-    exportUrl: string;
+    updateUrl?: string;
+    exportUrl?: string;
     translations: Record<string, string>;
 }
+
+// ...
+
 
 // Validation configuration interface
 interface ValidationConfig {
@@ -110,16 +114,24 @@ const VALIDATION_PATTERNS = {
  * 🧱 Core Logic: Real-time validation, country-specific rules, UEM integration
  */
 class PersonalDataManager {
-    private config: PersonalDataConfig;
-    private form: HTMLFormElement | null = null;
+    private config: PersonalDataManagerConfig;
+    private form: HTMLFormElement | null;
+    private validationStatus: Record<string, boolean> = {};
+    private originalData: any = {};
+    private isDirty: boolean = false;
     private validationTimer: number | null = null;
     private isSubmitting: boolean = false;
     private changesMade: boolean = false;
-    private originalData: PersonalDataForm | null = null;
 
-    constructor(config: PersonalDataConfig) {
+    constructor(config: PersonalDataManagerConfig) {
         this.config = config;
-        this.init();
+        this.form = document.getElementById('personal-data-form') as HTMLFormElement;
+
+        if (this.form) {
+            this.initialize();
+        } else {
+            console.warn('[Personal Data] Form not found');
+        }
     }
 
     /**
@@ -128,7 +140,7 @@ class PersonalDataManager {
      * 📥 Input: No parameters (uses instance config)
      * 📤 Output: Void (initializes manager state)
      */
-    private init(): void {
+    private initialize(): void {
         this.form = document.getElementById('personal-data-form') as HTMLFormElement;
 
         if (!this.form) {
@@ -307,7 +319,7 @@ class PersonalDataManager {
      */
     private validateField(field: HTMLInputElement | HTMLSelectElement, validationType: string): ValidationResult {
         const value = field.value.trim();
-        const country = this.config.userCountry;
+        const country = this.config.userCountry || 'IT';
 
         let result: ValidationResult = {
             isValid: true,
@@ -774,18 +786,30 @@ class PersonalDataManager {
         this.showLoadingState();
 
         try {
-            const formData = new FormData(this.form);
+            const formData = new FormData(this.form!);
+            const data = Object.fromEntries(formData.entries());
 
-            // Add Laravel method spoofing for PUT request
-            formData.append('_method', 'PUT');
-
-            const response = await fetch(this.config.updateUrl, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': this.config.csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest'
+            // Add unchecked checkboxes (as false)
+            this.form!.querySelectorAll('input[type="checkbox"]').forEach((checkbox: Element) => {
+                const input = checkbox as HTMLInputElement;
+                if (!input.checked) {
+                    data[input.name] = '0';
+                } else {
+                    data[input.name] = '1';
                 }
+            });
+
+            // Add CSRF token
+            const csrfToken = this.config.csrfToken;
+
+            const response = await fetch(this.config.updateUrl!, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
             });
 
             const result = await response.json();
@@ -882,7 +906,7 @@ class PersonalDataManager {
     private handleSubmitError(result: any): void {
         if (window.UEM && result.error) {
             // Use UEM for structured error handling
-            window.UEM.handleServerError(result);
+            window.UEM.handle('PERSONAL_DATA_UPDATE_FAILED', result);
         } else {
             // Fallback error display
             const message = result.message || this.config.translations.updateError || 'Failed to update personal data';
@@ -906,7 +930,7 @@ class PersonalDataManager {
         button.textContent = 'Exporting...';
 
         try {
-            const response = await fetch(this.config.exportUrl, {
+            const response = await fetch(this.config.exportUrl!, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': this.config.csrfToken,
@@ -1141,12 +1165,136 @@ class PersonalDataManager {
     }
 }
 
+/**
+ * @Oracode Class: Shipping Modal Manager (OS1-Compliant)
+ * 🎯 Purpose: Handle Shipping Address Modal via Vanilla JS (No Alpine)
+ * 🛡️ Enterprise: Strict DOM manipulation, no eval, explicit state management
+ */
+class ShippingModalManager {
+    private modal: HTMLElement | null;
+    private backdrop: HTMLElement | null;
+    private form: HTMLFormElement | null;
+    private closeButtons: NodeListOf<Element>;
+    private titleElement: HTMLElement | null;
+
+    constructor() {
+        this.modal = document.getElementById('shipping-address-modal');
+        this.backdrop = document.getElementById('shipping-modal-backdrop');
+        this.form = document.getElementById('shipping-address-form') as HTMLFormElement;
+        this.titleElement = document.getElementById('shipping-modal-title');
+        this.closeButtons = document.querySelectorAll('[data-action="close-shipping-modal"]');
+
+        this.init();
+    }
+
+    private init(): void {
+        if (!this.modal || !this.form) return;
+
+        // Open Triggers (Delegation not needed if buttons exist, but safer to delegate if dynamic)
+        document.addEventListener('click', (e) => {
+            const target = (e.target as Element).closest('[data-action="open-shipping-modal"]');
+            if (target) {
+                const url = target.getAttribute('data-url');
+                const method = target.getAttribute('data-method') || 'POST';
+                const payload = target.getAttribute('data-payload');
+
+                if (url) {
+                    this.open(url, method, payload ? JSON.parse(payload) : null);
+                }
+            }
+        });
+
+        // Close Triggers
+        if (this.backdrop) {
+            this.backdrop.addEventListener('click', () => this.close());
+        }
+
+        this.closeButtons.forEach(btn => {
+            btn.addEventListener('click', () => this.close());
+        });
+    }
+
+    public open(url: string, method: string, data: any = null): void {
+        if (!this.modal || !this.form) return;
+
+        // 1. Reset Form
+        this.form.reset();
+
+        // 2. Set Action and Method
+        this.form.action = url;
+
+        // Handle Method Spoofing (Laravel _method)
+        let methodInput = this.form.querySelector('input[name="_method"]') as HTMLInputElement;
+        if (!methodInput) {
+            methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            this.form.appendChild(methodInput);
+        }
+        methodInput.value = method;
+
+        // 3. Update Title
+        if (this.titleElement) {
+            // We use generic texts or the one passed via data attribute could be better, 
+            // but for now simple logic based on method
+            // Ideally texts are passed via config.translations
+            // We'll rely on current DOM state or config if available
+            this.titleElement.textContent = method === 'PUT'
+                ? ((window.personalDataConfig as any)?.translations['shipping_edit_address'] || 'Edit Address')
+                : ((window.personalDataConfig as any)?.translations['shipping_add_new'] || 'Add New Address');
+        }
+
+        // 4. Fill Data if Edit
+        if (data) {
+            this.fillForm(data);
+        }
+
+        // 5. Show Modal
+        this.modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden'); // Prevent background scroll
+    }
+
+    public close(): void {
+        if (!this.modal) return;
+        this.modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    private fillForm(data: any): void {
+        if (!this.form) return;
+
+        // Map data keys to input names
+        // data keys: address_line_1, city, etc.
+        // inputs: name="address_line_1", etc.
+
+        Object.keys(data).forEach(key => {
+            const input = this.form!.querySelector(`[name="${key}"]`) as HTMLInputElement | HTMLSelectElement;
+            if (input) {
+                if (input.type === 'checkbox') {
+                    (input as HTMLInputElement).checked = !!data[key];
+                } else {
+                    input.value = data[key] || '';
+                }
+            }
+        });
+    }
+}
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     if (window.personalDataConfig) {
-        const manager = new PersonalDataManager(window.personalDataConfig);
-        console.log('[Personal Data] Domain initialized');
+        // Initialize Personal Data Manager ONLY if form exists (allows reusing this script)
+        if (document.getElementById('personal-data-form') || document.querySelector('[data-action="save-personal-data"]')) {
+            new PersonalDataManager(window.personalDataConfig as unknown as PersonalDataManagerConfig);
+            console.log('[Personal Data] Main Manager initialized');
+        }
+
+        // Initialize Shipping Modal Manager (Always init if config exists, for reuse in Mint/Checkout)
+        new ShippingModalManager();
+        console.log('[Personal Data] Shipping Modal Manager initialized');
+
     } else {
-        console.error('[Personal Data] Configuration not found');
+        // Graceful degradation or error
+        console.warn('[Personal Data] Configuration not found - verify window.personalDataConfig');
     }
 });

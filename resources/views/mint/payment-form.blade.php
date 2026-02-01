@@ -262,10 +262,12 @@
                                         ⚠️
                                         {{ __('mint.shipping.no_address') ?? 'Non hai ancora salvato un indirizzo di spedizione.' }}
                                     </p>
-                                    <a href="{{ route('gdpr.profile') }}" target="_blank"
+                                    <button type="button" data-action="open-shipping-modal"
+                                        data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
+                                        data-method="POST"
                                         class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
-                                        ➕ {{ __('mint.shipping.add_address') ?? 'Aggiungi Indirizzo al Profilo' }}
-                                    </a>
+                                        ➕ {{ __('mint.shipping.add_address') ?? 'Aggiungi Indirizzo' }}
+                                    </button>
                                     <p class="mt-2 text-xs text-gray-500">
                                         Dopo aver aggiunto l'indirizzo, ricarica questa pagina.
                                     </p>
@@ -275,6 +277,21 @@
                             <input type="hidden" name="shipping_required" value="1">
                         </div>
                     @endif
+
+                    @push('scripts')
+                        {{-- Load Personal Data Logic for Shipping Modal --}}
+                        @vite(['resources/css/personal-data.css', 'resources/ts/domain/personal-data.ts'])
+                        <script>
+                            window.personalDataConfig = {
+                                csrfToken: '{{ csrf_token() }}',
+                                translations: {
+                                    shipping_add_new: "{{ __('user_personal_data.shipping.add_new') }}",
+                                    shipping_edit_address: "{{ __('user_personal_data.shipping.edit_address') }}"
+                                }
+                            };
+                        </script>
+                    @endpush
+                    <x-personal-data.shipping-address-modal :countries="$availableCountries" />
 
                     {{-- Payment Method --}}
                     <div class="mb-6">
