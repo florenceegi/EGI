@@ -62,6 +62,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('personal-data.export');
         Route::delete('personal-data', [PersonalDataController::class, 'destroy'])
             ->name('personal-data.destroy');
+
+        // Shipping Address Routes (OS3.0 Compliant)
+        Route::post('personal-data/shipping-address', [\App\Http\Controllers\User\UserShippingAddressController::class, 'store'])
+            ->name('personal-data.shipping-address.store');
+        Route::put('personal-data/shipping-address/{id}', [\App\Http\Controllers\User\UserShippingAddressController::class, 'update'])
+            ->name('personal-data.shipping-address.update');
+        Route::delete('personal-data/shipping-address/{id}', [\App\Http\Controllers\User\UserShippingAddressController::class, 'destroy'])
+            ->name('personal-data.shipping-address.destroy');
+        Route::post('personal-data/shipping-address/{id}/default', [\App\Http\Controllers\User\UserShippingAddressController::class, 'setDefault'])
+            ->name('personal-data.shipping-address.default');
     });
 
     /*

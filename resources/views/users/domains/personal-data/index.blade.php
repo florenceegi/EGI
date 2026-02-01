@@ -108,6 +108,85 @@
                         </div>
                     </div>
 
+                    {{-- Shipping Addresses Management --}}
+                    <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                        <div class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4">
+                            <h4 class="text-sm font-medium text-gray-900">
+                                {{ __('user_personal_data.shipping.title') ?? 'Indirizzi di Spedizione' }}
+                            </h4>
+                            <button type="button" @click="$dispatch('open-shipping-address-modal', { mode: 'create' })"
+                                class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                + {{ __('common.add') ?? 'Aggiungi' }}
+                            </button>
+                        </div>
+                        <div class="px-6 py-4">
+                            @if ($shippingAddresses->count() > 0)
+                                <ul role="list" class="divide-y divide-gray-100">
+                                    @foreach ($shippingAddresses as $address)
+                                        <li class="flex items-center justify-between gap-x-6 py-5">
+                                            <div class="min-w-0">
+                                                <div class="flex items-start gap-x-3">
+                                                    <p class="text-sm font-semibold leading-6 text-gray-900">
+                                                        {{ $address->city }}</p>
+                                                    @if ($address->is_default)
+                                                        <p
+                                                            class="mt-0.5 whitespace-nowrap rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                                            Default</p>
+                                                    @endif
+                                                </div>
+                                                <div
+                                                    class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
+                                                    <p class="whitespace-nowrap">{{ $address->address_line_1 }}</p>
+                                                    <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current">
+                                                        <circle cx="1" cy="1" r="1" />
+                                                    </svg>
+                                                    <p class="truncate">{{ $address->postal_code }}
+                                                        ({{ $address->country }})
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-none items-center gap-x-4">
+                                                <button type="button"
+                                                    @click="$dispatch('open-shipping-address-modal', { mode: 'edit', data: {{ json_encode($address) }} })"
+                                                    class="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block">
+                                                    {{ __('common.edit') ?? 'Modifica' }}
+                                                </button>
+
+                                                @if (!$address->is_default)
+                                                    <form method="POST"
+                                                        action="{{ route('user.domains.personal-data.shipping-address.default', $address->id) }}">
+                                                        @csrf
+                                                        <button type="submit"
+                                                            class="text-xs text-indigo-600 hover:text-indigo-900">Set
+                                                            Default</button>
+                                                    </form>
+
+                                                    <form method="POST"
+                                                        action="{{ route('user.domains.personal-data.shipping-address.destroy', $address->id) }}"
+                                                        onsubmit="return confirm('{{ __('common.confirm_delete') }}');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="text-xs text-red-600 hover:text-red-900">Delete</button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <div class="py-6 text-center">
+                                    <p class="text-sm text-gray-500">Nessun indirizzo di spedizione salvato.</p>
+                                    <button type="button"
+                                        @click="$dispatch('open-shipping-address-modal', { mode: 'create' })"
+                                        class="mt-2 text-sm text-indigo-600 hover:text-indigo-500">
+                                        Aggiungi il primo indirizzo
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
                     {{-- GDPR Quick Actions --}}
                     <x-personal-data.gdpr-actions :gdpr-summary="$gdprSummary" :can-edit="$canEdit" :auth-type="$authType" />
 
@@ -160,4 +239,5 @@
     </script>
 
     @include('components.iban-management-modal')
+    <x-personal-data.shipping-address-modal :countries="$availableCountries" />
 </x-app-layout>

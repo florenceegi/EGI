@@ -191,20 +191,31 @@ class MintController extends Controller {
                     'egi_id' => $egiId,
                 ]);
 
-                return view('mint.payment-form', [
-                    'egi' => $egi,
-                    'reservation' => $reservation,
-                    'paymentAmountEur' => 0,
-                    'showEgiliOption' => false,
-                    'canPayWithEgili' => false,
-                    'egiliBalance' => 0,
-                    'requiredEgili' => 0,
-                    'paymentProcessing' => true,
-                    'stripeMerchantAvailable' => false,
-                    'stripeMerchantError' => null,
-                    'paypalAvailable' => false,
-                    'paypalError' => null,
-                ]);
+                // SHIPPING LOGIC (Added)
+            $shippingRequired = $this->listingService->shippingRequiredForEgi($egi);
+            $shippingAddresses = [];
+            if ($shippingRequired) {
+                // Fetch basic shipping addresses
+                $shippingAddresses = Auth::user()->shippingAddresses()->orderBy('is_default', 'desc')->get();
+            }
+
+            return view('mint.payment-form', [
+                'egi' => $egi,
+                'reservation' => $reservation,
+                'paymentAmountEur' => 0, // Fixed variable name - kept 0 as $paymentAmountEur is not defined here
+                'showEgiliOption' => false,
+                'canPayWithEgili' => false,
+                'egiliBalance' => 0,
+                'requiredEgili' => 0,
+                'paymentProcessing' => false,
+                'stripeMerchantAvailable' => false,
+                'stripeMerchantError' => null,
+                'paypalAvailable' => false,
+                'paypalError' => null,
+                // Shipping Data
+                'shippingRequired' => $shippingRequired,
+                'shippingAddresses' => $shippingAddresses,
+            ]);
             }
 
             $paymentAmountEur = $this->resolvePaymentAmount($reservation, $egi);

@@ -188,10 +188,9 @@
                 </div>
 
                 {{-- Form Pagamento --}}
-                <form id="mint-payment-form" 
-                    action="{{ $reservation ? route('mint.process') : route('egi.mint-direct.process', $egi->id) }}" 
-                    method="POST"
-                    class="rounded-lg bg-white p-6 shadow-lg">
+                <form id="mint-payment-form"
+                    action="{{ $reservation ? route('mint.process') : route('egi.mint-direct.process', $egi->id) }}"
+                    method="POST" class="rounded-lg bg-white p-6 shadow-lg">
                     @csrf
 
                     @php
@@ -209,6 +208,72 @@
                     <input type="hidden" name="egi_id" value="{{ $egi->id }}">
                     @if ($reservation)
                         <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
+                    @endif
+
+                    {{-- SHIPPING ADDRESS SECTION (New) --}}
+                    @if ($shippingRequired ?? false)
+                        <div class="mb-8 rounded-xl border border-indigo-100 bg-indigo-50/50 p-5">
+                            <div class="mb-4 flex items-center border-b border-indigo-100 pb-2">
+                                <span class="mr-2 rounded-lg bg-indigo-100 p-2 text-xl">🚚</span>
+                                <h3 class="text-lg font-bold text-indigo-900">
+                                    {{ __('mint.shipping.title') ?? 'Dati di Spedizione' }}
+                                </h3>
+                            </div>
+
+                            @if ($shippingAddresses->count() > 0)
+                                <div class="space-y-3">
+                                    <p class="mb-2 text-sm text-indigo-800">
+                                        {{ __('mint.shipping.select_address') ?? 'Seleziona un indirizzo per la consegna del bene fisico:' }}
+                                    </p>
+                                    @foreach ($shippingAddresses as $address)
+                                        <label
+                                            class="flex cursor-pointer items-start rounded-lg border border-indigo-200 bg-white p-3 shadow-sm transition-all hover:border-indigo-400 hover:shadow-md">
+                                            <div class="flex h-5 items-center">
+                                                <input type="radio" name="shipping_address_id"
+                                                    value="{{ $address->id }}" {{ $loop->first ? 'checked' : '' }}
+                                                    class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <div class="font-bold text-gray-900">
+                                                    {{ $address->full_name }}
+                                                    @if ($address->is_default)
+                                                        <span
+                                                            class="ml-2 inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-800">
+                                                            Default
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <div class="text-gray-500">{{ $address->address_line_1 }}</div>
+                                                <div class="text-gray-500">
+                                                    {{ $address->city }}, {{ $address->postal_code }}
+                                                    ({{ $address->country }})
+                                                </div>
+                                                @if ($address->phone)
+                                                    <div class="mt-1 text-xs text-gray-400">📞 {{ $address->phone }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-center">
+                                    <p class="mb-3 text-sm text-yellow-800">
+                                        ⚠️
+                                        {{ __('mint.shipping.no_address') ?? 'Non hai ancora salvato un indirizzo di spedizione.' }}
+                                    </p>
+                                    <a href="{{ route('gdpr.profile') }}" target="_blank"
+                                        class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
+                                        ➕ {{ __('mint.shipping.add_address') ?? 'Aggiungi Indirizzo al Profilo' }}
+                                    </a>
+                                    <p class="mt-2 text-xs text-gray-500">
+                                        Dopo aver aggiunto l'indirizzo, ricarica questa pagina.
+                                    </p>
+                                </div>
+                            @endif
+
+                            <input type="hidden" name="shipping_required" value="1">
+                        </div>
                     @endif
 
                     {{-- Payment Method --}}

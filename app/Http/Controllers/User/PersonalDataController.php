@@ -143,6 +143,8 @@ class PersonalDataController extends BaseUserDomainController {
                 'lastUpdate' => $personalData->updated_at,
                 'validationConfig' => $this->getValidationConfig($userCountry),
                 'consentHistory' => $consentService->getConsentHistory($user, 10),
+                // Shipping Addresses
+                'shippingAddresses' => $user->shippingAddresses()->orderBy('is_default', 'desc')->get(),
             ];
 
             // Log successful page load with consent integration info
