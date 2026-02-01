@@ -219,14 +219,14 @@
                         <div class="mb-4 flex items-center border-b border-gray-700 pb-2">
                             <span class="mr-2 rounded-lg bg-indigo-900 p-2 text-xl">🚚</span>
                             <h3 class="text-lg font-bold text-gray-100">
-                                {{ __('mint.shipping.title') ?? 'Dati di Spedizione' }}
+                                Dati di Spedizione
                             </h3>
                         </div>
 
                         @if ($shippingAddresses->count() > 0)
                             <div class="space-y-3">
                                 <p class="mb-2 text-sm text-indigo-300">
-                                    {{ __('mint.shipping.select_address') ?? 'Seleziona un indirizzo per la consegna del bene fisico:' }}
+                                    Seleziona un indirizzo per la consegna del bene fisico:
                                 </p>
                                 @foreach ($shippingAddresses as $address)
                                     <label
@@ -264,7 +264,7 @@
                                         data-method="POST"
                                         class="inline-flex items-center text-sm font-semibold text-indigo-400 hover:text-indigo-300">
                                         ➕
-                                        {{ __('mint.shipping.add_new_address') ?? 'Aggiungi un altro indirizzo' }}
+                                        ➕ Aggiungi un altro indirizzo
                                     </button>
                                 </div>
                             </div>
@@ -272,7 +272,7 @@
                             <div class="rounded-lg border border-yellow-700 bg-yellow-900/30 p-4 text-center">
                                 <p class="mb-3 text-sm text-yellow-200">
                                     ⚠️
-                                    {{ __('mint.shipping.no_address') ?? 'Non hai ancora salvato un indirizzo di spedizione.' }}
+                                    ⚠️ Non hai ancora salvato un indirizzo di spedizione.
                                 </p>
                                 <button type="button" data-action="open-shipping-modal"
                                     data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
