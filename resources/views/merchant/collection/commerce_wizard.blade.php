@@ -142,11 +142,12 @@
                                 <select name="epp_project_id"
                                     class="mt-2 w-full rounded-md border-gray-300 text-sm shadow-sm">
                                     <option value="">{{ __('commerce.setup.select_epp_project') }}</option>
-                                    @if ($collection->epp_project_id)
-                                        <option value="{{ $collection->epp_project_id }}" selected>
-                                            {{ __('commerce.setup.current_project', ['id' => $collection->epp_project_id]) }}
+                                    @foreach ($eppProjects as $project)
+                                        <option value="{{ $project->id }}"
+                                            @if ($collection->epp_project_id == $project->id) selected @endif>
+                                            {{ $project->name }} ({{ $project->project_type_name }})
                                         </option>
-                                    @endif
+                                    @endforeach
                                 </select>
                             </div>
                         </label>

@@ -61,6 +61,7 @@ return [
         'shipping_title' => '3. Configurazione Spedizione',
         'is_physical_label' => 'Questo è un articolo fisico (richiede spedizione)',
         'utility_fulfillment_warning' => '⚠️ Questo EGI ha una utility che richiede fulfillment',
+        'shipping_cost_label' => 'Costo Spedizione (€)',
         'shipping_profile' => 'Profilo di Spedizione',
         'weight_label' => 'Peso (grammi)',
         'fragile_label' => 'Fragile',

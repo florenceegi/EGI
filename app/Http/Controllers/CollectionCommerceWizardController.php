@@ -26,9 +26,12 @@ class CollectionCommerceWizardController extends Controller
         app('Ultra\UltraLogManager\UltraLogManager')->info('COMMERCE_WIZARD_SHOW', ['collection_id' => $collection->id, 'user_id' => auth()->id()]);
         $this->authorize('update', $collection);
 
+        $eppProjects = \App\Models\EppProject::active()->get();
+
         return view('merchant.collection.commerce_wizard', [
             'collection' => $collection,
             'paymentMethods' => $collection->getEffectivePaymentMethods(),
+            'eppProjects' => $eppProjects,
         ]);
     }
 
