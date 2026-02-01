@@ -34,6 +34,7 @@ use App\Enums\Gdpr\GdprActivityCategory;
 use App\Services\EgiliService;
 use Illuminate\Support\Facades\Notification; // Added
 use App\Models\UserShippingAddress; // Added
+use App\Models\UserPersonalData; // Added for address sync
 use App\Notifications\Commerce\EgiSoldNotification; // Added
 use App\Services\Commerce\EgiListingService; // Added
 
@@ -197,6 +198,30 @@ class MintController extends Controller {
             if ($shippingRequired) {
                 // Fetch basic shipping addresses
                 $shippingAddresses = Auth::user()->shippingAddresses()->orderBy('is_default', 'desc')->get();
+
+                // AUTO-SYNC: If empty, try to create from Personal Data
+                if ($shippingAddresses->isEmpty()) {
+                    $personalData = UserPersonalData::where('user_id', Auth::id())->first();
+                    if ($personalData && $personalData->hasCompleteAddress()) {
+                        try {
+                            $newAddress = UserShippingAddress::create([
+                                'user_id' => Auth::id(),
+                                'label' => 'Indirizzo Personale',
+                                'full_name' => Auth::user()->name . ' ' . (Auth::user()->last_name ?? ''),
+                                'address_line_1' => $personalData->street,
+                                'city' => $personalData->city,
+                                'state' => $personalData->region ?? $personalData->province ?? '',
+                                'postal_code' => $personalData->zip,
+                                'country' => $personalData->country,
+                                'phone' => $personalData->cell_phone ?? $personalData->home_phone,
+                                'is_default' => true
+                            ]);
+                            $shippingAddresses->push($newAddress);
+                        } catch (\Exception $e) {
+                            $this->logger->warning('Failed to auto-create shipping address', ['error' => $e->getMessage()]);
+                        }
+                    }
+                }
             }
 
             return view('mint.payment-form', [
@@ -1425,6 +1450,30 @@ class MintController extends Controller {
             $shippingAddresses = [];
             if ($shippingRequired) {
                 $shippingAddresses = Auth::user()->shippingAddresses()->orderBy('is_default', 'desc')->get();
+                
+                // AUTO-SYNC: If empty, try to create from Personal Data
+                if ($shippingAddresses->isEmpty()) {
+                    $personalData = UserPersonalData::where('user_id', Auth::id())->first();
+                    if ($personalData && $personalData->hasCompleteAddress()) {
+                        try {
+                            $newAddress = UserShippingAddress::create([
+                                'user_id' => Auth::id(),
+                                'label' => 'Indirizzo Personale',
+                                'full_name' => Auth::user()->name . ' ' . (Auth::user()->last_name ?? ''),
+                                'address_line_1' => $personalData->street,
+                                'city' => $personalData->city,
+                                'state' => $personalData->region ?? $personalData->province ?? '',
+                                'postal_code' => $personalData->zip,
+                                'country' => $personalData->country,
+                                'phone' => $personalData->cell_phone ?? $personalData->home_phone,
+                                'is_default' => true
+                            ]);
+                            $shippingAddresses->push($newAddress);
+                        } catch (\Exception $e) {
+                            $this->logger->warning('Failed to auto-create shipping address', ['error' => $e->getMessage()]);
+                        }
+                    }
+                }
             }
 
             // Get countries for the modal
