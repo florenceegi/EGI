@@ -21,10 +21,10 @@
         is_default: false
     },
 
-    // Store routes in JS variables using @json to be safe
+    // Store routes in JS variables
     routes: {
-        store: @json($routeStore),
-        update: @json($routeUpdate)
+        store: '{{ $routeStore }}',
+        update: '{{ $routeUpdate }}'
     },
 
     openCreate() {
