@@ -278,7 +278,7 @@
                                     data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
                                     data-method="POST"
                                     class="inline-flex items-center rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600">
-                                    ➕ {{ __('mint.shipping.add_address') ?? 'Aggiungi Indirizzo' }}
+                                    ➕ Aggiungi Indirizzo
                                 </button>
                                 <p class="mt-2 text-xs text-gray-400">
                                     Dopo aver aggiunto l'indirizzo, ricarica questa pagina.
@@ -514,80 +514,80 @@
             });
 
             // Form submission con MODALE DI PROGRESS
-            document.getElementById('mint-payment-form').addEventListener('submit', function(e) {
-                console.log('Payment form submitted');
-                e.preventDefault(); // Previeni submit default
-
-                try {
-                    console.log('Inside try block');
-                    // alert('Debug: Payment Initiated'); // Uncomment if needed, but console is safer for now unless user confirms.
-                    // Actually, let's execute the logic.
-
-                    const form = this;
-                    const btn = document.getElementById('submit-mint-btn');
-
-                    // Check if Gold Bar timer expired
-                    const timerElement = document.getElementById('gold-bar-timer');
-                    if (timerElement) {
-                        const validUntil = new Date(timerElement.dataset.validUntil);
-                        if (new Date() > validUntil) {
-                            console.log('Timer expired');
-                            // Show expired modal
-                            document.getElementById('gold-bar-expired-modal').classList.remove('hidden');
-                            document.getElementById('gold-bar-expired-modal').classList.add('flex');
-                            return;
+            // Polling helper to ensure elements exist before binding
+            function ensureElement(selector, callback, maxAttempts = 20) {
+                let attempts = 0;
+                const interval = setInterval(() => {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        clearInterval(interval);
+                        console.log(`✅ Element found: ${selector}`);
+                        callback(element);
+                    } else {
+                        attempts++;
+                        if (attempts >= maxAttempts) {
+                            clearInterval(interval);
+                            console.warn(`❌ Element not found after ${maxAttempts} attempts: ${selector}`);
                         }
                     }
+                }, 250);
+            }
 
-                    // Disabilita button e mostra spinner
-                    if (btn) {
-                        console.log('Disabling button');
-                        btn.disabled = true;
-                        btn.innerHTML =
-                            '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> {{ __('mint.payment.processing') }}';
-                    }
+            // Form submission logic
+            ensureElement('#mint-payment-form', (form) => {
+                form.addEventListener('submit', function(e) {
+                    console.log('Payment form submission intercepted');
+                    e.preventDefault();
 
-                    // Mostra modale di progress
-                    if (window.Swal) {
-                        console.log('SweetAlert found');
-                        Swal.fire({
-                            title: '⏳ Elaborazione Mint',
-                            html: `
-                                <div class="space-y-4">
-                                    <div class="flex items-center justify-center">
-                                        <svg class="w-16 h-16 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                    </div>
-                                    <p class="text-gray-700">Stiamo elaborando il tuo pagamento e preparando il mint sulla blockchain Algorand.</p>
-                                    <p class="text-sm text-gray-500">⚠️ Non chiudere questa finestra</p>
-                                </div>
-                            `,
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                            showConfirmButton: false,
-                            didOpen: () => {
-                                // Submit form DOPO aver mostrato la modale
-                                console.log('Submitting form via Swal didOpen');
-                                form.submit();
+                    const btn = document.getElementById('submit-mint-btn');
+
+                    try {
+                        // Check Gold Bar Timer
+                        const timerElement = document.getElementById('gold-bar-timer');
+                        if (timerElement) {
+                            const validUntil = new Date(timerElement.dataset.validUntil);
+                            if (new Date() > validUntil) {
+                                console.warn('Timer expired during submit');
+                                document.getElementById('gold-bar-expired-modal').classList.remove('hidden');
+                                document.getElementById('gold-bar-expired-modal').classList.add('flex');
+                                return;
                             }
-                        });
-                    } else {
-                        // Se SweetAlert non disponibile, submit normale
-                        console.log('SweetAlert NOT found, submitting standard');
+                        }
+
+                        // UI Feedback
+                        if (btn) {
+                            btn.disabled = true;
+                            btn.innerHTML =
+                                '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Elaborazione...';
+                        }
+
+                        // SweetAlert Logic
+                        if (window.Swal) {
+                            Swal.fire({
+                                title: '⏳ Elaborazione Mint',
+                                html: '<p class="text-gray-700">Attendere prego...</p>',
+                                allowOutsideClick: false,
+                                showConfirmButton: false,
+                                didOpen: () => {
+                                    console.log('Submitting via Swal...');
+                                    form.submit();
+                                }
+                            });
+                        } else {
+                            console.log('Submitting directly...');
+                            form.submit();
+                        }
+                    } catch (err) {
+                        console.error('Critical Error in Submit Handler:', err);
+                        // Emergency fallback
                         form.submit();
                     }
-                } catch (error) {
-                    console.error('Payment submission error:', error);
-                    // Fallback in caso di errore JS critico
-                    this.submit();
-                }
+                });
+                console.log('Paid event listener attached.');
             });
 
-            // Gold Bar 10-minute timer
-            const goldBarTimer = document.getElementById('gold-bar-timer');
-            if (goldBarTimer) {
+            // Gold Bar Timer Logic
+            ensureElement('#gold-bar-timer', (goldBarTimer) => {
                 const validUntil = new Date(goldBarTimer.dataset.validUntil);
                 const countdownElement = document.getElementById('gold-timer-countdown');
 
@@ -596,35 +596,31 @@
                     const diff = validUntil - now;
 
                     if (diff <= 0) {
-                        // Timer expired - show modal
-                        countdownElement.textContent = '00:00';
-                        countdownElement.classList.add('text-red-600', 'font-bold');
+                        if (countdownElement) countdownElement.textContent = '00:00';
                         goldBarTimer.classList.add('border-red-400', 'bg-red-100');
-                        goldBarTimer.classList.remove('border-amber-400', 'bg-amber-100');
 
-                        // Show expired modal
-                        document.getElementById('gold-bar-expired-modal').classList.remove('hidden');
-                        document.getElementById('gold-bar-expired-modal').classList.add('flex');
+                        const expiredModal = document.getElementById('gold-bar-expired-modal');
+                        if (expiredModal) {
+                            expiredModal.classList.remove('hidden');
+                            expiredModal.classList.add('flex');
+                        }
 
-                        // Disable form submission
-                        document.getElementById('submit-mint-btn').disabled = true;
+                        const btn = document.getElementById('submit-mint-btn');
+                        if (btn) btn.disabled = true;
                         return;
                     }
 
                     const minutes = Math.floor(diff / 60000);
                     const seconds = Math.floor((diff % 60000) / 1000);
-                    countdownElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-                    // Warning color when less than 2 minutes
-                    if (diff < 120000) {
-                        countdownElement.classList.add('text-red-600', 'font-bold');
+                    if (countdownElement) {
+                        countdownElement.textContent =
+                            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                        if (diff < 120000) countdownElement.classList.add('text-red-600', 'font-bold');
                     }
-
                     setTimeout(updateGoldBarTimer, 1000);
                 }
-
                 updateGoldBarTimer();
-            }
+            });
         </script>
     @endpush
 
