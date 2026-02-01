@@ -14,7 +14,7 @@
 
                 {{-- Close Button (X) --}}
                 <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
-                    <button type="button" data-action="close-shipping-modal"
+                    <button type="button" onclick="window.closeShippingModal()"
                         class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         <span class="sr-only">Close</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -122,13 +122,13 @@
                             </div>
 
                             <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                                <button type="submit"
+                                <button type="button" onclick="window.saveShippingAddress(event)"
                                     class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto">
-                                    {{ __('user_personal_data.save_changes') }}
+                                    Salva Indirizzo
                                 </button>
-                                <button type="button" data-action="close-shipping-modal"
+                                <button type="button" onclick="window.closeShippingModal()"
                                     class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
-                                    {{ __('common.cancel') }}
+                                    Annulla
                                 </button>
                             </div>
                         </form>
