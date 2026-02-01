@@ -32,6 +32,10 @@ use App\Services\Gdpr\AuditLogService;
 use App\Services\CertificateGeneratorService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use App\Services\EgiliService;
+use Illuminate\Support\Facades\Notification; // Added
+use App\Models\UserShippingAddress; // Added
+use App\Notifications\Commerce\EgiSoldNotification; // Added
+use App\Services\Commerce\EgiListingService; // Added
 
 class MintController extends Controller {
 
@@ -41,6 +45,7 @@ class MintController extends Controller {
     protected CertificateGeneratorService $certificateGenerator;
     protected PaymentServiceFactory $paymentFactory;
     protected MerchantAccountResolver $merchantAccountResolver;
+    protected EgiListingService $listingService; // Added
 
     public function __construct(
         UltraLogManager $logger,
@@ -48,7 +53,8 @@ class MintController extends Controller {
         AuditLogService $auditService,
         CertificateGeneratorService $certificateGenerator,
         PaymentServiceFactory $paymentFactory,
-        MerchantAccountResolver $merchantAccountResolver
+        MerchantAccountResolver $merchantAccountResolver,
+        EgiListingService $listingService // Added
     ) {
         $this->middleware('auth')->except(['showMintResult']);
         $this->logger = $logger;
@@ -57,6 +63,7 @@ class MintController extends Controller {
         $this->certificateGenerator = $certificateGenerator;
         $this->paymentFactory = $paymentFactory;
         $this->merchantAccountResolver = $merchantAccountResolver;
+        $this->listingService = $listingService; // Added
     }
 
     /**
@@ -321,6 +328,17 @@ class MintController extends Controller {
                 }
             }
 
+            // 1. Check if shipping is required (Physical or Utility)
+            $shippingRequired = $this->listingService->shippingRequiredForEgi($egi);
+            $shippingAddresses = [];
+
+            if ($shippingRequired) {
+                // Fetch user's shipping addresses
+                $shippingAddresses = UserShippingAddress::where('user_id', Auth::id())
+                    ->orderBy('is_default', 'desc')
+                    ->get();
+            }
+
             return view('mint.payment-form', compact(
                 'egi',
                 'reservation',
@@ -336,7 +354,9 @@ class MintController extends Controller {
                 'isCommodity',
                 'commodityData',
                 'commodityRefreshedAt',
-                'commodityValidUntil'
+                'commodityValidUntil',
+                'shippingRequired', // Added
+                'shippingAddresses' // Added
             ));
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_CHECKOUT_ERROR', [
@@ -454,13 +474,22 @@ class MintController extends Controller {
      */
     public function processMint(Request $request): \Illuminate\Http\RedirectResponse {
         try {
-            $validated = $request->validate([
+            $egiTemp = Egi::find($request->egi_id); // Temporary fetch to check shipping logic
+            $shippingRequired = $egiTemp ? $this->listingService->shippingRequiredForEgi($egiTemp) : false;
+
+            $rules = [
                 'egi_id' => 'required|integer|exists:egis,id',
                 'reservation_id' => 'nullable|integer|exists:reservations,id', // ✅ NULLABLE per mint diretto
                 'payment_method' => 'required|string|in:stripe,paypal,egili',
                 'buyer_wallet' => 'nullable|string|max:255', // Optional - user wallet for direct transfer
                 'co_creator_display_name' => 'nullable|string|min:2|max:100|regex:/^[a-zA-Z0-9\s.\'\-]+$/', // AREA 5.5.1
-            ]);
+            ];
+
+            if ($shippingRequired) {
+                $rules['shipping_address_id'] = ['required', 'exists:user_shipping_addresses,id,user_id,' . Auth::id()];
+            }
+
+            $validated = $request->validate($rules);
 
             $egi = Egi::findOrFail($validated['egi_id']);
             // ✅ FIX: Capture ID before potential cloning swap because Cache uses the original ID
@@ -490,6 +519,16 @@ class MintController extends Controller {
                     'child_id' => $egi->id,
                     'serial' => $egi->serial_number
                 ]);
+            }
+            
+            // Capture Shipping Snapshot (if required)
+            // Note: We do this AFTER potential cloning, as the child EGI retains the physical properties
+            $shippingAddressSnapshot = null;
+            if ($shippingRequired && !empty($validated['shipping_address_id'])) {
+                $address = UserShippingAddress::find($validated['shipping_address_id']);
+                if ($address) {
+                    $shippingAddressSnapshot = $address->toArray();
+                }
             }
 
             // ✅ DUAL PATH: Mint con reservation VS Mint diretto
@@ -796,65 +835,103 @@ class MintController extends Controller {
                     $paymentMetadata['merchant_psp'] = $merchantContext;
                 }
             }
-
-            // Commodity: Freeze the price at mint time by saving it to EGI
+            
+            // Commodity Logic: Freeze Price & Prepare Metadata
+            $commodityMetadata = [];
             if ($commodityType && $commodityMintData) {
-                // Ensure price is saved to the EGI record so it's immutable for invoicing
-                $egi->update([
-                    'price' => $commodityMintData['price'],
-                ]);
-                
-                $this->logger->info('Commodity price frozen at mint', [
-                    'egi_id' => $egi->id,
-                    'type' => $commodityType,
-                    'frozen_price' => $commodityMintData['price'],
-                ]);
-                
-                // Clear the cache data
-                // Clear both new and old keys to be sure
-                Cache::forget('commodity_mint_' . Auth::id() . '_' . $originalEgiId);
-                Cache::forget('gold_bar_mint_' . Auth::id() . '_' . $originalEgiId);
-            }
-
-            // Create blockchain record
-            $metadata = [
-                'merchant_psp' => $paymentMetadata['merchant_psp'] ?? null,
-            ];
-
-            // Commodity: Store base value for distribution logic (Cost Reimbursement)
-            // Strategy: We rely on the data structure returned by calculateValue
-            if ($commodityType && isset($commodityMintData['data']['base_value'])) {
-                $baseValue = (float) $commodityMintData['data']['base_value'];
-                $metadata['commodity_base_value'] = $baseValue;
-                // Backward compat for Gold Specific reports?
-                if ($commodityType === 'goldbar') {
-                     $metadata['gold_base_value'] = $baseValue;
+                // 1. Freeze Price on EGI
+                if (($commodityMintData['price'] ?? 0) > 0) {
+                     $egi->update([
+                         'price' => $commodityMintData['price'], 
+                     ]);
                 }
                 
-                $this->logger->info('Commodity base value stored in metadata', [
+                // 2. Prepare Metadata (Base Value for Distribution)
+                if (isset($commodityMintData['data']['base_value'])) {
+                    $baseValue = (float) $commodityMintData['data']['base_value'];
+                    $commodityMetadata['commodity_base_value'] = $baseValue;
+                    // Backward compat for Gold Specific reports
+                    if ($commodityType === 'goldbar') {
+                         $commodityMetadata['gold_base_value'] = $baseValue;
+                    }
+                }
+
+                // 3. Clear Cache
+                Cache::forget('commodity_mint_' . Auth::id() . '_' . $originalEgiId);
+                Cache::forget('gold_bar_mint_' . Auth::id() . '_' . $originalEgiId);
+
+                $this->logger->info('Commodity price frozen and metadata prepared', [
                     'egi_id' => $egi->id,
                     'type' => $commodityType,
-                    'base_value' => $baseValue
+                    'frozen_price' => $commodityMintData['price'] ?? 0,
                 ]);
             }
 
-            $blockchainRecord = EgiBlockchain::create([
+            // --- 3. CREATE BLOCKCHAIN RECORD (Pending Status) ---
+            // This is the source of truth for the minting job
+            
+            $blockchainData = [
                 'egi_id' => $egi->id,
                 'reservation_id' => $reservation?->id, // ✅ NULLABLE per mint diretto
+                'mint_status' => 'pending_checkout', // Standard flow
+                'buyer_user_id' => Auth::id(),
+                'buyer_wallet' => $validated['buyer_wallet'] ?? null,
                 'payment_method' => $paymentMethod,
                 'psp_provider' => $paymentProvider,
                 'payment_reference' => $paymentReference,
                 'paid_amount' => $paidAmountRecorded,
                 'paid_currency' => $paidCurrency,
-                'buyer_user_id' => Auth::id(),
-                'buyer_wallet' => $validated['buyer_wallet'] ?? null,
-                'ownership_type' => $validated['buyer_wallet'] ? 'wallet' : 'treasury',
-                'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
-                'mint_status' => 'minting_queued',
-                'metadata' => $metadata, // Store metadata
-                // AREA 5.5.1: Store proposed co-creator name (will be frozen during mint)
+                'merchant_psp_config' => array_merge(
+                    $paymentMetadata['merchant_psp'] ?? [],
+                    $commodityMetadata // Merge commodity base values here
+                ),
+                
+                // Area 5: Metadata
+                'creator_display_name' => $egi->user->name, // Creator name frozen at mint
                 'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
-            ]);
+                
+                // Shipping
+                'shipping_address_snapshot' => $shippingAddressSnapshot,
+            ];
+
+            // Update or Create
+            if ($egi->blockchain) {
+                $blockchainRecord = $egi->blockchain;
+                $blockchainRecord->update($blockchainData);
+            } else {
+                $blockchainRecord = EgiBlockchain::create($blockchainData);
+            }
+
+            // GDPR Log (Mint Initiated)
+             $this->auditService->logUserAction(
+                Auth::user(),
+                'Mint process initiated',
+                [
+                    'egi_id' => $egi->id,
+                    'price' => $paymentAmountEur,
+                    'payment_method' => $paymentMethod,
+                    'has_shipping' => $shippingRequired
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
+            );
+
+            // Trigger Seller Notification (SOLD)
+            // For Minting, the "Seller" is the Creator (Owner of the collection/EGI)
+            // The Creator is $egi->user (or $egi->owner depending on logic, but usually user for mint)
+            $seller = $egi->user;
+            if ($seller && $seller->id !== Auth::id()) { // Don't notify if buying own EGI (testing)
+                try {
+                     // Ensure relations to prevent serialization issues
+                     $blockchainRecord->refresh();
+                     $blockchainRecord->load(['buyer', 'egi']);
+                     $seller->notify(new EgiSoldNotification($blockchainRecord));
+                } catch (\Exception $e) {
+                    $this->logger->error('Failed to send Sold Notification during Mint', ['error' => $e->getMessage()]);
+                }
+            }
+            // ... (Notification sent) ...
+            
+            // CRITICAL: Ensure queue worker is running with intelligent retry
 
             // CRITICAL: Ensure queue worker is running with intelligent retry
             $queueWorkerService = app(\App\Services\QueueWorkerService::class);

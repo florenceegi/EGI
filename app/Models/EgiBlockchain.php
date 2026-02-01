@@ -67,6 +67,12 @@ class EgiBlockchain extends Model {
         'crypto_payment_reference',
         'supports_crypto_payments',
 
+        // Shipping Data
+        'shipping_address_snapshot',
+        'tracking_code',
+        'carrier',
+        'shipped_at',
+
         // Phase 2 Area 5: Metadata fields
         'metadata',
         'creator_display_name',
@@ -82,7 +88,9 @@ class EgiBlockchain extends Model {
         'paid_amount' => 'decimal:2',
         'supports_crypto_payments' => 'boolean',
         'minted_at' => 'datetime',
+        'shipped_at' => 'datetime',
         'merchant_psp_config' => 'array',
+        'shipping_address_snapshot' => 'array',
         'metadata' => 'array',
         'metadata_last_updated_at' => 'datetime',
     ];

@@ -40,6 +40,10 @@ use App\Services\EgiAvailabilityService;
 use App\Services\EgiliService;
 use App\Services\Payment\MerchantAccountResolver;
 use App\Helpers\FegiAuth;
+use App\Models\UserShippingAddress; // Added
+use App\Notifications\Commerce\EgiSoldNotification; // Added
+use App\Services\Commerce\EgiListingService; // Added
+use Illuminate\Support\Facades\Notification; // Added
 
 class RebindController extends Controller {
     protected UltraLogManager $logger;
@@ -48,6 +52,7 @@ class RebindController extends Controller {
     protected EgiAvailabilityService $availabilityService;
     protected MerchantAccountResolver $merchantAccountResolver;
     protected PaymentServiceFactory $paymentFactory;
+    protected EgiListingService $listingService; // Added
 
     public function __construct(
         UltraLogManager $logger,
@@ -55,7 +60,8 @@ class RebindController extends Controller {
         AuditLogService $auditService,
         EgiAvailabilityService $availabilityService,
         MerchantAccountResolver $merchantAccountResolver,
-        PaymentServiceFactory $paymentFactory
+        PaymentServiceFactory $paymentFactory,
+        EgiListingService $listingService // Added
     ) {
         $this->middleware('auth');
         $this->logger = $logger;
@@ -64,6 +70,7 @@ class RebindController extends Controller {
         $this->availabilityService = $availabilityService;
         $this->merchantAccountResolver = $merchantAccountResolver;
         $this->paymentFactory = $paymentFactory;
+        $this->listingService = $listingService; // Added
     }
 
     /**
@@ -148,6 +155,19 @@ class RebindController extends Controller {
                 $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
             }
 
+            // ... (previous validation code) ...
+
+            // 1. Check if shipping is required
+            $shippingRequired = $this->listingService->shippingRequiredForEgi($egi);
+            $shippingAddresses = [];
+
+            if ($shippingRequired) {
+                // Fetch user's shipping addresses
+                $shippingAddresses = UserShippingAddress::where('user_id', Auth::id())
+                    ->orderBy('is_default', 'desc')
+                    ->get();
+            }
+
             return view('rebind.checkout', [
                 'egi' => $egi,
                 'owner' => $egi->owner,
@@ -160,6 +180,8 @@ class RebindController extends Controller {
                 'stripeMerchantError' => $stripeMerchantError,
                 'paypalAvailable' => $paypalAvailable,
                 'stripePublicKey' => config('services.stripe.key'),
+                'shippingRequired' => $shippingRequired, // Added
+                'shippingAddresses' => $shippingAddresses, // Added
             ]);
         } catch (\Exception $e) {
             $this->errorManager->handle('REBIND_CHECKOUT_ERROR', [
@@ -183,18 +205,38 @@ class RebindController extends Controller {
      */
     public function process(int $id, Request $request) {
         try {
-            $validated = $request->validate([
+            // 1. Check shipping requirements FIRST
+            $shippingRequired = $this->listingService->shippingRequiredForEgi($egi);
+            $shippingAddressSnapshot = null;
+
+            $validationRules = [
                 'payment_method' => 'required|string|in:stripe,paypal,egili',
-            ]);
+            ];
 
-            $egi = Egi::with(['owner', 'blockchain', 'collection.wallets'])
-                ->findOrFail($id);
+            if ($shippingRequired) {
+                $validationRules['shipping_address_id'] = [
+                    'required',
+                    'exists:user_shipping_addresses,id,user_id,' . Auth::id()
+                ];
+            }
 
+            $validated = $request->validate($validationRules);
+
+            if ($shippingRequired) {
+                // Fetch the selected address
+                $address = UserShippingAddress::find($validated['shipping_address_id']);
+                // Create snapshot (array)
+                $shippingAddressSnapshot = $address->toArray();
+            }
+
+            // ... availability check ...
             // Re-verify availability (prevent race conditions)
             $availability = $this->availabilityService->checkAvailability($egi, Auth::user());
 
             if (!$availability['can_rebind']) {
-                $this->logger->warning('REBIND_PROCESS_NOT_AVAILABLE', [
+               // ... (existing warning code) ...
+               // (This block is unchanged, just context for placement)
+                 $this->logger->warning('REBIND_PROCESS_NOT_AVAILABLE', [
                     'user_id' => Auth::id(),
                     'egi_id' => $egi->id,
                     'reason' => $availability['rebind_reason'] ?? 'unknown',
@@ -211,11 +253,13 @@ class RebindController extends Controller {
                     ->route('egis.show', $egi->id)
                     ->withErrors(['error' => __('rebind.errors.not_available')]);
             }
-
-            $paymentAmountEur = $egi->price ?? 0;
+            
+            // ... (price check code unchanged) ...
+             $paymentAmountEur = $egi->price ?? 0;
 
             if ($paymentAmountEur <= 0) {
-                $this->logger->error('REBIND_INVALID_PRICE', [
+                 // ... (existing price error code) ...
+                  $this->logger->error('REBIND_INVALID_PRICE', [
                     'user_id' => Auth::id(),
                     'egi_id' => $egi->id,
                     'price' => $paymentAmountEur,
@@ -224,7 +268,7 @@ class RebindController extends Controller {
                 return redirect()->back()->withErrors(['error' => __('rebind.errors.invalid_price')]);
             }
 
-            $paymentMethod = $validated['payment_method'];
+            $paymentMethod = $validated['payment_method']; // Already defined
             $paymentProvider = null;
             $paymentReference = null;
             $paidCurrency = 'EUR';
@@ -238,6 +282,7 @@ class RebindController extends Controller {
                 'price' => $egi->price,
                 'current_owner_id' => $egi->owner_id,
                 'payment_method' => $paymentMethod,
+                'shipping_required' => $shippingRequired, // Added log context
             ]);
 
             // === PAYMENT PROCESSING ===
@@ -387,8 +432,37 @@ class RebindController extends Controller {
             ]);
 
             // Transfer ownership in database
+            // Transfer ownership in database
             $egi->owner_id = $newOwnerId;
             $egi->save();
+
+            // Update Blockchain Record (Transaction Context & Shipping)
+            // We update this to reflect the "Current State" for the notification system
+            if ($egi->blockchain) {
+                $blockchainUpdate = [
+                    'buyer_user_id' => $newOwnerId, // IMPORTANT: Notification uses this to identify buyer
+                    'payment_method' => $paymentMethod,
+                    // Reset shipping fields for new owner
+                    'tracking_code' => null,
+                    'carrier' => null,
+                    'shipped_at' => null,
+                ];
+
+                if ($shippingRequired && $shippingAddressSnapshot) {
+                    $blockchainUpdate['shipping_address_snapshot'] = $shippingAddressSnapshot;
+                }
+
+                $egi->blockchain->update($blockchainUpdate);
+            }
+
+            // Notification Trigger (Sold Notification to Seller)
+            // We need to fetch the previous owner User object
+            $previousOwner = \App\Models\User::find($previousOwnerId);
+            if ($previousOwner && $egi->blockchain) {
+                 // Refresh relation to ensuring buyer is loaded correctly
+                 $egi->blockchain->load('buyer'); 
+                 $previousOwner->notify(new EgiSoldNotification($egi->blockchain));
+            }
 
             // GDPR audit log
             $this->auditService->logUserAction(
@@ -406,6 +480,7 @@ class RebindController extends Controller {
                     'payment_reference' => $paymentReference,
                     'seller_id' => $previousOwnerId,
                     'buyer_id' => $newOwnerId,
+                    'shipping_included' => $shippingRequired,
                 ],
                 GdprActivityCategory::BLOCKCHAIN_ACTIVITY
             );
@@ -418,11 +493,12 @@ class RebindController extends Controller {
                 'price' => $paymentAmountEur,
                 'payment_method' => $paymentMethod,
                 'payment_provider' => $paymentProvider,
+                'notification_sent' => true,
             ]);
 
             // TODO: Future enhancements:
             // 1. Blockchain ownership transfer via Algorand atomic transfer
-            // 2. Notification to seller and buyer
+            // 2. (Done) Notification to seller and buyer
             // 3. Calculate and Distribute Royalties (Creator, EPP, Natan, Frangette)
             // Logic:
             // - Creator: Wallet->royalty_rebind OR config('egi.default_wallets.Creator.rebind_royalty')

@@ -42,6 +42,8 @@ class CustomDatabaseChannel
             'App\\Notifications\\Invitations\\InvitationRejection' => NotificationStatus::REJECTED,
             'App\\Notifications\\Wallets\\WalletRejection' => NotificationStatus::REJECTED,
             'App\\Notifications\\Wallets\\WalletAccepted' => NotificationStatus::ACCEPTED,
+             // Commerce
+            'App\\Notifications\\Commerce\\EgiSoldNotification' => 'SHIPPED',
         ];
 
         // Controlla se l'azione corrisponde a una chiave nella mappatura

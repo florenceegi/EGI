@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\Gdpr\ConsentStatus;
 use App\Enums\Gdpr\DataExportStatus;
@@ -27,7 +27,14 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class User extends Authenticatable implements HasMedia {
+class User extends Authenticatable implements MustVerifyEmail, HasMedia { // MODIFIED
+    /**
+     * Get the shipping addresses for the user.
+     */
+    public function shippingAddresses(): HasMany
+    {
+        return $this->hasMany(UserShippingAddress::class);
+    }
     use HasApiTokens;
     use HasRoles;
     use InteractsWithMedia;

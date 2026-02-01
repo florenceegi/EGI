@@ -1059,9 +1059,14 @@ Route::prefix('notifications')->group(function () {
     Route::prefix('wallet')->group(function () {
         Route::post('/response', [NotificationWalletResponseController::class, 'response'])
             ->name('notifications.wallets.response');
-
         Route::post('/archive', [NotificationWalletResponseController::class, 'notificationArchive'])
             ->name('notifications.wallets.notificationArchive');
+    });
+
+    // Commerce notifications
+    Route::prefix('commerce')->group(function () {
+        Route::post('/shipped', [\App\Http\Controllers\Notifications\Commerce\NotificationCommerceResponseController::class, 'handleShipped'])
+            ->name('notifications.commerce.shipped');
     });
 
     // Invitation notifications
