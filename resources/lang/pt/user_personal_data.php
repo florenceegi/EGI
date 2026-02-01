@@ -184,4 +184,26 @@ return [
         'request_submitted' => 'Solicitação de exclusão enviada com sucesso',
         'processing_time' => 'A solicitação será processada em até 30 dias úteis',
     ],
+    // ===================================================================
+    // GESTÃO DE IBAN
+    // ===================================================================
+    'iban_management' => 'Gestão de IBAN',
+    'iban_description' => 'Configure seu IBAN para receber pagamentos em Euro',
+    'manage_iban' => 'Gerenciar IBAN',
+
+    // ===================================================================
+    // ENDEREÇOS DE ENTREGA
+    // ===================================================================
+    'shipping' => [
+        'title' => 'Endereços de Entrega',
+        'add_new' => 'Adicionar Novo Endereço',
+        'add_address' => 'Adicionar Endereço',
+        'edit_address' => 'Editar Endereço',
+        'select_address' => 'Selecione um endereço para entrega:',
+        'no_address' => 'Nenhum endereço de entrega salvo encontrado.',
+    ],
+    'address_created_success' => 'Endereço de entrega adicionado com sucesso',
+    'address_updated_success' => 'Endereço de entrega atualizado com sucesso',
+    'address_deleted_success' => 'Endereço de entrega excluído',
+    'address_default_success' => 'Endereço padrão definido',
 ];

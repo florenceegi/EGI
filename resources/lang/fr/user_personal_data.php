@@ -184,4 +184,26 @@ return [
         'request_submitted' => 'Demande de suppression envoyée avec succès',
         'processing_time' => 'La demande sera traitée sous 30 jours ouvrés',
     ],
+    // ===================================================================
+    // GESTION IBAN
+    // ===================================================================
+    'iban_management' => 'Gestion IBAN',
+    'iban_description' => 'Configurer votre IBAN pour recevoir des paiements en Euro',
+    'manage_iban' => 'Gérer IBAN',
+
+    // ===================================================================
+    // ADRESSES DE LIVRAISON
+    // ===================================================================
+    'shipping' => [
+        'title' => 'Adresses de Livraison',
+        'add_new' => 'Ajouter une Nouvelle Adresse',
+        'add_address' => 'Ajouter une Adresse',
+        'edit_address' => 'Modifier l\'Adresse',
+        'select_address' => 'Sélectionnez une adresse de livraison :',
+        'no_address' => 'Aucune adresse de livraison enregistrée.',
+    ],
+    'address_created_success' => 'Adresse de livraison ajoutée avec succès',
+    'address_updated_success' => 'Adresse de livraison mise à jour avec succès',
+    'address_deleted_success' => 'Adresse de livraison supprimée',
+    'address_default_success' => 'Adresse par défaut définie',
 ];

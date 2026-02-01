@@ -233,4 +233,20 @@ return [
     'iban_management' => 'Gestione IBAN',
     'iban_description' => 'Configura il tuo IBAN per ricevere pagamenti in Euro',
     'manage_iban' => 'Gestisci IBAN',
+
+    // ===================================================================
+    // SHIPPING ADDRESSES
+    // ===================================================================
+    'shipping' => [
+        'title' => 'Indirizzi di Spedizione',
+        'add_new' => 'Aggiungi Nuovo Indirizzo',
+        'add_address' => 'Aggiungi Indirizzo',
+        'edit_address' => 'Modifica Indirizzo',
+        'select_address' => 'Seleziona un indirizzo per la consegna:',
+        'no_address' => 'Nessun indirizzo di spedizione salvato presente.',
+    ],
+    'address_created_success' => 'Indirizzo di spedizione aggiunto con successo',
+    'address_updated_success' => 'Indirizzo di spedizione aggiornato con successo',
+    'address_deleted_success' => 'Indirizzo di spedizione eliminato',
+    'address_default_success' => 'Indirizzo predefinito impostato',
 ];

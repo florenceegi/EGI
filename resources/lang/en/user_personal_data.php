@@ -273,4 +273,27 @@ return [
     // NAVIGATION
     'quick_navigation' => 'Quick Navigation',
     'go_to_organization_data' => 'Go to Organization Data',
+
+    // ===================================================================
+    // IBAN MANAGEMENT
+    // ===================================================================
+    'iban_management' => 'IBAN Management',
+    'iban_description' => 'Configure your IBAN to receive payments in Euro',
+    'manage_iban' => 'Manage IBAN',
+
+    // ===================================================================
+    // SHIPPING ADDRESSES
+    // ===================================================================
+    'shipping' => [
+        'title' => 'Shipping Addresses',
+        'add_new' => 'Add New Address',
+        'add_address' => 'Add Address',
+        'edit_address' => 'Edit Address',
+        'select_address' => 'Select an address for delivery:',
+        'no_address' => 'No saved shipping address found.',
+    ],
+    'address_created_success' => 'Shipping address added successfully',
+    'address_updated_success' => 'Shipping address updated successfully',
+    'address_deleted_success' => 'Shipping address deleted',
+    'address_default_success' => 'Default address set',
 ];

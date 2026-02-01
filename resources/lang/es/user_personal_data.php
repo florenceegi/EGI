@@ -184,4 +184,26 @@ return [
         'request_submitted' => 'Solicitud de eliminación enviada correctamente',
         'processing_time' => 'La solicitud será procesada en un plazo de 30 días laborables',
     ],
+    // ===================================================================
+    // GESTIÓN IBAN
+    // ===================================================================
+    'iban_management' => 'Gestión IBAN',
+    'iban_description' => 'Configura tu IBAN para recibir pagos en Euros',
+    'manage_iban' => 'Gestionar IBAN',
+
+    // ===================================================================
+    // DIRECCIONES DE ENVÍO
+    // ===================================================================
+    'shipping' => [
+        'title' => 'Direcciones de Envío',
+        'add_new' => 'Añadir Nueva Dirección',
+        'add_address' => 'Añadir Dirección',
+        'edit_address' => 'Editar Dirección',
+        'select_address' => 'Selecciona una dirección de entrega:',
+        'no_address' => 'No se han encontrado direcciones guardadas.',
+    ],
+    'address_created_success' => 'Dirección de envío añadida correctamente',
+    'address_updated_success' => 'Dirección de envío actualizada correctamente',
+    'address_deleted_success' => 'Dirección de envío eliminada',
+    'address_default_success' => 'Dirección predeterminada establecida',
 ];

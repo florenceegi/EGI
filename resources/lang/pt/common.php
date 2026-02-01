@@ -20,6 +20,8 @@ return [
     'updated_at' => 'Atualizado em',
     'back' => 'Voltar',
     'back_to_egi' => 'Voltar ao EGI',
+    'add' => 'Adicionar',
+    'confirm_delete' => 'Tem certeza de que deseja excluir este item?',
 
     // Tab switcher
     'tab_collections' => 'Coleções',

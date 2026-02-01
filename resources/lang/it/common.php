@@ -15,6 +15,10 @@ return [
     'description' => 'Descrizione',
     'quantity' => 'Quantità',
     'unit_price' => 'Prezzo Unitario',
+    'add' => 'Aggiungi',
+    'edit' => 'Modifica',
+    'cancel' => 'Annulla',
+    'confirm_delete' => 'Sei sicuro di voler eliminare questo elemento?',
 
     // Tab switcher
     'tab_collections' => 'Collezioni',

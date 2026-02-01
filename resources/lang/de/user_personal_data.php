@@ -184,4 +184,26 @@ return [
         'request_submitted' => 'Löschanfrage erfolgreich gesendet',
         'processing_time' => 'Die Anfrage wird innerhalb von 30 Werktagen bearbeitet',
     ],
+    // ===================================================================
+    // IBAN VERWALTUNG
+    // ===================================================================
+    'iban_management' => 'IBAN Verwaltung',
+    'iban_description' => 'Konfigurieren Sie Ihre IBAN, um Zahlungen in Euro zu erhalten',
+    'manage_iban' => 'IBAN Verwalten',
+
+    // ===================================================================
+    // LIEFERADRESSEN
+    // ===================================================================
+    'shipping' => [
+        'title' => 'Lieferadressen',
+        'add_new' => 'Neue Adresse hinzufügen',
+        'add_address' => 'Adresse hinzufügen',
+        'edit_address' => 'Adresse bearbeiten',
+        'select_address' => 'Wählen Sie eine Lieferadresse:',
+        'no_address' => 'Keine gespeicherte Lieferadresse gefunden.',
+    ],
+    'address_created_success' => 'Lieferadresse erfolgreich hinzugefügt',
+    'address_updated_success' => 'Lieferadresse erfolgreich aktualisiert',
+    'address_deleted_success' => 'Lieferadresse gelöscht',
+    'address_default_success' => 'Standardadresse festgelegt',
 ];

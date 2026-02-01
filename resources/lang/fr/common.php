@@ -18,6 +18,8 @@ return [
     'delete' => 'Supprimer',
     'created_at' => 'Créé le',
     'updated_at' => 'Mis à jour le',
+    'add' => 'Ajouter',
+    'confirm_delete' => 'Êtes-vous sûr de vouloir supprimer cet élément ?',
 
     // Tab switcher
     'tab_collections' => 'Collections',
