@@ -260,6 +260,7 @@
                                 @endforeach
                                 <div class="mt-4 border-t border-gray-700 pt-4">
                                     <button type="button" data-action="open-shipping-modal"
+                                        onclick="document.getElementById('shipping-address-modal').classList.remove('hidden')"
                                         data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
                                         data-method="POST"
                                         class="inline-flex items-center text-sm font-semibold text-indigo-400 hover:text-indigo-300">
@@ -275,6 +276,7 @@
                                     ⚠️ Non hai ancora salvato un indirizzo di spedizione.
                                 </p>
                                 <button type="button" data-action="open-shipping-modal"
+                                    onclick="document.getElementById('shipping-address-modal').classList.remove('hidden')"
                                     data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
                                     data-method="POST"
                                     class="inline-flex items-center rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600">
@@ -458,7 +460,7 @@
                     </div>
 
                     {{-- Submit Button --}}
-                    <button type="submit" id="submit-mint-btn"
+                    <button type="button" id="submit-mint-btn" onclick="window.submitMintForm(event)"
                         class="w-full rounded-lg bg-blue-600 px-6 py-3 font-bold text-white transition-all hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         {{ __('mint.payment.submit_button') }}
                     </button>
