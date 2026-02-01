@@ -303,7 +303,56 @@
                                     shipping_edit_address: "{{ __('user_personal_data.shipping.edit_address') }}"
                                 }
                             };
-                        </script>
+                            });
+
+            // MODAL GLOBAL HANDLERS - Nuclear Option
+            window.closeShippingModal = function() {
+                const modal = document.getElementById('shipping-address-modal');
+                if (modal) modal.classList.add('hidden');
+            };
+
+            window.saveShippingAddress = function(e) {
+                console.log('🔘 Save Address Clicked');
+                if (e) e.preventDefault();
+
+                const form = document.getElementById('shipping-address-form');
+                if (!form) return;
+
+                const btn = e.target;
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = 'Salvataggio...';
+
+                const formData = new FormData(form);
+                const url = btn.getAttribute('data-url') || form.getAttribute('action') || '{{ route('user.domains.personal-data.shipping-address.store') }}';
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success || data.id) {
+                        alert('Indirizzo salvato con successo!');
+                        window.location.reload();
+                    } else {
+                        alert('Errore: ' + (data.message || 'Errore sconosciuto'));
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Errore di comunicazione col server.');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                });
+            };
+        </script>
                     @endpush
                     <x-personal-data.shipping-address-modal :countries="$availableCountries ?? []" />
 
@@ -473,156 +522,157 @@
     </div>
 
     {{-- JavaScript --}}
-    @push('scripts')
-        <script>
-            // Toggle wallet input
-            document.getElementById('has_wallet_toggle').addEventListener('change', function(e) {
-                const container = document.getElementById('wallet_input_container');
-                const input = document.getElementById('buyer_wallet');
+    {{-- JavaScript --}}
 
-                if (e.target.checked) {
-                    container.classList.remove('hidden');
-                    input.required = true;
+    <script>
+        // Toggle wallet input
+        document.getElementById('has_wallet_toggle').addEventListener('change', function(e) {
+            const container = document.getElementById('wallet_input_container');
+            const input = document.getElementById('buyer_wallet');
+
+            if (e.target.checked) {
+                container.classList.remove('hidden');
+                input.required = true;
+            } else {
+                container.classList.add('hidden');
+                input.required = false;
+                input.value = '';
+            }
+        });
+
+        // Co-creator name validation
+        const coCreatorInput = document.getElementById('co_creator_display_name');
+        coCreatorInput.addEventListener('input', function(e) {
+            const pattern = /^[a-zA-Z0-9\s.\'\-]+$/;
+            if (this.value && !pattern.test(this.value)) {
+                this.classList.add('border-red-500');
+                this.setCustomValidity('{{ __('mint.payment.co_creator_name_invalid') }}');
+            } else {
+                this.classList.remove('border-red-500');
+                this.setCustomValidity('');
+            }
+        });
+
+        // Check if page was reloaded after error (flash messages present)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Se ci sono errori flash, chiudi modale SweetAlert
+            const hasErrors = document.querySelector('.alert-danger') ||
+                document.querySelector('[role="alert"]') ||
+                @json($errors->any());
+
+            if (hasErrors && window.Swal) {
+                Swal.close();
+            }
+        });
+
+        // Form submission con MODALE DI PROGRESS
+        // Polling helper to ensure elements exist before binding
+        function ensureElement(selector, callback, maxAttempts = 20) {
+            let attempts = 0;
+            const interval = setInterval(() => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    clearInterval(interval);
+                    console.log(`✅ Element found: ${selector}`);
+                    callback(element);
                 } else {
-                    container.classList.add('hidden');
-                    input.required = false;
-                    input.value = '';
-                }
-            });
-
-            // Co-creator name validation
-            const coCreatorInput = document.getElementById('co_creator_display_name');
-            coCreatorInput.addEventListener('input', function(e) {
-                const pattern = /^[a-zA-Z0-9\s.\'\-]+$/;
-                if (this.value && !pattern.test(this.value)) {
-                    this.classList.add('border-red-500');
-                    this.setCustomValidity('{{ __('mint.payment.co_creator_name_invalid') }}');
-                } else {
-                    this.classList.remove('border-red-500');
-                    this.setCustomValidity('');
-                }
-            });
-
-            // Check if page was reloaded after error (flash messages present)
-            document.addEventListener('DOMContentLoaded', function() {
-                // Se ci sono errori flash, chiudi modale SweetAlert
-                const hasErrors = document.querySelector('.alert-danger') ||
-                    document.querySelector('[role="alert"]') ||
-                    @json($errors->any());
-
-                if (hasErrors && window.Swal) {
-                    Swal.close();
-                }
-            });
-
-            // Form submission con MODALE DI PROGRESS
-            // Polling helper to ensure elements exist before binding
-            function ensureElement(selector, callback, maxAttempts = 20) {
-                let attempts = 0;
-                const interval = setInterval(() => {
-                    const element = document.querySelector(selector);
-                    if (element) {
+                    attempts++;
+                    if (attempts >= maxAttempts) {
                         clearInterval(interval);
-                        console.log(`✅ Element found: ${selector}`);
-                        callback(element);
-                    } else {
-                        attempts++;
-                        if (attempts >= maxAttempts) {
-                            clearInterval(interval);
-                            console.warn(`❌ Element not found after ${maxAttempts} attempts: ${selector}`);
+                        console.warn(`❌ Element not found after ${maxAttempts} attempts: ${selector}`);
+                    }
+                }
+            }, 250);
+        }
+
+        // Form submission logic
+        ensureElement('#mint-payment-form', (form) => {
+            form.addEventListener('submit', function(e) {
+                console.log('Payment form submission intercepted');
+                e.preventDefault();
+
+                const btn = document.getElementById('submit-mint-btn');
+
+                try {
+                    // Check Gold Bar Timer
+                    const timerElement = document.getElementById('gold-bar-timer');
+                    if (timerElement) {
+                        const validUntil = new Date(timerElement.dataset.validUntil);
+                        if (new Date() > validUntil) {
+                            console.warn('Timer expired during submit');
+                            document.getElementById('gold-bar-expired-modal').classList.remove('hidden');
+                            document.getElementById('gold-bar-expired-modal').classList.add('flex');
+                            return;
                         }
                     }
-                }, 250);
-            }
 
-            // Form submission logic
-            ensureElement('#mint-payment-form', (form) => {
-                form.addEventListener('submit', function(e) {
-                    console.log('Payment form submission intercepted');
-                    e.preventDefault();
+                    // UI Feedback
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.innerHTML =
+                            '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Elaborazione...';
+                    }
 
-                    const btn = document.getElementById('submit-mint-btn');
-
-                    try {
-                        // Check Gold Bar Timer
-                        const timerElement = document.getElementById('gold-bar-timer');
-                        if (timerElement) {
-                            const validUntil = new Date(timerElement.dataset.validUntil);
-                            if (new Date() > validUntil) {
-                                console.warn('Timer expired during submit');
-                                document.getElementById('gold-bar-expired-modal').classList.remove('hidden');
-                                document.getElementById('gold-bar-expired-modal').classList.add('flex');
-                                return;
+                    // SweetAlert Logic
+                    if (window.Swal) {
+                        Swal.fire({
+                            title: '⏳ Elaborazione Mint',
+                            html: '<p class="text-gray-700">Attendere prego...</p>',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                console.log('Submitting via Swal...');
+                                form.submit();
                             }
-                        }
-
-                        // UI Feedback
-                        if (btn) {
-                            btn.disabled = true;
-                            btn.innerHTML =
-                                '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Elaborazione...';
-                        }
-
-                        // SweetAlert Logic
-                        if (window.Swal) {
-                            Swal.fire({
-                                title: '⏳ Elaborazione Mint',
-                                html: '<p class="text-gray-700">Attendere prego...</p>',
-                                allowOutsideClick: false,
-                                showConfirmButton: false,
-                                didOpen: () => {
-                                    console.log('Submitting via Swal...');
-                                    form.submit();
-                                }
-                            });
-                        } else {
-                            console.log('Submitting directly...');
-                            form.submit();
-                        }
-                    } catch (err) {
-                        console.error('Critical Error in Submit Handler:', err);
-                        // Emergency fallback
+                        });
+                    } else {
+                        console.log('Submitting directly...');
                         form.submit();
                     }
-                });
-                console.log('Paid event listener attached.');
-            });
-
-            // Gold Bar Timer Logic
-            ensureElement('#gold-bar-timer', (goldBarTimer) => {
-                const validUntil = new Date(goldBarTimer.dataset.validUntil);
-                const countdownElement = document.getElementById('gold-timer-countdown');
-
-                function updateGoldBarTimer() {
-                    const now = new Date();
-                    const diff = validUntil - now;
-
-                    if (diff <= 0) {
-                        if (countdownElement) countdownElement.textContent = '00:00';
-                        goldBarTimer.classList.add('border-red-400', 'bg-red-100');
-
-                        const expiredModal = document.getElementById('gold-bar-expired-modal');
-                        if (expiredModal) {
-                            expiredModal.classList.remove('hidden');
-                            expiredModal.classList.add('flex');
-                        }
-
-                        const btn = document.getElementById('submit-mint-btn');
-                        if (btn) btn.disabled = true;
-                        return;
-                    }
-
-                    const minutes = Math.floor(diff / 60000);
-                    const seconds = Math.floor((diff % 60000) / 1000);
-                    if (countdownElement) {
-                        countdownElement.textContent =
-                            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                        if (diff < 120000) countdownElement.classList.add('text-red-600', 'font-bold');
-                    }
-                    setTimeout(updateGoldBarTimer, 1000);
+                } catch (err) {
+                    console.error('Critical Error in Submit Handler:', err);
+                    // Emergency fallback
+                    form.submit();
                 }
-                updateGoldBarTimer();
             });
-        </script>
+            console.log('Paid event listener attached.');
+        });
+
+        // Gold Bar Timer Logic
+        ensureElement('#gold-bar-timer', (goldBarTimer) => {
+            const validUntil = new Date(goldBarTimer.dataset.validUntil);
+            const countdownElement = document.getElementById('gold-timer-countdown');
+
+            function updateGoldBarTimer() {
+                const now = new Date();
+                const diff = validUntil - now;
+
+                if (diff <= 0) {
+                    if (countdownElement) countdownElement.textContent = '00:00';
+                    goldBarTimer.classList.add('border-red-400', 'bg-red-100');
+
+                    const expiredModal = document.getElementById('gold-bar-expired-modal');
+                    if (expiredModal) {
+                        expiredModal.classList.remove('hidden');
+                        expiredModal.classList.add('flex');
+                    }
+
+                    const btn = document.getElementById('submit-mint-btn');
+                    if (btn) btn.disabled = true;
+                    return;
+                }
+
+                const minutes = Math.floor(diff / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                if (countdownElement) {
+                    countdownElement.textContent =
+                        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    if (diff < 120000) countdownElement.classList.add('text-red-600', 'font-bold');
+                }
+                setTimeout(updateGoldBarTimer, 1000);
+            }
+            updateGoldBarTimer();
+        });
+    </script>
 
 </x-platform-layout>
