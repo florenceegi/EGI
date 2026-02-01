@@ -513,6 +513,35 @@ Ogni pagamento Egili genera:
 
 ---
 
+## Gestione Spedizioni (Shipping Workflow)
+
+Per gli Asset Fisici (Commodity, Phygital) che richiedono consegna fisica, il sistema integra un workflow logistico parallelo al flusso finanziario.
+
+### 1. Snapshot e Privacy (GDPR)
+Al momento del checkout (qualsiasi Livello di pagamento), se l'EGI richiede spedizione:
+*   Il sistema cattura un **Snapshot Statico** dell'indirizzo di spedizione.
+*   Questo dato viene salvato in `egi_blockchain` e `notification_payload_shippings`.
+*   **Privacy**: L'indirizzo è legato alla singola transazione (storico immutabile) e visibile solo alle controparti.
+
+### 2. Flusso di Notifica "Actionable"
+A differenza delle piattaforme tradizionali, la gestione logistica è guidata dalle Notifiche Interattive:
+
+1.  **Merchant**: Riceve notifica **"EGI Sold - Spedizione Richiesta"**.
+    *   La notifica contiene un'azione diretta (Form integrato): **"Inserisci Tracking"**.
+    *   Non serve navigare in pannelli complessi; l'operazione si gestisce dalla notifica.
+2.  **Input Dati**: Il Merchant inserisce *Carrier* (Corriere) e *Tracking Code*.
+3.  **Aggiornamento**: Il sistema aggiorna il **Payload di Spedizione** (`notification_payload_shippings`) e lo stato `ugi_blockchain`.
+4.  **Buyer**: Riceve automaticamente notifica **"Il tuo EGI è in viaggio"** con link tracciamento.
+
+### 3. Integrazione Dati
+*   **Finanza**: Gestita da `payment_distributions` (Chi prende i soldi).
+*   **Logistica**: Gestita da `notification_payload_shippings` (Chi sposta la merce).
+*   **Asset**: Gestito da `egi_blockchain` (Chi possiede il titolo).
+
+Questa separazione garantisce che un problema sulla spedizione non blocchi la contabilità (e viceversa), mantenendo però tutto collegato nello stesso Ordine Logico.
+
+---
+
 ## Principio Guida
 
 **Inclusione progressiva senza esclusione**: ogni utente può partecipare al livello di complessità che preferisce, senza imporre barriere tecnologiche.

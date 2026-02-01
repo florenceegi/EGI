@@ -2,7 +2,7 @@
 
 namespace App\Notifications\Commerce;
 
-use App\Models\EgiBlockchain;
+use App\Models\NotificationPayloadShipping;
 use App\Notifications\Channels\CustomDatabaseChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -11,11 +11,11 @@ class EgiSoldNotification extends Notification
 {
     use Queueable;
 
-    private EgiBlockchain $purchase;
+    private NotificationPayloadShipping $payload;
 
-    public function __construct(EgiBlockchain $purchase)
+    public function __construct(NotificationPayloadShipping $payload)
     {
-        $this->purchase = $purchase;
+        $this->payload = $payload;
     }
 
     public function via($notifiable)
@@ -27,15 +27,15 @@ class EgiSoldNotification extends Notification
     {
         return [
             'view'          => 'notifications.commerce.egi_sold',
-            'model_type'    => EgiBlockchain::class,
-            'model_id'      => $this->purchase->id,
-            'sender_id'     => $this->purchase->buyer_user_id, // Il buyer è il sender della "richiesta" di ordine
+            'model_type'    => NotificationPayloadShipping::class,
+            'model_id'      => $this->payload->id,
+            'sender_id'     => $this->payload->buyer_id, 
             'data'          => [
-                'amount'            => $this->purchase->formatted_amount,
-                'buyer_name'        => $this->purchase->buyer->name,
-                'buyer_email'       => $this->purchase->buyer->email,
-                'shipping_snapshot' => $this->purchase->shipping_address_snapshot,
-                'egi_name'          => $this->purchase->egi->name ?? 'EGI Asset',
+                'amount'            => $this->payload->formatted_amount, // Uses helper in model
+                'buyer_name'        => $this->payload->buyer->name,      // Uses helper in model
+                'buyer_email'       => $this->payload->buyer->email,
+                'shipping_snapshot' => $this->payload->shipping_address_snapshot,
+                'egi_name'          => $this->payload->egi->name ?? 'EGI Asset',
             ],
             'outcome'       => 'pending',
         ];

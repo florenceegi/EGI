@@ -43,26 +43,40 @@ class NotificationCommerceResponseController extends Controller
                 abort(403);
             }
 
-            // Recupera l'ordine (EgiBlockchain)
-            $purchase = EgiBlockchain::find($notification->model_id);
+            // Retrieve Payload Shipping
+            $payload = \App\Models\NotificationPayloadShipping::find($notification->model_id);
 
-            if (!$purchase) {
+            if (!$payload) {
+                // Fallback for legacy or direct access scenarios (if any)
+                // But mainly we expect payload now.
                 return back()->with('error', __('commerce.notifications.flash.order_not_found'));
             }
 
-            // 1. Aggiorna i dati di spedizione
-            $purchase->update([
+            // Update Payload
+            $payload->update([
                 'carrier'       => $validated['carrier'],
                 'tracking_code' => $validated['tracking_code'],
                 'shipped_at'    => now(),
+                'status'        => 'shipped'
             ]);
+
+            // Sync with Ecosystem Blockchain Record
+            $purchase = $payload->egiBlockchain;
+            if ($purchase) {
+                $purchase->update([
+                    'carrier'       => $validated['carrier'],
+                    'tracking_code' => $validated['tracking_code'],
+                    'shipped_at'    => now(),
+                ]);
+            }
 
             // GDPR Audit (Update personal/transactional data)
             $this->auditService->logUserAction(
                 Auth::user(), 
                 'order_shipped', 
                 [ 
-                    'purchase_id' => $purchase->id,
+                    'purchase_id' => $purchase->id ?? 'N/A',
+                    'payload_id'  => $payload->id,
                     'carrier' => $validated['carrier'],
                     'tracking_code' => $validated['tracking_code']
                 ],

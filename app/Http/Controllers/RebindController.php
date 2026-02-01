@@ -460,8 +460,18 @@ class RebindController extends Controller {
             $previousOwner = \App\Models\User::find($previousOwnerId);
             if ($previousOwner && $egi->blockchain) {
                  // Refresh relation to ensuring buyer is loaded correctly
-                 $egi->blockchain->load('buyer'); 
-                 $previousOwner->notify(new EgiSoldNotification($egi->blockchain));
+                 $egi->blockchain->load('buyer');
+                 
+                 // Create Payload Shipping Record (Persistent Notification Data)
+                 $payload = \App\Models\NotificationPayloadShipping::create([
+                     'egi_blockchain_id' => $egi->blockchain->id,
+                     'seller_id' => $previousOwnerId,
+                     'buyer_id' => $newOwnerId,
+                     'shipping_address_snapshot' => $egi->blockchain->shipping_address_snapshot,
+                     'status' => 'pending'
+                 ]);
+                 
+                 $previousOwner->notify(new EgiSoldNotification($payload));
             }
 
             // GDPR audit log

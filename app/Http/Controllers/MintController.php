@@ -919,12 +919,22 @@ class MintController extends Controller {
             // For Minting, the "Seller" is the Creator (Owner of the collection/EGI)
             // The Creator is $egi->user (or $egi->owner depending on logic, but usually user for mint)
             $seller = $egi->user;
-            if ($seller && $seller->id !== Auth::id()) { // Don't notify if buying own EGI (testing)
+            if ($seller) { // Notify seller always (even if self-minting for test)
                 try {
                      // Ensure relations to prevent serialization issues
                      $blockchainRecord->refresh();
                      $blockchainRecord->load(['buyer', 'egi']);
-                     $seller->notify(new EgiSoldNotification($blockchainRecord));
+                     
+                     // Create Payload Shipping Record (Persistent Notification Data)
+                     $payload = \App\Models\NotificationPayloadShipping::create([
+                         'egi_blockchain_id' => $blockchainRecord->id,
+                         'seller_id' => $seller->id,
+                         'buyer_id' => Auth::id(),
+                         'shipping_address_snapshot' => $blockchainRecord->shipping_address_snapshot,
+                         'status' => 'pending'
+                     ]);
+                     
+                     $seller->notify(new EgiSoldNotification($payload));
                 } catch (\Exception $e) {
                     $this->logger->error('Failed to send Sold Notification during Mint', ['error' => $e->getMessage()]);
                 }
