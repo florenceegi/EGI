@@ -291,7 +291,7 @@
                             };
                         </script>
                     @endpush
-                    <x-personal-data.shipping-address-modal :countries="$availableCountries" />
+                    <x-personal-data.shipping-address-modal :countries="$availableCountries ?? []" />
 
                     {{-- Payment Method --}}
                     <div class="mb-6">
