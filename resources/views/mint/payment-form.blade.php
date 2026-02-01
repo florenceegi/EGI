@@ -624,6 +624,5 @@
                 updateGoldBarTimer();
             });
         </script>
-    @endpush
 
 </x-platform-layout>
