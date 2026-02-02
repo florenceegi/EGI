@@ -5,7 +5,7 @@
     ➡️ Submit: POST /mint/process → Redirect a mint.blade.php
 --}}
 <x-platform-layout :title="__('mint.page_title', ['title' => $egi->title])">
-    <div class="container mx-auto max-w-[95%] px-4 py-8 xl:max-w-[90%]">
+    <div class="container mx-auto max-w-7xl px-4 py-8 2xl:max-w-[1600px]">
 
         {{-- Header Ultra-Design --}}
         <div
@@ -493,9 +493,9 @@
                         @endif
                     </div>
 
-                    {{-- Submit Button --}}
+                    {{-- Submit Button (Visible Mobile/Tablet, Hidden Desktop) --}}
                     <button type="button" id="submit-mint-btn" onclick="window.submitMintForm(event)"
-                        class="w-full transform rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 font-bold text-white shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900">
+                        class="w-full transform rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 font-bold text-white shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 xl:hidden">
                         {{ __('mint.payment.submit_button') }}
                     </button>
 
@@ -547,15 +547,7 @@
 
         </div> {{-- End Main Grid --}}
 
-        {{-- MOBILE/TABLET STICKY BOTTOM BAR (Since Submit is in Right Panel which is hidden on mobile/tablet) --}}
-        {{-- We need a visible submit button for Mobile/Tablet inside the form or sticky --}}
-        {{-- Let's put it inside the form for Mobile/Tablet, hidden on XL --}}
-        <div class="mt-8 xl:hidden">
-            <button type="button" onclick="window.submitMintForm(event)"
-                class="w-full transform rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 font-bold text-white shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900">
-                Paga €{{ number_format($paymentAmountEur, 2) }}
-            </button>
-        </div>
+
 
     </div>
 
