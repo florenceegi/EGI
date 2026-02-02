@@ -7,7 +7,10 @@ use App\Notifications\Channels\CustomDatabaseChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
-class EgiSoldNotification extends Notification
+use Illuminate\Contracts\Queue\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
+
+class EgiSoldNotification extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -20,7 +23,7 @@ class EgiSoldNotification extends Notification
 
     public function via($notifiable)
     {
-        return [CustomDatabaseChannel::class];
+        return [CustomDatabaseChannel::class, 'broadcast'];
     }
 
     public function toCustomDatabase($notifiable)
@@ -31,13 +34,27 @@ class EgiSoldNotification extends Notification
             'model_id'      => $this->payload->id,
             'sender_id'     => $this->payload->buyer_id, 
             'data'          => [
-                'amount'            => $this->payload->formatted_amount, // Uses helper in model
-                'buyer_name'        => $this->payload->buyer->name,      // Uses helper in model
+                'amount'            => $this->payload->formatted_amount,
+                'buyer_name'        => $this->payload->buyer->name,
                 'buyer_email'       => $this->payload->buyer->email,
                 'shipping_snapshot' => $this->payload->shipping_address_snapshot,
                 'egi_name'          => $this->payload->egi->name ?? 'EGI Asset',
             ],
             'outcome'       => 'pending',
         ];
+    }
+
+    /**
+     * Get the broadcastable representation of the notification.
+     */
+    public function toBroadcast($notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage([
+            'title'   => 'Nuova Vendita EGI!',
+            'body'    => "Hai venduto '{$this->payload->egi->name}' a {$this->payload->buyer->name}. Clicca per gestire la spedizione.",
+            'action_url' => route('dashboard'), // Or specific management URL if available
+            'type'    => 'commerce',
+            'payload_id' => $this->payload->id,
+        ]);
     }
 }
