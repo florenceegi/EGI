@@ -76,15 +76,14 @@ class NotificationDetailsController extends Controller {
                 $viewKey = strtolower($viewKey); // Converte la stringa in minuscolo
             }
 
-            if (str_contains($viewKey, '.')) {
-                // Handle dot notation (e.g. 'commerce.egi_sold')
-                $parts = explode('.', $viewKey);
-                $section = $parts[0];
-                $key = $parts[1];
-                $config = config("notification-views.{$section}.{$key}", []);
-            } else {
-                 $config = $viewKey ? config('notification-views.' . $viewKey, []) : [];
+            // Normalizzazione chiave: rimuovi prefisso 'notifications.' se presente per matchare la config
+            if (str_starts_with($viewKey, 'notifications.')) {
+                $viewKey = substr($viewKey, 14); // len("notifications.") = 14
             }
+
+            // Fix per la dot notation: usa direttamente la chiave normalizzata
+            // Laravel config() supporta la dot notation profonda (es. commerce.egi_sold)
+            $config = $viewKey ? config('notification-views.' . $viewKey, []) : [];
             
             $view = $config['view'] ?? null;
 

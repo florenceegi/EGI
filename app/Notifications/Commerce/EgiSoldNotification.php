@@ -29,7 +29,7 @@ class EgiSoldNotification extends Notification implements ShouldBroadcast
     public function toCustomDatabase($notifiable)
     {
         return [
-            'view'          => 'notifications.commerce.egi_sold',
+            'view'          => 'commerce.egi_sold', // Matches config key structure
             'model_type'    => NotificationPayloadShipping::class,
             'model_id'      => $this->payload->id,
             'sender_id'     => $this->payload->buyer_id, 
