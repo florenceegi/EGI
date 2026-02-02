@@ -26,20 +26,20 @@
             </p>
 
             <!-- Shipping Details Box -->
-            @if (isset($notification->data['shipping_snapshot']))
+            @if (isset($notification->data['shipping_snapshot']) && is_array($notification->data['shipping_snapshot']))
                 <div class="mb-4 rounded-lg border border-gray-700/50 bg-gray-900/50 p-4">
                     <h4 class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
                         {{ __('commerce.notifications.sold.shipping_address') }}</h4>
                     <p class="text-sm leading-relaxed text-gray-300">
-                        {{ $notification->data['shipping_snapshot']['full_name'] }}<br>
-                        {{ $notification->data['shipping_snapshot']['address_line_1'] }}<br>
+                        {{ $notification->data['shipping_snapshot']['full_name'] ?? 'N/A' }}<br>
+                        {{ $notification->data['shipping_snapshot']['address_line_1'] ?? '' }}<br>
                         @if (!empty($notification->data['shipping_snapshot']['address_line_2']))
                             {{ $notification->data['shipping_snapshot']['address_line_2'] }}<br>
                         @endif
-                        {{ $notification->data['shipping_snapshot']['city'] }},
+                        {{ $notification->data['shipping_snapshot']['city'] ?? '' }},
                         {{ $notification->data['shipping_snapshot']['state'] ?? '' }}
-                        {{ $notification->data['shipping_snapshot']['postal_code'] }}<br>
-                        {{ $notification->data['shipping_snapshot']['country'] }}<br>
+                        {{ $notification->data['shipping_snapshot']['postal_code'] ?? '' }}<br>
+                        {{ $notification->data['shipping_snapshot']['country'] ?? '' }}<br>
                         <span
                             class="mt-1 block text-xs text-gray-500">{{ $notification->data['shipping_snapshot']['phone'] ?? '' }}</span>
                     </p>
