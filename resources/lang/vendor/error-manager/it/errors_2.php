@@ -194,6 +194,7 @@ return [
         'epp_project_delete_failed' => '[EPP] Project deletion failed. User :user_id, Project :project_id, Error: :error_message',
 
         'mint_insufficient_stripe_capabilities' => '[STRIPE] Account Stripe senza capabilities richieste (transfers + card_payments). Accounts: :insufficient_accounts',
+        'notification_unsupported_type' => 'Notifica di tipo non supportato o view mancante. ID: :notification_id, Type: :notification_type, ViewKey: :view_key',
     ],
 
     'user' => [
@@ -392,6 +393,7 @@ return [
         'epp_project_delete_failed' => 'Impossibile eliminare il progetto EPP. Riprova o contatta l\'assistenza.',
 
         'mint_insufficient_stripe_capabilities' => 'Configurazione sistema pagamento incompleta. Il nostro team è stato notificato.',
+        'notification_unsupported_type' => 'Impossibile visualizzare questa notifica. Il formato non è supportato o è obsoleto.',
     ],
 
 ];
