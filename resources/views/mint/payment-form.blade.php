@@ -557,7 +557,7 @@
                         <p class="mb-6 text-right text-xs text-slate-500">IVA inclusa se applicabile</p>
 
                         {{-- Submit Button (Moved Here for Desktop) --}}
-                        <button type="submit"
+                        <button type="submit" form="mint-payment-form"
                             class="w-full transform rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 font-bold text-white shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-emerald-500/40 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900">
                             {{ __('mint.payment.submit_button') }}
                         </button>
