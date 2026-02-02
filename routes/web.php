@@ -141,8 +141,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'showDirectMint'])
         ->name('egi.mint-direct');
 
-    Route::post('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'processDirectMint'])
-        ->name('egi.mint-direct.process');
+    Route::post('/egi/{id}/mint-direct', function($id, \Illuminate\Http\Request $request) {
+        \Log::channel('stack')->emergency('🔴 ROUTE HIT: egi.mint-direct.process', [
+            'id' => $id,
+            'user_id' => Auth::id(),
+            'payment_method' => $request->input('payment_method'),
+            'all_input' => $request->all()
+        ]);
+        return app()->call([App\Http\Controllers\MintController::class, 'processDirectMint'], ['id' => $id, 'request' => $request]);
+    })->name('egi.mint-direct.process');
 
     // Phase 3: Rebind route (secondary market - purchase from owner)
     Route::get('/egi/{id}/rebind', [App\Http\Controllers\RebindController::class, 'show'])
