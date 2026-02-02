@@ -97,6 +97,25 @@ return [
         ],
     ],
 
+    // === NUOVA SEZIONE: COMMERCE ===
+    'commerce' => [
+        'egi_sold' => [
+            'view' => 'notifications.commerce.egi_sold',
+            'render' => 'include',
+            'type' => 'interactive',
+        ],
+        'egi_shipped' => [
+            'view' => 'notifications.commerce.egi_shipped',
+            'render' => 'include',
+            'type' => 'informational',
+        ],
+        'default' => [
+            'view' => 'notifications.commerce.default',
+            'render' => 'include',
+            'type' => 'informational',
+        ],
+    ],
+
     // === NUOVA SEZIONE: RESERVATIONS ===
     'reservations' => [
         'highest' => [
