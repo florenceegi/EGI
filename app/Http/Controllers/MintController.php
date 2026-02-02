@@ -37,6 +37,8 @@ use App\Models\UserShippingAddress; // Added
 use App\Models\UserPersonalData; // Added for address sync
 use App\Notifications\Commerce\EgiSoldNotification; // Added
 use App\Services\Commerce\EgiListingService; // Added
+use App\Services\Notifications\CommerceNotificationService; // New Service
+use App\Services\EgiAvailabilityService; // New Service
 
 class MintController extends Controller {
 
@@ -55,7 +57,9 @@ class MintController extends Controller {
         CertificateGeneratorService $certificateGenerator,
         PaymentServiceFactory $paymentFactory,
         MerchantAccountResolver $merchantAccountResolver,
-        EgiListingService $listingService // Added
+        EgiListingService $listingService, // Added
+        EgiAvailabilityService $availabilityService, // Added
+        CommerceNotificationService $commerceNotificationService // Added
     ) {
         $this->middleware('auth')->except(['showMintResult']);
         $this->logger = $logger;
@@ -65,6 +69,8 @@ class MintController extends Controller {
         $this->paymentFactory = $paymentFactory;
         $this->merchantAccountResolver = $merchantAccountResolver;
         $this->listingService = $listingService; // Added
+        $this->availabilityService = $availabilityService; // Added
+        $this->commerceNotificationService = $commerceNotificationService; // Added
     }
 
     /**
@@ -2051,6 +2057,27 @@ class MintController extends Controller {
                     'metadata' => $egiliMetadata, // Egili metadata
                     'shipping_address_snapshot' => $shippingAddressSnapshot, // ✅ ADDED
                 ]);
+            }
+
+            // COMMERCE NOTIFICATION FLOW (Shipping & Logistics)
+            // Triggered only if payment succeeded and record exists
+            if ($blockchainRecord && $blockchainRecord->payment_reference) {
+                try {
+                     // Delegate notification logic to dedicated service
+                     // This creates the NotificationPayloadShipping and notifies the Seller
+                     $this->commerceNotificationService->handleSold(
+                         $blockchainRecord, 
+                         $egi->owner, // The Seller
+                         Auth::user() // The Buyer
+                     );
+                } catch (\Exception $e) {
+                    // Log error but DO NOT block the flow (Fail-Open)
+                    // The asset is paid and minted; notification failure is secondary
+                    $this->logger->error('Failed to trigger Commerce Notifications in Direct Mint', [
+                        'record_id' => $blockchainRecord->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
             }
 
             $this->logger->emergency('🚨 DIRECT MINT - BEFORE DISPATCH', [
