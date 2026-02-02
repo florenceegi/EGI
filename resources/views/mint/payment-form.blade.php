@@ -756,8 +756,9 @@
 
                 // Let browser submit form naturally
                 // This allows Laravel's redirect()->route() to work
-                console.log('✅ Allowing natural form submission for redirect');
-                return true; // Allow form to submit
+                console.log('✅ Manual form submission triggered');
+                form.submit();
+                return true;
             } catch (err) {
                 console.error('Critical Error in Submit Handler:', err);
                 alert('Errore durante l\'invio. Riprovare.');
