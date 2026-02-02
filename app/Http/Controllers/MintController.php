@@ -1493,12 +1493,34 @@ class MintController extends Controller {
             // SHIPPING LOGIC (Direct Mint)
             $shippingRequired = $this->listingService->shippingRequiredForEgi($egi);
             $shippingAddresses = collect([]);
+            
+            $this->logger->info('[DIRECT MINT DEBUG] Shipping check', [
+                'egi_id' => $id,
+                'user_id' => Auth::id(),
+                'shippingRequired' => $shippingRequired
+            ]);
+            
             if ($shippingRequired) {
                 $shippingAddresses = Auth::user()->shippingAddresses()->orderBy('is_default', 'desc')->get();
+                
+                $this->logger->info('[DIRECT MINT DEBUG] Checking auto-sync', [
+                    'user_id' => Auth::id(),
+                    'shipping_addresses_count' => $shippingAddresses->count(),
+                    'isEmpty' => $shippingAddresses->isEmpty()
+                ]);
                 
                 // AUTO-SYNC: If empty, try to create from Personal Data
                 if ($shippingAddresses->isEmpty()) {
                     $personalData = UserPersonalData::where('user_id', Auth::id())->first();
+                    
+                    $this->logger->info('[DIRECT MINT DEBUG] PersonalData fetched', [
+                        'has_record' => $personalData !== null,
+                        'street' => $personalData?->street,
+                        'city' => $personalData?->city,
+                        'zip' => $personalData?->zip,
+                        'hasCompleteAddress' => $personalData?->hasCompleteAddress()
+                    ]);
+                    
                     if ($personalData && $personalData->hasCompleteAddress()) {
                         try {
                             $newAddress = UserShippingAddress::create([
@@ -1514,8 +1536,13 @@ class MintController extends Controller {
                                 'is_default' => true
                             ]);
                             $shippingAddresses->push($newAddress);
+                            
+                            $this->logger->info('[DIRECT MINT DEBUG] Address created successfully', ['address_id' => $newAddress->id]);
                         } catch (\Exception $e) {
-                            $this->logger->warning('Failed to auto-create shipping address', ['error' => $e->getMessage()]);
+                            $this->logger->error('[DIRECT MINT DEBUG] Failed to auto-create shipping address', [
+                                'error' => $e->getMessage(),
+                                'trace' => $e->getTraceAsString()
+                            ]);
                         }
                     }
                 }
