@@ -200,22 +200,8 @@ class MintController extends Controller {
                 $shippingAddresses = Auth::user()->shippingAddresses()->orderBy('is_default', 'desc')->get();
 
                 // AUTO-SYNC: If empty, try to create from Personal Data
-                $this->logger->info('[SHIPPING DEBUG] Checking auto-sync', [
-                    'user_id' => Auth::id(),
-                    'shipping_addresses_count' => $shippingAddresses->count(),
-                    'isEmpty' => $shippingAddresses->isEmpty()
-                ]);
-                
                 if ($shippingAddresses->isEmpty()) {
                     $personalData = UserPersonalData::where('user_id', Auth::id())->first();
-                    $this->logger->info('[SHIPPING DEBUG] PersonalData fetched', [
-                        'has_record' => $personalData !== null,
-                        'street' => $personalData?->street,
-                        'city' => $personalData?->city,
-                        'zip' => $personalData?->zip,
-                        'hasCompleteAddress' => $personalData?->hasCompleteAddress()
-                    ]);
-                    
                     if ($personalData && $personalData->hasCompleteAddress()) {
                         try {
                             $newAddress = UserShippingAddress::create([
@@ -231,12 +217,8 @@ class MintController extends Controller {
                                 'is_default' => true
                             ]);
                             $shippingAddresses->push($newAddress);
-                            $this->logger->info('[SHIPPING DEBUG] Address created successfully', ['address_id' => $newAddress->id]);
                         } catch (\Exception $e) {
-                            $this->logger->error('[SHIPPING DEBUG] Failed to auto-create shipping address', [
-                                'error' => $e->getMessage(),
-                                'trace' => $e->getTraceAsString()
-                            ]);
+                            $this->logger->warning('Failed to auto-create shipping address', ['error' => $e->getMessage()]);
                         }
                     }
                 }
@@ -1493,34 +1475,13 @@ class MintController extends Controller {
             // SHIPPING LOGIC (Direct Mint)
             $shippingRequired = $this->listingService->shippingRequiredForEgi($egi);
             $shippingAddresses = collect([]);
-            
-            $this->logger->info('[DIRECT MINT DEBUG] Shipping check', [
-                'egi_id' => $id,
-                'user_id' => Auth::id(),
-                'shippingRequired' => $shippingRequired
-            ]);
-            
+
             if ($shippingRequired) {
                 $shippingAddresses = Auth::user()->shippingAddresses()->orderBy('is_default', 'desc')->get();
-                
-                $this->logger->info('[DIRECT MINT DEBUG] Checking auto-sync', [
-                    'user_id' => Auth::id(),
-                    'shipping_addresses_count' => $shippingAddresses->count(),
-                    'isEmpty' => $shippingAddresses->isEmpty()
-                ]);
                 
                 // AUTO-SYNC: If empty, try to create from Personal Data
                 if ($shippingAddresses->isEmpty()) {
                     $personalData = UserPersonalData::where('user_id', Auth::id())->first();
-                    
-                    $this->logger->info('[DIRECT MINT DEBUG] PersonalData fetched', [
-                        'has_record' => $personalData !== null,
-                        'street' => $personalData?->street,
-                        'city' => $personalData?->city,
-                        'zip' => $personalData?->zip,
-                        'hasCompleteAddress' => $personalData?->hasCompleteAddress()
-                    ]);
-                    
                     if ($personalData && $personalData->hasCompleteAddress()) {
                         try {
                             $newAddress = UserShippingAddress::create([
@@ -1536,13 +1497,8 @@ class MintController extends Controller {
                                 'is_default' => true
                             ]);
                             $shippingAddresses->push($newAddress);
-                            
-                            $this->logger->info('[DIRECT MINT DEBUG] Address created successfully', ['address_id' => $newAddress->id]);
                         } catch (\Exception $e) {
-                            $this->logger->error('[DIRECT MINT DEBUG] Failed to auto-create shipping address', [
-                                'error' => $e->getMessage(),
-                                'trace' => $e->getTraceAsString()
-                            ]);
+                            $this->logger->warning('Failed to auto-create shipping address', ['error' => $e->getMessage()]);
                         }
                     }
                 }
@@ -1609,32 +1565,13 @@ class MintController extends Controller {
      */
     public function processDirectMint(int $id, \App\Http\Requests\MintDirectRequest $request) {
         try {
-            // DIAGNOSTIC LOG 1: Entry Point
-            \Log::channel('stack')->info('=== MINT FLOW START ===', [
-                'egi_id' => $id,
-                'user_id' => Auth::id(),
-                'timestamp' => now()->toDateTimeString()
-            ]);
-
             $validated = $request->validated();
             
-            \Log::channel('stack')->info('MINT: Validation passed', [
-                'payment_method' => $validated['payment_method'] ?? 'MISSING',
-                'shipping_address_id' => $validated['shipping_address_id'] ?? 'none'
-            ]);
-
             $egi = Egi::findOrFail($id);
             // ✅ FIX: Capture ID before potential cloning logic (though consistent here, good practice)
             $originalEgiId = $egi->id;
 
-            \Log::channel('stack')->info('MINT: EGI found', [
-                'egi_id' => $egi->id,
-                'title' => $egi->title,
-                'price' => $egi->price,
-                'owner_id' => $egi->user_id
-            ]);
 
-            // dd($validated);
 
             // SHIPPING LOGIC (Ported from processMint)
             $egiTemp = Egi::find($id);
