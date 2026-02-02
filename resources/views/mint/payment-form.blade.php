@@ -642,6 +642,27 @@
             const paymentOptions = document.querySelectorAll('.js-payment-option');
             const hiddenInput = document.getElementById('selected_payment_method');
 
+            // Initialize visual state based on server-selected value
+            const initialMethod = hiddenInput.value;
+            if (initialMethod) {
+                console.log('🎯 Initializing with pre-selected method:', initialMethod);
+                const initialOption = document.querySelector(`.js-payment-option[data-method="${initialMethod}"]`);
+                if (initialOption) {
+                    const card = initialOption.querySelector('.payment-card');
+                    const checkmark = initialOption.querySelector('.checkmark');
+
+                    if (initialMethod === 'stripe') {
+                        card.classList.add('border-blue-500', 'bg-blue-500/20', 'shadow-blue-500/20');
+                    } else if (initialMethod === 'paypal') {
+                        card.classList.add('border-blue-400', 'bg-blue-400/20', 'shadow-blue-400/20');
+                    } else if (initialMethod === 'egili') {
+                        card.classList.add('border-emerald-500', 'bg-emerald-900/20', 'shadow-emerald-500/20');
+                    }
+
+                    if (checkmark) checkmark.classList.remove('hidden');
+                }
+            }
+
             paymentOptions.forEach(option => {
                 if (option.dataset.enabled === 'false') return; // Skip disabled
 
