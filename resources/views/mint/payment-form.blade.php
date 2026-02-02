@@ -384,8 +384,7 @@
                             <div class="relative">
                                 <input type="radio" name="payment_method" id="pm_stripe" value="stripe"
                                     {{ $selectedPaymentMethod === 'stripe' && $stripeMerchantAvailable ? 'checked' : '' }}
-                                    {{ !$stripeMerchantAvailable ? 'disabled' : '' }}
-                                    class="peer pointer-events-none absolute opacity-0">
+                                    {{ !$stripeMerchantAvailable ? 'disabled' : '' }} class="peer sr-only">
                                 <label for="pm_stripe"
                                     class="{{ $stripeMerchantAvailable ? 'cursor-pointer hover:border-blue-500 hover:bg-blue-500/10 peer-checked:border-blue-500 peer-checked:bg-blue-500/20' : 'cursor-not-allowed opacity-50' }} flex flex-col items-center justify-center rounded-xl border border-white/10 bg-slate-800/50 p-4 transition-all hover:shadow-lg peer-checked:shadow-blue-500/20">
                                     <span class="text-3xl">💳</span>
@@ -406,8 +405,7 @@
                             <div class="relative">
                                 <input type="radio" name="payment_method" id="pm_paypal" value="paypal"
                                     {{ $selectedPaymentMethod === 'paypal' && $paypalAvailable ? 'checked' : '' }}
-                                    {{ !$paypalAvailable ? 'disabled' : '' }}
-                                    class="peer pointer-events-none absolute opacity-0">
+                                    {{ !$paypalAvailable ? 'disabled' : '' }} class="peer sr-only">
                                 <label for="pm_paypal"
                                     class="{{ $paypalAvailable ? 'cursor-pointer hover:border-blue-400 hover:bg-blue-400/10 peer-checked:border-blue-400 peer-checked:bg-blue-400/20' : 'cursor-not-allowed opacity-50' }} flex flex-col items-center justify-center rounded-xl border border-white/10 bg-slate-800/50 p-4 transition-all hover:shadow-lg peer-checked:shadow-blue-400/20">
                                     <span class="text-3xl">💙</span>
@@ -427,8 +425,7 @@
                                 <div class="relative">
                                     <input type="radio" name="payment_method" id="pm_egili" value="egili"
                                         {{ $selectedPaymentMethod === 'egili' && $canPayWithEgili ? 'checked' : '' }}
-                                        {{ $canPayWithEgili ? '' : 'disabled' }}
-                                        class="peer pointer-events-none absolute opacity-0">
+                                        {{ $canPayWithEgili ? '' : 'disabled' }} class="peer sr-only">
                                     <label for="pm_egili"
                                         class="{{ $canPayWithEgili ? 'cursor-pointer hover:bg-emerald-500/10 peer-checked:border-emerald-500 peer-checked:bg-emerald-900/20' : 'cursor-not-allowed opacity-50' }} flex flex-col items-center justify-center rounded-xl border border-emerald-500/30 bg-slate-800/50 p-4 transition-all hover:shadow-lg peer-checked:shadow-emerald-500/20">
                                         <span class="text-3xl">🪙</span>
