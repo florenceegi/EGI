@@ -11,14 +11,15 @@
         <div class="flex-1">
             <h3 class="mb-2 text-lg font-bold text-white">{{ __('commerce.notifications.shipped.title_internal') }}</h3>
             <p class="mb-2 text-gray-300">
-                {{ __('commerce.notifications.shipped.message_internal', ['item' => $notification->data['egi_name']]) }}
+                {{ __('commerce.notifications.shipped.message_internal', ['item' => $notification->data['egi_name'] ?? 'Item']) }}
             </p>
             <div class="inline-block min-w-[250px] rounded border border-gray-700/50 bg-gray-900/50 p-3">
                 <div class="text-xs uppercase text-gray-500">{{ __('commerce.notifications.shipped.tracking_info') }}
                 </div>
                 <div class="mt-1 font-mono text-sm text-white">
-                    {{ $notification->data['carrier'] }}<br>
-                    <span class="tracking-wider text-green-400">{{ $notification->data['tracking_code'] }}</span>
+                    {{ $notification->data['carrier'] ?? 'N/A' }}<br>
+                    <span
+                        class="tracking-wider text-green-400">{{ $notification->data['tracking_code'] ?? 'N/A' }}</span>
                 </div>
             </div>
         </div>

@@ -19,9 +19,9 @@
             <h3 class="mb-1 text-lg font-bold text-white">{{ __('commerce.notifications.sold.title') }}</h3>
             <p class="mb-4 text-sm text-gray-400">
                 {{ __('commerce.notifications.sold.subtitle', [
-                    'buyer' => $notification->data['buyer_name'],
-                    'item' => $notification->data['egi_name'],
-                    'amount' => $notification->data['amount'],
+                    'buyer' => $notification->data['buyer_name'] ?? 'N/A',
+                    'item' => $notification->data['egi_name'] ?? 'N/A',
+                    'amount' => $notification->data['amount'] ?? 'N/A',
                 ]) }}
             </p>
 
