@@ -1537,6 +1537,9 @@ class MintController extends Controller {
      */
     public function processDirectMint(int $id, \App\Http\Requests\MintDirectRequest $request) {
         try {
+            // DEBUG: REMOVE AFTER DIAGNOSIS
+            // dd('DEBUG HIT: processDirectMint', $request->all(), Auth::user()->id, $id);
+
             $validated = $request->validated();
 
             $egi = Egi::findOrFail($id);

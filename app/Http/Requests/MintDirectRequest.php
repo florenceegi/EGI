@@ -213,6 +213,9 @@ class MintDirectRequest extends FormRequest {
             }
         }
 
+        // DEBUG DIAGNOSIS
+        dd("AUTHORIZATION FAILED: $reason", $user ? $user->id : 'No User', $egi ? $egi->id : 'No EGI', $user->can('allow-blockchain-operations'));
+
         throw new \Illuminate\Auth\Access\AuthorizationException(
             $this->getAuthorizationMessage($reason)
         );
