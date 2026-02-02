@@ -226,14 +226,14 @@
                             <span
                                 class="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/20 text-2xl">🚚</span>
                             <h3 class="text-xl font-bold text-gray-100">
-                                Dati di Spedizione
+                                {{ __('user_personal_data.shipping_address.main') }}
                             </h3>
                         </div>
 
                         @if ($shippingAddresses->count() > 0)
                             <div class="space-y-3">
                                 <p class="mb-2 text-sm text-indigo-300">
-                                    Seleziona un indirizzo per la consegna del bene fisico:
+                                    {{ __('user_personal_data.shipping_address.select_for_delivery') }}
                                 </p>
                                 @foreach ($shippingAddresses as $address)
                                     <label
@@ -276,25 +276,24 @@
                                         class="group inline-flex items-center text-sm font-semibold text-indigo-400 transition-colors hover:text-indigo-300">
                                         <span
                                             class="mr-2 flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/10 transition-colors group-hover:bg-indigo-500/20">➕</span>
-                                        Aggiungi un altro indirizzo
+                                        {{ __('user_personal_data.shipping_address.add_another') }}
                                     </button>
                                 </div>
                             </div>
                         @else
                             <div class="rounded-lg border border-yellow-700 bg-yellow-900/30 p-4 text-center">
                                 <p class="mb-3 text-sm text-yellow-200">
-                                    ⚠️
-                                    ⚠️ Non hai ancora salvato un indirizzo di spedizione.
+                                    ⚠️ {{ __('user_personal_data.shipping_address.no_addresses_warning') }}
                                 </p>
                                 <button type="button" data-action="open-shipping-modal"
                                     onclick="document.getElementById('shipping-address-modal').classList.remove('hidden')"
                                     data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
                                     data-method="POST"
                                     class="inline-flex items-center rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600">
-                                    ➕ Aggiungi Indirizzo
+                                    ➕ {{ __('user_personal_data.shipping_address.add_first') }}
                                 </button>
                                 <p class="mt-2 text-xs text-gray-400">
-                                    Dopo aver aggiunto l'indirizzo, ricarica questa pagina.
+                                    {{ __('user_personal_data.shipping_address.reload_after_add') }}
                                 </p>
                             </div>
                         @endif
@@ -392,7 +391,8 @@
                                 <div
                                     class="payment-card {{ $selectedPaymentMethod === 'stripe' ? 'border-blue-500 bg-blue-500/20 shadow-blue-500/20' : '' }} flex cursor-pointer flex-col items-center justify-center rounded-xl border border-white/10 bg-slate-800/50 p-4 transition-all hover:border-blue-500 hover:bg-blue-500/10 hover:shadow-lg">
                                     <span class="text-3xl">💳</span>
-                                    <span class="mt-2 text-sm font-semibold text-white">Carta</span>
+                                    <span
+                                        class="mt-2 text-sm font-semibold text-white">{{ __('mint.payment.credit_card') }}</span>
                                     {{-- Checkmark Icon for Active State --}}
                                     <div
                                         class="checkmark {{ $selectedPaymentMethod === 'stripe' ? '' : 'hidden' }} absolute right-3 top-3 text-blue-500">
@@ -412,7 +412,8 @@
                                 <div
                                     class="payment-card {{ $selectedPaymentMethod === 'paypal' ? 'border-blue-400 bg-blue-400/20 shadow-blue-400/20' : '' }} flex cursor-pointer flex-col items-center justify-center rounded-xl border border-white/10 bg-slate-800/50 p-4 transition-all hover:border-blue-400 hover:bg-blue-400/10 hover:shadow-lg">
                                     <span class="text-3xl">💙</span>
-                                    <span class="mt-2 text-sm font-semibold text-white">PayPal</span>
+                                    <span
+                                        class="mt-2 text-sm font-semibold text-white">{{ __('mint.payment.paypal') }}</span>
                                     <div
                                         class="checkmark {{ $selectedPaymentMethod === 'paypal' ? '' : 'hidden' }} absolute right-3 top-3 text-blue-400">
                                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24"
@@ -431,9 +432,10 @@
                                     <div
                                         class="payment-card {{ $selectedPaymentMethod === 'egili' ? 'border-emerald-500 bg-emerald-900/20 shadow-emerald-500/20' : '' }} flex cursor-pointer flex-col items-center justify-center rounded-xl border border-emerald-500/30 bg-slate-800/50 p-4 transition-all hover:bg-emerald-500/10 hover:shadow-lg">
                                         <span class="text-3xl">🪙</span>
-                                        <span class="mt-2 text-sm font-semibold text-emerald-400">Egili</span>
-                                        <span class="text-[10px] text-emerald-600">Saldo:
-                                            {{ number_format($egiliBalance) }}</span>
+                                        <span
+                                            class="mt-2 text-sm font-semibold text-emerald-400">{{ __('mint.payment.payment_method_egili') }}</span>
+                                        <span
+                                            class="text-[10px] text-emerald-600">{{ __('mint.payment.egili_balance_label', ['balance' => number_format($egiliBalance)]) }}</span>
                                         <div
                                             class="checkmark {{ $selectedPaymentMethod === 'egili' ? '' : 'hidden' }} absolute right-3 top-3 text-emerald-500">
                                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24"
