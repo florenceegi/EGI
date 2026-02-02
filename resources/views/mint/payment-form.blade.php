@@ -314,7 +314,7 @@
                                     shipping_edit_address: "{{ __('user_personal_data.shipping.edit_address') }}"
                                 }
                             };
-                            };
+
 
                             // MODAL GLOBAL HANDLERS - Nuclear Option
                             window.closeShippingModal = function() {
