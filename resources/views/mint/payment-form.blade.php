@@ -19,10 +19,11 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
 
-            {{-- COLONNA 1: EGI Preview --}}
-            <div class="space-y-6">
+            {{-- PANEL 1: ASSET & DETAILS (Left) --}}
+            {{-- Mobile: Top | Tablet: Left Col | Desktop: Left Col --}}
+            <div class="space-y-6 md:col-span-5 xl:col-span-3">
 
                 {{-- Immagine EGI --}}
                 <div class="overflow-hidden rounded-lg bg-white shadow-lg">
@@ -176,8 +177,9 @@
 
             </div>
 
-            {{-- COLONNA 2: Payment Form --}}
-            <div class="space-y-6">
+            {{-- PANEL 2: CONTROL CENTER (Center) --}}
+            {{-- Mobile: Middle | Tablet: Right Col | Desktop: Center Col --}}
+            <div class="space-y-6 md:col-span-7 xl:col-span-6">
 
                 {{-- MiCA Compliance Notice --}}
                 <div class="border-l-4 border-blue-500 bg-blue-50 p-4">
