@@ -373,6 +373,33 @@ class MintController extends Controller {
                 $shippingAddresses = UserShippingAddress::where('user_id', Auth::id())
                     ->orderBy('is_default', 'desc')
                     ->get();
+                
+                // AUTO-SYNC: If empty, try to create from Personal Data (same as showDirectMint)
+                if ($shippingAddresses->isEmpty()) {
+                    $personalData = UserPersonalData::where('user_id', Auth::id())->first();
+                    if ($personalData && $personalData->hasCompleteAddress()) {
+                        try {
+                            $newAddress = UserShippingAddress::create([
+                                'user_id' => Auth::id(),
+                                'label' => 'Indirizzo Personale',
+                                'full_name' => Auth::user()->name . ' ' . (Auth::user()->last_name ?? ''),
+                                'address_line_1' => $personalData->street,
+                                'city' => $personalData->city,
+                                'state' => $personalData->region ?? $personalData->province ?? '',
+                                'postal_code' => $personalData->zip,
+                                'country' => $personalData->country,
+                                'phone' => $personalData->cell_phone ?? $personalData->home_phone,
+                                'is_default' => true
+                            ]);
+                            $shippingAddresses->push($newAddress);
+                        } catch (\Exception $e) {
+                            $this->logger->warning('Failed to auto-create shipping address in showCheckout', [
+                                'error' => $e->getMessage(),
+                                'user_id' => Auth::id()
+                            ]);
+                        }
+                    }
+                }
             }
 
             // Get countries for the modal
