@@ -194,7 +194,7 @@ class MintController extends Controller {
 
                 // SHIPPING LOGIC (Added)
             $shippingRequired = $this->listingService->shippingRequiredForEgi($egi);
-            $shippingAddresses = [];
+            $shippingAddresses = collect([]);
             if ($shippingRequired) {
                 // Fetch basic shipping addresses
                 $shippingAddresses = Auth::user()->shippingAddresses()->orderBy('is_default', 'desc')->get();
@@ -367,7 +367,7 @@ class MintController extends Controller {
 
             // 1. Check if shipping is required (Physical or Utility)
             $shippingRequired = $this->listingService->shippingRequiredForEgi($egi);
-            $shippingAddresses = [];
+            $shippingAddresses = collect([]);
 
             if ($shippingRequired) {
                 $shippingAddresses = UserShippingAddress::where('user_id', Auth::id())
@@ -1447,7 +1447,7 @@ class MintController extends Controller {
 
             // SHIPPING LOGIC (Direct Mint)
             $shippingRequired = $this->listingService->shippingRequiredForEgi($egi);
-            $shippingAddresses = [];
+            $shippingAddresses = collect([]);
             if ($shippingRequired) {
                 $shippingAddresses = Auth::user()->shippingAddresses()->orderBy('is_default', 'desc')->get();
                 
