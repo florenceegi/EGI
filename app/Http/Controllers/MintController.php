@@ -1545,6 +1545,24 @@ class MintController extends Controller {
 
             // dd($validated);
 
+            // SHIPPING LOGIC (Ported from processMint)
+            $egiTemp = Egi::find($id);
+            $shippingRequired = $egiTemp ? $this->listingService->shippingRequiredForEgi($egiTemp) : false;
+
+            if ($shippingRequired) {
+                if (empty($validated['shipping_address_id'])) {
+                     return redirect()->back()->withErrors(['error' => __('mint.errors.shipping_address_required')]);
+                }
+                // Verify ownership manually since Request rule is generic exists
+                $addressCheck = UserShippingAddress::where('id', $validated['shipping_address_id'])
+                    ->where('user_id', Auth::id())
+                    ->exists();
+                
+                if (!$addressCheck) {
+                    return redirect()->back()->withErrors(['error' => __('mint.errors.invalid_shipping_address')]);
+                }
+            }
+
             // MASTER CLONABLE LOGIC: If buying a Master, clone it first
             $wasCloned = false;
             if ($egi->is_template) {
@@ -1579,6 +1597,16 @@ class MintController extends Controller {
                     'child_id' => $egi->id,
                     'serial' => $egi->serial_number
                 ]);
+            }
+
+            // Capture Shipping Snapshot (if required)
+            // Note: We do this AFTER potential cloning, as the child EGI retains the physical properties
+            $shippingAddressSnapshot = null;
+            if ($shippingRequired && !empty($validated['shipping_address_id'])) {
+                $address = UserShippingAddress::find($validated['shipping_address_id']);
+                if ($address) {
+                    $shippingAddressSnapshot = $address->toArray();
+                }
             }
 
             // Double-check availability (prevent race conditions)
@@ -1862,6 +1890,7 @@ class MintController extends Controller {
                     'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
                     'mint_status' => 'pending_checkout',
                     'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
+                    'shipping_address_snapshot' => $shippingAddressSnapshot, // ✅ ADDED
                 ]);
 
                 $paymentRequest = new PaymentRequest(
@@ -1992,6 +2021,7 @@ class MintController extends Controller {
                     'mint_status' => 'minting_queued',
                     'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
                     'metadata' => $egiliMetadata, // Egili metadata
+                    'shipping_address_snapshot' => $shippingAddressSnapshot, // ✅ ADDED
                 ]);
             }
 

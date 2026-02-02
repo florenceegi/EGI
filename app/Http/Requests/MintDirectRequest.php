@@ -127,6 +127,13 @@ class MintDirectRequest extends FormRequest {
                 // 'regex:/^[a-zA-Z0-9\s.\'\-]+$/', // TEMPORANEAMENTE DISABILITATO PER DEBUG
             ],
 
+            // Shipping
+            'shipping_address_id' => [
+                'nullable',
+                'integer',
+                'exists:user_shipping_addresses,id'
+            ],
+
             // Anti-CSRF protection (implicit via FormRequest)
         ];
     }
