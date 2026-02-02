@@ -218,89 +218,88 @@
 
 
                     {{-- SHIPPING ADDRESS SECTION (New) --}}
-                    {{-- FORCE RENDER FOR DEBUGGING --}}
-                    {{-- @if ($shippingRequired ?? false) --}}
-                    {{-- SHIPPING ADDRESS SECTION (New) --}}
-                    <div class="mb-8 rounded-2xl border border-white/10 bg-[#1e293b]/50 p-6 backdrop-blur-md">
-                        <div class="mb-6 flex items-center border-b border-white/10 pb-4">
-                            <span
-                                class="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/20 text-2xl">🚚</span>
-                            <h3 class="text-xl font-bold text-gray-100">
-                                {{ __('user_personal_data.shipping_address.main') }}
-                            </h3>
-                        </div>
+                    @if ($shippingRequired ?? false)
+                        {{-- SHIPPING ADDRESS SECTION (New) --}}
+                        <div class="mb-8 rounded-2xl border border-white/10 bg-[#1e293b]/50 p-6 backdrop-blur-md">
+                            <div class="mb-6 flex items-center border-b border-white/10 pb-4">
+                                <span
+                                    class="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/20 text-2xl">🚚</span>
+                                <h3 class="text-xl font-bold text-gray-100">
+                                    {{ __('user_personal_data.shipping_address.main') }}
+                                </h3>
+                            </div>
 
-                        @if ($shippingAddresses->count() > 0)
-                            <div class="space-y-3">
-                                <p class="mb-2 text-sm text-indigo-300">
-                                    {{ __('user_personal_data.shipping_address.select_for_delivery') }}
-                                </p>
-                                @foreach ($shippingAddresses as $address)
-                                    <label
-                                        class="group flex cursor-pointer items-start rounded-xl border border-white/10 bg-gray-800/80 p-4 shadow-lg transition-all duration-300 hover:border-indigo-500/50 hover:bg-gray-800 hover:shadow-indigo-500/10">
-                                        <div class="mt-1 flex h-5 items-center">
-                                            <input type="radio" name="shipping_address_id"
-                                                value="{{ $address->id }}" {{ $loop->first ? 'checked' : '' }}
-                                                class="h-5 w-5 border-gray-500 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-900">
-                                        </div>
-                                        <div class="ml-4 flex-1">
-                                            <div class="flex items-center justify-between">
-                                                <span
-                                                    class="font-bold text-white group-hover:text-indigo-300">{{ $address->full_name }}</span>
-                                                @if ($address->is_default)
+                            @if ($shippingAddresses->count() > 0)
+                                <div class="space-y-3">
+                                    <p class="mb-2 text-sm text-indigo-300">
+                                        {{ __('user_personal_data.shipping_address.select_for_delivery') }}
+                                    </p>
+                                    @foreach ($shippingAddresses as $address)
+                                        <label
+                                            class="group flex cursor-pointer items-start rounded-xl border border-white/10 bg-gray-800/80 p-4 shadow-lg transition-all duration-300 hover:border-indigo-500/50 hover:bg-gray-800 hover:shadow-indigo-500/10">
+                                            <div class="mt-1 flex h-5 items-center">
+                                                <input type="radio" name="shipping_address_id"
+                                                    value="{{ $address->id }}" {{ $loop->first ? 'checked' : '' }}
+                                                    class="h-5 w-5 border-gray-500 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-900">
+                                            </div>
+                                            <div class="ml-4 flex-1">
+                                                <div class="flex items-center justify-between">
                                                     <span
-                                                        class="ml-2 inline-flex items-center rounded-full bg-indigo-500/20 px-2.5 py-0.5 text-xs font-medium text-indigo-300 ring-1 ring-inset ring-indigo-500/30">
-                                                        Default
-                                                    </span>
+                                                        class="font-bold text-white group-hover:text-indigo-300">{{ $address->full_name }}</span>
+                                                    @if ($address->is_default)
+                                                        <span
+                                                            class="ml-2 inline-flex items-center rounded-full bg-indigo-500/20 px-2.5 py-0.5 text-xs font-medium text-indigo-300 ring-1 ring-inset ring-indigo-500/30">
+                                                            Default
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <div class="mt-1 text-sm text-gray-300">{{ $address->address_line_1 }}
+                                                </div>
+                                                <div class="text-sm text-gray-400">
+                                                    {{ $address->city }}, {{ $address->postal_code }}
+                                                    ({{ $address->country }})
+                                                </div>
+                                                @if ($address->phone)
+                                                    <div class="mt-2 flex items-center text-xs text-gray-500">
+                                                        <span class="mr-1 opacity-70">📞</span> {{ $address->phone }}
+                                                    </div>
                                                 @endif
                                             </div>
-                                            <div class="mt-1 text-sm text-gray-300">{{ $address->address_line_1 }}
-                                            </div>
-                                            <div class="text-sm text-gray-400">
-                                                {{ $address->city }}, {{ $address->postal_code }}
-                                                ({{ $address->country }})
-                                            </div>
-                                            @if ($address->phone)
-                                                <div class="mt-2 flex items-center text-xs text-gray-500">
-                                                    <span class="mr-1 opacity-70">📞</span> {{ $address->phone }}
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </label>
-                                @endforeach
-                                <div class="mt-4 border-t border-white/10 pt-4">
+                                        </label>
+                                    @endforeach
+                                    <div class="mt-4 border-t border-white/10 pt-4">
+                                        <button type="button" data-action="open-shipping-modal"
+                                            onclick="document.getElementById('shipping-address-modal').classList.remove('hidden')"
+                                            data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
+                                            data-method="POST"
+                                            class="group inline-flex items-center text-sm font-semibold text-indigo-400 transition-colors hover:text-indigo-300">
+                                            <span
+                                                class="mr-2 flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/10 transition-colors group-hover:bg-indigo-500/20">➕</span>
+                                            {{ __('user_personal_data.shipping_address.add_another') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="rounded-lg border border-yellow-700 bg-yellow-900/30 p-4 text-center">
+                                    <p class="mb-3 text-sm text-yellow-200">
+                                        ⚠️ {{ __('user_personal_data.shipping_address.no_addresses_warning') }}
+                                    </p>
                                     <button type="button" data-action="open-shipping-modal"
                                         onclick="document.getElementById('shipping-address-modal').classList.remove('hidden')"
                                         data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
                                         data-method="POST"
-                                        class="group inline-flex items-center text-sm font-semibold text-indigo-400 transition-colors hover:text-indigo-300">
-                                        <span
-                                            class="mr-2 flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/10 transition-colors group-hover:bg-indigo-500/20">➕</span>
-                                        {{ __('user_personal_data.shipping_address.add_another') }}
+                                        class="inline-flex items-center rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600">
+                                        ➕ {{ __('user_personal_data.shipping_address.add_first') }}
                                     </button>
+                                    <p class="mt-2 text-xs text-gray-400">
+                                        {{ __('user_personal_data.shipping_address.reload_after_add') }}
+                                    </p>
                                 </div>
-                            </div>
-                        @else
-                            <div class="rounded-lg border border-yellow-700 bg-yellow-900/30 p-4 text-center">
-                                <p class="mb-3 text-sm text-yellow-200">
-                                    ⚠️ {{ __('user_personal_data.shipping_address.no_addresses_warning') }}
-                                </p>
-                                <button type="button" data-action="open-shipping-modal"
-                                    onclick="document.getElementById('shipping-address-modal').classList.remove('hidden')"
-                                    data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
-                                    data-method="POST"
-                                    class="inline-flex items-center rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600">
-                                    ➕ {{ __('user_personal_data.shipping_address.add_first') }}
-                                </button>
-                                <p class="mt-2 text-xs text-gray-400">
-                                    {{ __('user_personal_data.shipping_address.reload_after_add') }}
-                                </p>
-                            </div>
-                        @endif
+                            @endif
 
-                        <input type="hidden" name="shipping_required" value="1">
-                    </div>
-                    {{-- @endif --}}
+                            <input type="hidden" name="shipping_required" value="1">
+                        </div>
+                    @endif
 
                     @push('scripts')
                         {{-- Load Personal Data Logic for Shipping Modal --}}
@@ -747,10 +746,13 @@
                 }
 
                 // UI Feedback ONLY - don't prevent submission
+                // Use setTimeout to allow form submission to start BEFORE disabling button
                 if (btn) {
-                    btn.disabled = true;
-                    btn.innerHTML =
-                        '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> {{ __('mint.payment.processing') }}';
+                    setTimeout(() => {
+                        btn.disabled = true;
+                        btn.innerHTML =
+                            '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> {{ __('mint.payment.processing') }}';
+                    }, 10);
                 }
 
                 // Let browser submit form naturally
