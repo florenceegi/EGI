@@ -674,28 +674,6 @@
                     }
                 }
 
-                // validate payment method
-                const paymentMethod = form.querySelector('input[name="payment_method"]:checked');
-                if (!paymentMethod) {
-                    // Tenta di selezionare il primo disponibile
-                    const firstAvailable = form.querySelector('input[name="payment_method"]:not(:disabled)');
-                    if (firstAvailable) {
-                        firstAvailable.checked = true;
-                        // Procedi pure...
-                    } else {
-                        if (window.Swal) {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Attenzione',
-                                text: 'Seleziona un metodo di pagamento per procedere.',
-                                confirmButtonColor: '#3b82f6'
-                            });
-                        } else {
-                            alert('Seleziona un metodo di pagamento per procedere.');
-                        }
-                        return;
-                    }
-                }
 
                 // UI Feedback
                 if (btn) {
