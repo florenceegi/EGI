@@ -712,11 +712,13 @@
             });
         });
 
-        // Form submission logic
+        // Form submission logic - let browser handle naturally for redirects
         // DIRECT GLOBAL HANDLER - Nuclear Option for reliability
         window.submitMintForm = function(e) {
             console.log('🔘 Submit Button Clicked (Direct Handler)');
-            if (e) e.preventDefault();
+
+            // DO NOT preventDefault - browser needs to handle redirect!
+            // The form will submit naturally and follow server's redirect response
 
             const form = document.getElementById('mint-payment-form');
             const btn = document.getElementById('submit-mint-btn');
@@ -724,6 +726,7 @@
             if (!form) {
                 console.error('❌ Form mint-payment-form not found');
                 alert('Errore tecnico: Modulo non trovato. Ricarica la pagina.');
+                if (e) e.preventDefault();
                 return;
             }
 
@@ -739,26 +742,28 @@
                             expiredModal.classList.remove('hidden');
                             expiredModal.classList.add('flex');
                         }
+                        if (e) e.preventDefault();
                         return;
                     }
                 }
 
-
-
-                // UI Feedback
+                // UI Feedback ONLY - don't prevent submission
                 if (btn) {
                     btn.disabled = true;
                     btn.innerHTML =
                         '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> {{ __('mint.payment.processing') }}';
                 }
 
-                // Simple form submission - allows server redirect to result page
-                console.log('🚀 Submitting form...');
-                form.submit();
+                // Let browser submit form naturally
+                // This allows Laravel's redirect()->route() to work
+                console.log('✅ Allowing natural form submission for redirect');
+                return true; // Allow form to submit
             } catch (err) {
                 console.error('Critical Error in Submit Handler:', err);
                 alert('Errore durante l\'invio. Riprovare.');
                 if (btn) btn.disabled = false;
+                if (e) e.preventDefault();
+                return false;
             }
         };
 
