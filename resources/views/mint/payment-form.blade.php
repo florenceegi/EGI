@@ -371,121 +371,93 @@
                         <label class="mb-4 block text-lg font-medium text-gray-200">
                             {{ __('mint.payment.payment_method_label') }}
                         </label>
-                        <div class="space-y-4">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                             @php
                                 $stripeMerchantAvailable = $stripeMerchantAvailable ?? false;
                                 $stripeMerchantError =
                                     $stripeMerchantError ?? __('payment.errors.merchant_account_incomplete');
                             @endphp
+
+                            {{-- Stripe Option --}}
                             <label
-                                class="{{ $stripeMerchantAvailable ? 'cursor-pointer border-white/20 hover:bg-white/5 bg-white/5' : 'cursor-not-allowed border-red-500/30 bg-red-900/10 opacity-60' }} flex items-center rounded-xl border p-4 transition-all duration-300">
+                                class="{{ $stripeMerchantAvailable ? 'cursor-pointer border-white/10 hover:border-blue-500 hover:bg-blue-500/10' : 'cursor-not-allowed opacity-50' }} group relative flex flex-col items-center justify-center rounded-xl border bg-slate-800/50 p-4 transition-all">
                                 <input type="radio" name="payment_method" value="stripe"
                                     {{ $selectedPaymentMethod === 'stripe' && $stripeMerchantAvailable ? 'checked' : '' }}
                                     {{ !$stripeMerchantAvailable ? 'disabled' : '' }}
-                                    class="{{ !$stripeMerchantAvailable ? 'cursor-not-allowed opacity-50' : '' }} h-5 w-5 border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900">
-                                <div class="ml-4 flex-1">
-                                    <span
-                                        class="{{ $stripeMerchantAvailable ? 'text-white' : 'text-red-400' }} text-base font-medium">
-                                        💳 {{ __('mint.payment.credit_card') }}
-                                    </span>
-                                    @if (!$stripeMerchantAvailable)
-                                        <p class="mt-1 text-xs text-red-500">
-                                            ⚠️ {{ $stripeMerchantError }}
-                                        </p>
-                                    @endif
-                                </div>
+                                    class="absolute right-3 top-3 h-4 w-4 border-slate-500 bg-slate-700 text-blue-500 focus:ring-blue-500">
+                                <span class="text-2xl">💳</span>
+                                <span class="mt-2 text-sm font-semibold text-white">Carta</span>
                             </label>
+
+                            {{-- PayPal Option --}}
                             @php
                                 $paypalAvailable = $paypalAvailable ?? false;
-                                $paypalError = $paypalError ?? __('payment.errors.paypal_not_implemented');
                             @endphp
                             <label
-                                class="{{ $paypalAvailable ? 'cursor-pointer border-gray-300 hover:bg-gray-50' : 'cursor-not-allowed border-red-300 bg-red-50 opacity-60' }} flex items-center rounded-lg border p-3 transition-colors">
+                                class="{{ $paypalAvailable ? 'cursor-pointer border-white/10 hover:border-blue-400 hover:bg-blue-400/10' : 'cursor-not-allowed opacity-50' }} group relative flex flex-col items-center justify-center rounded-xl border bg-slate-800/50 p-4 transition-all">
                                 <input type="radio" name="payment_method" value="paypal"
                                     {{ $selectedPaymentMethod === 'paypal' && $paypalAvailable ? 'checked' : '' }}
                                     {{ !$paypalAvailable ? 'disabled' : '' }}
-                                    class="{{ !$paypalAvailable ? 'cursor-not-allowed opacity-50' : '' }} h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <div class="ml-3 flex-1">
-                                    <span
-                                        class="{{ $paypalAvailable ? 'text-gray-900' : 'text-red-700' }} text-sm font-medium">
-                                        💙 {{ __('mint.payment.paypal') }}
-                                    </span>
-                                    @if (!$paypalAvailable)
-                                        <p class="mt-1 text-xs text-red-600">
-                                            ⚠️ {{ $paypalError }}
-                                        </p>
-                                    @endif
-                                </div>
+                                    class="absolute right-3 top-3 h-4 w-4 border-slate-500 bg-slate-700 text-blue-500 focus:ring-blue-500">
+                                <span class="text-2xl">💙</span>
+                                <span class="mt-2 text-sm font-semibold text-white">PayPal</span>
                             </label>
+
+                            {{-- Egili Option --}}
                             @if ($showEgiliOption)
                                 <label
-                                    class="{{ $canPayWithEgili ? 'cursor-pointer hover:bg-emerald-50' : 'cursor-not-allowed bg-emerald-50/60' }} flex items-start rounded-lg border border-emerald-400/60 p-3 transition-colors">
-                                    <div class="pt-1">
-                                        <input type="radio" name="payment_method" value="egili"
-                                            {{ $selectedPaymentMethod === 'egili' && $canPayWithEgili ? 'checked' : '' }}
-                                            {{ $canPayWithEgili ? '' : 'disabled' }}
-                                            class="h-4 w-4 border-emerald-400 text-emerald-600 focus:ring-emerald-600">
-                                    </div>
-                                    <div class="ml-3 space-y-1 text-sm">
-                                        <p class="font-semibold text-emerald-900">
-                                            🪙 {{ __('mint.payment.payment_method_egili') }}
-                                        </p>
-                                        <p class="text-xs text-emerald-700">
-                                            {{ __('mint.payment.egili_balance_label', ['balance' => number_format($egiliBalance)]) }}
-                                        </p>
-                                        <p class="text-xs text-emerald-700">
-                                            {{ __('mint.payment.egili_required_label', ['required' => number_format($requiredEgili)]) }}
-                                        </p>
-                                        @unless ($canPayWithEgili)
-                                            <p class="text-xs font-semibold text-red-600">
-                                                {{ __('mint.payment.egili_insufficient') }}
-                                            </p>
-                                        @endunless
-                                    </div>
+                                    class="{{ $canPayWithEgili ? 'cursor-pointer border-emerald-500/30 hover:bg-emerald-500/10' : 'cursor-not-allowed opacity-50' }} group relative flex flex-col items-center justify-center rounded-xl border bg-slate-800/50 p-4 transition-all">
+                                    <input type="radio" name="payment_method" value="egili"
+                                        {{ $selectedPaymentMethod === 'egili' && $canPayWithEgili ? 'checked' : '' }}
+                                        {{ $canPayWithEgili ? '' : 'disabled' }}
+                                        class="absolute right-3 top-3 h-4 w-4 border-emerald-500 bg-emerald-900/50 text-emerald-500 focus:ring-emerald-500">
+                                    <span class="text-2xl">🪙</span>
+                                    <span class="mt-2 text-sm font-semibold text-emerald-400">Egili</span>
+                                    <span class="text-[10px] text-emerald-600">Saldo:
+                                        {{ number_format($egiliBalance) }}</span>
                                 </label>
                             @endif
                         </div>
                     </div>
 
-                    {{-- Wallet Destinazione (Opzionale) --}}
-                    <div class="mb-6">
-                        <div class="mb-3 flex items-center">
-                            <input type="checkbox" id="has_wallet_toggle"
-                                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            <label for="has_wallet_toggle" class="ml-2 text-sm font-medium text-gray-700">
-                                {{ __('mint.buyer_info.has_wallet') }}
-                            </label>
+                    {{-- Inputs Group (Wallet + CoCreator) --}}
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        {{-- Wallet Destinazione --}}
+                        <div class="mb-6">
+                            <div class="mb-3 flex items-center">
+                                <input type="checkbox" id="has_wallet_toggle"
+                                    class="h-4 w-4 rounded border-slate-600 bg-slate-700 text-blue-600 focus:ring-blue-500 focus:ring-offset-slate-900">
+                                <label for="has_wallet_toggle" class="ml-2 text-sm font-medium text-gray-300">
+                                    {{ __('mint.buyer_info.has_wallet') }}
+                                </label>
+                            </div>
+
+                            <div id="wallet_input_container" class="hidden">
+                                <label class="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                                    {{ __('mint.buyer_info.wallet_label') }}
+                                </label>
+                                <input type="text" name="buyer_wallet" id="buyer_wallet"
+                                    placeholder="{{ __('mint.buyer_info.wallet_placeholder') }}"
+                                    class="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 font-mono text-sm text-white placeholder-slate-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                <p class="mt-1 text-xs text-slate-500">
+                                    {{ __('mint.buyer_info.wallet_help') }}
+                                </p>
+                            </div>
                         </div>
 
-                        <div id="wallet_input_container" class="hidden">
-                            <label class="mb-2 block text-sm font-medium text-gray-700">
-                                {{ __('mint.buyer_info.wallet_label') }}
+                        {{-- Nickname Co-Creator --}}
+                        <div class="mb-6">
+                            <label for="co_creator_display_name"
+                                class="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                                {{ __('mint.payment.co_creator_name_label') }}
+                                <span class="text-[10px] text-slate-600">({{ __('mint.payment.optional') }})</span>
                             </label>
-                            <input type="text" name="buyer_wallet" id="buyer_wallet"
-                                placeholder="{{ __('mint.buyer_info.wallet_placeholder') }}"
-                                class="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <p class="mt-1 text-xs text-gray-500">
-                                {{ __('mint.buyer_info.wallet_help') }}
-                            </p>
-                        </div>
-                    </div>
-
-                    {{-- Nickname Co-Creator (pre-filled) - Contrasto migliorato --}}
-                    <div class="mb-6">
-                        <label for="co_creator_display_name" class="mb-2 block text-sm font-medium text-gray-300">
-                            {{ __('mint.payment.co_creator_name_label') }}
-                            <span class="text-xs text-gray-500">({{ __('mint.payment.optional') }})</span>
-                        </label>
-                        <input type="text" name="co_creator_display_name" id="co_creator_display_name"
-                            value="{{ Auth::user()->name }}" placeholder="{{ Auth::user()->name }}"
-                            pattern="^[a-zA-Z0-9\s.''\-]+$" maxlength="100"
-                            class="w-full rounded-xl border border-gray-600 bg-gray-800 px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <p class="mt-1 text-xs text-gray-500">
-                            {{ __('mint.payment.co_creator_name_help') }}
-                        </p>
-                        <div class="mt-2 border-l-4 border-yellow-500 bg-yellow-50 p-2">
-                            <p class="text-xs text-yellow-800">
-                                ⚠️ {{ __('mint.payment.co_creator_name_warning') }}
+                            <input type="text" name="co_creator_display_name" id="co_creator_display_name"
+                                value="{{ Auth::user()->name }}" placeholder="{{ Auth::user()->name }}"
+                                pattern="^[a-zA-Z0-9\s.''\-]+$" maxlength="100"
+                                class="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 text-white placeholder-slate-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <p class="mt-1 text-xs text-slate-500">
+                                {{ __('mint.payment.co_creator_name_help') }}
                             </p>
                         </div>
                     </div>
@@ -527,7 +499,60 @@
 
                 </form>
 
+            </div> {{-- End Center Panel --}}
+
+            {{-- PANEL 3: SUMMARY STICKY (Right) --}}
+            {{-- Mobile: Bottom (Sticky) | Tablet: Left Col | Desktop: Right Col --}}
+            <div class="hidden xl:col-span-3 xl:block">
+                <div
+                    class="sticky top-24 rounded-2xl border border-white/10 bg-[#1e293b]/50 p-6 shadow-xl backdrop-blur-md">
+                    <h3 class="mb-6 text-lg font-bold text-white">Riepilogo Ordine</h3>
+
+                    <div class="space-y-4 border-b border-white/10 pb-6">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Prezzo EGI</span>
+                            <span class="text-white">€{{ number_format($paymentAmountEur, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Service Fee</span>
+                            <span class="text-emerald-400">Incluse</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <div class="mb-2 flex items-end justify-between">
+                            <span class="text-sm text-slate-400">Totale</span>
+                            <span
+                                class="text-4xl font-bold text-white">€{{ number_format($paymentAmountEur, 2) }}</span>
+                        </div>
+                        <p class="mb-6 text-right text-xs text-slate-500">IVA inclusa se applicabile</p>
+
+                        {{-- Submit Button (Moved Here for Desktop) --}}
+                        {{-- Note: We need to trigger the form from outside. Using window.submitMintForm() works perfect. --}}
+                        <button type="button" onclick="window.submitMintForm(event)"
+                            class="w-full transform rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 font-bold text-white shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-emerald-500/40 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900">
+                            {{ __('mint.payment.submit_button') }}
+                        </button>
+
+                        <div class="mt-4 flex justify-center gap-2 text-xs text-slate-600">
+                            <span>🔒 Pagamento Sicuro SSL</span>
+                            <span>•</span>
+                            <span>🇪🇺 MiCA Compliant</span>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+        </div> {{-- End Main Grid --}}
+
+        {{-- MOBILE/TABLET STICKY BOTTOM BAR (Since Submit is in Right Panel which is hidden on mobile/tablet) --}}
+        {{-- We need a visible submit button for Mobile/Tablet inside the form or sticky --}}
+        {{-- Let's put it inside the form for Mobile/Tablet, hidden on XL --}}
+        <div class="mt-8 xl:hidden">
+            <button type="button" onclick="window.submitMintForm(event)"
+                class="w-full transform rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 font-bold text-white shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900">
+                Paga €{{ number_format($paymentAmountEur, 2) }}
+            </button>
         </div>
 
     </div>
