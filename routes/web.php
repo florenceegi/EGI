@@ -57,13 +57,7 @@ Route::post('/stripe/webhook', [PspWebhookController::class, 'handleStripeWebhoo
 use App\Http\Controllers\Web\BiographyWebController;
 
 // SECURITY: Debug routes available only when APP_DEBUG is true
-Route::get('/debug-logs', function () {
-    if (!Auth::check()) abort(403);
-    $path = storage_path('logs/laravel.log');
-    if (!file_exists($path)) return "Log missing";
-    $lines = array_slice(file($path), -200);
-    return response(implode("", $lines))->header('Content-Type', 'text/plain');
-})->middleware('auth');
+// Route::get('/debug-logs', [App\Http\Controllers\DebugLogController::class, 'show'])->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------

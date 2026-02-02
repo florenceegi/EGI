@@ -214,36 +214,12 @@ class MintDirectRequest extends FormRequest {
         }
 
         // DEBUG DIAGNOSIS
-        \Illuminate\Support\Facades\Log::emergency("AUTHORIZATION FAILED in MintDirectRequest", [
-            'reason' => $reason,
-            'user_id' => $user ? $user->id : 'null',
-            'egi_id' => $egi ? $egi->id : 'null',
-            'permission' => $user ? $user->can('allow-blockchain-operations') : 'unknown'
-        ]);
+        // dd("AUTHORIZATION FAILED: $reason", $user ? $user->id : 'No User', $egi ? $egi->id : 'No EGI', $user->can('allow-blockchain-operations'));
 
         throw new \Illuminate\Auth\Access\AuthorizationException(
             $this->getAuthorizationMessage($reason)
         );
     }
-
-    /**
-     * Handle a failed validation attempt.
-     *
-     * @param \Illuminate\Contracts\Validation\Validator $validator
-     * @return void
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
-    {
-        \Illuminate\Support\Facades\Log::emergency("VALIDATION FAILED in MintDirectRequest", [
-            'errors' => $validator->errors()->toArray(),
-            'input' => $this->all()
-        ]);
-
-        parent::failedValidation($validator);
-    }
-
 
     /**
      * Get human-readable authorization error message.

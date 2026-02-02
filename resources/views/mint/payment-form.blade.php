@@ -603,6 +603,29 @@
                 const element = document.querySelector(selector);
                 if (element) {
                     clearInterval(interval);
+                    callback(element);
+                } else {
+                    attempts++;
+                    if (attempts >= maxAttempts) clearInterval(interval);
+                }
+            }, 250);
+        }
+
+        // Auto-select first payment method if none selected
+        document.addEventListener('DOMContentLoaded', function() {
+            const checked = document.querySelector('input[name="payment_method"]:checked');
+            if (!checked) {
+                const first = document.querySelector('input[name="payment_method"]:not(:disabled)');
+                if (first) first.checked = true;
+            }
+        });
+
+        window.submitMintForm = function(e) {
+            let attempts = 0;
+            const interval = setInterval(() => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    clearInterval(interval);
                     console.log(`✅ Element found: ${selector}`);
                     callback(element);
                 } else {
@@ -648,6 +671,29 @@
 
                 // UI Feedback
                 if (btn) {
+                    // validate payment method
+                    const paymentMethod = form.querySelector('input[name="payment_method"]:checked');
+                    if (!paymentMethod) {
+                        // Tenta di selezionare il primo disponibile
+                        const firstAvailable = form.querySelector('input[name="payment_method"]:not(:disabled)');
+                        if (firstAvailable) {
+                            firstAvailable.checked = true;
+                            // Procedi pure...
+                        } else {
+                            if (window.Swal) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Attenzione',
+                                    text: 'Seleziona un metodo di pagamento per procedere.',
+                                    confirmButtonColor: '#3b82f6'
+                                });
+                            } else {
+                                alert('Seleziona un metodo di pagamento per procedere.');
+                            }
+                            return;
+                        }
+                    }
+
                     btn.disabled = true;
                     btn.innerHTML =
                         '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Elaborazione...';

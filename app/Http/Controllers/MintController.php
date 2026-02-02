@@ -1539,11 +1539,7 @@ class MintController extends Controller {
         try {
             // DEBUG: REMOVE AFTER DIAGNOSIS
             // DEBUG: REMOVE AFTER DIAGNOSIS
-            \Illuminate\Support\Facades\Log::emergency('DEBUG HIT: processDirectMint ENTRY', [
-                'request' => $request->all(),
-                'user_id' => Auth::user()->id,
-                'egi_id' => $id
-            ]);
+            // dd('DEBUG HIT: processDirectMint', $request->all(), Auth::user()->id, $id);
 
             $validated = $request->validated();
 
