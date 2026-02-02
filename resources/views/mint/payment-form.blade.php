@@ -5,19 +5,21 @@
     ➡️ Submit: POST /mint/process → Redirect a mint.blade.php
 --}}
 <x-platform-layout :title="__('mint.page_title', ['title' => $egi->title])">
-    <div class="container mx-auto max-w-4xl px-4 py-8">
+    <div class="container mx-auto max-w-[95%] px-4 py-8 xl:max-w-[90%]">
 
-        {{-- Header --}}
-        <div class="mb-8 rounded-xl bg-gradient-to-br from-[#1B365D] to-[#2D5016] p-6 text-center shadow-2xl">
-            <h1 class="mb-2 text-3xl font-bold text-white drop-shadow-lg">
+        {{-- Header Ultra-Design --}}
+        <div
+            class="relative mb-12 overflow-hidden rounded-2xl bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] p-8 text-center shadow-2xl ring-1 ring-white/10">
+            <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+            <h1 class="relative mb-3 font-serif text-4xl font-bold tracking-tight text-white drop-shadow-lg md:text-5xl">
                 {{ __('mint.header_title') }}
             </h1>
-            <p class="text-lg font-semibold text-[#D4A574]">
+            <p class="relative text-xl font-light text-[#D4A574]">
                 {{ __('mint.header_description') }}
             </p>
         </div>
 
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
 
             {{-- COLONNA 1: EGI Preview --}}
             <div class="space-y-6">
@@ -190,7 +192,8 @@
                 {{-- Form Pagamento --}}
                 <form id="mint-payment-form"
                     action="{{ $reservation ? route('mint.process') : route('egi.mint-direct.process', $egi->id) }}"
-                    method="POST" class="rounded-lg bg-white p-6 shadow-lg">
+                    method="POST"
+                    class="rounded-2xl border border-white/10 bg-[#0f172a]/90 p-8 shadow-2xl backdrop-blur-xl">
                     @csrf
 
                     @php
@@ -215,10 +218,12 @@
                     {{-- SHIPPING ADDRESS SECTION (New) --}}
                     {{-- FORCE RENDER FOR DEBUGGING --}}
                     {{-- @if ($shippingRequired ?? false) --}}
-                    <div class="mb-8 rounded-xl border border-gray-700 bg-gray-800 p-5">
-                        <div class="mb-4 flex items-center border-b border-gray-700 pb-2">
-                            <span class="mr-2 rounded-lg bg-indigo-900 p-2 text-xl">🚚</span>
-                            <h3 class="text-lg font-bold text-gray-100">
+                    {{-- SHIPPING ADDRESS SECTION (New) --}}
+                    <div class="mb-8 rounded-2xl border border-white/10 bg-[#1e293b]/50 p-6 backdrop-blur-md">
+                        <div class="mb-6 flex items-center border-b border-white/10 pb-4">
+                            <span
+                                class="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/20 text-2xl">🚚</span>
+                            <h3 class="text-xl font-bold text-gray-100">
                                 Dati di Spedizione
                             </h3>
                         </div>
@@ -230,42 +235,46 @@
                                 </p>
                                 @foreach ($shippingAddresses as $address)
                                     <label
-                                        class="flex cursor-pointer items-start rounded-lg border border-gray-600 bg-gray-700 p-3 shadow-sm transition-all hover:border-indigo-400 hover:shadow-md">
-                                        <div class="flex h-5 items-center">
+                                        class="group flex cursor-pointer items-start rounded-xl border border-white/10 bg-gray-800/80 p-4 shadow-lg transition-all duration-300 hover:border-indigo-500/50 hover:bg-gray-800 hover:shadow-indigo-500/10">
+                                        <div class="mt-1 flex h-5 items-center">
                                             <input type="radio" name="shipping_address_id"
                                                 value="{{ $address->id }}" {{ $loop->first ? 'checked' : '' }}
-                                                class="h-4 w-4 border-gray-500 bg-gray-600 text-indigo-500 focus:ring-indigo-400">
+                                                class="h-5 w-5 border-gray-500 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-900">
                                         </div>
-                                        <div class="ml-3 text-sm">
-                                            <div class="font-bold text-gray-100">
-                                                {{ $address->full_name }}
+                                        <div class="ml-4 flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <span
+                                                    class="font-bold text-white group-hover:text-indigo-300">{{ $address->full_name }}</span>
                                                 @if ($address->is_default)
                                                     <span
-                                                        class="ml-2 inline-flex items-center rounded-full bg-indigo-900 px-2.5 py-0.5 text-xs font-medium text-indigo-200">
+                                                        class="ml-2 inline-flex items-center rounded-full bg-indigo-500/20 px-2.5 py-0.5 text-xs font-medium text-indigo-300 ring-1 ring-inset ring-indigo-500/30">
                                                         Default
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="text-gray-300">{{ $address->address_line_1 }}</div>
-                                            <div class="text-gray-300">
+                                            <div class="mt-1 text-sm text-gray-300">{{ $address->address_line_1 }}
+                                            </div>
+                                            <div class="text-sm text-gray-400">
                                                 {{ $address->city }}, {{ $address->postal_code }}
                                                 ({{ $address->country }})
                                             </div>
                                             @if ($address->phone)
-                                                <div class="mt-1 text-xs text-gray-400">📞 {{ $address->phone }}
+                                                <div class="mt-2 flex items-center text-xs text-gray-500">
+                                                    <span class="mr-1 opacity-70">📞</span> {{ $address->phone }}
                                                 </div>
                                             @endif
                                         </div>
                                     </label>
                                 @endforeach
-                                <div class="mt-4 border-t border-gray-700 pt-4">
+                                <div class="mt-4 border-t border-white/10 pt-4">
                                     <button type="button" data-action="open-shipping-modal"
                                         onclick="document.getElementById('shipping-address-modal').classList.remove('hidden')"
                                         data-url="{{ route('user.domains.personal-data.shipping-address.store') }}"
                                         data-method="POST"
-                                        class="inline-flex items-center text-sm font-semibold text-indigo-400 hover:text-indigo-300">
-                                        ➕
-                                        ➕ Aggiungi un altro indirizzo
+                                        class="group inline-flex items-center text-sm font-semibold text-indigo-400 transition-colors hover:text-indigo-300">
+                                        <span
+                                            class="mr-2 flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/10 transition-colors group-hover:bg-indigo-500/20">➕</span>
+                                        Aggiungi un altro indirizzo
                                     </button>
                                 </div>
                             </div>
@@ -358,29 +367,29 @@
                     <x-personal-data.shipping-address-modal :countries="$availableCountries ?? []" />
 
                     {{-- Payment Method --}}
-                    <div class="mb-6">
-                        <label class="mb-3 block text-sm font-medium text-gray-700">
+                    <div class="mb-8">
+                        <label class="mb-4 block text-lg font-medium text-gray-200">
                             {{ __('mint.payment.payment_method_label') }}
                         </label>
-                        <div class="space-y-3">
+                        <div class="space-y-4">
                             @php
                                 $stripeMerchantAvailable = $stripeMerchantAvailable ?? false;
                                 $stripeMerchantError =
                                     $stripeMerchantError ?? __('payment.errors.merchant_account_incomplete');
                             @endphp
                             <label
-                                class="{{ $stripeMerchantAvailable ? 'cursor-pointer border-gray-300 hover:bg-gray-50' : 'cursor-not-allowed border-red-300 bg-red-50 opacity-60' }} flex items-center rounded-lg border p-3 transition-colors">
+                                class="{{ $stripeMerchantAvailable ? 'cursor-pointer border-white/20 hover:bg-white/5 bg-white/5' : 'cursor-not-allowed border-red-500/30 bg-red-900/10 opacity-60' }} flex items-center rounded-xl border p-4 transition-all duration-300">
                                 <input type="radio" name="payment_method" value="stripe"
                                     {{ $selectedPaymentMethod === 'stripe' && $stripeMerchantAvailable ? 'checked' : '' }}
                                     {{ !$stripeMerchantAvailable ? 'disabled' : '' }}
-                                    class="{{ !$stripeMerchantAvailable ? 'cursor-not-allowed opacity-50' : '' }} h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <div class="ml-3 flex-1">
+                                    class="{{ !$stripeMerchantAvailable ? 'cursor-not-allowed opacity-50' : '' }} h-5 w-5 border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900">
+                                <div class="ml-4 flex-1">
                                     <span
-                                        class="{{ $stripeMerchantAvailable ? 'text-gray-900' : 'text-red-700' }} text-sm font-medium">
+                                        class="{{ $stripeMerchantAvailable ? 'text-white' : 'text-red-400' }} text-base font-medium">
                                         💳 {{ __('mint.payment.credit_card') }}
                                     </span>
                                     @if (!$stripeMerchantAvailable)
-                                        <p class="mt-1 text-xs text-red-600">
+                                        <p class="mt-1 text-xs text-red-500">
                                             ⚠️ {{ $stripeMerchantError }}
                                         </p>
                                     @endif
@@ -463,14 +472,14 @@
 
                     {{-- Nickname Co-Creator (pre-filled) - Contrasto migliorato --}}
                     <div class="mb-6">
-                        <label for="co_creator_display_name" class="mb-2 block text-sm font-medium text-gray-700">
+                        <label for="co_creator_display_name" class="mb-2 block text-sm font-medium text-gray-300">
                             {{ __('mint.payment.co_creator_name_label') }}
                             <span class="text-xs text-gray-500">({{ __('mint.payment.optional') }})</span>
                         </label>
                         <input type="text" name="co_creator_display_name" id="co_creator_display_name"
                             value="{{ Auth::user()->name }}" placeholder="{{ Auth::user()->name }}"
                             pattern="^[a-zA-Z0-9\s.''\-]+$" maxlength="100"
-                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-600 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-xl border border-gray-600 bg-gray-800 px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <p class="mt-1 text-xs text-gray-500">
                             {{ __('mint.payment.co_creator_name_help') }}
                         </p>
@@ -482,16 +491,17 @@
                     </div>
 
                     {{-- Total - Contrasto migliorato --}}
-                    <div class="mb-6 border-t pt-4">
+                    <div class="mb-8 border-t border-gray-700 pt-6">
                         <div class="flex items-center justify-between text-lg font-semibold">
-                            <span class="text-gray-900">{{ __('mint.payment.total_label') }}</span>
-                            <span class="text-2xl font-bold text-green-700">
+                            <span class="text-gray-300">{{ __('mint.payment.total_label') }}</span>
+                            <span class="text-3xl font-bold text-emerald-400 drop-shadow-md">
                                 €{{ number_format($paymentAmountEur, 2) }}
                             </span>
                         </div>
                         @if ($showEgiliOption)
-                            <div class="mt-3 rounded-lg bg-emerald-50 p-3 text-xs text-emerald-800">
-                                <p class="font-semibold">
+                            <div
+                                class="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-900/20 p-4 text-xs text-emerald-300">
+                                <p class="font-semibold text-emerald-200">
                                     {{ __('mint.payment.egili_summary_title') }}
                                 </p>
                                 <p>
@@ -501,7 +511,7 @@
                                     {{ __('mint.payment.egili_balance_label', ['balance' => number_format($egiliBalance)]) }}
                                 </p>
                                 @unless ($canPayWithEgili)
-                                    <p class="font-semibold text-red-600">
+                                    <p class="mt-1 font-bold text-red-400">
                                         {{ __('mint.payment.egili_insufficient') }}
                                     </p>
                                 @endunless
@@ -511,7 +521,7 @@
 
                     {{-- Submit Button --}}
                     <button type="button" id="submit-mint-btn" onclick="window.submitMintForm(event)"
-                        class="w-full rounded-lg bg-blue-600 px-6 py-3 font-bold text-white transition-all hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        class="w-full transform rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 font-bold text-white shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900">
                         {{ __('mint.payment.submit_button') }}
                     </button>
 
@@ -587,64 +597,65 @@
         }
 
         // Form submission logic
-            // DIRECT GLOBAL HANDLER - Nuclear Option for reliability
-            window.submitMintForm = function(e) {
-                console.log('🔘 Submit Button Clicked (Direct Handler)');
-                if (e) e.preventDefault();
+        // DIRECT GLOBAL HANDLER - Nuclear Option for reliability
+        window.submitMintForm = function(e) {
+            console.log('🔘 Submit Button Clicked (Direct Handler)');
+            if (e) e.preventDefault();
 
-                const form = document.getElementById('mint-payment-form');
-                const btn = document.getElementById('submit-mint-btn');
+            const form = document.getElementById('mint-payment-form');
+            const btn = document.getElementById('submit-mint-btn');
 
-                if (!form) {
-                    console.error('❌ Form mint-payment-form not found');
-                    alert('Errore tecnico: Modulo non trovato. Ricarica la pagina.');
-                    return;
-                }
+            if (!form) {
+                console.error('❌ Form mint-payment-form not found');
+                alert('Errore tecnico: Modulo non trovato. Ricarica la pagina.');
+                return;
+            }
 
-                try {
-                     // Check Gold Bar Timer
-                    const timerElement = document.getElementById('gold-bar-timer');
-                    if (timerElement) {
-                        const validUntil = new Date(timerElement.dataset.validUntil);
-                        if (new Date() > validUntil) {
-                            console.warn('Timer expired during submit');
-                            const expiredModal = document.getElementById('gold-bar-expired-modal');
-                            if(expiredModal) {
-                                expiredModal.classList.remove('hidden');
-                                expiredModal.classList.add('flex');
-                            }
-                            return;
+            try {
+                // Check Gold Bar Timer
+                const timerElement = document.getElementById('gold-bar-timer');
+                if (timerElement) {
+                    const validUntil = new Date(timerElement.dataset.validUntil);
+                    if (new Date() > validUntil) {
+                        console.warn('Timer expired during submit');
+                        const expiredModal = document.getElementById('gold-bar-expired-modal');
+                        if (expiredModal) {
+                            expiredModal.classList.remove('hidden');
+                            expiredModal.classList.add('flex');
                         }
+                        return;
                     }
-
-                    // UI Feedback
-                    if (btn) {
-                        btn.disabled = true;
-                        btn.innerHTML = '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Elaborazione...';
-                    }
-
-                    // SweetAlert Logic
-                    if (window.Swal) {
-                         Swal.fire({
-                            title: '⏳ Elaborazione Mint',
-                            html: '<div class="space-y-4"><p class="text-lg">Caricamento...</p><p class="text-sm text-gray-500">Non chiudere la finestra.</p></div>',
-                            allowOutsideClick: false,
-                            showConfirmButton: false,
-                            didOpen: () => {
-                                console.log('🚀 Submitting form via Swal...');
-                                form.submit();
-                            }
-                        });
-                    } else {
-                        console.log('🚀 Submitting form directly...');
-                        form.submit();
-                    }
-                } catch (err) {
-                    console.error('Critical Error in Submit Handler:', err);
-                    alert('Errore durante l\'invio. Riprovare.');
-                    if(btn) btn.disabled = false;
                 }
-            };
+
+                // UI Feedback
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML =
+                        '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Elaborazione...';
+                }
+
+                // SweetAlert Logic
+                if (window.Swal) {
+                    Swal.fire({
+                        title: '⏳ Elaborazione Mint',
+                        html: '<div class="space-y-4"><p class="text-lg">Caricamento...</p><p class="text-sm text-gray-500">Non chiudere la finestra.</p></div>',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            console.log('🚀 Submitting form via Swal...');
+                            form.submit();
+                        }
+                    });
+                } else {
+                    console.log('🚀 Submitting form directly...');
+                    form.submit();
+                }
+            } catch (err) {
+                console.error('Critical Error in Submit Handler:', err);
+                alert('Errore durante l\'invio. Riprovare.');
+                if (btn) btn.disabled = false;
+            }
+        };
 
         // Gold Bar Timer Logic
         ensureElement('#gold-bar-timer', (goldBarTimer) => {
