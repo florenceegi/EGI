@@ -373,6 +373,11 @@
                         <label class="mb-4 block text-lg font-medium text-gray-200">
                             {{ __('mint.payment.payment_method_label') }}
                         </label>
+
+                        {{-- HIDDEN INPUT CHE VIENE INVIATO AL SERVER --}}
+                        <input type="hidden" name="payment_method" id="selected_payment_method"
+                            value="{{ $selectedPaymentMethod }}">
+
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                             @php
                                 $stripeMerchantAvailable = $stripeMerchantAvailable ?? false;
@@ -381,65 +386,63 @@
                             @endphp
 
                             {{-- Stripe Option --}}
-                            <div class="relative">
-                                <input type="radio" name="payment_method" id="pm_stripe" value="stripe"
-                                    {{ $selectedPaymentMethod === 'stripe' && $stripeMerchantAvailable ? 'checked' : '' }}
-                                    {{ !$stripeMerchantAvailable ? 'disabled' : '' }} class="peer sr-only">
-                                <label for="pm_stripe"
-                                    class="{{ $stripeMerchantAvailable ? 'cursor-pointer hover:border-blue-500 hover:bg-blue-500/10 peer-checked:border-blue-500 peer-checked:bg-blue-500/20' : 'cursor-not-allowed opacity-50' }} flex flex-col items-center justify-center rounded-xl border border-white/10 bg-slate-800/50 p-4 transition-all hover:shadow-lg peer-checked:shadow-blue-500/20">
+                            <div class="js-payment-option {{ !$stripeMerchantAvailable ? 'opacity-50 pointer-events-none' : '' }} relative"
+                                data-method="stripe"
+                                data-enabled="{{ $stripeMerchantAvailable ? 'true' : 'false' }}">
+                                <div
+                                    class="payment-card {{ $selectedPaymentMethod === 'stripe' ? 'border-blue-500 bg-blue-500/20 shadow-blue-500/20' : '' }} flex cursor-pointer flex-col items-center justify-center rounded-xl border border-white/10 bg-slate-800/50 p-4 transition-all hover:border-blue-500 hover:bg-blue-500/10 hover:shadow-lg">
                                     <span class="text-3xl">💳</span>
                                     <span class="mt-2 text-sm font-semibold text-white">Carta</span>
                                     {{-- Checkmark Icon for Active State --}}
-                                    <div class="absolute right-3 top-3 hidden text-blue-500 peer-checked:block">
+                                    <div
+                                        class="checkmark {{ $selectedPaymentMethod === 'stripe' ? '' : 'hidden' }} absolute right-3 top-3 text-blue-500">
                                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                                             stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M5 13l4 4L19 7" />
                                         </svg>
                                     </div>
-                                </label>
+                                </div>
                             </div>
 
                             {{-- PayPal Option --}}
                             @php $paypalAvailable = $paypalAvailable ?? false; @endphp
-                            <div class="relative">
-                                <input type="radio" name="payment_method" id="pm_paypal" value="paypal"
-                                    {{ $selectedPaymentMethod === 'paypal' && $paypalAvailable ? 'checked' : '' }}
-                                    {{ !$paypalAvailable ? 'disabled' : '' }} class="peer sr-only">
-                                <label for="pm_paypal"
-                                    class="{{ $paypalAvailable ? 'cursor-pointer hover:border-blue-400 hover:bg-blue-400/10 peer-checked:border-blue-400 peer-checked:bg-blue-400/20' : 'cursor-not-allowed opacity-50' }} flex flex-col items-center justify-center rounded-xl border border-white/10 bg-slate-800/50 p-4 transition-all hover:shadow-lg peer-checked:shadow-blue-400/20">
+                            <div class="js-payment-option {{ !$paypalAvailable ? 'opacity-50 pointer-events-none' : '' }} relative"
+                                data-method="paypal" data-enabled="{{ $paypalAvailable ? 'true' : 'false' }}">
+                                <div
+                                    class="payment-card {{ $selectedPaymentMethod === 'paypal' ? 'border-blue-400 bg-blue-400/20 shadow-blue-400/20' : '' }} flex cursor-pointer flex-col items-center justify-center rounded-xl border border-white/10 bg-slate-800/50 p-4 transition-all hover:border-blue-400 hover:bg-blue-400/10 hover:shadow-lg">
                                     <span class="text-3xl">💙</span>
                                     <span class="mt-2 text-sm font-semibold text-white">PayPal</span>
-                                    <div class="absolute right-3 top-3 hidden text-blue-400 peer-checked:block">
+                                    <div
+                                        class="checkmark {{ $selectedPaymentMethod === 'paypal' ? '' : 'hidden' }} absolute right-3 top-3 text-blue-400">
                                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                                             stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M5 13l4 4L19 7" />
                                         </svg>
                                     </div>
-                                </label>
+                                </div>
                             </div>
 
                             {{-- Egili Option --}}
                             @if ($showEgiliOption)
-                                <div class="relative">
-                                    <input type="radio" name="payment_method" id="pm_egili" value="egili"
-                                        {{ $selectedPaymentMethod === 'egili' && $canPayWithEgili ? 'checked' : '' }}
-                                        {{ $canPayWithEgili ? '' : 'disabled' }} class="peer sr-only">
-                                    <label for="pm_egili"
-                                        class="{{ $canPayWithEgili ? 'cursor-pointer hover:bg-emerald-500/10 peer-checked:border-emerald-500 peer-checked:bg-emerald-900/20' : 'cursor-not-allowed opacity-50' }} flex flex-col items-center justify-center rounded-xl border border-emerald-500/30 bg-slate-800/50 p-4 transition-all hover:shadow-lg peer-checked:shadow-emerald-500/20">
+                                <div class="js-payment-option {{ !$canPayWithEgili ? 'opacity-50 pointer-events-none' : '' }} relative"
+                                    data-method="egili" data-enabled="{{ $canPayWithEgili ? 'true' : 'false' }}">
+                                    <div
+                                        class="payment-card {{ $selectedPaymentMethod === 'egili' ? 'border-emerald-500 bg-emerald-900/20 shadow-emerald-500/20' : '' }} flex cursor-pointer flex-col items-center justify-center rounded-xl border border-emerald-500/30 bg-slate-800/50 p-4 transition-all hover:bg-emerald-500/10 hover:shadow-lg">
                                         <span class="text-3xl">🪙</span>
                                         <span class="mt-2 text-sm font-semibold text-emerald-400">Egili</span>
                                         <span class="text-[10px] text-emerald-600">Saldo:
                                             {{ number_format($egiliBalance) }}</span>
-                                        <div class="absolute right-3 top-3 hidden text-emerald-500 peer-checked:block">
+                                        <div
+                                            class="checkmark {{ $selectedPaymentMethod === 'egili' ? '' : 'hidden' }} absolute right-3 top-3 text-emerald-500">
                                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                                                 stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M5 13l4 4L19 7" />
                                             </svg>
                                         </div>
-                                    </label>
+                                    </div>
                                 </div>
                             @endif
                         </div>
@@ -634,13 +637,56 @@
             }, 250);
         }
 
-        // Auto-select first payment method if none selected
+        // Payment method selection handler
         document.addEventListener('DOMContentLoaded', function() {
-            const checked = document.querySelector('input[name="payment_method"]:checked');
-            if (!checked) {
-                const first = document.querySelector('input[name="payment_method"]:not(:disabled)');
-                if (first) first.checked = true;
-            }
+            const paymentOptions = document.querySelectorAll('.js-payment-option');
+            const hiddenInput = document.getElementById('selected_payment_method');
+
+            paymentOptions.forEach(option => {
+                if (option.dataset.enabled === 'false') return; // Skip disabled
+
+                option.addEventListener('click', function() {
+                    const method = this.dataset.method;
+                    console.log('✅ Payment method selected:', method);
+
+                    // Update hidden input
+                    hiddenInput.value = method;
+
+                    // Visual feedback - remove all active states
+                    paymentOptions.forEach(opt => {
+                        const card = opt.querySelector('.payment-card');
+                        const checkmark = opt.querySelector('.checkmark');
+
+                        // Reset borders
+                        card.classList.remove('border-blue-500', 'bg-blue-500/20',
+                            'shadow-blue-500/20');
+                        card.classList.remove('border-blue-400', 'bg-blue-400/20',
+                            'shadow-blue-400/20');
+                        card.classList.remove('border-emerald-500', 'bg-emerald-900/20',
+                            'shadow-emerald-500/20');
+
+                        // Hide checkmark
+                        if (checkmark) checkmark.classList.add('hidden');
+                    });
+
+                    // Add active state to selected
+                    const selectedCard = this.querySelector('.payment-card');
+                    const selectedCheckmark = this.querySelector('.checkmark');
+
+                    if (method === 'stripe') {
+                        selectedCard.classList.add('border-blue-500', 'bg-blue-500/20',
+                            'shadow-blue-500/20');
+                    } else if (method === 'paypal') {
+                        selectedCard.classList.add('border-blue-400', 'bg-blue-400/20',
+                            'shadow-blue-400/20');
+                    } else if (method === 'egili') {
+                        selectedCard.classList.add('border-emerald-500', 'bg-emerald-900/20',
+                            'shadow-emerald-500/20');
+                    }
+
+                    if (selectedCheckmark) selectedCheckmark.classList.remove('hidden');
+                });
+            });
         });
 
         // Form submission logic
