@@ -76,8 +76,16 @@ class NotificationDetailsController extends Controller {
                 $viewKey = strtolower($viewKey); // Converte la stringa in minuscolo
             }
 
-            $config = $viewKey ? config('notification-views.' . $viewKey, []) : [];
-
+            if (str_contains($viewKey, '.')) {
+                // Handle dot notation (e.g. 'commerce.egi_sold')
+                $parts = explode('.', $viewKey);
+                $section = $parts[0];
+                $key = $parts[1];
+                $config = config("notification-views.{$section}.{$key}", []);
+            } else {
+                 $config = $viewKey ? config('notification-views.' . $viewKey, []) : [];
+            }
+            
             $view = $config['view'] ?? null;
 
             $this->logger->info('[NOTIFICATION_DETAILS] View configuration resolved', [

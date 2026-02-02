@@ -610,6 +610,17 @@ return [
             'notify_slack' => false,
             'msg_to' => 'div',
         ],
+        'NOTIFICATION_UNSUPPORTED_TYPE' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.notification_unsupported_type',
+            'user_message_key' => 'error-manager::errors.user.generic_error',
+            'http_status_code' => 400,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
         'INVALID_FILE_VALIDATION' => [ // Specific validation context
             'type' => 'warning',
             'blocking' => 'semi-blocking',
