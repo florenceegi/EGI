@@ -16,7 +16,8 @@
 | **P0-5** | UEM-First | Errori → `$errorManager->handle()`, mai solo ULM |
 | **P0-6** | Anti-Service-Method | `read_file` + `grep` prima di usare service |
 | **P0-7** | Anti-Enum-Constant | Verifica costanti enum esistono |
-| **P0-8** | i18n 6 Lingue | Traduzioni in TUTTE: `it`, `en`, `de`, `es`, `fr`, `pt` |
+| **P0-8** | Complete Flow Analysis | Map ENTIRE flow BEFORE any fix (15-35 min) |
+| **P0-9** | i18n 6 Lingue | Traduzioni in TUTTE: `it`, `en`, `de`, `es`, `fr`, `pt` |
 
 ### 🌍 Lingue Obbligatorie (P0-8)
 
@@ -41,6 +42,17 @@ Ogni traduzione DEVE essere in **tutte e 6** le lingue:
 3. Pattern simile esiste? → Non so = 🛑 CHIEDI esempio
 4. Sto ASSUMENDO? → SÌ = 🛑 DICHIARA e CHIEDI
 5. Limiti impliciti? → SÌ = 🛑 RENDI ESPLICITO
+```
+
+### 🔄 Prima di Ogni FIX/DEBUG (P0-8)
+
+```
+1. Flow MAPPATO? (user action → response) → NO = 🛑 MAP FIRST
+2. Types TRACCIATI? (ogni variabile/step) → NO = 🛑 TRACE FIRST
+3. ALL occurrences TROVATE? (grep/search) → NO = 🛑 FIND ALL
+4. Context VERIFICATO? (dependencies/patterns) → NO = 🛑 VERIFY
+
+TEMPO: 15-35 min | RISPARMIO: 2+ ore debugging
 ```
 
 ### 🔧 Processo Verifica Metodi

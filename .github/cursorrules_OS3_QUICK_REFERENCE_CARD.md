@@ -92,6 +92,18 @@ Info mancanti? → 🛑 STOP, NON inventare
 [ ] Sto usando il nome ESATTO della costante?
 ```
 
+### **P0-8: COMPLETE FLOW ANALYSIS - Pre-Fix Mandatory**
+```
+[ ] Ho mappato l'INTERO flusso (user action → response)?
+[ ] Ho tracciato i TIPI attraverso ogni step?
+[ ] Ho trovato TUTTE le occorrenze del pattern?
+[ ] Ho verificato CONTESTO e dependencies?
+
+SE ANCHE UNA È NO → 🛑 STOP
+NON SI FIXA senza analisi completa (15-35 min)
+Dettagli: docs/Oracode_Systems/OS3/06_Modulo_5_Complete_Flow_Analysis.md
+```
+
 ---
 
 ## **🎯 6 PILASTRI CARDINALI OS2.0**
