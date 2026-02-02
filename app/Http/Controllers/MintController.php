@@ -200,8 +200,22 @@ class MintController extends Controller {
                 $shippingAddresses = Auth::user()->shippingAddresses()->orderBy('is_default', 'desc')->get();
 
                 // AUTO-SYNC: If empty, try to create from Personal Data
+                $this->logger->info('[SHIPPING DEBUG] Checking auto-sync', [
+                    'user_id' => Auth::id(),
+                    'shipping_addresses_count' => $shippingAddresses->count(),
+                    'isEmpty' => $shippingAddresses->isEmpty()
+                ]);
+                
                 if ($shippingAddresses->isEmpty()) {
                     $personalData = UserPersonalData::where('user_id', Auth::id())->first();
+                    $this->logger->info('[SHIPPING DEBUG] PersonalData fetched', [
+                        'has_record' => $personalData !== null,
+                        'street' => $personalData?->street,
+                        'city' => $personalData?->city,
+                        'zip' => $personalData?->zip,
+                        'hasCompleteAddress' => $personalData?->hasCompleteAddress()
+                    ]);
+                    
                     if ($personalData && $personalData->hasCompleteAddress()) {
                         try {
                             $newAddress = UserShippingAddress::create([
@@ -217,8 +231,12 @@ class MintController extends Controller {
                                 'is_default' => true
                             ]);
                             $shippingAddresses->push($newAddress);
+                            $this->logger->info('[SHIPPING DEBUG] Address created successfully', ['address_id' => $newAddress->id]);
                         } catch (\Exception $e) {
-                            $this->logger->warning('Failed to auto-create shipping address', ['error' => $e->getMessage()]);
+                            $this->logger->error('[SHIPPING DEBUG] Failed to auto-create shipping address', [
+                                'error' => $e->getMessage(),
+                                'trace' => $e->getTraceAsString()
+                            ]);
                         }
                     }
                 }
