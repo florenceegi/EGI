@@ -148,7 +148,8 @@ Route::middleware('auth')->group(function () {
             'payment_method' => $request->input('payment_method'),
             'all_input' => $request->all()
         ]);
-        return app()->call([App\Http\Controllers\MintController::class, 'processDirectMint'], ['id' => $id, 'request' => $request]);
+        $controller = app(App\Http\Controllers\MintController::class);
+        return $controller->processDirectMint($id, app(App\Http\Requests\MintDirectRequest::class));
     })->name('egi.mint-direct.process');
 
     // Phase 3: Rebind route (secondary market - purchase from owner)
