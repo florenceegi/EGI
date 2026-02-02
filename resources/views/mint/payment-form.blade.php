@@ -194,7 +194,7 @@
                 {{-- Form Pagamento --}}
                 <form id="mint-payment-form"
                     action="{{ $reservation ? route('mint.process') : route('egi.mint-direct.process', $egi->id) }}"
-                    method="POST"
+                    method="POST" onsubmit="return window.submitMintForm(event)"
                     class="rounded-2xl border border-white/10 bg-[#0f172a]/90 p-8 shadow-2xl backdrop-blur-xl">
                     @csrf
 
@@ -522,7 +522,7 @@
                     </div>
 
                     {{-- Submit Button (Visible Mobile/Tablet, Hidden Desktop) --}}
-                    <button type="button" id="submit-mint-btn" onclick="window.submitMintForm(event)"
+                    <button type="submit" id="submit-mint-btn"
                         class="w-full transform rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 font-bold text-white shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 xl:hidden">
                         {{ __('mint.payment.submit_button') }}
                     </button>
@@ -558,8 +558,7 @@
                         <p class="mb-6 text-right text-xs text-slate-500">IVA inclusa se applicabile</p>
 
                         {{-- Submit Button (Moved Here for Desktop) --}}
-                        {{-- Note: We need to trigger the form from outside. Using window.submitMintForm() works perfect. --}}
-                        <button type="button" onclick="window.submitMintForm(event)"
+                        <button type="submit"
                             class="w-full transform rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 font-bold text-white shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-emerald-500/40 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900">
                             {{ __('mint.payment.submit_button') }}
                         </button>
@@ -756,9 +755,9 @@
 
                 // Let browser submit form naturally
                 // This allows Laravel's redirect()->route() to work
-                console.log('✅ Manual form submission triggered');
-                form.submit();
-                return true;
+                console.log('✅ Allowing natural form submission');
+                // form.submit(); // removed manual submit to allow natural flow
+                return true; // Allow form to submit
             } catch (err) {
                 console.error('Critical Error in Submit Handler:', err);
                 alert('Errore durante l\'invio. Riprovare.');
