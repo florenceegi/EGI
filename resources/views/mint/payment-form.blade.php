@@ -364,7 +364,6 @@
                             };
                         </script>
                     @endpush
-                    <x-personal-data.shipping-address-modal :countries="$availableCountries ?? []" />
 
                     {{-- Payment Method --}}
                     <div class="mb-8">
@@ -529,6 +528,9 @@
                 </form>
 
             </div> {{-- End Center Panel --}}
+
+            {{-- MODAL MOVED OUTSIDE FORM --}}
+            <x-personal-data.shipping-address-modal :countries="$availableCountries ?? []" />
 
             {{-- PANEL 3: SUMMARY STICKY (Right) --}}
             {{-- Mobile: Bottom (Sticky) | Tablet: Left Col | Desktop: Right Col --}}
