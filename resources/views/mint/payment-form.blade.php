@@ -230,7 +230,7 @@
                             </h3>
                         </div>
 
-                        @if ($shippingAddresses->count() > 0)
+                        @if (count($shippingAddresses) > 0)
                             <div class="space-y-3">
                                 <p class="mb-2 text-sm text-indigo-300">
                                     {{ __('user_personal_data.shipping_address.select_for_delivery') }}
