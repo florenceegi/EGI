@@ -206,4 +206,15 @@ return [
     'address_updated_success' => 'Endereço de entrega atualizado com sucesso',
     'address_deleted_success' => 'Endereço de entrega excluído',
     'address_default_success' => 'Endereço padrão definido',
+    // ===================================================================
+    // SHIPPING ADDRESS SECTION
+    // ===================================================================
+    'shipping_address' => [
+        'main' => 'Detalhes de Envio',
+        'select_for_delivery' => 'Selecione um endereço para entrega do bem físico:',
+        'add_another' => 'Adicionar outro endereço',
+        'no_addresses_warning' => 'Você ainda não salvou um endereço de envio.',
+        'add_first' => 'Adicionar Endereço',
+        'reload_after_add' => 'Após adicionar o endereço, recarregue esta página.',
+    ],
 ];

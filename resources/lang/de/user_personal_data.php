@@ -206,4 +206,15 @@ return [
     'address_updated_success' => 'Lieferadresse erfolgreich aktualisiert',
     'address_deleted_success' => 'Lieferadresse gelöscht',
     'address_default_success' => 'Standardadresse festgelegt',
+    // ===================================================================
+    // SHIPPING ADDRESS SECTION
+    // ===================================================================
+    'shipping_address' => [
+        'main' => 'Versanddetails',
+        'select_for_delivery' => 'Wählen Sie eine Adresse für die Lieferung der physischen Ware:',
+        'add_another' => 'Weitere Adresse hinzufügen',
+        'no_addresses_warning' => 'Sie haben noch keine Versandadresse gespeichert.',
+        'add_first' => 'Adresse hinzufügen',
+        'reload_after_add' => 'Nach dem Hinzufügen der Adresse laden Sie diese Seite neu.',
+    ],
 ];

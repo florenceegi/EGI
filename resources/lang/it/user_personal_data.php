@@ -249,4 +249,15 @@ return [
     'address_updated_success' => 'Indirizzo di spedizione aggiornato con successo',
     'address_deleted_success' => 'Indirizzo di spedizione eliminato',
     'address_default_success' => 'Indirizzo predefinito impostato',
+    // ===================================================================
+    // SHIPPING ADDRESS SECTION
+    // ===================================================================
+    'shipping_address' => [
+        'main' => 'Dati di Spedizione',
+        'select_for_delivery' => 'Seleziona un indirizzo per la consegna del bene fisico:',
+        'add_another' => 'Aggiungi un altro indirizzo',
+        'no_addresses_warning' => 'Non hai ancora salvato un indirizzo di spedizione.',
+        'add_first' => 'Aggiungi Indirizzo',
+        'reload_after_add' => 'Dopo aver aggiunto l\'indirizzo, ricarica questa pagina.',
+    ],
 ];

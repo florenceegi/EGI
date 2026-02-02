@@ -296,4 +296,15 @@ return [
     'address_updated_success' => 'Shipping address updated successfully',
     'address_deleted_success' => 'Shipping address deleted',
     'address_default_success' => 'Default address set',
+    // ===================================================================
+    // SHIPPING ADDRESS SECTION
+    // ===================================================================
+    'shipping_address' => [
+        'main' => 'Shipping Details',
+        'select_for_delivery' => 'Select an address for physical goods delivery:',
+        'add_another' => 'Add another address',
+        'no_addresses_warning' => 'You haven\'t saved a shipping address yet.',
+        'add_first' => 'Add Address',
+        'reload_after_add' => 'After adding the address, reload this page.',
+    ],
 ];
