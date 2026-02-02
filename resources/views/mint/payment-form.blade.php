@@ -381,43 +381,66 @@
                             @endphp
 
                             {{-- Stripe Option --}}
-                            <label
-                                class="{{ $stripeMerchantAvailable ? 'cursor-pointer border-white/10 hover:border-blue-500 hover:bg-blue-500/10' : 'cursor-not-allowed opacity-50' }} group relative flex flex-col items-center justify-center rounded-xl border bg-slate-800/50 p-4 transition-all">
-                                <input type="radio" name="payment_method" value="stripe"
+                            <div class="relative">
+                                <input type="radio" name="payment_method" id="pm_stripe" value="stripe"
                                     {{ $selectedPaymentMethod === 'stripe' && $stripeMerchantAvailable ? 'checked' : '' }}
-                                    {{ !$stripeMerchantAvailable ? 'disabled' : '' }}
-                                    class="absolute right-3 top-3 h-4 w-4 border-slate-500 bg-slate-700 text-blue-500 focus:ring-blue-500">
-                                <span class="text-2xl">💳</span>
-                                <span class="mt-2 text-sm font-semibold text-white">Carta</span>
-                            </label>
+                                    {{ !$stripeMerchantAvailable ? 'disabled' : '' }} class="peer hidden">
+                                <label for="pm_stripe"
+                                    class="{{ $stripeMerchantAvailable ? 'cursor-pointer hover:border-blue-500 hover:bg-blue-500/10 peer-checked:border-blue-500 peer-checked:bg-blue-500/20' : 'cursor-not-allowed opacity-50' }} flex flex-col items-center justify-center rounded-xl border border-white/10 bg-slate-800/50 p-4 transition-all hover:shadow-lg peer-checked:shadow-blue-500/20">
+                                    <span class="text-3xl">💳</span>
+                                    <span class="mt-2 text-sm font-semibold text-white">Carta</span>
+                                    {{-- Checkmark Icon for Active State --}}
+                                    <div class="absolute right-3 top-3 hidden text-blue-500 peer-checked:block">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                </label>
+                            </div>
 
                             {{-- PayPal Option --}}
-                            @php
-                                $paypalAvailable = $paypalAvailable ?? false;
-                            @endphp
-                            <label
-                                class="{{ $paypalAvailable ? 'cursor-pointer border-white/10 hover:border-blue-400 hover:bg-blue-400/10' : 'cursor-not-allowed opacity-50' }} group relative flex flex-col items-center justify-center rounded-xl border bg-slate-800/50 p-4 transition-all">
-                                <input type="radio" name="payment_method" value="paypal"
+                            @php $paypalAvailable = $paypalAvailable ?? false; @endphp
+                            <div class="relative">
+                                <input type="radio" name="payment_method" id="pm_paypal" value="paypal"
                                     {{ $selectedPaymentMethod === 'paypal' && $paypalAvailable ? 'checked' : '' }}
-                                    {{ !$paypalAvailable ? 'disabled' : '' }}
-                                    class="absolute right-3 top-3 h-4 w-4 border-slate-500 bg-slate-700 text-blue-500 focus:ring-blue-500">
-                                <span class="text-2xl">💙</span>
-                                <span class="mt-2 text-sm font-semibold text-white">PayPal</span>
-                            </label>
+                                    {{ !$paypalAvailable ? 'disabled' : '' }} class="peer hidden">
+                                <label for="pm_paypal"
+                                    class="{{ $paypalAvailable ? 'cursor-pointer hover:border-blue-400 hover:bg-blue-400/10 peer-checked:border-blue-400 peer-checked:bg-blue-400/20' : 'cursor-not-allowed opacity-50' }} flex flex-col items-center justify-center rounded-xl border border-white/10 bg-slate-800/50 p-4 transition-all hover:shadow-lg peer-checked:shadow-blue-400/20">
+                                    <span class="text-3xl">💙</span>
+                                    <span class="mt-2 text-sm font-semibold text-white">PayPal</span>
+                                    <div class="absolute right-3 top-3 hidden text-blue-400 peer-checked:block">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                </label>
+                            </div>
 
                             {{-- Egili Option --}}
                             @if ($showEgiliOption)
-                                <label
-                                    class="{{ $canPayWithEgili ? 'cursor-pointer border-emerald-500/30 hover:bg-emerald-500/10' : 'cursor-not-allowed opacity-50' }} group relative flex flex-col items-center justify-center rounded-xl border bg-slate-800/50 p-4 transition-all">
-                                    <input type="radio" name="payment_method" value="egili"
+                                <div class="relative">
+                                    <input type="radio" name="payment_method" id="pm_egili" value="egili"
                                         {{ $selectedPaymentMethod === 'egili' && $canPayWithEgili ? 'checked' : '' }}
-                                        {{ $canPayWithEgili ? '' : 'disabled' }}
-                                        class="absolute right-3 top-3 h-4 w-4 border-emerald-500 bg-emerald-900/50 text-emerald-500 focus:ring-emerald-500">
-                                    <span class="text-2xl">🪙</span>
-                                    <span class="mt-2 text-sm font-semibold text-emerald-400">Egili</span>
-                                    <span class="text-[10px] text-emerald-600">Saldo:
-                                        {{ number_format($egiliBalance) }}</span>
-                                </label>
+                                        {{ $canPayWithEgili ? '' : 'disabled' }} class="peer hidden">
+                                    <label for="pm_egili"
+                                        class="{{ $canPayWithEgili ? 'cursor-pointer hover:bg-emerald-500/10 peer-checked:border-emerald-500 peer-checked:bg-emerald-900/20' : 'cursor-not-allowed opacity-50' }} flex flex-col items-center justify-center rounded-xl border border-emerald-500/30 bg-slate-800/50 p-4 transition-all hover:shadow-lg peer-checked:shadow-emerald-500/20">
+                                        <span class="text-3xl">🪙</span>
+                                        <span class="mt-2 text-sm font-semibold text-emerald-400">Egili</span>
+                                        <span class="text-[10px] text-emerald-600">Saldo:
+                                            {{ number_format($egiliBalance) }}</span>
+                                        <div class="absolute right-3 top-3 hidden text-emerald-500 peer-checked:block">
+                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                    </label>
+                                </div>
                             @endif
                         </div>
                     </div>
