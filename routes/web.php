@@ -56,6 +56,9 @@ Route::post('/stripe/webhook', [PspWebhookController::class, 'handleStripeWebhoo
 
 use App\Http\Controllers\Web\BiographyWebController;
 
+// DEBUG: Live log viewer
+Route::get('/live-logs', [App\Http\Controllers\LiveLogController::class, 'show'])->middleware('auth');
+
 // SECURITY: Debug routes available only when APP_DEBUG is true
 // Route::get('/debug-logs', [App\Http\Controllers\DebugLogController::class, 'show'])->middleware('auth');
 

@@ -1537,15 +1537,30 @@ class MintController extends Controller {
      */
     public function processDirectMint(int $id, \App\Http\Requests\MintDirectRequest $request) {
         try {
-            // DEBUG: REMOVE AFTER DIAGNOSIS
-            // DEBUG: REMOVE AFTER DIAGNOSIS
-            // dd('DEBUG HIT: processDirectMint', $request->all(), Auth::user()->id, $id);
+            // DIAGNOSTIC LOG 1: Entry Point
+            \Log::channel('stack')->info('=== MINT FLOW START ===', [
+                'egi_id' => $id,
+                'user_id' => Auth::id(),
+                'timestamp' => now()->toDateTimeString()
+            ]);
 
             $validated = $request->validated();
+            
+            \Log::channel('stack')->info('MINT: Validation passed', [
+                'payment_method' => $validated['payment_method'] ?? 'MISSING',
+                'shipping_address_id' => $validated['shipping_address_id'] ?? 'none'
+            ]);
 
             $egi = Egi::findOrFail($id);
             // ✅ FIX: Capture ID before potential cloning logic (though consistent here, good practice)
             $originalEgiId = $egi->id;
+
+            \Log::channel('stack')->info('MINT: EGI found', [
+                'egi_id' => $egi->id,
+                'title' => $egi->title,
+                'price' => $egi->price,
+                'owner_id' => $egi->user_id
+            ]);
 
             // dd($validated);
 
