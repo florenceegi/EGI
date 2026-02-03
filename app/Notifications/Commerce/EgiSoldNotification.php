@@ -38,7 +38,8 @@ class EgiSoldNotification extends Notification implements ShouldBroadcast
                 'buyer_name'        => $this->payload->buyer->name,
                 'buyer_email'       => $this->payload->buyer->email,
                 'shipping_snapshot' => $this->payload->shipping_address_snapshot,
-                'egi_name'          => $this->payload->egi->name ?? 'EGI Asset',
+                'egi_name'          => ($this->payload->egi->title ?? 'EGI Asset') . 
+                                       ($this->payload->egi->token_EGI ? ' (ASA: ' . $this->payload->egi->token_EGI . ')' : ''),
             ],
             'outcome'       => 'pending',
         ];
@@ -51,7 +52,7 @@ class EgiSoldNotification extends Notification implements ShouldBroadcast
     {
         return new BroadcastMessage([
             'title'   => 'Nuova Vendita EGI!',
-            'body'    => "Hai venduto '{$this->payload->egi->name}' a {$this->payload->buyer->name}. Clicca per gestire la spedizione.",
+            'body'    => "Hai venduto '{$this->payload->egi->title}' a {$this->payload->buyer->name}. Clicca per gestire la spedizione.",
             'action_url' => route('dashboard'), // Or specific management URL if available
             'type'    => 'commerce',
             'payload_id' => $this->payload->id,
