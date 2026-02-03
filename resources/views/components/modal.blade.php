@@ -14,8 +14,9 @@
     ][$maxWidth ?? '2xl'];
 @endphp
 
-<div x-data="{ show: @if ($attributes->whereStartsWith('wire:model')->first()) @entangle($attributes->wire('model')) @else false @endif }" x-on:close.stop="show = false" x-on:keydown.escape.window="show = false" x-show="show"
-    id="{{ $id }}" class="jetstream-modal fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0"
+<div x-data="{ show: @if ($attributes->whereStartsWith('wire:model')->first()) @entangle($attributes->wire('model')) @else false @endif }" x-on:close.stop="show = false" x-on:keydown.escape.window="show = false"
+    x-on:open-modal.window="console.log('Evento open-modal ricevuto:', $event.detail, 'ID Atteso:', '{{ $id }}'); if ($event.detail == '{{ $id }}') show = true"
+    x-show="show" id="{{ $id }}" class="jetstream-modal fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0"
     style="display: none;">
     <div x-show="show" class="fixed inset-0 transform transition-all" x-on:click="show = false"
         x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
