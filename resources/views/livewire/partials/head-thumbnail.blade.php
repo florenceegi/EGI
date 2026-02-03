@@ -63,7 +63,8 @@
 <!-- Modern Notification Card with Priority System - bordi ridotti -->
 <div class="notification-thumbnail group relative transform cursor-pointer overflow-hidden rounded-2xl bg-white/10 p-6 transition-all duration-300 hover:scale-105 hover:bg-white/20 hover:shadow-2xl hover:shadow-purple-500/20"
     data-notification-id="{{ $notif->id }}" data-created-at="{{ $notif->created_at }}"
-    data-status="{{ $notif->model->status ?? null }}" data-priority="{{ $priority }}">
+    data-status="{{ $notif->model->status ?? null }}" data-priority="{{ $priority }}"
+    wire:click="setActiveNotification('{{ $notif->id }}')">
 
     <!-- Priority Indicator Strip -->
     <div class="{{ $gradientClass }} absolute left-0 right-0 top-0 h-1 bg-gradient-to-r"></div>
