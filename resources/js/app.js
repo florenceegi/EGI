@@ -65,6 +65,8 @@ console.log("Modulo file_upload_manager importato (init in main.ts)."); // Debug
 // --- 🔔 IMPORT MODULI NOTIFICHE (auto-eseguiti o passive) ---
 import "./notification"; // Se auto-eseguito, rimane qui
 import "./modules/notifications/init/notification-response-init"; // Se auto-eseguito, rimane qui
+import { NotificationUpdater } from "./real-time/NotificationUpdater"; // ✅ Import Manual Updater
+NotificationUpdater.init(); // ✅ Initialize immediately
 console.log("Moduli notifiche importati."); // Debugging
 
 // --- ✍️ IMPORT BIOGRAPHY EDIT ---

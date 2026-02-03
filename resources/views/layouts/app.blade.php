@@ -8,6 +8,9 @@
     <meta name="user-authenticated" content="{{ auth()->check() ? 'true' : 'false' }}">
     <meta name="user-preferred-currency"
         content="{{ auth()->check() ? auth()->user()->preferred_currency ?? 'USD' : 'USD' }}">
+    @auth
+        <meta name="user-id" content="{{ auth()->id() }}">
+    @endauth
 
     {{--
     @oracode-dimension technical
