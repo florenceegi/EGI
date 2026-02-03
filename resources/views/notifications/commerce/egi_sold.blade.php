@@ -18,8 +18,11 @@
         <div class="flex-1">
             <h3 class="mb-1 text-lg font-bold text-white">{{ __('commerce.notifications.sold.title') }}</h3>
             <p class="mb-4 text-sm text-gray-400">
-                L'utente {{ $notification->data['buyer_name'] ?? 'N/A' }} ha acquistato l'oggetto
-                {{ $notification->data['egi_name'] ?? 'N/A' }} per {{ $notification->data['amount'] ?? 'N/A' }}.
+                {{ __('commerce.notifications.sold.sold_message', [
+                    'buyer' => $notification->data['buyer_name'] ?? 'N/A',
+                    'egi_item' => $notification->data['egi_name'] ?? 'N/A',
+                    'amount' => $notification->data['amount'] ?? 'N/A',
+                ]) }}
                 <span class="ml-2 rounded bg-gray-900 px-1 text-xs text-gray-600">ID: {{ $notification->id }}</span>
             </p>
 

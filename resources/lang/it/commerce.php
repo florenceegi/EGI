@@ -85,6 +85,7 @@ return [
         'sold' => [
             'title' => 'Nuovo Ordine Ricevuto',
             'subtitle' => 'L\'utente :buyer ha acquistato l\'oggetto :egi_item per :amount.',
+            'sold_message' => 'L\'utente :buyer ha acquistato l\'oggetto :egi_item per :amount.',
             'shipping_address' => 'Indirizzo di Spedizione',
             'action_ship' => 'Inserisci Spedizione',
             'modal_title' => 'Conferma Spedizione',
