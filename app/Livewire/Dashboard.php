@@ -268,18 +268,33 @@ class Dashboard extends Component {
         // 1. Cerca nella collezione in memoria (Pending)
         $notification = $this->pendingNotifications->firstWhere('id', $this->activeNotificationId);
 
+        if ($notification) {
+            Log::channel('florenceegi')->info('🎯 getActiveNotification() - HIT in Pending', [
+                'requested_id' => $this->activeNotificationId,
+                'found_id' => $notification->id,
+                'egi_name' => $notification->data['egi_name'] ?? 'N/A'
+            ]);
+        }
+
         // 2. Cerca nella collezione in memoria (Historical)
         if (!$notification) {
             $notification = $this->historicalNotifications->firstWhere('id', $this->activeNotificationId);
         }
 
-        // 3. Fallback DB (solo se non trovato in memoria, es. appena eliminato o cambiato stato)
+        // 3. Fallback DB
         if (!$notification) {
             $user = FegiAuth::user();
             if ($user) {
                 $notification = $user->customNotifications()
                     ->with('model')
                     ->find($this->activeNotificationId);
+                    
+                if ($notification) {
+                     Log::channel('florenceegi')->info('💾 getActiveNotification() - FETCHED from DB (Not in memory?)', [
+                        'requested_id' => $this->activeNotificationId,
+                        'found_id' => $notification->id
+                    ]);
+                }
             }
         }
 
