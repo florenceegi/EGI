@@ -114,7 +114,10 @@
                             @endphp
 
                             @if ($viewName && view()->exists($viewName))
-                                @include($viewName, ['notification' => $activeNotif])
+                                <!-- Wrapper con wire:key per forzare il re-render completo del DOM -->
+                                <div wire:key="detail-{{ $activeNotif->id }}">
+                                    @include($viewName, ['notification' => $activeNotif])
+                                </div>
                             @else
                                 <div class="text-center">
                                     <div
