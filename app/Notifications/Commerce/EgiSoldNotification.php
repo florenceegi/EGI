@@ -7,7 +7,7 @@ use App\Notifications\Channels\CustomDatabaseChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
-use Illuminate\Contracts\Queue\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class EgiSoldNotification extends Notification implements ShouldBroadcast
