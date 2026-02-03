@@ -20,7 +20,7 @@
             <p class="mb-4 text-sm text-gray-400">
                 {{ __('commerce.notifications.sold.subtitle', [
                     'buyer' => $notification->data['buyer_name'] ?? 'N/A',
-                    'item' => $notification->data['egi_name'] ?? 'N/A',
+                    'egi_item' => $notification->data['egi_name'] ?? 'N/A',
                     'amount' => $notification->data['amount'] ?? 'N/A',
                 ]) }}
                 <span class="ml-2 rounded bg-gray-900 px-1 text-xs text-gray-600">ID: {{ $notification->id }}</span>
