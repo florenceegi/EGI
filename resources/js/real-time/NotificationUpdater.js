@@ -75,11 +75,26 @@ export class NotificationUpdater {
     }
 
     static updateBadgeCount() {
-        const badge = document.querySelector('.notification-badge'); // Adjust selector as needed
+        const badge = document.querySelector('.notification-unread-badge');
+        
         if (badge) {
-            let count = parseInt(badge.innerText) || 0;
-            badge.innerText = count + 1;
-            badge.style.display = 'block';
+            // If badge exists, increment it
+            let count = parseInt(badge.innerText.replace('+', '')) || 0;
+            count++;
+            badge.innerText = count > 99 ? '99+' : count;
+        } else {
+            // If badge doesn't exist (was 0), create it inside the button
+            const button = document.querySelector('.notification-badge-button');
+            if (button) {
+                const newBadge = document.createElement('span');
+                newBadge.className = 'absolute flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full notification-unread-badge -top-1 -right-1';
+                newBadge.innerText = '1';
+                button.appendChild(newBadge);
+                
+                // Play notification sound
+                const audio = new Audio('/sounds/notification.mp3'); // Optional if file exists
+                // audio.play().catch(e => console.log('Audio autoplay blocked'));
+            }
         }
     }
 }
