@@ -120,6 +120,27 @@ class ExampleController extends Controller
 
 ---
 
+## ⚡ Livewire & Translations (CRITICAL)
+
+**PROBLEM**: Livewire's DOM diffing often fails to update translated strings with dynamic parameters (`__('key', ['param' => $val])`), causing STALE texts (caching).
+
+**RULE**: Use **Atomic Translations**.
+Split sentences into static translated parts and raw Blade variables.
+
+❌ **BAD (Livewire Fails)**:
+```php
+{{ __('messages.sold', ['item' => $item->name]) }}
+```
+
+✅ **GOOD (Atomic & Robust)**:
+```php
+{{ __('messages.user') }} {{ $user->name }} {{ __('messages.bought') }} {{ $item->name }}
+```
+
+**NEVER** use array parameter injection inside a Livewire Component view.
+
+---
+
 ## 🐍 Pattern Python AI Gateway
 
 ```python
