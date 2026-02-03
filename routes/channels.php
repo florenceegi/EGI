@@ -22,3 +22,8 @@ Broadcast::channel('user-welcome.{userId}', function ($user, $userId) {
     // L'utente può ascoltare solo il proprio canale
     return $user && (int) $user->id === (int) $userId;
 });
+
+// ✅ ADDED: Standard Channel for Private Notifications
+Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+});
