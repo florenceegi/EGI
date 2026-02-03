@@ -247,7 +247,8 @@ class Dashboard extends Component {
     #[On('setActiveNotification')]
     public function setActiveNotification($id) {
         $this->activeNotificationId = $id;
-        $this->loadNotifications();
+        // Non ricarichiamo tutto il dataset, cambiamo solo il puntatore attivo.
+        // $this->loadNotifications(); 
 
         Log::channel('florenceegi')->info('🔄 setActiveNotification() - Active Notification Set:', [
             'activeNotificationId' => $this->activeNotificationId,
@@ -259,32 +260,33 @@ class Dashboard extends Component {
 
 
     public function getActiveNotification() {
-        Log::channel('florenceegi')->info('🔎 getActiveNotification() - Checking for active notification:', [
-            'activeNotificationId' => $this->activeNotificationId,
-        ]);
-
         if (!$this->activeNotificationId) {
-            Log::channel('florenceegi')->info('⚠️ getActiveNotification() - No activeNotificationId set.');
             return null;
         }
 
-        $user = FegiAuth::user();
-        if (!$user) {
-            Log::channel('florenceegi')->error('❌ getActiveNotification() - User not authenticated!');
-            return null;
+        // 1. Cerca nella collezione in memoria (Pending)
+        $notification = $this->pendingNotifications->firstWhere('id', $this->activeNotificationId);
+
+        // 2. Cerca nella collezione in memoria (Historical)
+        if (!$notification) {
+            $notification = $this->historicalNotifications->firstWhere('id', $this->activeNotificationId);
         }
 
-        $notification = $user
-            ->customNotifications()
-            ->where('id', $this->activeNotificationId)
-            ->with('model')
-            ->first();
+        // 3. Fallback DB (solo se non trovato in memoria, es. appena eliminato o cambiato stato)
+        if (!$notification) {
+            $user = FegiAuth::user();
+            if ($user) {
+                $notification = $user->customNotifications()
+                    ->with('model')
+                    ->find($this->activeNotificationId);
+            }
+        }
 
         if (!$notification) {
-            Log::channel('florenceegi')->error('❌ getActiveNotification() - Notification NOT FOUND in DB!', [
-                'activeNotificationId' => $this->activeNotificationId,
-            ]);
-            return null;
+             Log::channel('florenceegi')->warning('⚠️ getActiveNotification() - Notification not found even in DB.', [
+                'id' => $this->activeNotificationId
+             ]);
+             return null;
         }
 
         // Recupera la vista dal file di configurazione
