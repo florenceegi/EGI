@@ -58,9 +58,10 @@ class Dashboard extends Component {
             $this->loadNotifications();
 
             // Se ci sono notifiche pendenti...
-            if (isset($this->pendingNotifications) && $this->pendingNotifications->isNotEmpty()) {
-                $this->activeNotificationId = $this->pendingNotifications->first()->id;
-            }
+            // FIXED: Non selezioniamo automaticamente la prima notifica. L'utente deve cliccare.
+            // if (isset($this->pendingNotifications) && $this->pendingNotifications->isNotEmpty()) {
+            //     $this->activeNotificationId = $this->pendingNotifications->first()->id;
+            // }
         } else {
             // Gestisci il caso ospite (utente è null)
             Log::channel('florenceegi')->info('Dashboard: mount - User is guest, skipping privileged actions.');
@@ -326,10 +327,10 @@ class Dashboard extends Component {
         $this->loadStats();
         $this->loadNotifications();
         
-        // Se è una nuova notifica commerce, la impostiamo come attiva se non ce ne sono altre
-        if (!$this->activeNotificationId && isset($this->pendingNotifications) && $this->pendingNotifications->isNotEmpty()) {
-            $this->activeNotificationId = $this->pendingNotifications->first()->id;
-        }
+        // FIXED: Non selezioniamo automaticamente la nuova notifica. L'utente deve cliccare.
+        // if (!$this->activeNotificationId && isset($this->pendingNotifications) && $this->pendingNotifications->isNotEmpty()) {
+        //    $this->activeNotificationId = $this->pendingNotifications->first()->id;
+        // }
 
         $this->dispatch('notification-received'); // Custom event for UI effects
     }
