@@ -7,10 +7,10 @@ use App\Notifications\Channels\CustomDatabaseChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow; // ✅ Changed to NOW to bypass Queue
 use Illuminate\Notifications\Messages\BroadcastMessage;
 
-class EgiSoldNotification extends Notification implements ShouldBroadcast
+class EgiSoldNotification extends Notification implements ShouldBroadcastNow // ✅ SYNC DELIVERY
 {
     use Queueable;
 
