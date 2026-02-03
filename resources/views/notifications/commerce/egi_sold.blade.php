@@ -23,6 +23,7 @@
                     'item' => $notification->data['egi_name'] ?? 'N/A',
                     'amount' => $notification->data['amount'] ?? 'N/A',
                 ]) }}
+                <span class="ml-2 rounded bg-gray-900 px-1 text-xs text-gray-600">ID: {{ $notification->id }}</span>
             </p>
 
             <!-- Shipping Details Box -->
