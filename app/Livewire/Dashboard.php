@@ -302,6 +302,36 @@ class Dashboard extends Component {
         return $notification;
     }
 
+    /**
+     * Listen for real-time notifications from Laravel Echo
+     */
+    public function getListeners()
+    {
+        $userId = auth()->id();
+        return [
+            "echo-private:App.Models.User.{$userId},.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated" => 'handleBroadcastNotification',
+             // Merge with existing attribute-based listeners handled by Livewire automatically
+        ];
+    }
+
+    /**
+     * Handle incoming real-time notification
+     */
+    public function handleBroadcastNotification($payload)
+    {
+        Log::channel('florenceegi')->info('📡 Real-time Notification Received', ['payload' => $payload]);
+        
+        $this->loadStats();
+        $this->loadNotifications();
+        
+        // Se è una nuova notifica commerce, la impostiamo come attiva se non ce ne sono altre
+        if (!$this->activeNotificationId && isset($this->pendingNotifications) && $this->pendingNotifications->isNotEmpty()) {
+            $this->activeNotificationId = $this->pendingNotifications->first()->id;
+        }
+
+        $this->dispatch('notification-received'); // Custom event for UI effects
+    }
+
     public function render() {
         return view('livewire.dashboard', [
             'pendingNotifications' => $this->pendingNotifications ?? collect(),
