@@ -84,6 +84,9 @@ return [
         'sold' => [
             'title' => 'New Order Received',
             'subtitle' => 'User :buyer purchased :item for :amount.',
+            'part_user' => 'User',
+            'part_bought' => 'purchased',
+            'part_for' => 'for',
             'shipping_address' => 'Shipping Address',
             'action_ship' => 'Input Shipping',
             'modal_title' => 'Confirm Shipment',
