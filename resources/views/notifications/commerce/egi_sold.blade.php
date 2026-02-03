@@ -24,6 +24,8 @@
                     'amount' => $notification->data['amount'] ?? 'N/A',
                 ]) }}
                 <span class="ml-2 rounded bg-gray-900 px-1 text-xs text-gray-600">ID: {{ $notification->id }}</span>
+                <br>
+                <span class="text-xs text-red-400">RAW VAR: {{ $notification->data['egi_name'] ?? 'N/A' }}</span>
             </p>
 
             <!-- Shipping Details Box -->
