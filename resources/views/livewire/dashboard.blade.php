@@ -114,16 +114,8 @@
                         @endphp
 
                         @if ($viewName && view()->exists($viewName))
-                            <!-- DEBUG VISIVO: Rimuovere dopo fix -->
-                            <div class="mb-4 rounded border border-red-500 bg-red-900/50 p-2 text-xs text-red-200">
-                                <strong>DEBUG MONITOR:</strong><br>
-                                ID ATTIVO: {{ $activeNotif->id }}<br>
-                                EGI DATA: {{ $activeNotif->data['egi_name'] ?? 'NULL' }}<br>
-                                BUYER: {{ $activeNotif->data['buyer_name'] ?? 'NULL' }}
-                            </div>
-
                             <!-- Wrapper con wire:key per forzare il re-render completo del DOM -->
-                            <div wire:key="detail-{{ $activeNotif->id }}-{{ time() }}">
+                            <div wire:key="detail-{{ $activeNotif->id }}">
                                 @include($viewName, ['notification' => $activeNotif])
                             </div>
                         @else
