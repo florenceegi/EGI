@@ -9,6 +9,7 @@
 
 | # | Regola | Cosa Fare |
 |---|--------|-----------|
+| **P0-0** | **NO ALPINE/LIVEWIRE** | **VIETATO SCRIVERE NUOVO CODICE ALPINE/LIVEWIRE. Solo Vanilla/TS.** |
 | **P0-1** | REGOLA ZERO | MAI dedurre. Se non sai → 🛑 CHIEDI |
 | **P0-2** | Translation Keys | `__('key')` mai stringhe hardcoded |
 | **P0-3** | Statistics Rule | No `->take(10)` nascosti, sempre param espliciti |

@@ -49,9 +49,10 @@
             @endif
 
             <!-- Actions -->
-            <div class="mt-2 flex space-x-3" x-data="{ showTrackingModal: false }">
+            <div class="mt-2 flex space-x-3">
                 <!-- Main Action: Ship -->
-                <button @click="$dispatch('open-modal', 'shipment-modal-{{ $notification->id }}')"
+                <button
+                    onclick="document.getElementById('shipment-modal-{{ $notification->id }}').classList.remove('hidden'); document.getElementById('shipment-modal-{{ $notification->id }}').classList.add('flex')"
                     class="flex items-center rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-lg shadow-blue-900/20 transition-all duration-200 hover:bg-blue-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -61,17 +62,23 @@
                     {{ __('commerce.notifications.sold.action_ship') }}
                 </button>
 
-                <!-- Modal for Tracking Input -->
-                <x-modal name="shipment-modal-{{ $notification->id }}" focusable>
-                    <div class="bg-gray-800 p-6 text-white">
-                        <h2 class="mb-4 text-lg font-medium text-white">
-                            {{ __('commerce.notifications.sold.modal_title') }}
-                        </h2>
-                        <p class="mb-6 text-sm text-gray-400">
-                            {{ __('commerce.notifications.sold.modal_desc') }}
-                        </p>
+                <!-- Vanilla JS Modal -->
+                <div id="shipment-modal-{{ $notification->id }}"
+                    class="fixed inset-0 z-50 hidden items-center justify-center overflow-y-auto bg-gray-900/80 px-4 py-6 backdrop-blur-sm transition-all duration-300 sm:px-0">
+                    <div
+                        class="relative w-full max-w-2xl transform rounded-lg border border-gray-700 bg-gray-800 p-6 shadow-xl transition-all">
 
-                        <!-- Form handled by Livewire or Controller via AJAX -->
+                        <!-- Header -->
+                        <div class="mb-4">
+                            <h2 class="text-lg font-medium text-white">
+                                {{ __('commerce.notifications.sold.modal_title') }}
+                            </h2>
+                            <p class="text-sm text-gray-400">
+                                {{ __('commerce.notifications.sold.modal_desc') }}
+                            </p>
+                        </div>
+
+                        <!-- Form -->
                         <form method="POST" action="{{ route('notifications.commerce.shipped') }}">
                             @csrf
                             <input type="hidden" name="notification_id" value="{{ $notification->id }}">
@@ -94,7 +101,8 @@
                             </div>
 
                             <div class="mt-6 flex justify-end">
-                                <button type="button" x-on:click="$dispatch('close')"
+                                <button type="button"
+                                    onclick="document.getElementById('shipment-modal-{{ $notification->id }}').classList.add('hidden'); document.getElementById('shipment-modal-{{ $notification->id }}').classList.remove('flex')"
                                     class="mr-3 rounded-lg bg-gray-700 px-4 py-2 text-gray-300 transition-colors hover:bg-gray-600">
                                     {{ __('commerce.notifications.sold.cancel') }}
                                 </button>
@@ -105,7 +113,7 @@
                             </div>
                         </form>
                     </div>
-                </x-modal>
+                </div>
             </div>
         </div>
 
