@@ -198,4 +198,3 @@
         console.log('✅ Global Stats Container ready (with Smart Polling):', instanceId);
     });
 </script>
-</script>

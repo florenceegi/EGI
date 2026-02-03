@@ -8,7 +8,7 @@
 
 export class NotificationUpdater {
 
-    static init() {
+    static init(attempts = 0) {
         // 1. Get User ID from Meta
         const userIdMeta = document.querySelector('meta[name="user-id"]');
         if (!userIdMeta) {
@@ -19,11 +19,9 @@ export class NotificationUpdater {
         const userId = userIdMeta.getAttribute('content');
         if (!userId) return;
 
-        console.log(`🔔 NotificationUpdater: Initializing for User ${userId}...`);
+        console.log(`🔔 NotificationUpdater (Try ${attempts + 1}): Initializing for User ${userId}...`);
 
         // 2. Subscribe to Private Channel
-        // Note: The event name typically includes the namespace unless prefixed with '.'
-        // Laravel broadcasts standard notifications as: Illuminate\Notifications\Events\BroadcastNotificationCreated
         if (window.Echo) {
             console.log(`🔔 Subscribing to channel: App.Models.User.${userId}`);
             window.Echo.private(`App.Models.User.${userId}`)
@@ -32,7 +30,13 @@ export class NotificationUpdater {
                     this.handleNotification(notification);
                 });
         } else {
-            console.error('❌ NotificationUpdater: Echo not initialized.');
+            console.warn('⚠️ NotificationUpdater: Echo not initialized yet.');
+            if (attempts < 5) {
+                console.log(`⏳ NotificationUpdater: Retrying in 500ms... (Attempt ${attempts + 1}/5)`);
+                setTimeout(() => this.init(attempts + 1), 500);
+            } else {
+                console.error('❌ NotificationUpdater: Echo failed to initialize after 5 attempts.');
+            }
         }
     }
 

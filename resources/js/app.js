@@ -9,7 +9,7 @@
  * 🧱 Core Logic: Bootstrap → Editor → Polyfill → Global Libraries → Module Imports
  */
 
-console.log("Inizializzazione di app.js (dependencies only)"); // Debugging
+console.log("Inizializzazione di app.js (dependencies only) - VER. MINT-FIX-V3"); // Debugging - Confirm Build Update
 
 // --- 🔧 IMPORT BOOTSTRAP E CONFIGURAZIONI BASE ---
 import "./bootstrap";
