@@ -25,8 +25,10 @@ export class NotificationUpdater {
         // Note: The event name typically includes the namespace unless prefixed with '.'
         // Laravel broadcasts standard notifications as: Illuminate\Notifications\Events\BroadcastNotificationCreated
         if (window.Echo) {
+            console.log(`🔔 Subscribing to channel: App.Models.User.${userId}`);
             window.Echo.private(`App.Models.User.${userId}`)
-                .listen('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', (notification) => {
+                .notification((notification) => {
+                    console.log('🔔 Event Received via .notification() helper');
                     this.handleNotification(notification);
                 });
         } else {
