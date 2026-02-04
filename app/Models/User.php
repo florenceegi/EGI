@@ -1429,8 +1429,8 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 🔧 FIX: Usa metodo standard come Biography invece di query custom
      */
     public function getCurrentProfileImage(): ?Media {
-        // Usa il metodo standard di Spatie come le biografie che funzionano
-        return $this->getMedia('profile_images')->last();
+        // Retrieve the explicitly set current profile image from the single-file collection
+        return $this->getFirstMedia('current_profile');
     }
 
     /**
@@ -1448,9 +1448,18 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 📤 Returns: Boolean success status
      */
     public function setCurrentProfileImage(Media $media): bool {
-        // Update the profile_photo_path field with the media Relative URL
-        // Using relative path ensures it works on any domain (localhost or production)
-        $relativeUrl = '/storage/' . $media->id . '/' . $media->file_name;
+        // 1. Spatie Logic: Copy to 'current_profile' collection (Single File)
+        // This ensures checking getCurrentProfileImage() retrieves the explicitly set one
+        $this->clearMediaCollection('current_profile');
+        $newMedia = $media->copy($this, 'current_profile');
+        
+        // Save source reference if needed
+        $newMedia->setCustomProperty('source_media_id', $media->id);
+        $newMedia->save();
+
+        // 2. Jetstream Logic: Update profile_photo_path for navbar compatibility
+        // Using relative path ensures it works on any domain
+        $relativeUrl = '/storage/' . $newMedia->id . '/' . $newMedia->file_name;
         
         $this->update([
             'profile_photo_path' => $relativeUrl
