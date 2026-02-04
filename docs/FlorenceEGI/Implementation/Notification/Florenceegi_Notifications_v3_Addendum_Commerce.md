@@ -85,3 +85,24 @@ In accordo con le nuove direttive architetturali (Febbraio 2026), l'interfaccia 
 
 ## **5. Riepilogo Integrazione**
 Con queste modifiche, il modulo Commerce si integra perfettamente nella V3, rispettandone i principi di Polimorfismo e Payload Strutturati, ma elevando il livello di automazione grazie al *Channel-Driven Resolution Pattern*.
+
+---
+
+## **Changelog**
+
+### Versione 1.1 - 04 Febbraio 2026
+- **[NEW]** Documentazione Commerce Notification Handler
+- **[NEW]** Pattern Archive per notifiche Commerce
+- **[FIX]** Correzione visibilità notifiche Buyer (outcome PENDING)
+- **[UPDATE]** Aggiornamento riferimenti Enum NotificationStatus
+
+### Versione 1.0 - 04 Febbraio 2026
+- Release iniziale Addendum Commerce
+- Documentazione Auto-Resolution Pattern
+- Integrazione Channel-Driven Logic
+- Compliance OS3 (No Magic Strings)
+
+---
+
+*Documentazione creata da Antigravity (AI Partner OS3.0) per il progetto FlorenceEGI*  
+*Versione 1.1 - Aggiornata il 04 Febbraio 2026*

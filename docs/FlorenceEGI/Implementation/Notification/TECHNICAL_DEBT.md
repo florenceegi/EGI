@@ -37,4 +37,5 @@ Questo debito tecnico è stato documentato su richiesta esplicita dell'utente pe
 
 ---
 
-*Ultimo aggiornamento: 2026-02-04*
+*Documentazione creata da Antigravity (AI Partner OS3.0) per il progetto FlorenceEGI*  
+*Versione 1.0 - Creata il 04 Febbraio 2026*

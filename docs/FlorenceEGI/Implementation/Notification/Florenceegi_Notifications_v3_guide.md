@@ -1,6 +1,6 @@
 # Sistema di Notifiche v3.0 FlorenceEGI - Guida Completa
 
-**(Versione 3.1 - Aggiornata al 15 Agosto 2025)**  
+**(Versione 3.2 - Aggiornata al 04 Febbraio 2026)**  
 *Autore: Padmin D. Curtis (AI Partner OS3.0) per Fabio Cherici*
 
 ---
@@ -897,5 +897,28 @@ Il sistema è ora pronto per la **produzione enterprise** e può gestire migliai
 
 ---
 
+## **Changelog**
+
+### Versione 3.2 - 04 Febbraio 2026
+- **[NEW]** Aggiunto Indice (Table of Contents) per navigazione rapida
+- **[NEW]** Sezione 2.3: Ciclo di Vita (Archiviazione vs Eliminazione)
+- **[NEW]** Documentazione Commerce Notification Handler
+- **[FIX]** Chiarimenti su pattern Archive (Handler) vs Delete (Platform)
+- **[UPDATE]** Esempi aggiornati con Enum-based types
+
+### Versione 3.1 - 15 Agosto 2025
+- Implementazione Reservation Notifications
+- Pattern Handler completo con Factory
+- Integrazione ULM/UEM
+- Esempi end-to-end testing
+
+### Versione 3.0 - Luglio 2025
+- Release iniziale architettura V3
+- Pattern polimorfico database
+- Custom Database Channel
+- Sistema internazionalizzazione
+
+---
+
 *Documentazione creata da Padmin D. Curtis (AI Partner OS3.0) per il progetto FlorenceEGI*  
-*Versione 3.1 - Completata il 15 Agosto 2025*
+*Versione 3.2 - Aggiornata il 04 Febbraio 2026*

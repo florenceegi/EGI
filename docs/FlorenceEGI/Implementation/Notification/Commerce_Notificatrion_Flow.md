@@ -115,3 +115,23 @@ La modale di inserimento dati (in `egi_sold.blade.php`) è stata riscritta per r
 2.  **Logic Bug**: `EgiShippedNotification` ora nasce come `PENDING` (visibile), non `done` (invisibile).
 3.  **Channel Map**: Corretta la chiave della mappa in `CustomDatabaseChannel` per reagire alla classe `EgiShippedNotification`.
 4.  **Controller**: Aggiornato per usare `NotificationStatus::SHIPPED->value` db-compliant.
+
+---
+
+## **Changelog**
+
+### Versione 1.1 - 04 Febbraio 2026
+- **[NEW]** Documentazione pattern Archive per notifiche Commerce
+- **[UPDATE]** Aggiornamento diagramma Mermaid con fase archiviazione
+- **[FIX]** Correzione riferimenti Enum (SHIPPED)
+
+### Versione 1.0 - 04 Febbraio 2026
+- Release iniziale Commerce Flow
+- Diagramma sequenza completo
+- Documentazione stati e transizioni
+- Integrazione Channel-Driven Logic
+
+---
+
+*Documentazione creata da Antigravity (AI Partner OS3.0) per il progetto FlorenceEGI*  
+*Versione 1.1 - Aggiornata il 04 Febbraio 2026*
