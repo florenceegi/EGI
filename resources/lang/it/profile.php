@@ -242,4 +242,15 @@ return [
     'no_media_id_provided' => 'ID media non fornito',
     'how_to_use_banners' => 'Come gestire i banner',
     'banner_management_help' => 'Passa il mouse sul banner per vedere i pulsanti. Clicca sull\'icona blu per impostare il banner come attuale, o sull\'icona rossa per eliminarlo.',
+    
+    // Home page modals
+    'banners_uploaded_successfully' => 'Banner caricati con successo',
+    'current_banner_updated' => 'Banner attuale aggiornato',
+    'failed_to_update_current_banner' => 'Errore durante l\'aggiornamento del banner attuale',
+    'failed_to_delete_banner' => 'Errore durante l\'eliminazione del banner',
+    'upload_new_avatar' => 'Carica Nuovo Avatar',
+    'all_avatar_images' => 'Tutti gli Avatar',
+    'current_avatar' => 'Avatar Attuale',
+    'set_as_avatar' => 'Imposta come Avatar',
+    'delete_avatar' => 'Elimina Avatar',
 ];
