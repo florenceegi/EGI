@@ -1,15 +1,9 @@
 /**
- * @Oracode Script: Home Page Image Manager - Vanilla JS
- * 🎯 Purpose: Handle multi-image upload, preview, and gallery management
- * 🛡️ Security: Client-side validation, CSRF protection
- * 🎨 Brand: FlorenceEGI Renaissance design system
- * 🔧 Accessibility: Keyboard navigation, ARIA announcements
- *
  * @package FlorenceEGI
- * @author Antigravity (AI Partner OS3.0)
- * @version 1.0.1
+ * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+ * @version 1.0.0 (FlorenceEGI - Frontend)
  * @date 2026-02-04
- * @compliance P0-0 (NO ALPINE/LIVEWIRE - Pure Vanilla JS)
+ * @purpose Handle multi-image upload, preview, and gallery management with AJAX and SweetAlert2
  */
 
 class HomePageImageManager {

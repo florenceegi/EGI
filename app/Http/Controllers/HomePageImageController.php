@@ -14,17 +14,11 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Ultra\UltraLogManager\UltraLogManager;
 
 /**
- * @Oracode Controller: Home Page Image Management - ULTRA+GDPR Pattern
- * 🎯 Purpose: Handle multi-image upload for Creator/Company/Collector home pages
- * 🛡️ Security: File validation, authorization, GDPR compliance
- * 📊 GDPR: Consent verification, audit logging, data subject rights
- * ⚡ UEM: Complete error handling with Ultra Error Manager
- * 🔍 ULM: Comprehensive operation logging
- *
  * @package App\Http\Controllers
- * @author Antigravity (AI Partner OS3.0)
- * @version 1.0.0
+ * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+ * @version 1.0.0 (FlorenceEGI - Controllers)
  * @date 2026-02-04
+ * @purpose Handle multi-image upload for Creator/Company/Collector home pages
  */
 class HomePageImageController extends Controller
 {

@@ -2,6 +2,14 @@
 
 namespace App\Models;
 
+/**
+ * @package App\Models
+ * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+ * @version 1.0.0 (FlorenceEGI - Core Model)
+ * @date 2026-02-04
+ * @purpose User model handling authentication, profiles, and media relations
+ */
+
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\Gdpr\ConsentStatus;
