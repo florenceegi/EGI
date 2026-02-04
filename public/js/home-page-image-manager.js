@@ -43,6 +43,56 @@ class HomePageImageManager {
 
         // Preview container delegation
         this.previewContainer.addEventListener('click', (e) => this.handlePreviewClick(e));
+
+        // Handle "Set Current" forms via AJAX (for Banner/Avatar inside Gallery)
+        const setCurrentForms = this.modal.querySelectorAll('form[action*="set-current"]');
+        setCurrentForms.forEach(form => {
+            form.addEventListener('submit', (e) => this.handleSetCurrent(e));
+        });
+    }
+
+    async handleSetCurrent(e) {
+        e.preventDefault();
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        // Show loading state
+        if(submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.dataset.originalHtml = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<svg class="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+        }
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(data.message || 'Error setting current image');
+                if(submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while communicating with the server.');
+            if(submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+            }
+        }
     }
 
     handleFileSelection(e) {
