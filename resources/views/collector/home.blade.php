@@ -410,7 +410,7 @@
             helpText="{{ __('profile.supported_formats_with_size') }}" />
 
         {{-- Avatar Upload Modal --}}
-        <x-modals.image-upload-modal modalId="collector-avatar-modal" type="avatar" collection="profile_images"
+        <x-modals.image-upload-modal modalId="collector-avatar-modal" type="avatar" collection="profile_image"
             uploadRoute="{{ route('profile.upload-image') }}"
             setCurrentRoute="{{ route('profile.set-current-image') }}"
             deleteRoute="{{ route('profile.delete-image') }}" :currentImage="auth()->user()->getCurrentProfileImage()" :allImages="auth()->user()->getAllProfileImages()"

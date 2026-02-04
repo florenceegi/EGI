@@ -606,7 +606,7 @@
         <x-modals.image-upload-modal
             modalId="company-avatar-modal"
             type="avatar"
-            collection="profile_images"
+            collection="profile_image"
             uploadRoute="{{ route('profile.upload-image') }}"
             setCurrentRoute="{{ route('profile.set-current-image') }}"
             deleteRoute="{{ route('profile.delete-image') }}"
