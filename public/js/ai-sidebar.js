@@ -19,8 +19,6 @@
         chatForm: null,
         chatInput: null,
         chatContainer: null,
-        messageEl: null,
-        quickActionsEl: null,
         checklistEl: null,
         userId: null,
         userType: null,
@@ -39,8 +37,6 @@
         state.chatForm = document.getElementById('ai-sidebar-form');
         state.chatInput = document.getElementById('ai-sidebar-input');
         state.chatContainer = document.getElementById('ai-sidebar-chat');
-        state.messageEl = document.getElementById('ai-sidebar-message');
-        state.quickActionsEl = document.getElementById('ai-sidebar-quick-actions');
         state.checklistEl = document.getElementById('ai-sidebar-checklist');
 
         if (!state.sidebar || !state.toggleBtn) {
@@ -60,12 +56,6 @@
 
         // Bind events
         bindEvents();
-
-        // Generate initial AI message based on checklist
-        generateAIMessage();
-
-        // Generate quick actions
-        generateQuickActions();
 
         // Check localStorage for previous state
         const savedState = localStorage.getItem('ai-sidebar-open');
@@ -152,92 +142,6 @@
         state.sidebar.setAttribute('aria-hidden', 'true');
         state.toggleBtn.dataset.sidebarOpen = 'false';
         localStorage.setItem('ai-sidebar-open', 'false');
-    }
-
-    /**
-     * Generate AI message based on checklist status
-     * This is programmatic, not real AI
-     */
-    function generateAIMessage() {
-        if (!state.messageEl || !state.checklist.length) return;
-
-        const completed = state.checklist.filter(item => item.completed).length;
-        const total = state.checklist.length;
-        const percent = Math.round((completed / total) * 100);
-
-        let message = '';
-
-        if (percent === 0) {
-            // Just started
-            message = getTranslation('ai_sidebar.messages.welcome', {
-                userType: state.userType
-            });
-        } else if (percent < 50) {
-            // Making progress
-            const nextItem = state.checklist.find(item => !item.completed);
-            message = getTranslation('ai_sidebar.messages.progress_low', {
-                completed: completed,
-                total: total,
-                nextStep: nextItem ? getTranslation(nextItem.title_key) : ''
-            });
-        } else if (percent < 100) {
-            // Almost there
-            const remaining = total - completed;
-            message = getTranslation('ai_sidebar.messages.progress_high', {
-                remaining: remaining
-            });
-        } else {
-            // All done!
-            message = getTranslation('ai_sidebar.messages.complete');
-        }
-
-        state.messageEl.textContent = message;
-    }
-
-    /**
-     * Generate quick action buttons for incomplete items
-     */
-    function generateQuickActions() {
-        if (!state.quickActionsEl) return;
-
-        const incompleteItems = state.checklist.filter(item => !item.completed).slice(0, 3);
-        
-        if (incompleteItems.length === 0) {
-            state.quickActionsEl.innerHTML = `
-                <div class="text-center py-4">
-                    <div class="text-2xl mb-2">🎉</div>
-                    <p class="text-sm text-gray-400">${getTranslation('ai_sidebar.messages.all_done')}</p>
-                </div>
-            `;
-            return;
-        }
-
-        let html = '<p class="text-xs text-gray-500 mb-2">' + getTranslation('ai_sidebar.quick_actions_label') + '</p>';
-
-        incompleteItems.forEach(item => {
-            html += `
-                <button 
-                    class="quick-action-btn w-full text-left rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-2.5 text-sm transition-all hover:border-indigo-500/50 hover:bg-indigo-900/20"
-                    data-step-id="${item.id}"
-                    data-action="${item.action || ''}"
-                    data-modal="${item.modal || ''}"
-                >
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">${item.icon || '→'}</span>
-                        <span class="text-gray-200">${getTranslation(item.title_key)}</span>
-                    </div>
-                </button>
-            `;
-        });
-
-        state.quickActionsEl.innerHTML = html;
-
-        // Bind quick action events
-        state.quickActionsEl.querySelectorAll('.quick-action-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                handleStepAction(this.dataset);
-            });
-        });
     }
 
     /**

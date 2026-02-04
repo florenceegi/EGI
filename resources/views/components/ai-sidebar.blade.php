@@ -163,22 +163,62 @@
         <div class="flex-1 overflow-hidden border-b border-gray-700/50">
             {{-- AI Message Area --}}
             <div id="ai-sidebar-chat" class="h-full overflow-y-auto p-4">
-                {{-- Initial AI message (programmatic, not real AI) --}}
-                <div class="ai-message mb-4 rounded-xl bg-gradient-to-r from-indigo-900/30 to-purple-900/30 p-4">
-                    <div class="mb-2 flex items-center gap-2">
+                {{-- Initial AI message - Discorsivo basato su cosa manca --}}
+                <div class="ai-message rounded-xl bg-gradient-to-r from-indigo-900/30 to-purple-900/30 p-4">
+                    <div class="mb-3 flex items-center gap-2">
                         <div class="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-xs">
                             ✨
                         </div>
                         <span class="text-xs font-medium text-indigo-300">{{ __('ai_sidebar.assistant_name') }}</span>
                     </div>
-                    <p id="ai-sidebar-message" class="text-sm leading-relaxed text-gray-200">
-                        {{-- Message will be set by JS based on checklist status --}}
-                    </p>
-                </div>
-                
-                {{-- Quick Actions (context-aware) --}}
-                <div id="ai-sidebar-quick-actions" class="space-y-2">
-                    {{-- Will be populated by JS based on incomplete items --}}
+                    
+                    {{-- Messaggio discorsivo generato in PHP --}}
+                    @php
+                        $incompleteItems = collect($checklist)->where('completed', false);
+                        $completedItems = collect($checklist)->where('completed', true);
+                        $totalIncomplete = $incompleteItems->count();
+                    @endphp
+                    
+                    <div class="space-y-3 text-sm leading-relaxed text-gray-200">
+                        @if ($totalIncomplete === 0)
+                            {{-- Tutto completato --}}
+                            <p>🎉 <strong>{{ __('ai_sidebar.discourse.complete_title') }}</strong></p>
+                            <p>{{ __('ai_sidebar.discourse.complete_text') }}</p>
+                        @else
+                            {{-- Saluto e stato --}}
+                            <p>{{ __('ai_sidebar.discourse.greeting', ['name' => $user->name]) }}</p>
+                            
+                            <p>{{ __('ai_sidebar.discourse.progress_intro', ['completed' => $completedItems->count(), 'total' => $totalCount]) }}</p>
+                            
+                            {{-- Analisi di cosa manca --}}
+                            <p><strong>{{ __('ai_sidebar.discourse.missing_title') }}</strong></p>
+                            
+                            <ul class="ml-4 list-disc space-y-1 text-gray-300">
+                                @foreach ($incompleteItems as $item)
+                                    <li>{{ __($item['title_key']) }}</li>
+                                @endforeach
+                            </ul>
+                            
+                            {{-- Suggerimento prioritario --}}
+                            @php
+                                $firstIncomplete = $incompleteItems->first();
+                            @endphp
+                            
+                            @if ($firstIncomplete)
+                                <p class="mt-3 border-l-2 border-indigo-500 pl-3 text-indigo-200">
+                                    💡 {{ __('ai_sidebar.discourse.suggestion_intro') }} 
+                                    <strong>{{ __($firstIncomplete['title_key']) }}</strong>.
+                                    @if (isset($firstIncomplete['description_key']))
+                                        {{ __($firstIncomplete['description_key']) }}
+                                    @endif
+                                </p>
+                            @endif
+                            
+                            <p class="mt-2 text-xs text-gray-400">
+                                {{ __('ai_sidebar.discourse.click_hint') }}
+                            </p>
+                        @endif
+                    </div>
                 </div>
             </div>
             

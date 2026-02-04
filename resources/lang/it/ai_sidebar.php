@@ -32,6 +32,17 @@ return [
         'title' => 'Checklist Onboarding',
     ],
 
+    // Discourse messages (AI-like text)
+    'discourse' => [
+        'greeting' => 'Ciao :name! Sono qui per aiutarti a completare il tuo profilo.',
+        'progress_intro' => 'Hai completato :completed passaggi su :total. Vediamo insieme cosa manca per rendere il tuo profilo perfetto.',
+        'missing_title' => 'Ecco cosa devi ancora fare:',
+        'suggestion_intro' => 'Ti consiglio di iniziare da',
+        'click_hint' => 'Clicca su uno degli elementi nella lista qui sotto per completarlo.',
+        'complete_title' => 'Fantastico!',
+        'complete_text' => 'Il tuo profilo è completo e pronto per essere scoperto. Ora puoi concentrarti sulla creazione delle tue opere e sulla crescita della tua community.',
+    ],
+
     // Checklist Items - Creator
     'steps' => [
         'avatar' => [
