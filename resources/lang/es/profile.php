@@ -106,8 +106,7 @@ return [
     'manage_and_log_out_your_active_sessions_on_other_browsers_and_devices.' => 'Administra y cierra tus sesiones activas en otros navegadores y dispositivos.',
     'text_for_sessione' => 'Si es necesario, puedes cerrar sesión en todas las otras sesiones del navegador en todos tus dispositivos. Algunas de tus sesiones recientes están listadas abajo; sin embargo, esta lista podría no ser completa. Si crees que tu cuenta ha sido comprometida, también deberías actualizar tu contraseña.',
     'log_out_other_browser_sessions' => 'Cerrar las demás sesiones del navegador',
-];
-    
+
     // Home page modals
     'banners_uploaded_successfully' => 'Banners subidos exitosamente',
     'current_banner_updated' => 'Banner actual actualizado',

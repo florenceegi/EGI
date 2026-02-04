@@ -239,19 +239,6 @@ return [
     'set_as_banner_success' => 'Banner set as current successfully',
     'set_as_banner' => 'Set as Banner',
     'no_media_id_provided' => 'No media ID provided',
-];
-    
-    // Home page modals
-    'banners_uploaded_successfully' => 'Banners uploaded successfully',
-    'current_banner_updated' => 'Current banner updated',
-    'failed_to_update_current_banner' => 'Failed to update current banner',
-    'failed_to_delete_banner' => 'Failed to delete banner',
-    'upload_new_avatar' => 'Upload New Avatar',
-    'all_avatar_images' => 'All Avatars',
-    'current_avatar' => 'Current Avatar',
-    'set_as_avatar' => 'Set as Avatar',
-    'delete_avatar' => 'Delete Avatar',
-];
     
     // Home page modals
     'banners_uploaded_successfully' => 'Banners uploaded successfully',

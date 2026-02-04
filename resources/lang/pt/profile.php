@@ -111,8 +111,7 @@ return [
     'manage_and_log_out_your_active_sessions_on_other_browsers_and_devices.' => 'Gerencie e faça logout de suas sessões ativas em outros navegadores e dispositivos.',
     'text_for_sessione' => 'Se necessário, você pode encerrar todas as outras sessões de seus navegadores em todos os seus dispositivos. Algumas de suas sessões recentes estão listadas abaixo; no entanto, esta lista pode não ser exaustiva. Se você acha que sua conta foi comprometida, você também deve atualizar sua senha.',
     'log out other browser sessions' => 'Encerrar outras sessões do navegador',
-];
-    
+
     // Home page modals
     'banners_uploaded_successfully' => 'Banners enviados com sucesso',
     'current_banner_updated' => 'Banner atual atualizado',

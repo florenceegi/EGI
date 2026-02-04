@@ -105,8 +105,7 @@ return [
     'manage_and_log_out_your_active_sessions_on_other_browsers_and_devices.' => 'Gérez et déconnectez vos sessions actives sur d\'autres navigateurs et appareils.',
     'text_for_sessione' => 'Si nécessaire, vous pouvez vous déconnecter de toutes les autres sessions de navigateur sur tous vos appareils. Certaines de vos sessions récentes sont listées ci-dessous; cependant, cette liste pourrait ne pas être exhaustive. Si vous pensez que votre compte a été compromis, vous devriez également mettre à jour votre mot de passe.',
     'log_out_other_browser_sessions' => 'Déconnecter les autres sessions du navigateur',
-];
-    
+
     // Home page modals
     'banners_uploaded_successfully' => 'Bannières téléchargées avec succès',
     'current_banner_updated' => 'Bannière actuelle mise à jour',
