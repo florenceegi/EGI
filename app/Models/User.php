@@ -1448,9 +1448,12 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 📤 Returns: Boolean success status
      */
     public function setCurrentProfileImage(Media $media): bool {
-        // Update the profile_photo_path field with the media URL
+        // Update the profile_photo_path field with the media Relative URL
+        // Using relative path ensures it works on any domain (localhost or production)
+        $relativeUrl = '/storage/' . $media->id . '/' . $media->file_name;
+        
         $this->update([
-            'profile_photo_path' => $media->getUrl()
+            'profile_photo_path' => $relativeUrl
         ]);
 
         return true;
