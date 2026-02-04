@@ -27,6 +27,23 @@ Il Sistema di Notifiche v3.0 di FlorenceEGI è una soluzione enterprise-grade pr
 
 ---
 
+## **Indice**
+
+1. **[Architettura del Sistema](#1-architettura-del-sistema)**
+   - 1.1 Diagramma Concettuale
+   - 1.2 Database Schema
+2. **[Tipi di Notifica e Ciclo di Vita](#2-tipi-di-notifica-e-ciclo-di-vita)**
+   - 2.1 Pattern Duale
+   - 2.2 Classificazione
+   - **2.3 Ciclo di Vita: Archiviazione ed Eliminazione** (NEW)
+3. **[Implementazione: Caso Studio](#3-implementazione-caso-studio-reservation-notifications)**
+4. **[Logging & Error Management (ULM)](#4-ultra-log-manager-ulm-e-ultra-error-manager-uem)**
+5. **[Internazionalizzazione](#5-internazionalizzazione-i18n)**
+6. **[Testing](#6-testing-e-debugging)**
+7. **[Estensione del Sistema](#7-estensione-del-sistema)**
+
+---
+
 ## **1. Architettura del Sistema**
 
 ### **1.1 Diagramma Concettuale**
@@ -180,6 +197,24 @@ Utilizzato per comunicazioni **Sistema → User** puramente informative (reserva
 - ✅ **Unidirezionale**: Nessuna risposta richiesta
 - ✅ **Informativa**: Solo notifica di eventi/cambiamenti
 - ✅ **Archivio**: User può solo "archiviare" la notifica
+
+### **2.3 Ciclo di Vita: Archiviazione ed Eliminazione**
+
+Il ciclo di vita di una notifiche segue due stazioni distinte:
+
+#### **A. Archiviazione (Business Logic)**
+L'archiviazione è l'atto di segnare una notifica come "gestita" o "letta".
+- **Azione**: Endpoint `/archive` o logica Handler.
+- **Effetto**: Imposta `read_at = NOW()`, `outcome = ARCHIVED`.
+- **Visibilità**: La notifica sparisce dalla lista "Pending" e appare in "History".
+- **Responsabilità**: Modulo specifico (es. Commerce handler).
+
+#### **B. Eliminazione (Platform Logic)**
+L'eliminazione è la rimozione definitiva del record dal database.
+- **Azione**: Bottone "Delete" nella sezione History.
+- **Effetto**: `DELETE FROM notifications WHERE id = ...`
+- **Visibilità**: Rimossa permanentemente.
+- **Responsabilità**: **Dashboard Platform** (Livewire Component). Non richiede implementazione nei singoli moduli.
 
 ---
 

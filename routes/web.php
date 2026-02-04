@@ -1292,6 +1292,14 @@ Route::prefix('notifications/{notification}/gdpr')
             ->middleware('throttle:3,60');
     });
 
+Route::prefix('notifications/commerce')
+    ->name('notifications.commerce.')
+    ->middleware(['auth', 'verified'])
+    ->group(function () {
+        Route::post('/shipped', [App\Http\Controllers\Notifications\Commerce\NotificationCommerceResponseController::class, 'handleShipped'])->name('shipped');
+        Route::post('/archive', [App\Http\Controllers\Notifications\Commerce\NotificationCommerceResponseController::class, 'archive'])->name('archive');
+    });
+
 Route::prefix('api')->name('api.')->group(function () {
     // Reservation API endpoints
     Route::post('/egis/{egiId}/reserve', [ReservationController::class, 'apiReserve'])

@@ -552,7 +552,7 @@
 <body class="bg-rinascimento-gradient font-corpo min-h-screen antialiased">
     {{-- Skip to main content link - WCAG 2.1 --}}
     <a href="#main-content"
-        class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-blu-algoritmo focus:px-4 focus:py-2 focus:text-white focus:outline-none focus:ring-2 focus:ring-oro-fiorentino">
+        class="focus:ring-oro-fiorentino sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-blu-algoritmo focus:px-4 focus:py-2 focus:text-white focus:outline-none focus:ring-2">
         {{ __('accessibility.skip_to_content', ['default' => 'Vai al contenuto principale']) }}
     </a>
 
@@ -561,7 +561,7 @@
         {{-- Header with Logo --}}
         <header class="mb-6 text-center sm:mb-8" role="banner">
             <a href="{{ url('/') }}"
-                class="inline-flex items-center rounded-lg focus:outline-none focus:ring-2 focus:ring-oro-fiorentino focus:ring-offset-2"
+                class="focus:ring-oro-fiorentino inline-flex items-center rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2"
                 aria-label="{{ __('register.back_to_home', ['default' => 'Torna alla home di FlorenceEGI']) }}">
                 <div class="bg-oro-fiorentino flex h-10 w-10 items-center justify-center rounded-full sm:h-12 sm:w-12"
                     aria-hidden="true">
@@ -571,7 +571,8 @@
                             d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                 </div>
-                <span class="font-rinascimento ml-3 text-xl font-bold text-blu-algoritmo sm:text-2xl">FlorenceEGI</span>
+                <span
+                    class="font-rinascimento ml-3 text-xl font-bold text-blu-algoritmo sm:text-2xl">FlorenceEGI</span>
             </a>
         </header>
 
@@ -653,7 +654,7 @@
             <p>
                 {{ __('register.already_registered_prompt') }}
                 <a href="{{ route('login') }}"
-                    class="rounded font-semibold text-blu-algoritmo underline decoration-1 underline-offset-2 hover:text-oro-fiorentino hover:decoration-2 focus:outline-none focus:ring-2 focus:ring-oro-fiorentino focus:ring-offset-2">
+                    class="hover:text-oro-fiorentino focus:ring-oro-fiorentino rounded font-semibold text-blu-algoritmo underline decoration-1 underline-offset-2 hover:decoration-2 focus:outline-none focus:ring-2 focus:ring-offset-2">
                     {{ __('register.login_link') }}
                 </a>
             </p>
@@ -661,12 +662,12 @@
             {{-- Legal links --}}
             <nav class="mt-4 flex flex-wrap justify-center gap-4 text-xs" aria-label="Link legali">
                 <a href="{{ route('gdpr.privacy-policy') }}"
-                    class="rounded underline decoration-1 underline-offset-2 hover:text-blu-algoritmo focus:outline-none focus:ring-2 focus:ring-oro-fiorentino focus:ring-offset-2">
+                    class="focus:ring-oro-fiorentino rounded underline decoration-1 underline-offset-2 hover:text-blu-algoritmo focus:outline-none focus:ring-2 focus:ring-offset-2">
                     {{ __('footer.privacy_policy', ['default' => 'Privacy Policy']) }}
                 </a>
                 <span aria-hidden="true">•</span>
                 <a href="{{ route('gdpr.terms') }}"
-                    class="rounded underline decoration-1 underline-offset-2 hover:text-blu-algoritmo focus:outline-none focus:ring-2 focus:ring-oro-fiorentino focus:ring-offset-2">
+                    class="focus:ring-oro-fiorentino rounded underline decoration-1 underline-offset-2 hover:text-blu-algoritmo focus:outline-none focus:ring-2 focus:ring-offset-2">
                     {{ __('footer.terms_of_service', ['default' => 'Termini di Servizio']) }}
                 </a>
             </nav>
@@ -727,7 +728,8 @@
                 document.addEventListener('keydown', function(e) {
                     // Escape key closes any open dialogs
                     if (e.key === 'Escape') {
-                        var activeDialog = document.querySelector('[role="dialog"][aria-hidden="false"]');
+                        var activeDialog = document.querySelector(
+                            '[role="dialog"][aria-hidden="false"]');
                         if (activeDialog) {
                             var closeButton = activeDialog.querySelector('[data-dismiss]');
                             if (closeButton) closeButton.click();

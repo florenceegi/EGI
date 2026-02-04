@@ -31,7 +31,15 @@ enum NotificationHandlerType: string
     /**
      * Handler per le notifiche relative al GDPR.
      */
+    /**
+     * Handler per le notifiche relative al GDPR.
+     */
     case GDPR = 'gdpr';
+
+    /**
+     * Handler per le notifiche Commerce.
+     */
+    case COMMERCE = 'commerce';
 
     /**
      * Ottiene il nome della classe handler associata al tipo.
@@ -44,6 +52,7 @@ enum NotificationHandlerType: string
             self::WALLET => \App\Services\Notifications\WalletNotificationHandler::class,
             self::INVITATION => \App\Services\Notifications\InvitationNotificationHandler::class,
             self::GDPR => \App\Services\Notifications\GdprNotificationHandler::class,
+            self::COMMERCE => \App\Services\Notifications\CommerceNotificationHandler::class,
         };
     }
 }

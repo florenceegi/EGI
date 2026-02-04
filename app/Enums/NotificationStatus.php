@@ -11,8 +11,7 @@ use ValueError;
  * @date    2025-06-11
  * @solution Provides a centralized and type-safe enumeration for all possible notification states, including the new interactive GDPR flow.
  */
-enum NotificationStatus: string
-{
+enum NotificationStatus: string {
     // Stati generici
     case PENDING = 'pending';
     case ACTIVE = 'active';
@@ -20,27 +19,26 @@ enum NotificationStatus: string
     case EXPIRED = 'expired';
     case ARCHIVED = 'Archived';
 
-    // Stati per proposte a due vie (Inviti, Wallet)
+        // Stati per proposte a due vie (Inviti, Wallet)
     case REQUEST = 'request';
     case ACCEPTED = 'accepted';
     case REJECTED = 'rejected';
 
-    // Stati specifici per il nuovo flusso GDPR
+        // Stati specifici per il nuovo flusso GDPR
     case PENDING_CONFIRMATION = 'pending_confirmation';
     case CONFIRMED = 'confirmed';
     case REVOKED = 'revoked';
     case DISAVOWED = 'disavowed';
 
-    // Stati legacy/tecnici
+        // Stati legacy/tecnici
     case CREATION = 'creation';
     case PENDING_CREATE = 'pending_create';
     case PENDING_UPDATE = 'pending_update';
     case UPDATE = 'update';
-    // Commerce
+        // Commerce
     case SHIPPED = 'shipped';
 
-    public static function fromDatabase(string $value): self
-    {
+    public static function fromDatabase(string $value): self {
         foreach (self::cases() as $case) {
             if ($value === $case->value) {
                 return $case;

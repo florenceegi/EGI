@@ -22,6 +22,19 @@
                         class="tracking-wider text-green-400">{{ $notification->data['tracking_code'] ?? 'N/A' }}</span>
                 </div>
             </div>
+
+            @if (is_null($notification->read_at))
+                <div class="mt-4 flex justify-end">
+                    <form action="{{ route('notifications.commerce.archive') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="notification_id" value="{{ $notification->id }}">
+                        <button type="submit"
+                            class="rounded bg-gray-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                            {{ __('label.archived') }}
+                        </button>
+                    </form>
+                </div>
+            @endif
         </div>
         <span class="ml-4 whitespace-nowrap text-xs text-gray-500">
             {{ $notification->created_at->diffForHumans() }}

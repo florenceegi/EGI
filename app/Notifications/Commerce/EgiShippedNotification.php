@@ -53,4 +53,11 @@ class EgiShippedNotification extends Notification
             'outcome'       => \App\Enums\NotificationStatus::PENDING->value, // Visibile in lista
         ];
     }
+    /**
+     * Get the type of the notification being stored.
+     */
+    public function databaseType(object $notifiable): string
+    {
+        return 'commerce';
+    }
 }

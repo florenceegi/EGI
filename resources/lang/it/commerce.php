@@ -115,6 +115,7 @@ return [
         'flash' => [
             'order_not_found' => 'Ordine non trovato.',
             'shipped_success' => 'Spedizione confermata e acquirente notificato!',
+            'archived_success' => 'Notifica archiviata con successo.',
         ],
     ],
 ];

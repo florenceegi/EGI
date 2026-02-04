@@ -25,16 +25,14 @@
                     $isDisabled = $details['disabled'] ?? false;
                     $isComingSoon = $details['coming_soon'] ?? false;
                 @endphp
-                <label class="type-card block p-3 sm:p-4 {{ $isDisabled ? 'opacity-60 cursor-not-allowed' : '' }}" 
-                       data-type="{{ $type }}"
-                       @if($isDisabled) data-disabled="true" @endif>
+                <label class="type-card {{ $isDisabled ? 'opacity-60 cursor-not-allowed' : '' }} block p-3 sm:p-4"
+                    data-type="{{ $type }}" @if ($isDisabled) data-disabled="true" @endif>
                     <input type="radio" name="user_type" value="{{ $type }}" class="sr-only"
-                        {{ old('user_type') === $type ? 'checked' : '' }}
-                        {{ $isDisabled ? 'disabled' : '' }}>
+                        {{ old('user_type') === $type ? 'checked' : '' }} {{ $isDisabled ? 'disabled' : '' }}>
                     <div class="flex items-start gap-3">
                         {{-- Icon --}}
                         <div
-                            class="bg-{{ $details['color'] }} flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full sm:h-12 sm:w-12 {{ $isDisabled ? 'grayscale' : '' }}">
+                            class="bg-{{ $details['color'] }} {{ $isDisabled ? 'grayscale' : '' }} flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full sm:h-12 sm:w-12">
                             <svg class="h-5 w-5 text-white sm:h-6 sm:w-6" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -43,15 +41,18 @@
                         </div>
                         {{-- Content --}}
                         <div class="min-w-0 flex-1">
-                            <h3 class="text-sm font-semibold {{ $isDisabled ? 'text-gray-400' : 'text-blu-algoritmo' }} sm:text-base">
+                            <h3
+                                class="{{ $isDisabled ? 'text-gray-400' : 'text-blu-algoritmo' }} text-sm font-semibold sm:text-base">
                                 {{ __('register.user_type_' . $type) }}
-                                @if($isComingSoon)
-                                    <span class="ml-1.5 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+                                @if ($isComingSoon)
+                                    <span
+                                        class="ml-1.5 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
                                         Coming Soon
                                     </span>
                                 @endif
                             </h3>
-                            <p class="mt-1 line-clamp-2 text-xs {{ $isDisabled ? 'text-gray-400' : 'text-gray-600' }} sm:text-sm">
+                            <p
+                                class="{{ $isDisabled ? 'text-gray-400' : 'text-gray-600' }} mt-1 line-clamp-2 text-xs sm:text-sm">
                                 {{ __('register.user_type_' . $type . '_desc') }}
                             </p>
                         </div>
@@ -133,7 +134,8 @@
                             c.classList.remove('selected');
                             const ci = c.querySelector('.check-indicator');
                             const icon = ci.querySelector('svg');
-                            ci.classList.remove('bg-verde-rinascita', 'border-verde-rinascita');
+                            ci.classList.remove('bg-verde-rinascita',
+                                'border-verde-rinascita');
                             ci.classList.add('border-gray-300');
                             icon.classList.add('opacity-0');
                             c.querySelector('input').checked = false;

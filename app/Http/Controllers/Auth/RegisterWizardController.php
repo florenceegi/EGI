@@ -18,7 +18,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * 🎯 Purpose: Guided multi-step registration process for better UX
  * 🛡️ Security: Delegates to RegisteredUserController for full ecosystem setup
  * 📊 Steps: 1. User Type → 2. Consents → 3. Data → 4. Summary → Delegate to store()
- * 
+ *
  * @package App\Http\Controllers\Auth
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0
@@ -269,7 +269,7 @@ class RegisterWizardController extends Controller {
 
     /**
      * Final: Delegate to existing RegisteredUserController::store()
-     * 
+     *
      * @Oracode Method: Wizard Completion via Delegation
      * 🎯 Purpose: Build a proper RegistrationRequest and delegate to the existing registration flow
      * 🛡️ Security: Uses the full 1006-line RegisteredUserController with all ecosystem setup
@@ -298,12 +298,12 @@ class RegisterWizardController extends Controller {
             'password' => $data['password'],
             'password_confirmation' => $data['password'], // Already validated in step3
             'user_type' => $userType,
-            
+
             // GDPR Required (from step2)
             'privacy_policy_accepted' => '1',
-            'terms_accepted' => '1', 
+            'terms_accepted' => '1',
             'age_confirmation' => '1',
-            
+
             // GDPR Optional (from step2)
             'consents' => [
                 'analytics' => ($consents['analytics'] ?? false) ? '1' : '0',
@@ -322,21 +322,21 @@ class RegisterWizardController extends Controller {
 
         // Merge wizard data into the current request
         $request->merge($registrationData);
-        
+
         // Create a RegistrationRequest from the modified request
         $registrationRequest = \App\Http\Requests\RegistrationRequest::createFrom($request);
-        
+
         // Set container and redirector for FormRequest validation
         $registrationRequest->setContainer(app());
         $registrationRequest->setRedirector(app(\Illuminate\Routing\Redirector::class));
-        
+
         // Validate the request (this will throw ValidationException if invalid)
         $registrationRequest->validateResolved();
 
         // Delegate to the existing RegisteredUserController::store()
         // This handles: Algorand wallet, ecosystem setup, domain separation, GDPR, audit, etc.
         $registeredUserController = app(RegisteredUserController::class);
-        
+
         return $registeredUserController->store($registrationRequest);
     }
 }

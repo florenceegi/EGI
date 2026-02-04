@@ -90,7 +90,7 @@ class NotificationCommerceResponseController extends Controller
 
             // 3. Mark notification as 'SHIPPED' (outcome) and read (archived)
             $notification->update([
-                'outcome' => 'SHIPPED',
+                'outcome' => \App\Enums\NotificationStatus::SHIPPED->value,
                 'read_at' => now(), // Archivia la notifica
             ]);
 
@@ -102,6 +102,44 @@ class NotificationCommerceResponseController extends Controller
 
         } catch (\Exception $e) {
             return $this->errorManager->handle('COMMERCE_SHIPMENT_FAILED', [
+                'user_id' => Auth::id(),
+                'notification_id' => $request->input('notification_id')
+            ], $e);
+        }
+    }
+
+    /**
+     * Archive the notification
+     */
+    public function archive(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'notification_id' => 'required|exists:notifications,id',
+            ]);
+
+            $notification = CustomDatabaseNotification::find($validated['notification_id']);
+
+            if ($notification->notifiable_id !== Auth::id()) {
+                abort(403);
+            }
+
+            $notification->update([
+                'read_at' => now(),
+                'outcome' => \App\Enums\NotificationStatus::ARCHIVED->value,
+            ]);
+
+            $this->auditService->logUserAction(
+                Auth::user(),
+                'notification_archived',
+                ['notification_id' => $notification->id],
+                GdprActivityCategory::NOTIFICATION_MANAGEMENT
+            );
+
+            return back()->with('success', __('commerce.notifications.flash.archived_success'));
+
+        } catch (\Exception $e) {
+            return $this->errorManager->handle('COMMERCE_ARCHIVE_FAILED', [
                 'user_id' => Auth::id(),
                 'notification_id' => $request->input('notification_id')
             ], $e);

@@ -41,7 +41,7 @@ class EgiSoldNotification extends Notification implements ShouldBroadcastNow // 
                 'egi_name'          => ($this->payload->egi->title ?? 'EGI Asset') . 
                                        ($this->payload->egi->token_EGI ? ' (ASA: ' . $this->payload->egi->token_EGI . ')' : ''),
             ],
-            'outcome'       => 'pending',
+            'outcome'       => \App\Enums\NotificationStatus::PENDING->value, // Visibile in lista
         ];
     }
 
@@ -57,5 +57,12 @@ class EgiSoldNotification extends Notification implements ShouldBroadcastNow // 
             'type'    => 'commerce',
             'payload_id' => $this->payload->id,
         ]);
+    }
+    /**
+     * Get the type of the notification being stored.
+     */
+    public function databaseType(object $notifiable): string
+    {
+        return 'commerce';
     }
 }
