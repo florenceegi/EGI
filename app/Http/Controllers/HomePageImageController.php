@@ -115,12 +115,12 @@ class HomePageImageController extends Controller
 
             // 3. Request validation
             $request->validate([
-                'creator_banners.' => 'required',
-                'creator_banners.*' => 'file|mimes:' . implode(',', self::ALLOWED_EXTENSIONS) . '|max:' . self::MAX_FILE_SIZE_KB
+                'creator_banners' => 'required',
+                'creator_banners*' => 'file|mimes:' . implode(',', self::ALLOWED_EXTENSIONS) . '|max:' . self::MAX_FILE_SIZE_KB
             ]);
 
             // 4. File processing
-            $files = $request->file('creator_banners.');
+            $files = $request->file('creator_banners');
             if (!is_array($files)) {
                 $files = [$files];
             }
@@ -135,7 +135,7 @@ class HomePageImageController extends Controller
                 ]);
 
                 $media = $user->addMedia($file)
-                    ->toMediaCollection('creator_banners.');
+                    ->toMediaCollection('creator_banners');
 
                 $uploadedMedia[] = $media;
             }
@@ -219,7 +219,7 @@ class HomePageImageController extends Controller
 
             // 3. Get and verify media ownership
             $media = Media::findOrFail($request->media_id);
-            if ($media->model_id !== $user->id || $media->collection_name !== 'creator_banners.') {
+            if ($media->model_id !== $user->id || $media->collection_name !== 'creator_banners') {
                 throw new \Exception('Unauthorized access to media');
             }
 
@@ -299,7 +299,7 @@ class HomePageImageController extends Controller
 
             // 3. Get and verify media ownership
             $media = Media::findOrFail($request->media_id);
-            if ($media->model_id !== $user->id || $media->collection_name !== 'creator_banners.') {
+            if ($media->model_id !== $user->id || $media->collection_name !== 'creator_banners') {
                 throw new \Exception('Unauthorized access to media');
             }
 

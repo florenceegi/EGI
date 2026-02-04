@@ -108,7 +108,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                     ], 403);
                 }
 
-                return redirect()->route('profile.show')
+                return redirect()->back()
                     ->withErrors(['consent' => __('gdpr.consent_required_profile_images')]);
             }
 
@@ -199,7 +199,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 ]);
             }
 
-            return redirect()->route('profile.show')
+            return redirect()->back()
                 ->with('success', __('profile.image_uploaded_successfully'));
         } catch (\Illuminate\Validation\ValidationException $e) {
             // UEM: Handle validation errors
@@ -217,7 +217,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 ], 422);
             }
 
-            return redirect()->route('profile.show')
+            return redirect()->back()
                 ->withErrors($e->errors())
                 ->with('error', __('profile.validation_failed'));
         } catch (\Exception $e) {
@@ -235,7 +235,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 ], 500);
             }
 
-            return redirect()->route('profile.show')
+            return redirect()->back()
                 ->with('error', __('profile.image_upload_failed'));
         }
     }
@@ -350,7 +350,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                     'media_id' => $request->media_id
                 ]);
 
-                return redirect()->route('profile.show')
+                return redirect()->back()
                     ->withErrors(['consent' => __('gdpr.consent_required_profile_changes')]);
             }
 
@@ -391,7 +391,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 'file_name' => $media->file_name
             ]);
 
-            return redirect()->route('profile.show')
+            return redirect()->back()
                 ->with('success', __('profile.current_image_updated'));
         } catch (\Exception $e) {
             // 9. UEM: Error handling
@@ -401,7 +401,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 'ip_address' => $request->ip()
             ], $e);
 
-            return redirect()->route('profile.show')
+            return redirect()->back()
                 ->with('error', __('profile.failed_to_update_current_image'));
         }
     }
@@ -436,7 +436,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                     'media_id' => $request->media_id
                 ]);
 
-                return redirect()->route('profile.show')
+                return redirect()->back()
                     ->withErrors(['consent' => __('gdpr.consent_required_profile_changes')]);
             }
 
@@ -493,7 +493,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 'remaining_count' => $deletionInfo['remaining_images_count']
             ]);
 
-            return redirect()->route('profile.show')
+            return redirect()->back()
                 ->with('success', __('profile.image_deleted_successfully'));
         } catch (\Exception $e) {
             // 11. UEM: Error handling
@@ -503,7 +503,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 'ip_address' => $request->ip()
             ], $e);
 
-            return redirect()->route('profile.show')
+            return redirect()->back()
                 ->with('error', __('profile.failed_to_delete_image'));
         }
     }
