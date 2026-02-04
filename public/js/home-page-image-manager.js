@@ -7,7 +7,7 @@
  *
  * @package FlorenceEGI
  * @author Antigravity (AI Partner OS3.0)
- * @version 1.0.0
+ * @version 1.0.1
  * @date 2026-02-04
  * @compliance P0-0 (NO ALPINE/LIVEWIRE - Pure Vanilla JS)
  */
@@ -45,12 +45,16 @@ class HomePageImageManager {
         this.previewContainer.addEventListener('click', (e) => this.handlePreviewClick(e));
 
         // Handle "Set Current" forms via AJAX (for Banner/Avatar inside Gallery)
+        // This prevents silent page reloads and gives better feedback
         const setCurrentForms = this.modal.querySelectorAll('form[action*="set-current"]');
         setCurrentForms.forEach(form => {
             form.addEventListener('submit', (e) => this.handleSetCurrent(e));
         });
     }
 
+    /**
+     * Handle "Set as Current" form submission via AJAX
+     */
     async handleSetCurrent(e) {
         e.preventDefault();
         const form = e.target;
@@ -77,9 +81,21 @@ class HomePageImageManager {
             const data = await response.json();
 
             if (data.success) {
-                window.location.reload();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: data.message || 'Image updated successfully',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                     window.location.reload();
+                }
             } else {
-                alert(data.message || 'Error setting current image');
+                this.showError(data.message || 'Error setting current image');
                 if(submitBtn) {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = submitBtn.dataset.originalHtml;
@@ -87,7 +103,7 @@ class HomePageImageManager {
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred while communicating with the server.');
+            this.showError('An error occurred while communicating with the server.');
             if(submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = submitBtn.dataset.originalHtml;
@@ -226,16 +242,44 @@ class HomePageImageManager {
             const data = await response.json();
 
             if (data.success) {
-                window.location.reload();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Images uploaded successfully',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    window.location.reload();
+                }
             } else {
-                alert(data.message || 'Upload failed');
+                this.showError(data.message || 'Upload failed');
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Upload failed');
+            this.showError('Upload failed');
         } finally {
             this.uploadButton.disabled = false;
             this.uploadButton.textContent = 'Upload Selected Images';
+        }
+    }
+
+    // Helper to standardize error display
+    showError(message) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: message,
+                confirmButtonColor: '#EF4444',
+                background: '#1F2937', // Dark mode background
+                color: '#fff' // White text
+            });
+        } else {
+            alert(message);
         }
     }
 
