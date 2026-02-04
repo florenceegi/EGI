@@ -774,6 +774,7 @@ class RegisteredUserController extends Controller {
             if (in_array($validated['user_type'], ['company', 'pa_entity'])) {
                 UserOrganizationData::create([
                     'user_id' => $user->id,
+                    'org_name' => $validated['org_name'] ?? null,
                     'business_type' => $validated['user_type'] === 'pa_entity' ? 'pa_entity' : 'corporation',
                     'is_seller_verified' => false,
                     'can_issue_invoices' => true, // PA può emettere fatture istituzionali

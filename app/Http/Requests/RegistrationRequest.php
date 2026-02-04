@@ -104,6 +104,9 @@ class RegistrationRequest extends FormRequest
             'consents.marketing' => 'sometimes|string|in:1,0',
             'consents.profiling' => 'sometimes|string|in:1,0',
 
+            // ═══ ORGANIZATION (Company/PA) ═══
+            'org_name' => 'nullable|string|max:255',
+
             // ═══ WALLET & IBAN (OPTIONAL) ═══
             'iban' => ['nullable', 'string', 'min:15', 'max:34', new ValidIban()],
             'wallet_passphrase' => 'nullable|string|min:12|max:255',
