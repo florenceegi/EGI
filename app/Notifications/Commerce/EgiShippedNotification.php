@@ -39,7 +39,7 @@ class EgiShippedNotification extends Notification
     public function toCustomDatabase($notifiable)
     {
         return [
-            'view'          => 'notifications.commerce.egi_shipped',
+            'view'          => 'commerce.egi_shipped',
             'model_type'    => EgiBlockchain::class,
             'model_id'      => $this->purchase->id,
             'sender_id'     => 1, // System
