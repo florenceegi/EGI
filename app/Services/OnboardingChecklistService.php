@@ -24,6 +24,7 @@ class OnboardingChecklistService
      * Cache TTL in seconds (5 minutes)
      */
     private const CACHE_TTL = 300;
+    private const CACHE_VERSION = 'v2';
 
     /**
      * @var UltraLogManager
@@ -49,7 +50,7 @@ class OnboardingChecklistService
      */
     public function getChecklist(User $user, string $userType): array
     {
-        $cacheKey = "onboarding_checklist_{$userType}_{$user->id}";
+        $cacheKey = "onboarding_checklist_" . self::CACHE_VERSION . "_{$userType}_{$user->id}";
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($user, $userType) {
             return match ($userType) {
@@ -70,7 +71,7 @@ class OnboardingChecklistService
      */
     public function refreshChecklist(User $user, string $userType): array
     {
-        $cacheKey = "onboarding_checklist_{$userType}_{$user->id}";
+        $cacheKey = "onboarding_checklist_" . self::CACHE_VERSION . "_{$userType}_{$user->id}";
         Cache::forget($cacheKey);
 
         return $this->getChecklist($user, $userType);
@@ -106,15 +107,15 @@ class OnboardingChecklistService
     {
         $items = [];
 
-        // 1. Verify email
+        // 1. Configure payments (Stripe) - PRIORITY: First thing for selling
         $items[] = [
-            'id' => 'verify_email',
-            'title_key' => 'ai_sidebar.steps.verify_email.title',
-            'description_key' => 'ai_sidebar.steps.verify_email.description',
-            'completed' => $user->hasVerifiedEmail(),
-            'icon' => '📧',
-            'action' => route('verification.notice'),
-            'modal' => null,
+            'id' => 'stripe',
+            'title_key' => 'ai_sidebar.steps.stripe.title',
+            'description_key' => 'ai_sidebar.steps.stripe.description',
+            'completed' => $this->hasStripeConnected($user),
+            'icon' => '💳',
+            'action' => null,
+            'modal' => 'payment-modal',
             'priority' => 1,
         ];
 
@@ -154,19 +155,7 @@ class OnboardingChecklistService
             'priority' => 4,
         ];
 
-        // 5. Configure payments (Stripe)
-        $items[] = [
-            'id' => 'stripe',
-            'title_key' => 'ai_sidebar.steps.stripe.title',
-            'description_key' => 'ai_sidebar.steps.stripe.description',
-            'completed' => $this->hasStripeConnected($user),
-            'icon' => '💳',
-            'action' => null,
-            'modal' => 'payment-modal',
-            'priority' => 5,
-        ];
-
-        // 6. Create first collection
+        // 5. Create first collection
         $items[] = [
             'id' => 'collection',
             'title_key' => 'ai_sidebar.steps.collection.title',
@@ -175,10 +164,10 @@ class OnboardingChecklistService
             'icon' => '📁',
             'action' => route('collections.create'),
             'modal' => null,
-            'priority' => 6,
+            'priority' => 5,
         ];
 
-        // 7. Create first EGI
+        // 6. Create first EGI
         $items[] = [
             'id' => 'first_egi',
             'title_key' => 'ai_sidebar.steps.first_egi.title',
@@ -187,10 +176,10 @@ class OnboardingChecklistService
             'icon' => '🎨',
             'action' => route('egis.create'),
             'modal' => null,
-            'priority' => 7,
+            'priority' => 6,
         ];
 
-        // 8. Add social links
+        // 7. Add social links
         $items[] = [
             'id' => 'social_links',
             'title_key' => 'ai_sidebar.steps.social_links.title',
@@ -199,7 +188,7 @@ class OnboardingChecklistService
             'icon' => '🔗',
             'action' => null,
             'modal' => 'social-links-modal',
-            'priority' => 8,
+            'priority' => 7,
         ];
 
         // Sort by priority and return
@@ -216,15 +205,15 @@ class OnboardingChecklistService
     {
         $items = [];
 
-        // 1. Verify email
+        // 1. Configure payments (Stripe) - PRIORITY: First thing for selling
         $items[] = [
-            'id' => 'verify_email',
-            'title_key' => 'ai_sidebar.steps.verify_email.title',
-            'description_key' => 'ai_sidebar.steps.verify_email.description',
-            'completed' => $user->hasVerifiedEmail(),
-            'icon' => '📧',
-            'action' => route('verification.notice'),
-            'modal' => null,
+            'id' => 'stripe',
+            'title_key' => 'ai_sidebar.steps.stripe.title',
+            'description_key' => 'ai_sidebar.steps.stripe.description',
+            'completed' => $this->hasStripeConnected($user),
+            'icon' => '💳',
+            'action' => null,
+            'modal' => 'payment-modal',
             'priority' => 1,
         ];
 
@@ -264,19 +253,7 @@ class OnboardingChecklistService
             'priority' => 4,
         ];
 
-        // 5. Configure payments (Stripe)
-        $items[] = [
-            'id' => 'stripe',
-            'title_key' => 'ai_sidebar.steps.stripe.title',
-            'description_key' => 'ai_sidebar.steps.stripe.description',
-            'completed' => $this->hasStripeConnected($user),
-            'icon' => '💳',
-            'action' => null,
-            'modal' => 'payment-modal',
-            'priority' => 5,
-        ];
-
-        // 6. Create first collection
+        // 5. Create first collection
         $items[] = [
             'id' => 'collection',
             'title_key' => 'ai_sidebar.steps.collection.title',
@@ -285,10 +262,10 @@ class OnboardingChecklistService
             'icon' => '📁',
             'action' => route('collections.create'),
             'modal' => null,
-            'priority' => 6,
+            'priority' => 5,
         ];
 
-        // 7. Create first EGI
+        // 6. Create first EGI
         $items[] = [
             'id' => 'first_egi',
             'title_key' => 'ai_sidebar.steps.first_egi.title',
@@ -297,7 +274,7 @@ class OnboardingChecklistService
             'icon' => '🎨',
             'action' => route('egis.create'),
             'modal' => null,
-            'priority' => 7,
+            'priority' => 6,
         ];
 
         return collect($items)->sortBy('priority')->values()->toArray();

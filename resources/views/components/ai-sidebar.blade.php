@@ -162,7 +162,7 @@
         {{-- AI Chat Section (Top) --}}
         <div class="flex-1 overflow-hidden border-b border-gray-700/50">
             {{-- AI Message Area --}}
-            <div id="ai-sidebar-chat" class="h-full overflow-y-auto p-4">
+            <div id="ai-sidebar-chat" class="h-full overflow-y-auto p-4 pt-6">
                 {{-- Initial AI message - Discorsivo basato su cosa manca --}}
                 <div class="ai-message rounded-xl bg-gradient-to-r from-indigo-900/30 to-purple-900/30 p-4">
                     <div class="mb-3 flex items-center gap-2">
