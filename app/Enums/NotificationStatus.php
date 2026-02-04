@@ -15,6 +15,7 @@ enum NotificationStatus: string
 {
     // Stati generici
     case PENDING = 'pending';
+    case ACTIVE = 'active';
     case DONE = 'done';
     case EXPIRED = 'expired';
     case ARCHIVED = 'Archived';

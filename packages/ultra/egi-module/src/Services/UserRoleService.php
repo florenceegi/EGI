@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ultra\EgiModule\Services;
 
+use App\Enums\NotificationStatus;
 use App\Helpers\FegiAuth;
 use App\Models\Collection;
 use App\Models\CollectionUser;
@@ -432,7 +433,7 @@ class UserRoleService implements UserRoleServiceInterface {
                     'creation_timestamp' => now()->toISOString(),
                     'created_by_service' => static::class
                 ], $metadata),
-                'status' => 'active' // Active status for collection membership
+                'status' => NotificationStatus::ACTIVE->value
             ];
 
             // Create the collection-user record
