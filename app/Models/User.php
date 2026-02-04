@@ -1497,6 +1497,48 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
     }
 
     /**
+     * @Oracode Method: Get All Creator Banner Images
+     * 🎯 Purpose: Get all uploaded creator banner images for home page
+     * 📤 Returns: Collection of Media models
+     */
+    public function getAllCreatorBanners() {
+        return $this->getMedia('creator_banners');
+    }
+
+    /**
+     * @Oracode Method: Get Current Creator Banner
+     * 🎯 Purpose: Get the currently active creator banner for home page
+     * 📤 Returns: Media model or null
+     */
+    public function getCurrentCreatorBanner(): ?Media {
+        return $this->getFirstMedia('current_creator_banner');
+    }
+
+    /**
+     * @Oracode Method: Set Current Creator Banner
+     * 🎯 Purpose: Set a specific banner as the current active creator banner
+     * 📤 Returns: Boolean success status
+     */
+    public function setCurrentCreatorBanner(Media $media): bool {
+        // Clear current creator banner first
+        $currentBanner = $this->getCurrentCreatorBanner();
+        if ($currentBanner) {
+            $currentBanner->delete();
+        }
+
+        // Copy the selected banner to current_creator_banner collection
+        $newBanner = $media->copy($this, 'current_creator_banner');
+
+        // Store reference to source media for tracking
+        $newBanner->setCustomProperty('source_media_id', $media->id);
+        $newBanner->save();
+
+        return true;
+    }
+
+
+
+    /**
      * @Oracode Method: Get Profile Photo URL (Override)
      * 🎯 Purpose: Override default profile photo URL - se c'è immagine la mostra, altrimenti avatar generato
      * 📤 Returns: URL string for current profile image or generated avatar
