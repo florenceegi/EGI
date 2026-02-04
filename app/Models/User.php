@@ -87,6 +87,8 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
         'last_activity_logged_at',
         'total_gdpr_requests',
         'profile_photo_path',
+        'current_banner_id',
+        'current_profile_image_id',
         'created_via',
         'language',
         'wallet',
@@ -1426,14 +1428,35 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 📤 Returns: Banner URL string or null
      */
     public function getCreatorBannerUrl(string $conversion = 'banner'): ?string {
-        $currentBanner = $this->getCurrentBanner();
+        $currentBanner = $this->currentBannerMedia;
         if (!$currentBanner) {
             return null;
         }
         
-        // Force relative URL to avoid domain mismatch (e.g. localhost in database vs sslip.io in browser)
+        // Force relative URL to avoid domain mismatch
         $url = $currentBanner->getUrl($conversion);
         return parse_url($url, PHP_URL_PATH);
+    }
+
+    /**
+     * @Oracode Relationship: Current Banner Media (Spatie)
+     */
+    public function currentBannerMedia(): BelongsTo {
+        return $this->belongsTo(Media::class, 'current_banner_id');
+    }
+
+    /**
+     * @Oracode Relationship: Current Profile Image (Spatie)
+     */
+    public function currentProfileImageMedia(): BelongsTo {
+        return $this->belongsTo(Media::class, 'current_profile_image_id');
+    }
+
+    /**
+     * @Oracode Method: Get Current Banner
+     */
+    public function getCurrentBanner(): ?Media {
+        return $this->currentBannerMedia;
     }
 
     /**
@@ -1443,8 +1466,7 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 🔧 FIX: Usa metodo standard come Biography invece di query custom
      */
     public function getCurrentProfileImage(): ?Media {
-        // Retrieve the explicitly set current profile image from the single-file collection
-        return $this->getFirstMedia('current_profile');
+        return $this->currentProfileImageMedia;
     }
 
     /**
@@ -1462,19 +1484,14 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 📤 Returns: Boolean success status
      */
     public function setCurrentProfileImage(Media $media): bool {
-        // 1. Spatie Logic: Copy to 'current_profile' collection (Single File)
-        // This ensures checking getCurrentProfileImage() retrieves the explicitly set one
-        $this->clearMediaCollection('current_profile');
-        $newMedia = $media->copy($this, 'current_profile');
+        // 1. Pointer Update: Set ID in database
+        $this->update(['current_profile_image_id' => $media->id]);
         
-        // Save source reference if needed
-        $newMedia->setCustomProperty('source_media_id', $media->id);
-        $newMedia->save();
-
         // 2. Jetstream Logic: Update profile_photo_path for navbar compatibility
-        // Using relative path ensures it works on any domain
-        $relativeUrl = '/storage/' . $newMedia->id . '/' . $newMedia->file_name;
-        
+        // We use the MEDIA URL (relative) directly
+        $url = $media->getUrl(); // e.g. /storage/1/file.jpg
+        $relativeUrl = parse_url($url, PHP_URL_PATH);
+
         $this->update([
             'profile_photo_path' => $relativeUrl
         ]);
@@ -1487,9 +1504,7 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 🎯 Purpose: Get the currently active banner image
      * 📤 Returns: Media model or null
      */
-    public function getCurrentBanner(): ?Media {
-        return $this->getFirstMedia('current_banner');
-    }
+    // Old getCurrentBanner removed (duplicate)
 
     /**
      * @Oracode Method: Get All Banner Images
@@ -1506,20 +1521,7 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 📤 Returns: Boolean success status
      */
     public function setCurrentBanner(Media $media): bool {
-        // Clear current banner first
-        $currentBanner = $this->getCurrentBanner();
-        if ($currentBanner) {
-            $currentBanner->delete();
-        }
-
-        // Copy the selected banner to current_banner collection
-        $newBanner = $media->copy($this, 'current_banner');
-
-        // Store reference to source media for tracking
-        $newBanner->setCustomProperty('source_media_id', $media->id);
-        $newBanner->save();
-
-        return true;
+        return $this->update(['current_banner_id' => $media->id]);
     }
 
     /**
@@ -1537,7 +1539,7 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 📤 Returns: Media model or null
      */
     public function getCurrentCreatorBanner(): ?Media {
-        return $this->getFirstMedia('current_banner');
+        return $this->currentBannerMedia;
     }
 
     /**
@@ -1546,15 +1548,8 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 📤 Returns: Boolean success status
      */
     public function setCurrentCreatorBanner(Media $media): bool {
-        // Use 'current_banner' collection which is defined as singleFile(true)
-        // Spatie will automatically replace the existing file
-        $newBanner = $media->copy($this, 'current_banner');
-
-        // Store reference to source media for tracking
-        $newBanner->setCustomProperty('source_media_id', $media->id);
-        $newBanner->save();
-
-        return true;
+        // Pointer Update Only
+        return $this->update(['current_banner_id' => $media->id]);
     }
 
 

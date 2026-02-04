@@ -73,7 +73,7 @@
                 @if ($currentImage)
                     <div class="mb-6">
                         <h4 class="mb-3 text-sm font-medium text-gray-300">{{ __('profile.currently_active') }}</h4>
-                        <div class="border-[#D4A574] relative overflow-hidden rounded-lg border-2">
+                        <div class="relative overflow-hidden rounded-lg border-2 border-[#D4A574]">
                             <img src="{{ $currentImage->getUrl($type === 'banner' ? 'banner_mobile' : 'thumb') }}"
                                 alt="{{ __('profile.current_' . $type) }}" class="h-32 w-full object-cover">
                         </div>
@@ -89,7 +89,7 @@
 
                         {{-- Upload Area --}}
                         <div id="{{ $modalId }}-upload-area"
-                            class="hover:border-[#D4A574] cursor-pointer rounded-lg border-2 border-dashed border-gray-600 p-8 text-center transition-colors hover:bg-gray-700/50">
+                            class="cursor-pointer rounded-lg border-2 border-dashed border-gray-600 p-8 text-center transition-colors hover:border-[#D4A574] hover:bg-gray-700/50">
                             <input type="file" name="{{ $collection }}" id="{{ $modalId }}-file-input"
                                 accept="image/jpeg,image/png,image/webp,image/avif" class="sr-only" multiple>
                             <label for="{{ $modalId }}-file-input" class="block cursor-pointer">
@@ -113,7 +113,7 @@
 
                         {{-- Upload Button --}}
                         <button type="submit" id="{{ $modalId }}-upload-button"
-                            class="bg-[#D4A574] hover:bg-[#D4A574]/90 mt-4 hidden w-full rounded-lg px-4 py-3 font-semibold text-gray-900 transition-colors">
+                            class="mt-4 hidden w-full rounded-lg bg-[#D4A574] px-4 py-3 font-semibold text-gray-900 transition-colors hover:bg-[#D4A574]/90">
                             {{ __('profile.upload_selected_images') }}
                         </button>
                     </form>
@@ -133,7 +133,8 @@
                                     </div>
 
                                     {{-- Current indicator --}}
-                                    @if ($currentImage && $currentImage->getCustomProperty('source_media_id') == $image->id)
+                                    {{-- Current indicator --}}
+                                    @if ($currentImage && $currentImage->id == $image->id)
                                         <div class="absolute right-1 top-1 rounded-full bg-green-500 p-1"
                                             title="{{ __('profile.currently_active') }}">
                                             <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -147,8 +148,8 @@
                                     {{-- Action buttons --}}
                                     <div
                                         class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 transition-all group-hover:bg-opacity-50">
-                                        <div class="space-x-2 ">
-                                            @if (!$currentImage || $currentImage->getCustomProperty('source_media_id') != $image->id)
+                                        <div class="space-x-2">
+                                            @if (!$currentImage || $currentImage->id != $image->id)
                                                 <form action="{{ $setCurrentRoute }}" method="POST" class="inline">
                                                     @csrf
                                                     <input type="hidden" name="media_id" value="{{ $image->id }}">
