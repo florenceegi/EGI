@@ -543,7 +543,7 @@
                             <div class="pt-4 text-center border-t border-oro-fiorentino/20">
                                 <p class="text-grigio-pietra">
                                     {{ __('login.no_account_text') }}
-                                    <a href="{{ route('register.wizard') }}" class="font-medium transition-colors text-oro-fiorentino hover:text-verde-rinascita">
+                                    <a href="{{ route('register.wizard.step1') }}" class="font-medium transition-colors text-oro-fiorentino hover:text-verde-rinascita">
                                         {{ __('login.register_link') }}
                                     </a>
                                 </p>
