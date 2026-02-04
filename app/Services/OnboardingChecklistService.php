@@ -472,7 +472,7 @@ class OnboardingChecklistService
      */
     protected function hasCollection(User $user): bool
     {
-        return Collection::where('user_id', $user->id)->exists();
+        return Collection::where('creator_id', $user->id)->exists();
     }
 
     /**
