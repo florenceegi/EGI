@@ -1448,9 +1448,9 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 📤 Returns: Boolean success status
      */
     public function setCurrentProfileImage(Media $media): bool {
-        // Update the profile_photo_path field with the media file_name
+        // Update the profile_photo_path field with the media URL
         $this->update([
-            'profile_photo_path' => $media->file_name
+            'profile_photo_path' => $media->getUrl()
         ]);
 
         return true;
