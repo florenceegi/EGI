@@ -72,5 +72,7 @@ return [
     'errors' => [
         'request_failed' => 'Request failed. Please try again.',
         'connection_error' => 'Connection error. Please check your internet.',
+        'invalid_user_type' => 'Invalid user type.',
+        'unauthorized' => 'Unauthorized to access this resource.',
     ],
 ];

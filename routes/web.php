@@ -1332,6 +1332,16 @@ Route::prefix('api')->name('api.')->group(function () {
     // API di configurazione
     Route::get('/app-config', [App\Http\Controllers\Api\AppConfigController::class, 'getAppConfig'])
         ->name('app.config');
+
+    // Onboarding Checklist API (AI Sidebar)
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/onboarding/checklist/{userType}/{userId}', [App\Http\Controllers\Api\OnboardingChecklistController::class, 'getChecklist'])
+            ->name('onboarding.checklist');
+        Route::post('/onboarding/checklist/{userType}/{userId}/refresh', [App\Http\Controllers\Api\OnboardingChecklistController::class, 'refreshChecklist'])
+            ->name('onboarding.checklist.refresh');
+        Route::get('/onboarding/progress/{userType}/{userId}', [App\Http\Controllers\Api\OnboardingChecklistController::class, 'getProgress'])
+            ->name('onboarding.progress');
+    });
 });
 
 /*

@@ -72,5 +72,7 @@ return [
     'errors' => [
         'request_failed' => 'Solicitud fallida. Por favor, inténtalo de nuevo.',
         'connection_error' => 'Error de conexión. Por favor, verifica tu conexión a internet.',
+        'invalid_user_type' => 'Tipo de usuario no válido.',
+        'unauthorized' => 'No autorizado para acceder a este recurso.',
     ],
 ];
