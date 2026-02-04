@@ -1523,7 +1523,7 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 📤 Returns: Media model or null
      */
     public function getCurrentCreatorBanner(): ?Media {
-        return $this->getFirstMedia('current_creator_banner');
+        return $this->getFirstMedia('current_banner');
     }
 
     /**
@@ -1532,14 +1532,9 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      * 📤 Returns: Boolean success status
      */
     public function setCurrentCreatorBanner(Media $media): bool {
-        // Clear current creator banner first
-        $currentBanner = $this->getCurrentCreatorBanner();
-        if ($currentBanner) {
-            $currentBanner->delete();
-        }
-
-        // Copy the selected banner to current_creator_banner collection
-        $newBanner = $media->copy($this, 'current_creator_banner');
+        // Use 'current_banner' collection which is defined as singleFile(true)
+        // Spatie will automatically replace the existing file
+        $newBanner = $media->copy($this, 'current_banner');
 
         // Store reference to source media for tracking
         $newBanner->setCustomProperty('source_media_id', $media->id);
