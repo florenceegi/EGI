@@ -201,7 +201,7 @@ class HomePageImageManager {
 // Initialize managers when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize any modals present on the page
-    const modalIds = ['creator-banner-modal', 'creator-avatar-modal', 'company-banner-modal', 'collector-banner-modal'];
+    const modalIds = ['creator-banner-modal', 'creator-avatar-modal', 'company-banner-modal', 'company-avatar-modal', 'collector-banner-modal', 'collector-avatar-modal'];
     
     window.imageManagers = {};
     modalIds.forEach(id => {
