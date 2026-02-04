@@ -350,7 +350,7 @@
             helpText="{{ __('profile.supported_formats_with_size') }}" />
 
         {{-- Include JS Manager --}}
-        @vite(['resources/js/home-page-image-manager.js'])
+        <script src="{{ asset('js/home-page-image-manager.js') }}" defer></script>
     @endif
 
 </x-guest-layout>
