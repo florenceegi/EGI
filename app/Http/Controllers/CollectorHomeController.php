@@ -31,6 +31,7 @@ class CollectorHomeController extends Controller {
     protected PortfolioService $portfolioService;
     protected \Ultra\UltraLogManager\UltraLogManager $logger;
     protected \Ultra\ErrorManager\Interfaces\ErrorManagerInterface $errorManager;
+    protected \App\Services\OnboardingChecklistService $onboardingService;
 
     /**
      * Constructor with dependency injection
@@ -38,15 +39,18 @@ class CollectorHomeController extends Controller {
      * @param PortfolioService $portfolioService
      * @param \Ultra\UltraLogManager\UltraLogManager $logger
      * @param \Ultra\ErrorManager\Interfaces\ErrorManagerInterface $errorManager
+     * @param \App\Services\OnboardingChecklistService $onboardingService
      */
     public function __construct(
         PortfolioService $portfolioService,
         \Ultra\UltraLogManager\UltraLogManager $logger,
-        \Ultra\ErrorManager\Interfaces\ErrorManagerInterface $errorManager
+        \Ultra\ErrorManager\Interfaces\ErrorManagerInterface $errorManager,
+        \App\Services\OnboardingChecklistService $onboardingService
     ) {
         $this->portfolioService = $portfolioService;
         $this->logger = $logger;
         $this->errorManager = $errorManager;
+        $this->onboardingService = $onboardingService;
     }
     /**
      * @Oracode Method: Display Collector Home Page
@@ -205,6 +209,12 @@ class CollectorHomeController extends Controller {
         // 🚀 FIX: Usa PortfolioService per stats accurate
         $stats = $this->portfolioService->getCollectorPortfolioStats($collector);
 
+        // Get onboarding checklist for owner
+        $onboardingChecklist = [];
+        if (auth()->check() && auth()->id() === $collector->id) {
+            $onboardingChecklist = $this->onboardingService->getChecklist($collector, 'collector');
+        }
+
         return view('collector.portfolio', compact(
             'collector',
             'purchasedEgis',
@@ -215,7 +225,8 @@ class CollectorHomeController extends Controller {
             'collection_filter',
             'creator_filter',
             'sort',
-            'view'
+            'view',
+            'onboardingChecklist'
         ));
     }
 

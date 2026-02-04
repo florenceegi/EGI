@@ -130,4 +130,13 @@
             'view' => $view,
         ])
     </x-slot>
+
+    {{-- AI Sidebar - Onboarding Assistant (Owner Only) --}}
+    @if (!empty($onboardingChecklist))
+        <x-ai-sidebar 
+            :user="$collector" 
+            :userType="'collector'" 
+            :checklist="$onboardingChecklist" 
+        />
+    @endif
 </x-guest-layout>

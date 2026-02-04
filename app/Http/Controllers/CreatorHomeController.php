@@ -32,13 +32,16 @@ class CreatorHomeController extends Controller
 {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
+    protected \App\Services\OnboardingChecklistService $onboardingService;
 
     public function __construct(
         UltraLogManager $logger,
-        ErrorManagerInterface $errorManager
+        ErrorManagerInterface $errorManager,
+        \App\Services\OnboardingChecklistService $onboardingService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
+        $this->onboardingService = $onboardingService;
     }
 
     /**
@@ -166,6 +169,12 @@ class CreatorHomeController extends Controller
             ]);
         }
 
+        // Get onboarding checklist for owner
+        $onboardingChecklist = [];
+        if (auth()->check() && auth()->id() === $creator->id) {
+            $onboardingChecklist = $this->onboardingService->getChecklist($creator, 'creator');
+        }
+
         // Full page view with new layout
         return view('creator.home-spa', [
             'creator' => $creator,
@@ -182,6 +191,7 @@ class CreatorHomeController extends Controller
             'sort' => $sort,
             'view' => $view,
             'canSwitchPortfolioMode' => $canSwitchPortfolioMode,
+            'onboardingChecklist' => $onboardingChecklist,
         ])->with('activeTab', 'portfolio');
     }
     /**

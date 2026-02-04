@@ -455,4 +455,13 @@
     {{-- Payment Settings Modal --}}
     <x-payment-settings-modal />
 
+    {{-- AI Sidebar - Onboarding Assistant (Owner Only) --}}
+    @if (!empty($onboardingChecklist))
+        <x-ai-sidebar 
+            :user="$creator" 
+            :userType="'creator'" 
+            :checklist="$onboardingChecklist" 
+        />
+    @endif
+
 </x-guest-layout>

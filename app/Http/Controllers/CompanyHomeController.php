@@ -33,13 +33,16 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 class CompanyHomeController extends Controller {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
+    protected \App\Services\OnboardingChecklistService $onboardingService;
 
     public function __construct(
         UltraLogManager $logger,
-        ErrorManagerInterface $errorManager
+        ErrorManagerInterface $errorManager,
+        \App\Services\OnboardingChecklistService $onboardingService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
+        $this->onboardingService = $onboardingService;
     }
     /**
      * Risolve una company da ID numerico o nick_name
@@ -170,6 +173,9 @@ class CompanyHomeController extends Controller {
             'sort' => $sort,
             'view' => $view,
             'canSwitchPortfolioMode' => $canSwitchPortfolioMode,
+            'onboardingChecklist' => auth()->check() && auth()->id() === $company->id 
+                ? $this->onboardingService->getChecklist($company, 'company') 
+                : [],
         ])->with('activeTab', 'portfolio');
     }
 
