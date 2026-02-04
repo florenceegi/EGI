@@ -586,8 +586,8 @@
         />
     @endif
 
-</x-guest-layout>
-
+    {{-- Image Upload Modals (only for owner) --}}
+    @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $company->id)
         {{-- Banner Upload Modal --}}
         <x-modals.image-upload-modal
             modalId="company-banner-modal"
@@ -619,3 +619,5 @@
         {{-- Include JS Manager --}}
         @vite(['resources/js/home-page-image-manager.js'])
     @endif
+
+</x-guest-layout>
