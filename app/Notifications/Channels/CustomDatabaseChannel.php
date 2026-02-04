@@ -42,8 +42,8 @@ class CustomDatabaseChannel
             'App\\Notifications\\Invitations\\InvitationRejection' => NotificationStatus::REJECTED,
             'App\\Notifications\\Wallets\\WalletRejection' => NotificationStatus::REJECTED,
             'App\\Notifications\\Wallets\\WalletAccepted' => NotificationStatus::ACCEPTED,
-             // Commerce
-            'App\\Notifications\\Commerce\\EgiSoldNotification' => 'SHIPPED',
+             // Commerce (Uses Enum)
+            'App\\Notifications\\Commerce\\EgiShippedNotification' => NotificationStatus::SHIPPED,
         ];
 
         // Controlla se l'azione corrisponde a una chiave nella mappatura
@@ -51,8 +51,8 @@ class CustomDatabaseChannel
             $action = $actionResponseMap[$action];
         }
 
-        // Se l'azione è ACCEPTED o REJECTED, aggiorna la notifica precedente
-        if ($action === NotificationStatus::ACCEPTED || $action === NotificationStatus::REJECTED) {
+        // Se l'azione è ACCEPTED, REJECTED o SHIPPED, aggiorna la notifica precedente
+        if ($action === NotificationStatus::ACCEPTED || $action === NotificationStatus::REJECTED || $action === NotificationStatus::SHIPPED) {
             Log::channel('florenceegi')->info('Notifica precedente aggiornata', [
                 'notification->id' => $notification->id,
             ]);

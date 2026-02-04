@@ -50,7 +50,7 @@ class EgiShippedNotification extends Notification
                 'tracking_code' => $this->purchase->tracking_code,
                 'egi_name'      => $this->purchase->egi->name ?? 'EGI Asset',
             ],
-            'outcome'       => 'done', // Informativa, non richiede azione
+            'outcome'       => \App\Enums\NotificationStatus::PENDING->value, // Visibile in lista
         ];
     }
 }

@@ -35,7 +35,8 @@ enum NotificationStatus: string
     case PENDING_CREATE = 'pending_create';
     case PENDING_UPDATE = 'pending_update';
     case UPDATE = 'update';
-    case ACTIVE = 'active';
+    // Commerce
+    case SHIPPED = 'shipped';
 
     public static function fromDatabase(string $value): self
     {
