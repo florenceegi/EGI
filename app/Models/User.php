@@ -1419,7 +1419,13 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
      */
     public function getCreatorBannerUrl(string $conversion = 'banner'): ?string {
         $currentBanner = $this->getCurrentBanner();
-        return $currentBanner ? $currentBanner->getUrl($conversion) : null;
+        if (!$currentBanner) {
+            return null;
+        }
+        
+        // Force relative URL to avoid domain mismatch (e.g. localhost in database vs sslip.io in browser)
+        $url = $currentBanner->getUrl($conversion);
+        return parse_url($url, PHP_URL_PATH);
     }
 
     /**
