@@ -1,7 +1,6 @@
 @vite(['resources/css/creator-home.css'])
 
-<x-guest-layout :title="$collector->name . ' - ' . __('collector.portfolio.title')"
-    :metaDescription="__('collector.portfolio.meta_description', ['name' => $collector->name])">
+<x-guest-layout :title="$collector->name . ' - ' . __('collector.portfolio.title')" :metaDescription="__('collector.portfolio.meta_description', ['name' => $collector->name])">
 
     @push('head')
         <script type="application/ld+json">
@@ -35,7 +34,8 @@
                         class="h-full w-full object-cover">
                 @else
                     <div class="absolute inset-0"
-                        style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+                        style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+                    </div>
                 @endif
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
                 <div class="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
@@ -47,7 +47,7 @@
                 <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:gap-8 md:col-span-8">
                     <div class="group relative flex-shrink-0">
                         <div
-                            class="h-32 w-32 overflow-hidden rounded-full shadow-2xl ring-4 ring-oro-fiorentino/40 md:h-40 md:w-40">
+                            class="ring-oro-fiorentino/40 h-32 w-32 overflow-hidden rounded-full shadow-2xl ring-4 md:h-40 md:w-40">
                             <img src="{{ $collector->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($collector->name) . '&size=160&background=D4A574&color=2D5016' }}"
                                 alt="{{ __('collector.home.avatar_alt', ['name' => $collector->name]) }}"
                                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
@@ -67,7 +67,7 @@
                             {{ $collector->name }}
                         </h1>
                         @if ($collector->tagline)
-                            <p class="font-source-sans text-lg italic text-oro-fiorentino md:text-xl">
+                            <p class="font-source-sans text-oro-fiorentino text-lg italic md:text-xl">
                                 "{{ $collector->tagline }}"
                             </p>
                         @endif
@@ -81,22 +81,24 @@
                 <div class="flex flex-col items-center gap-6 md:col-span-4 md:items-end">
                     <div class="grid grid-cols-3 gap-6 text-center">
                         <div class="flex flex-col">
-                            <span class="text-2xl font-bold text-oro-fiorentino md:text-3xl">
+                            <span class="text-oro-fiorentino text-2xl font-bold md:text-3xl">
                                 {{ $stats['total_owned_egis'] ?? 0 }}
                             </span>
                             <span class="text-xs text-gray-300 md:text-sm">{{ __('collector.home.owned_egis') }}</span>
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-2xl font-bold text-oro-fiorentino md:text-3xl">
+                            <span class="text-oro-fiorentino text-2xl font-bold md:text-3xl">
                                 {{ $stats['collections_represented'] ?? 0 }}
                             </span>
-                            <span class="text-xs text-gray-300 md:text-sm">{{ __('collector.collections_represented') }}</span>
+                            <span
+                                class="text-xs text-gray-300 md:text-sm">{{ __('collector.collections_represented') }}</span>
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-2xl font-bold text-oro-fiorentino md:text-3xl">
+                            <span class="text-oro-fiorentino text-2xl font-bold md:text-3xl">
                                 €{{ number_format($stats['total_spent_eur'] ?? 0, 2) }}
                             </span>
-                            <span class="text-xs text-gray-300 md:text-sm">{{ __('collector.home.total_spent') }}</span>
+                            <span
+                                class="text-xs text-gray-300 md:text-sm">{{ __('collector.home.total_spent') }}</span>
                         </div>
                     </div>
                 </div>
@@ -110,7 +112,7 @@
             <div class="mx-auto flex w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="scrollbar-hide flex w-full space-x-6">
                     <a href="{{ route('collector.portfolio', $collector->id) }}"
-                        class="border-b-2 border-oro-fiorentino px-6 py-4 text-sm font-medium text-oro-fiorentino">
+                        class="border-oro-fiorentino text-oro-fiorentino border-b-2 px-6 py-4 text-sm font-medium">
                         {{ __('collector.home.portfolio_tab') }}
                     </a>
                     <a href="{{ route('collector.collections', $collector->id) }}"
@@ -133,10 +135,28 @@
 
     {{-- AI Sidebar - Onboarding Assistant (Owner Only) --}}
     @if (!empty($onboardingChecklist))
-        <x-ai-sidebar 
-            :user="$collector" 
-            :userType="'collector'" 
-            :checklist="$onboardingChecklist" 
-        />
+        <x-ai-sidebar :user="$collector" :userType="'collector'" :checklist="$onboardingChecklist" />
+    @endif
+
+    {{-- Image Upload Modals (only for owner) --}}
+    @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $collector->id)
+        {{-- Banner Upload Modal --}}
+        <x-modals.image-upload-modal modalId="collector-banner-modal" type="banner" collection="creator_banners"
+            uploadRoute="{{ route('creator.upload-banner') }}"
+            setCurrentRoute="{{ route('creator.set-current-banner') }}"
+            deleteRoute="{{ route('creator.delete-banner') }}" :currentImage="auth()->user()->getCurrentCreatorBanner()" :allImages="auth()->user()->getAllCreatorBanners()"
+            title="{{ __('profile.upload_new_banner') }}"
+            helpText="{{ __('profile.supported_formats_with_size') }}" />
+
+        {{-- Avatar Upload Modal --}}
+        <x-modals.image-upload-modal modalId="collector-avatar-modal" type="avatar" collection="profile_image"
+            uploadRoute="{{ route('profile.upload-image') }}"
+            setCurrentRoute="{{ route('profile.set-current-image') }}"
+            deleteRoute="{{ route('profile.delete-image') }}" :currentImage="auth()->user()->getCurrentProfileImage()" :allImages="auth()->user()->getAllProfileImages()"
+            title="{{ __('profile.upload_new_avatar') }}"
+            helpText="{{ __('profile.supported_formats_with_size') }}" />
+
+        {{-- Include JS Manager --}}
+        <script src="{{ asset('js/home-page-image-manager.js') }}" defer></script>
     @endif
 </x-guest-layout>

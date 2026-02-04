@@ -457,11 +457,29 @@
 
     {{-- AI Sidebar - Onboarding Assistant (Owner Only) --}}
     @if (!empty($onboardingChecklist))
-        <x-ai-sidebar 
-            :user="$creator" 
-            :userType="'creator'" 
-            :checklist="$onboardingChecklist" 
-        />
+        <x-ai-sidebar :user="$creator" :userType="'creator'" :checklist="$onboardingChecklist" />
+    @endif
+
+    {{-- Image Upload Modals (only for owner) --}}
+    @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $creator->id)
+        {{-- Banner Upload Modal --}}
+        <x-modals.image-upload-modal modalId="creator-banner-modal" type="banner" collection="creator_banners"
+            uploadRoute="{{ route('creator.upload-banner') }}"
+            setCurrentRoute="{{ route('creator.set-current-banner') }}"
+            deleteRoute="{{ route('creator.delete-banner') }}" :currentImage="auth()->user()->getCurrentCreatorBanner()" :allImages="auth()->user()->getAllCreatorBanners()"
+            title="{{ __('profile.upload_new_banner') }}"
+            helpText="{{ __('profile.supported_formats_with_size') }}" />
+
+        {{-- Avatar Upload Modal --}}
+        <x-modals.image-upload-modal modalId="creator-avatar-modal" type="avatar" collection="profile_image"
+            uploadRoute="{{ route('profile.upload-image') }}"
+            setCurrentRoute="{{ route('profile.set-current-image') }}"
+            deleteRoute="{{ route('profile.delete-image') }}" :currentImage="auth()->user()->getCurrentProfileImage()" :allImages="auth()->user()->getAllProfileImages()"
+            title="{{ __('profile.upload_new_avatar') }}"
+            helpText="{{ __('profile.supported_formats_with_size') }}" />
+
+        {{-- Include JS Manager --}}
+        <script src="{{ asset('js/home-page-image-manager.js') }}" defer></script>
     @endif
 
 </x-guest-layout>
