@@ -112,3 +112,15 @@ return [
     'text_for_sessione' => 'Se necessário, você pode encerrar todas as outras sessões de seus navegadores em todos os seus dispositivos. Algumas de suas sessões recentes estão listadas abaixo; no entanto, esta lista pode não ser exaustiva. Se você acha que sua conta foi comprometida, você também deve atualizar sua senha.',
     'log out other browser sessions' => 'Encerrar outras sessões do navegador',
 ];
+    
+    // Home page modals
+    'banners_uploaded_successfully' => 'Banners enviados com sucesso',
+    'current_banner_updated' => 'Banner atual atualizado',
+    'failed_to_update_current_banner' => 'Falha ao atualizar o banner atual',
+    'failed_to_delete_banner' => 'Falha ao excluir o banner',
+    'upload_new_avatar' => 'Enviar Novo Avatar',
+    'all_avatar_images' => 'Todos os Avatares',
+    'current_avatar' => 'Avatar Atual',
+    'set_as_avatar' => 'Definir como Avatar',
+    'delete_avatar' => 'Excluir Avatar',
+];

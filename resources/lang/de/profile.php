@@ -106,4 +106,15 @@ return [
     'manage_and_log_out_your_active_sessions_on_other_browsers_and_devices.' => 'Verwalten und melden Sie sich von Ihren aktiven Sitzungen auf anderen Browsern und Geräten ab.',
     'text_for_sessione' => 'Wenn nötig, können Sie sich von allen anderen Browsersitzungen auf all Ihren Geräten abmelden. Einige Ihrer letzten Sitzungen sind unten aufgeführt; diese Liste ist jedoch möglicherweise nicht vollständig. Wenn Sie glauben, dass Ihr Konto gefährdet ist, sollten Sie auch Ihr Passwort aktualisieren.',
     'log_out_other_browser_sessions' => 'Andere Browsersitzungen abmelden',
+];    
+    // Home page modals
+    'banners_uploaded_successfully' => 'Banner erfolgreich hochgeladen',
+    'current_banner_updated' => 'Aktuelles Banner aktualisiert',
+    'failed_to_update_current_banner' => 'Fehler beim Aktualisieren des aktuellen Banners',
+    'failed_to_delete_banner' => 'Fehler beim Löschen des Banners',
+    'upload_new_avatar' => 'Neuen Avatar hochladen',
+    'all_avatar_images' => 'Alle Avatare',
+    'current_avatar' => 'Aktueller Avatar',
+    'set_as_avatar' => 'Als Avatar festlegen',
+    'delete_avatar' => 'Avatar löschen',
 ];

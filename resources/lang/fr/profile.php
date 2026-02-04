@@ -106,3 +106,15 @@ return [
     'text_for_sessione' => 'Si nécessaire, vous pouvez vous déconnecter de toutes les autres sessions de navigateur sur tous vos appareils. Certaines de vos sessions récentes sont listées ci-dessous; cependant, cette liste pourrait ne pas être exhaustive. Si vous pensez que votre compte a été compromis, vous devriez également mettre à jour votre mot de passe.',
     'log_out_other_browser_sessions' => 'Déconnecter les autres sessions du navigateur',
 ];
+    
+    // Home page modals
+    'banners_uploaded_successfully' => 'Bannières téléchargées avec succès',
+    'current_banner_updated' => 'Bannière actuelle mise à jour',
+    'failed_to_update_current_banner' => 'Échec de la mise à jour de la bannière actuelle',
+    'failed_to_delete_banner' => 'Échec de la suppression de la bannière',
+    'upload_new_avatar' => 'Télécharger un Nouvel Avatar',
+    'all_avatar_images' => 'Tous les Avatars',
+    'current_avatar' => 'Avatar Actuel',
+    'set_as_avatar' => 'Définir comme Avatar',
+    'delete_avatar' => 'Supprimer l\'Avatar',
+];

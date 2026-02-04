@@ -107,3 +107,15 @@ return [
     'text_for_sessione' => 'Si es necesario, puedes cerrar sesión en todas las otras sesiones del navegador en todos tus dispositivos. Algunas de tus sesiones recientes están listadas abajo; sin embargo, esta lista podría no ser completa. Si crees que tu cuenta ha sido comprometida, también deberías actualizar tu contraseña.',
     'log_out_other_browser_sessions' => 'Cerrar las demás sesiones del navegador',
 ];
+    
+    // Home page modals
+    'banners_uploaded_successfully' => 'Banners subidos exitosamente',
+    'current_banner_updated' => 'Banner actual actualizado',
+    'failed_to_update_current_banner' => 'Error al actualizar el banner actual',
+    'failed_to_delete_banner' => 'Error al eliminar el banner',
+    'upload_new_avatar' => 'Subir Nuevo Avatar',
+    'all_avatar_images' => 'Todos los Avatares',
+    'current_avatar' => 'Avatar Actual',
+    'set_as_avatar' => 'Establecer como Avatar',
+    'delete_avatar' => 'Eliminar Avatar',
+];
