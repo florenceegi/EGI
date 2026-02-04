@@ -814,6 +814,14 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::delete('/profile/delete-banner', [App\Http\Controllers\ProfileImageController::class, 'deleteBanner'])
             ->name('profile.delete-banner');
 
+        // Creator Home Page Banner Management Routes
+        Route::post('/creator/upload-banner', [App\Http\Controllers\HomePageImageController::class, 'uploadCreatorBanner'])
+            ->name('creator.upload-banner');
+        Route::post('/creator/set-current-banner', [App\Http\Controllers\HomePageImageController::class, 'setCurrentCreatorBanner'])
+            ->name('creator.set-current-banner');
+        Route::delete('/creator/delete-banner', [App\Http\Controllers\HomePageImageController::class, 'deleteCreatorBanner'])
+            ->name('creator.delete-banner');
+
         // Account Statements Routes
         Route::get('/account/statements', [App\Http\Controllers\AccountStatementsController::class, 'index'])
             ->name('account.statements');
