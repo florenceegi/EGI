@@ -76,6 +76,20 @@
                 {{-- Overlay gradiente potenziato per leggibilità --}}
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
                 <div class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
+
+                {{-- Edit Banner Button (only for owner) --}}
+                @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $creator->id)
+                    <div class="absolute right-4 top-4 z-10">
+                        <button onclick="openImageModal('creator-banner-modal')"
+                            class="hover:bg-oro-fiorentino rounded-lg bg-gray-900/80 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:text-gray-900">
+                            <svg class="mr-2 inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {{ __('profile.upload_banner') }}
+                        </button>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -97,6 +111,17 @@
                                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                                 loading="lazy">
                         </div>
+
+                        {{-- Edit Avatar Button (only for owner) --}}
+                        @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $creator->id)
+                            <button onclick="openImageModal('creator-avatar-modal')"
+                                class="bg-oro-fiorentino hover:bg-oro-fiorentino/90 absolute bottom-0 right-0 rounded-full p-2 text-gray-900 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                            </button>
+                        @endif
                         @if ($creator->is_verified)
                             <div class="absolute -bottom-2 -right-2 rounded-full bg-verde-rinascita p-2 shadow-lg"
                                 title="{{ __('creator.home.verified_badge_title') }}">
@@ -305,5 +330,27 @@
     <main class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
 
     </main>
+
+    {{-- Image Upload Modals (only for owner) --}}
+    @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $creator->id)
+        {{-- Banner Upload Modal --}}
+        <x-modals.image-upload-modal modalId="creator-banner-modal" type="banner" collection="creator_banners"
+            uploadRoute="{{ route('creator.upload-banner') }}"
+            setCurrentRoute="{{ route('creator.set-current-banner') }}"
+            deleteRoute="{{ route('creator.delete-banner') }}" :currentImage="auth()->user()->getCurrentCreatorBanner()" :allImages="auth()->user()->getAllCreatorBanners()"
+            title="{{ __('profile.upload_new_banner') }}"
+            helpText="{{ __('profile.supported_formats_with_size') }}" />
+
+        {{-- Avatar Upload Modal --}}
+        <x-modals.image-upload-modal modalId="creator-avatar-modal" type="avatar" collection="profile_images"
+            uploadRoute="{{ route('profile.upload-image') }}"
+            setCurrentRoute="{{ route('profile.set-current-image') }}"
+            deleteRoute="{{ route('profile.delete-image') }}" :currentImage="auth()->user()->getCurrentProfileImage()" :allImages="auth()->user()->getAllProfileImages()"
+            title="{{ __('profile.upload_new_avatar') }}"
+            helpText="{{ __('profile.supported_formats_with_size') }}" />
+
+        {{-- Include JS Manager --}}
+        @vite(['resources/js/home-page-image-manager.js'])
+    @endif
 
 </x-guest-layout>
