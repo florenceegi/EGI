@@ -332,7 +332,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
      * @param Request $request Request with media_id parameter
      * @return RedirectResponse Success/error redirect response
      */
-    public function setCurrentImage(Request $request): RedirectResponse {
+    public function setCurrentImage(Request $request) {
         try {
             $user = Auth::user();
 
@@ -349,6 +349,13 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                     'user_id' => $user->id,
                     'media_id' => $request->media_id
                 ]);
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => __('gdpr.consent_required_profile_changes')
+                    ], 403);
+                }
 
                 return redirect()->back()
                     ->withErrors(['consent' => __('gdpr.consent_required_profile_changes')]);
@@ -391,6 +398,13 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 'file_name' => $media->file_name
             ]);
 
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => __('profile.current_image_updated')
+                ]);
+            }
+
             return redirect()->back()
                 ->with('success', __('profile.current_image_updated'));
         } catch (\Exception $e) {
@@ -400,6 +414,13 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 'media_id' => $request->media_id,
                 'ip_address' => $request->ip()
             ], $e);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('profile.failed_to_update_current_image')
+                ], 500);
+            }
 
             return redirect()->back()
                 ->with('error', __('profile.failed_to_update_current_image'));
