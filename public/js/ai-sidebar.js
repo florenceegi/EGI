@@ -1,14 +1,14 @@
 /**
  * AI Sidebar - Onboarding Assistant
  * Shopify-style: Chat AI + Stripe-style checklist
- * 
+ *
  * P0-0: Vanilla JS ONLY (NO Alpine/Livewire)
- * 
+ *
  * @author EGI Team
  */
 
-(function() {
-    'use strict';
+(function () {
+    "use strict";
 
     // Sidebar state
     const state = {
@@ -23,7 +23,7 @@
         userId: null,
         userType: null,
         checklist: [],
-        isLoading: false
+        isLoading: false,
     };
 
     /**
@@ -31,13 +31,13 @@
      */
     function init() {
         // Get DOM elements
-        state.sidebar = document.getElementById('ai-sidebar');
-        state.toggleBtn = document.getElementById('ai-sidebar-toggle');
-        state.closeBtn = document.getElementById('ai-sidebar-close');
-        state.chatForm = document.getElementById('ai-sidebar-form');
-        state.chatInput = document.getElementById('ai-sidebar-input');
-        state.chatContainer = document.getElementById('ai-sidebar-chat');
-        state.checklistEl = document.getElementById('ai-sidebar-checklist');
+        state.sidebar = document.getElementById("ai-sidebar");
+        state.toggleBtn = document.getElementById("ai-sidebar-toggle");
+        state.closeBtn = document.getElementById("ai-sidebar-close");
+        state.chatForm = document.getElementById("ai-sidebar-form");
+        state.chatInput = document.getElementById("ai-sidebar-input");
+        state.chatContainer = document.getElementById("ai-sidebar-chat");
+        state.checklistEl = document.getElementById("ai-sidebar-checklist");
 
         if (!state.sidebar || !state.toggleBtn) {
             return; // Component not on this page
@@ -46,11 +46,13 @@
         // Get data attributes
         state.userId = state.sidebar.dataset.userId;
         state.userType = state.sidebar.dataset.userType;
-        
+
         try {
-            state.checklist = JSON.parse(state.sidebar.dataset.checklist || '[]');
+            state.checklist = JSON.parse(
+                state.sidebar.dataset.checklist || "[]",
+            );
         } catch (e) {
-            console.error('AI Sidebar: Failed to parse checklist data', e);
+            console.error("AI Sidebar: Failed to parse checklist data", e);
             state.checklist = [];
         }
 
@@ -58,8 +60,8 @@
         bindEvents();
 
         // Check localStorage for previous state
-        const savedState = localStorage.getItem('ai-sidebar-open');
-        if (savedState === 'true') {
+        const savedState = localStorage.getItem("ai-sidebar-open");
+        if (savedState === "true") {
             openSidebar();
         }
     }
@@ -69,36 +71,38 @@
      */
     function bindEvents() {
         // Toggle button
-        state.toggleBtn.addEventListener('click', toggleSidebar);
+        state.toggleBtn.addEventListener("click", toggleSidebar);
 
         // Close button
         if (state.closeBtn) {
-            state.closeBtn.addEventListener('click', closeSidebar);
+            state.closeBtn.addEventListener("click", closeSidebar);
         }
 
         // Chat form
         if (state.chatForm) {
-            state.chatForm.addEventListener('submit', handleChatSubmit);
+            state.chatForm.addEventListener("submit", handleChatSubmit);
         }
 
         // Checklist items
         if (state.checklistEl) {
-            state.checklistEl.addEventListener('click', handleChecklistClick);
+            state.checklistEl.addEventListener("click", handleChecklistClick);
         }
 
         // Close on escape
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && state.isOpen) {
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && state.isOpen) {
                 closeSidebar();
             }
         });
 
         // Close on outside click (mobile)
-        document.addEventListener('click', function(e) {
-            if (state.isOpen && 
-                window.innerWidth < 768 && 
-                !state.sidebar.contains(e.target) && 
-                !state.toggleBtn.contains(e.target)) {
+        document.addEventListener("click", function (e) {
+            if (
+                state.isOpen &&
+                window.innerWidth < 768 &&
+                !state.sidebar.contains(e.target) &&
+                !state.toggleBtn.contains(e.target)
+            ) {
                 closeSidebar();
             }
         });
@@ -120,11 +124,11 @@
      */
     function openSidebar() {
         state.isOpen = true;
-        state.sidebar.classList.remove('collapsed');
-        state.sidebar.setAttribute('aria-hidden', 'false');
-        state.toggleBtn.dataset.sidebarOpen = 'true';
-        localStorage.setItem('ai-sidebar-open', 'true');
-        
+        state.sidebar.classList.remove("collapsed");
+        state.sidebar.setAttribute("aria-hidden", "false");
+        state.toggleBtn.dataset.sidebarOpen = "true";
+        localStorage.setItem("ai-sidebar-open", "true");
+
         // Focus input
         setTimeout(() => {
             if (state.chatInput) {
@@ -138,21 +142,21 @@
      */
     function closeSidebar() {
         state.isOpen = false;
-        state.sidebar.classList.add('collapsed');
-        state.sidebar.setAttribute('aria-hidden', 'true');
-        state.toggleBtn.dataset.sidebarOpen = 'false';
-        localStorage.setItem('ai-sidebar-open', 'false');
+        state.sidebar.classList.add("collapsed");
+        state.sidebar.setAttribute("aria-hidden", "true");
+        state.toggleBtn.dataset.sidebarOpen = "false";
+        localStorage.setItem("ai-sidebar-open", "false");
     }
 
     /**
      * Handle checklist item click
      */
     function handleChecklistClick(e) {
-        const item = e.target.closest('.checklist-item');
+        const item = e.target.closest(".checklist-item");
         if (!item) return;
 
         // Don't do anything for completed items
-        if (item.classList.contains('completed')) return;
+        if (item.classList.contains("completed")) return;
 
         handleStepAction(item.dataset);
     }
@@ -186,37 +190,47 @@
     function openActionModal(modalId, stepId) {
         // Check for common modal systems
         const modalEl = document.getElementById(modalId);
-        
+
         if (modalEl) {
             // Standard modal - add 'open' class or remove 'hidden'
-            if (modalEl.classList.contains('hidden')) {
-                modalEl.classList.remove('hidden');
-                modalEl.classList.add('flex');
+            if (modalEl.classList.contains("hidden")) {
+                modalEl.classList.remove("hidden");
+                modalEl.classList.add("flex");
             }
-            
+
             // Dispatch custom event for modals that listen
-            modalEl.dispatchEvent(new CustomEvent('modal:open', { 
-                detail: { stepId: stepId } 
-            }));
+            modalEl.dispatchEvent(
+                new CustomEvent("modal:open", {
+                    detail: { stepId: stepId },
+                }),
+            );
         }
 
         // Check for window-level modal handlers
-        if (window[modalId] && typeof window[modalId].open === 'function') {
+        if (window[modalId] && typeof window[modalId].open === "function") {
             window[modalId].open();
         }
 
         // Specific modal handlers
         switch (modalId) {
-            case 'avatar-upload-modal':
-                if (window.avatarModal) window.avatarModal.open();
+            case "avatar-upload-modal":
+                // Check for creator/company/collector avatar modals
+                if (window.openImageModal) {
+                    const userType = document.getElementById('ai-sidebar')?.dataset.userType || 'creator';
+                    window.openImageModal(`${userType}-avatar-modal`);
+                }
                 break;
-            case 'banner-upload-modal':
-                if (window.bannerModal) window.bannerModal.open();
+            case "banner-upload-modal":
+                // Check for creator/company/collector banner modals
+                if (window.openImageModal) {
+                    const userType = document.getElementById('ai-sidebar')?.dataset.userType || 'creator';
+                    window.openImageModal(`${userType}-banner-modal`);
+                }
                 break;
-            case 'payment-modal':
+            case "payment-modal":
                 if (window.paymentModal) window.paymentModal.open();
                 break;
-            case 'collection-modal':
+            case "collection-modal":
                 if (window.collectionModal) window.collectionModal.open();
                 break;
             // Add more modal handlers as needed
@@ -228,18 +242,18 @@
      */
     function executeAction(action, stepId) {
         // Check if it's a URL
-        if (action.startsWith('/') || action.startsWith('http')) {
+        if (action.startsWith("/") || action.startsWith("http")) {
             window.location.href = action;
             return;
         }
 
         // Check if it's a window function
-        if (window[action] && typeof window[action] === 'function') {
+        if (window[action] && typeof window[action] === "function") {
             window[action](stepId);
             return;
         }
 
-        console.warn('AI Sidebar: Unknown action', action);
+        console.warn("AI Sidebar: Unknown action", action);
     }
 
     /**
@@ -255,30 +269,32 @@
         state.chatInput.disabled = true;
 
         // Add user message to chat
-        addChatMessage(message, 'user');
-        state.chatInput.value = '';
+        addChatMessage(message, "user");
+        state.chatInput.value = "";
 
         // Show typing indicator
         const typingId = showTypingIndicator();
 
         try {
             // Call Art Advisor API
-            const response = await fetch('/art-advisor/chat', {
-                method: 'POST',
+            const response = await fetch("/art-advisor/chat", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                    'Accept': 'text/event-stream'
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN":
+                        document.querySelector('meta[name="csrf-token"]')
+                            ?.content || "",
+                    Accept: "text/event-stream",
                 },
                 body: JSON.stringify({
                     message: message,
                     context: {
                         user_type: state.userType,
                         user_id: state.userId,
-                        mode: 'onboarding_help'
+                        mode: "onboarding_help",
                     },
-                    expert: 'platform'
-                })
+                    expert: "platform",
+                }),
             });
 
             // Remove typing indicator
@@ -288,18 +304,18 @@
                 // Handle SSE stream
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
-                let fullMessage = '';
-                const messageId = addChatMessage('', 'assistant');
+                let fullMessage = "";
+                const messageId = addChatMessage("", "assistant");
 
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
 
                     const chunk = decoder.decode(value);
-                    const lines = chunk.split('\n');
+                    const lines = chunk.split("\n");
 
                     for (const line of lines) {
-                        if (line.startsWith('data: ')) {
+                        if (line.startsWith("data: ")) {
                             try {
                                 const data = JSON.parse(line.slice(6));
                                 if (data.content) {
@@ -315,12 +331,18 @@
                     }
                 }
             } else {
-                addChatMessage(getTranslation('ai_sidebar.errors.request_failed'), 'error');
+                addChatMessage(
+                    getTranslation("ai_sidebar.errors.request_failed"),
+                    "error",
+                );
             }
         } catch (error) {
             removeTypingIndicator(typingId);
-            console.error('AI Sidebar: Chat error', error);
-            addChatMessage(getTranslation('ai_sidebar.errors.connection_error'), 'error');
+            console.error("AI Sidebar: Chat error", error);
+            addChatMessage(
+                getTranslation("ai_sidebar.errors.connection_error"),
+                "error",
+            );
         } finally {
             state.isLoading = false;
             state.chatInput.disabled = false;
@@ -332,25 +354,25 @@
      * Add message to chat container
      */
     function addChatMessage(content, type) {
-        const messageId = 'msg-' + Date.now();
-        const div = document.createElement('div');
+        const messageId = "msg-" + Date.now();
+        const div = document.createElement("div");
         div.id = messageId;
         div.className = `chat-message ${type} mb-3 rounded-lg p-3 text-sm`;
 
-        if (type === 'user') {
-            div.className += ' bg-indigo-600/30 ml-8 text-white';
+        if (type === "user") {
+            div.className += " bg-indigo-600/30 ml-8 text-white";
             div.innerHTML = `<p>${escapeHtml(content)}</p>`;
-        } else if (type === 'assistant') {
-            div.className += ' bg-gray-800 mr-4 text-gray-200';
+        } else if (type === "assistant") {
+            div.className += " bg-gray-800 mr-4 text-gray-200";
             div.innerHTML = `
                 <div class="mb-1 flex items-center gap-1 text-xs text-indigo-400">
                     <span>✨</span>
-                    <span>${getTranslation('ai_sidebar.assistant_name')}</span>
+                    <span>${getTranslation("ai_sidebar.assistant_name")}</span>
                 </div>
                 <div class="message-content">${content}</div>
             `;
-        } else if (type === 'error') {
-            div.className += ' bg-red-900/30 text-red-300';
+        } else if (type === "error") {
+            div.className += " bg-red-900/30 text-red-300";
             div.innerHTML = `<p>⚠️ ${escapeHtml(content)}</p>`;
         }
 
@@ -366,7 +388,7 @@
     function updateChatMessage(messageId, content) {
         const messageEl = document.getElementById(messageId);
         if (messageEl) {
-            const contentEl = messageEl.querySelector('.message-content');
+            const contentEl = messageEl.querySelector(".message-content");
             if (contentEl) {
                 contentEl.innerHTML = formatMarkdown(content);
             }
@@ -378,14 +400,14 @@
      * Show typing indicator
      */
     function showTypingIndicator() {
-        const id = 'typing-' + Date.now();
-        const div = document.createElement('div');
+        const id = "typing-" + Date.now();
+        const div = document.createElement("div");
         div.id = id;
-        div.className = 'typing-indicator mb-3 rounded-lg bg-gray-800 p-3 mr-4';
+        div.className = "typing-indicator mb-3 rounded-lg bg-gray-800 p-3 mr-4";
         div.innerHTML = `
             <div class="flex items-center gap-1 text-xs text-indigo-400">
                 <span>✨</span>
-                <span>${getTranslation('ai_sidebar.assistant_name')}</span>
+                <span>${getTranslation("ai_sidebar.assistant_name")}</span>
             </div>
             <div class="flex gap-1 mt-2">
                 <span class="h-2 w-2 rounded-full bg-gray-500 animate-bounce" style="animation-delay: 0ms"></span>
@@ -413,17 +435,20 @@
      */
     function formatMarkdown(text) {
         return text
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/`(.*?)`/g, '<code class="bg-gray-700 px-1 rounded">$1</code>')
-            .replace(/\n/g, '<br>');
+            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+            .replace(/\*(.*?)\*/g, "<em>$1</em>")
+            .replace(
+                /`(.*?)`/g,
+                '<code class="bg-gray-700 px-1 rounded">$1</code>',
+            )
+            .replace(/\n/g, "<br>");
     }
 
     /**
      * Escape HTML
      */
     function escapeHtml(text) {
-        const div = document.createElement('div');
+        const div = document.createElement("div");
         div.textContent = text;
         return div.innerHTML;
     }
@@ -436,7 +461,7 @@
         if (window.translations && window.translations[key]) {
             let text = window.translations[key];
             // Replace placeholders
-            Object.keys(params).forEach(param => {
+            Object.keys(params).forEach((param) => {
                 text = text.replace(`:${param}`, params[param]);
             });
             return text;
@@ -444,15 +469,19 @@
 
         // Fallback translations
         const fallbacks = {
-            'ai_sidebar.messages.welcome': 'Welcome! Let me help you complete your profile setup.',
-            'ai_sidebar.messages.progress_low': `Great start! You've completed ${params.completed || 0} of ${params.total || 0} steps. Next: ${params.nextStep || 'continue setup'}`,
-            'ai_sidebar.messages.progress_high': `Almost there! Just ${params.remaining || 0} more steps to go.`,
-            'ai_sidebar.messages.complete': 'Congratulations! Your profile is fully set up. 🎉',
-            'ai_sidebar.messages.all_done': 'All setup steps completed!',
-            'ai_sidebar.quick_actions_label': 'Suggested next steps:',
-            'ai_sidebar.assistant_name': 'EGI Assistant',
-            'ai_sidebar.errors.request_failed': 'Request failed. Please try again.',
-            'ai_sidebar.errors.connection_error': 'Connection error. Please check your internet.'
+            "ai_sidebar.messages.welcome":
+                "Welcome! Let me help you complete your profile setup.",
+            "ai_sidebar.messages.progress_low": `Great start! You've completed ${params.completed || 0} of ${params.total || 0} steps. Next: ${params.nextStep || "continue setup"}`,
+            "ai_sidebar.messages.progress_high": `Almost there! Just ${params.remaining || 0} more steps to go.`,
+            "ai_sidebar.messages.complete":
+                "Congratulations! Your profile is fully set up. 🎉",
+            "ai_sidebar.messages.all_done": "All setup steps completed!",
+            "ai_sidebar.quick_actions_label": "Suggested next steps:",
+            "ai_sidebar.assistant_name": "EGI Assistant",
+            "ai_sidebar.errors.request_failed":
+                "Request failed. Please try again.",
+            "ai_sidebar.errors.connection_error":
+                "Connection error. Please check your internet.",
         };
 
         return fallbacks[key] || key;
@@ -463,25 +492,32 @@
      */
     async function refreshChecklist() {
         try {
-            const response = await fetch(`/api/onboarding/checklist/${state.userType}/${state.userId}`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
-                }
-            });
+            const response = await fetch(
+                `/api/onboarding/checklist/${state.userType}/${state.userId}`,
+                {
+                    headers: {
+                        Accept: "application/json",
+                        "X-CSRF-TOKEN":
+                            document.querySelector('meta[name="csrf-token"]')
+                                ?.content || "",
+                    },
+                },
+            );
 
             if (response.ok) {
                 const data = await response.json();
                 state.checklist = data.checklist || [];
-                state.sidebar.dataset.checklist = JSON.stringify(state.checklist);
-                
+                state.sidebar.dataset.checklist = JSON.stringify(
+                    state.checklist,
+                );
+
                 // Re-render
                 generateAIMessage();
                 generateQuickActions();
                 renderChecklist();
             }
         } catch (error) {
-            console.error('AI Sidebar: Failed to refresh checklist', error);
+            console.error("AI Sidebar: Failed to refresh checklist", error);
         }
     }
 
@@ -491,30 +527,36 @@
     function renderChecklist() {
         if (!state.checklistEl) return;
 
-        const completed = state.checklist.filter(item => item.completed).length;
+        const completed = state.checklist.filter(
+            (item) => item.completed,
+        ).length;
         const total = state.checklist.length;
         const percent = Math.round((completed / total) * 100);
 
         // Update progress
-        const progressFill = state.sidebar.querySelector('.progress-fill');
+        const progressFill = state.sidebar.querySelector(".progress-fill");
         if (progressFill) {
-            progressFill.style.width = percent + '%';
+            progressFill.style.width = percent + "%";
         }
 
-        const progressText = state.sidebar.querySelector('[data-progress-text]');
+        const progressText = state.sidebar.querySelector(
+            "[data-progress-text]",
+        );
         if (progressText) {
             progressText.textContent = `${completed}/${total}`;
         }
 
         // Update badge on toggle button
-        const badge = state.toggleBtn.querySelector('span');
+        const badge = state.toggleBtn.querySelector("span");
         if (badge) {
             if (percent === 100) {
                 badge.innerHTML = `<svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>`;
-                badge.className = 'absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-white';
+                badge.className =
+                    "absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-white";
             } else {
                 badge.textContent = total - completed;
-                badge.className = 'absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white';
+                badge.className =
+                    "absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white";
             }
         }
     }
@@ -525,18 +567,17 @@
         close: closeSidebar,
         toggle: toggleSidebar,
         refresh: refreshChecklist,
-        getState: () => ({ isOpen: state.isOpen, checklist: state.checklist })
+        getState: () => ({ isOpen: state.isOpen, checklist: state.checklist }),
     };
 
     // Initialize when DOM ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
     } else {
         init();
     }
 
     // Listen for checklist updates
-    window.addEventListener('checklist:updated', refreshChecklist);
-    window.addEventListener('modal:closed', refreshChecklist);
-
+    window.addEventListener("checklist:updated", refreshChecklist);
+    window.addEventListener("modal:closed", refreshChecklist);
 })();
