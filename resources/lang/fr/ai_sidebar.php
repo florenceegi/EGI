@@ -34,8 +34,11 @@ return [
 
     // Discourse messages (AI-like text)
     'discourse' => [
-        'greeting' => 'Salut :name ! Je suis là pour t\'aider à compléter ton profil.',
-        'progress_intro' => 'Tu as complété :completed étapes sur :total. Voyons ce qui manque pour rendre ton profil parfait.',
+        'greeting' => 'Salut',
+        'greeting_suffix' => ' ! Je suis là pour t\'aider à compléter ton profil.',
+        'progress_intro' => 'Tu as complété',
+        'progress_of' => 'sur',
+        'progress_suffix' => ' étapes. Voyons ce qui manque pour rendre ton profil parfait.',
         'missing_title' => 'Voici ce qu\'il te reste à faire :',
         'suggestion_intro' => 'Je te conseille de commencer par',
         'click_hint' => 'Clique sur un élément de la liste ci-dessous pour le compléter.',
