@@ -32,16 +32,16 @@
         {{-- Payment Settings (Owner Only) --}}
         @if (auth()->check() && auth()->id() === $company->id)
             {{-- DESKTOP: Bottone completo con carta di credito --}}
-            <div class="absolute bottom-4 right-4 z-30 hidden md:block">
+            <div class="absolute z-30 hidden bottom-4 right-4 md:block">
                 <button onclick="window.paymentModal.open()"
                     class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-600 via-yellow-500 to-orange-600 p-[2px] shadow-xl shadow-amber-500/40 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(251,191,36,0.6)]">
                     <div
-                        class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transition-transform duration-700 group-hover:translate-x-full">
+                        class="absolute inset-0 transition-transform duration-700 -translate-x-full bg-gradient-to-r from-transparent via-white to-transparent opacity-30 group-hover:translate-x-full">
                     </div>
                     <div class="relative rounded-xl bg-gradient-to-br from-gray-900 to-black px-4 py-2.5">
                         <div class="flex items-center gap-3">
                             <div
-                                class="relative h-8 w-12 overflow-hidden rounded-md bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 shadow-lg shadow-amber-500/40 transition-all duration-500 group-hover:rotate-6 group-hover:scale-110">
+                                class="relative w-12 h-8 overflow-hidden transition-all duration-500 rounded-md shadow-lg bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 shadow-amber-500/40 group-hover:rotate-6 group-hover:scale-110">
                                 <div
                                     class="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-black/20">
                                 </div>
@@ -60,15 +60,15 @@
                                     class="absolute bottom-1 left-1 text-[6px] font-bold tracking-wide text-white/90 drop-shadow">
                                     •••• 4242</div>
                                 <div class="absolute bottom-1 right-1 flex gap-[1px]">
-                                    <div class="h-1 w-1 rounded-full bg-red-500/80"></div>
-                                    <div class="h-1 w-1 rounded-full bg-yellow-500/80"></div>
+                                    <div class="w-1 h-1 rounded-full bg-red-500/80"></div>
+                                    <div class="w-1 h-1 rounded-full bg-yellow-500/80"></div>
                                 </div>
                                 <div
-                                    class="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800">
+                                    class="absolute left-0 right-0 h-1 -translate-y-1/2 top-1/2 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800">
                                 </div>
                             </div>
                             <span
-                                class="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 bg-clip-text text-sm font-bold text-transparent">{{ __('payment.settings_title') }}</span>
+                                class="text-sm font-bold text-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 bg-clip-text">{{ __('payment.settings_title') }}</span>
                             <div
                                 class="ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400 shadow-lg shadow-amber-400/80">
                             </div>
@@ -78,12 +78,12 @@
             </div>
 
             {{-- MOBILE: FAB compatto - Vanilla JS (NO Alpine!) --}}
-            <div id="payment-fab-mobile-company" class="fixed bottom-20 right-4 z-50 md:hidden">
+            <div id="payment-fab-mobile-company" class="fixed z-50 bottom-20 right-4 md:hidden">
                 <button onclick="window.paymentModal.open()"
-                    class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 via-yellow-500 to-orange-500 shadow-lg shadow-amber-500/50 transition-all duration-300 active:scale-95">
+                    class="flex items-center justify-center transition-all duration-300 rounded-full shadow-lg group h-14 w-14 bg-gradient-to-br from-amber-500 via-yellow-500 to-orange-500 shadow-amber-500/50 active:scale-95">
                     {{-- Icona carta stilizzata --}}
                     <div
-                        class="relative h-7 w-10 rounded bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 shadow-inner">
+                        class="relative w-10 rounded shadow-inner h-7 bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500">
                         <div
                             class="absolute left-1 top-1 h-2 w-2.5 rounded-sm bg-gradient-to-br from-yellow-200 to-amber-400">
                         </div>
@@ -91,7 +91,7 @@
                     </div>
                     {{-- Indicatore attivo --}}
                     <div
-                        class="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full bg-green-400 shadow-lg shadow-green-400/80">
+                        class="absolute w-3 h-3 bg-green-400 rounded-full shadow-lg -right-1 -top-1 animate-pulse shadow-green-400/80">
                     </div>
                 </button>
             </div>
@@ -106,7 +106,7 @@
                 @endphp
                 @if ($bannerUrl)
                     <img src="{{ $bannerUrl }}" alt="Banner for {{ $company->name }}"
-                        class="h-full w-full object-cover">
+                        class="object-cover w-full h-full">
                 @else
                     {{-- Mobile: sfondo più scuro per contrasto con card --}}
                     <div
@@ -120,9 +120,9 @@
             {{-- Edit Banner Button - Owner Only --}}
             @if (auth()->check() && auth()->id() === $company->id)
                 <button type="button" onclick="openImageModal('company-banner-modal')" id="edit-banner-btn"
-                    class="absolute left-4 top-4 z-20 flex touch-manipulation items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-black/80"
+                    class="absolute z-20 flex items-center gap-2 px-3 py-2 text-sm font-medium text-white transition-all rounded-lg left-4 top-4 touch-manipulation bg-black/60 backdrop-blur-sm hover:bg-black/80"
                     title="{{ __('company.profile.edit_banner') }}">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -135,16 +135,16 @@
              MOBILE: iOS-style Profile Header (iPhone-first)
              Seguendo iOS Human Interface Guidelines
         ═══════════════════════════════════════════════════════════════════ --}}
-        <div class="relative z-10 px-4 pb-4 pt-6 md:hidden">
+        <div class="relative z-10 px-4 pt-6 pb-4 md:hidden">
             {{-- Profile Card con glassmorphism iOS --}}
-            <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
+            <div class="p-4 border rounded-2xl border-white/10 bg-white/5 backdrop-blur-xl">
                 {{-- Row 1: Avatar + Info --}}
                 <div class="flex items-center gap-4">
                     {{-- Avatar iOS size (80pt) --}}
                     <div class="relative flex-shrink-0">
                         <div class="h-20 w-20 overflow-hidden rounded-2xl ring-2 ring-[#C9A227]/40">
                             <img src="{{ $company->profile_photo_url }}" alt="{{ $company->name }}"
-                                class="h-full w-full object-cover" loading="lazy">
+                                class="object-cover w-full h-full" loading="lazy">
                         </div>
                         {{-- Edit Avatar Button - Owner Only --}}
                         @if (auth()->check() && auth()->id() === $company->id)
@@ -173,14 +173,14 @@
                     </div>
 
                     {{-- Info --}}
-                    <div class="min-w-0 flex-1">
-                        <div class="mb-1 flex items-center gap-2">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
                             <span
                                 class="rounded-full bg-[#1E3A5F]/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#C9A227]">
                                 {{ __('company.home.business_badge') }}
                             </span>
                         </div>
-                        <h1 class="truncate text-xl font-bold text-white">{{ $company->name }}</h1>
+                        <h1 class="text-xl font-bold text-white truncate">{{ $company->name }}</h1>
                         @if ($company->tagline)
                             <p class="truncate text-sm italic text-[#C9A227]/80">"{{ $company->tagline }}"</p>
                         @endif
@@ -191,7 +191,7 @@
                 </div>
 
                 {{-- Divider --}}
-                <div class="my-4 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                <div class="h-px my-4 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
                 {{-- Row 2: Stats iOS-style (equal width columns) --}}
                 <div class="grid grid-cols-3 gap-2">
@@ -219,15 +219,15 @@
         {{-- ═══════════════════════════════════════════════════════════════════
              DESKTOP: Layout originale (md+)
         ═══════════════════════════════════════════════════════════════════ --}}
-        <div class="relative z-10 mx-auto hidden max-w-7xl px-4 py-16 sm:px-6 md:block md:py-24 lg:px-8">
-            <div class="grid grid-cols-1 items-end gap-12 md:grid-cols-12 md:gap-8">
+        <div class="relative z-10 hidden px-4 py-16 mx-auto max-w-7xl sm:px-6 md:block md:py-24 lg:px-8">
+            <div class="grid items-end grid-cols-1 gap-12 md:grid-cols-12 md:gap-8">
                 {{-- Logo + Info --}}
                 <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:gap-8 md:col-span-8">
-                    <div class="group relative flex-shrink-0">
+                    <div class="relative flex-shrink-0 group">
                         <div
                             class="h-32 w-32 overflow-hidden rounded-2xl shadow-2xl ring-4 ring-[#C9A227]/30 md:h-40 md:w-40">
                             <img src="{{ $company->profile_photo_url }}" alt="{{ $company->name }}"
-                                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
                                 loading="lazy">
                         </div>
                         {{-- Edit Avatar Button - Owner Only --}}
@@ -236,7 +236,7 @@
                                 id="edit-avatar-btn-desktop"
                                 class="absolute -bottom-2 -left-2 rounded-full bg-[#1E3A5F] p-2 shadow-lg ring-2 ring-gray-900 transition-all hover:scale-110 hover:bg-[#2a4d7a]"
                                 title="{{ __('company.profile.edit_avatar') }}">
-                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor"
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -247,7 +247,7 @@
                         @endif
                         @if ($company->is_verified ?? false)
                             <div class="absolute -bottom-2 -right-2 rounded-full bg-[#2D7D46] p-2 shadow-lg">
-                                <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                         clip-rule="evenodd" />
@@ -257,13 +257,13 @@
                     </div>
 
                     <div class="flex flex-col text-center sm:text-left">
-                        <div class="mb-2 flex items-center justify-center gap-2 sm:justify-start">
+                        <div class="flex items-center justify-center gap-2 mb-2 sm:justify-start">
                             <span
                                 class="rounded-full bg-[#1E3A5F] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#C9A227]">
                                 {{ __('company.home.business_badge') }}
                             </span>
                         </div>
-                        <h1 class="font-playfair mb-1 text-3xl font-bold text-white md:text-5xl">{{ $company->name }}
+                        <h1 class="mb-1 text-3xl font-bold text-white font-playfair md:text-5xl">{{ $company->name }}
                         </h1>
                         @if ($company->tagline)
                             <p class="font-source-sans text-lg italic text-[#C9A227] md:text-xl">
@@ -283,19 +283,19 @@
                         <div>
                             <p class="text-2xl font-bold text-white">{{ number_format($stats['total_egis'] ?? 0) }}
                             </p>
-                            <p class="text-sm uppercase tracking-wider text-gray-400">
+                            <p class="text-sm tracking-wider text-gray-400 uppercase">
                                 {{ __('company.home.stats.egis') }}</p>
                         </div>
                         <div>
                             <p class="text-2xl font-bold text-white">
                                 {{ number_format($stats['total_collections'] ?? 0) }}</p>
-                            <p class="text-sm uppercase tracking-wider text-gray-400">
+                            <p class="text-sm tracking-wider text-gray-400 uppercase">
                                 {{ __('company.home.stats.collections') }}</p>
                         </div>
                         <div>
                             <p class="text-2xl font-bold text-white">
                                 {{ number_format($stats['total_supporters'] ?? 0) }}</p>
-                            <p class="text-sm uppercase tracking-wider text-gray-400">
+                            <p class="text-sm tracking-wider text-gray-400 uppercase">
                                 {{ __('company.home.stats.supporters') }}</p>
                         </div>
                     </div>
@@ -307,21 +307,21 @@
     {{-- NAVIGATION TABS --}}
     <x-slot name="platformStats">
         <nav class="sticky top-0 z-40 border-b border-[#1E3A5F]/50 bg-gray-900/95 backdrop-blur-md">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="scrollbar-hide flex overflow-x-auto" id="company-tabs">
-                    <button data-tab="portfolio" data-url="{{ route('company.portfolio', $company->id) }}"
-                        class="company-tab {{ ($activeTab ?? 'portfolio') === 'portfolio' ? 'active text-[#C9A227] border-[#C9A227]' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
+            <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div class="flex overflow-x-auto scrollbar-hide" id="company-tabs">
+                    <button data-tab="portfolio" data-url="{{ route('company.portfolio', $company->nick_name ?? $company->id) }}"
+                        class="company-tab {{ ($activeTab ?? 'portfolio') === 'portfolio' ? 'active text-company-accent border-company-accent' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('company.home.nav.portfolio') }}
                     </button>
-                    <button data-tab="collections" data-url="{{ route('company.collections', $company->id) }}"
+                    <button data-tab="collections" data-url="{{ route('company.collections', $company->nick_name ?? $company->id) }}"
                         class="company-tab {{ ($activeTab ?? '') === 'collections' ? 'active text-[#C9A227] border-[#C9A227]' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('company.home.nav.collections') }}
                     </button>
-                    <button data-tab="about" data-url="{{ route('company.about', $company->id) }}"
-                        class="company-tab {{ ($activeTab ?? '') === 'about' ? 'active text-[#C9A227] border-[#C9A227]' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
+                    <button data-tab="about" data-url="{{ route('company.about', $company->nick_name ?? $company->id) }}"
+                        class="company-tab {{ ($activeTab ?? '') === 'about' ? 'active text-company-accent border-company-accent' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('company.home.nav.about') }}
                     </button>
-                    <button data-tab="impact" data-url="{{ route('company.impact', $company->id) }}"
+                    <button data-tab="impact" data-url="{{ route('company.impact', $company->nick_name ?? $company->id) }}"
                         class="company-tab {{ ($activeTab ?? '') === 'impact' ? 'active text-[#C9A227] border-[#C9A227]' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('company.home.nav.impact') }}
                     </button>
@@ -414,7 +414,7 @@
                     .catch(error => {
                         console.error('Error loading content:', error);
                         contentContainer.innerHTML =
-                            '<p class="text-red-500 text-center py-12">Error loading content</p>';
+                            '<p class="py-12 text-center text-red-500">Error loading content</p>';
                         hideLoader();
                     });
             }
@@ -455,7 +455,7 @@
                             .catch(error => {
                                 console.error('Error loading portfolio mode:', error);
                                 contentContainer.innerHTML =
-                                    '<p class="text-red-500 text-center py-12">Error loading content</p>';
+                                    '<p class="py-12 text-center text-red-500">Error loading content</p>';
                                 hideLoader();
                             });
                         return;
@@ -494,7 +494,7 @@
                         .catch(error => {
                             console.error('Error loading view:', error);
                             contentContainer.innerHTML =
-                                '<p class="text-red-500 text-center py-12">Error loading content</p>';
+                                '<p class="py-12 text-center text-red-500">Error loading content</p>';
                             hideLoader();
                         });
                 });

@@ -128,7 +128,7 @@
                         @if (auth()->check() && auth()->id() === $creator->id)
                             <button type="button" onclick="openImageModal('creator-avatar-modal')"
                                 id="edit-avatar-btn-mobile"
-                                class="absolute -bottom-1 -left-1 touch-manipulation rounded-full bg-oro-fiorentino p-1.5 shadow-lg ring-2 ring-gray-900 transition-all hover:bg-opacity-90"
+                                class="bg-oro-fiorentino absolute -bottom-1 -left-1 touch-manipulation rounded-full p-1.5 shadow-lg ring-2 ring-gray-900 transition-all hover:bg-opacity-90"
                                 title="{{ __('creator.profile.edit_avatar') }}">
                                 <svg class="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
@@ -206,9 +206,10 @@
                         @if (auth()->check() && auth()->id() === $creator->id)
                             <button type="button" onclick="openImageModal('creator-avatar-modal')"
                                 id="edit-avatar-btn-desktop"
-                                class="absolute -bottom-2 -right-2 touch-manipulation rounded-full bg-oro-fiorentino p-2 shadow-lg ring-2 ring-gray-900 transition-all hover:bg-opacity-90"
+                                class="bg-oro-fiorentino absolute -bottom-2 -right-2 touch-manipulation rounded-full p-2 shadow-lg ring-2 ring-gray-900 transition-all hover:bg-opacity-90"
                                 title="{{ __('creator.profile.edit_avatar') }}">
-                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -246,7 +247,8 @@
                 <div class="flex flex-col items-center gap-6 md:col-span-4 md:items-end">
                     <div class="flex gap-8 text-center">
                         <div>
-                            <p class="text-2xl font-bold text-white">{{ number_format($stats['total_egis'] ?? 0) }}</p>
+                            <p class="text-2xl font-bold text-white">{{ number_format($stats['total_egis'] ?? 0) }}
+                            </p>
                             <p class="text-sm uppercase tracking-wider text-gray-400">
                                 {{ __('creator.home.stats.works') }}</p>
                         </div>
@@ -273,23 +275,28 @@
         <nav class="sticky top-0 z-40 border-b border-gray-800 bg-gray-900/95 backdrop-blur-md">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="scrollbar-hide flex overflow-x-auto" id="creator-tabs">
-                    <button data-tab="portfolio" data-url="{{ route('creator.portfolio', $creator->nick_name ?? $creator->id) }}"
+                    <button data-tab="portfolio"
+                        data-url="{{ route('creator.portfolio', $creator->nick_name ?? $creator->id) }}"
                         class="creator-tab {{ ($activeTab ?? 'portfolio') === 'portfolio' ? 'active text-oro-fiorentino border-oro-fiorentino' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('creator.home.nav.portfolio') }}
                     </button>
-                    <button data-tab="collections" data-url="{{ route('creator.collections', $creator->nick_name ?? $creator->id) }}"
+                    <button data-tab="collections"
+                        data-url="{{ route('creator.collections', $creator->nick_name ?? $creator->id) }}"
                         class="creator-tab {{ ($activeTab ?? '') === 'collections' ? 'active text-oro-fiorentino border-oro-fiorentino' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('creator.home.nav.collections') }}
                     </button>
-                    <button data-tab="biography" data-url="{{ route('creator.biography', $creator->nick_name ?? $creator->id) }}"
+                    <button data-tab="biography"
+                        data-url="{{ route('creator.biography', $creator->nick_name ?? $creator->id) }}"
                         class="creator-tab {{ ($activeTab ?? '') === 'biography' ? 'active text-oro-fiorentino border-oro-fiorentino' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('creator.home.nav.biography') }}
                     </button>
-                    <button data-tab="impact" data-url="{{ route('creator.impact', $creator->nick_name ?? $creator->id) }}"
+                    <button data-tab="impact"
+                        data-url="{{ route('creator.impact', $creator->nick_name ?? $creator->id) }}"
                         class="creator-tab {{ ($activeTab ?? '') === 'impact' ? 'active text-oro-fiorentino border-oro-fiorentino' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('creator.home.nav.impact') }}
                     </button>
-                    <button data-tab="community" data-url="{{ route('creator.community', $creator->nick_name ?? $creator->id) }}"
+                    <button data-tab="community"
+                        data-url="{{ route('creator.community', $creator->nick_name ?? $creator->id) }}"
                         class="creator-tab {{ ($activeTab ?? '') === 'community' ? 'active text-oro-fiorentino border-oro-fiorentino' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('creator.home.nav.community') }}
                     </button>

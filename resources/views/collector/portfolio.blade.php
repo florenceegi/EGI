@@ -70,9 +70,10 @@
                         @if (auth()->check() && auth()->id() === $collector->id)
                             <button type="button" onclick="openImageModal('collector-avatar-modal')"
                                 id="edit-avatar-btn"
-                                class="absolute -bottom-2 -left-2 touch-manipulation rounded-full bg-oro-fiorentino p-2 shadow-lg ring-2 ring-gray-900 transition-all hover:bg-opacity-90"
+                                class="bg-oro-fiorentino absolute -bottom-2 -left-2 touch-manipulation rounded-full p-2 shadow-lg ring-2 ring-gray-900 transition-all hover:bg-opacity-90"
                                 title="{{ __('collector.profile.edit_avatar') }}">
-                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -138,11 +139,11 @@
             aria-label="{{ __('collector.home.navigation_aria') }}">
             <div class="mx-auto flex w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="scrollbar-hide flex w-full space-x-6">
-                    <a href="{{ route('collector.portfolio', $collector->id) }}"
+                    <a href="{{ route('collector.portfolio', $collector->nick_name ?? $collector->id) }}"
                         class="border-oro-fiorentino text-oro-fiorentino border-b-2 px-6 py-4 text-sm font-medium">
                         {{ __('collector.home.portfolio_tab') }}
                     </a>
-                    <a href="{{ route('collector.collections', $collector->id) }}"
+                    <a href="{{ route('collector.collections', $collector->nick_name ?? $collector->id) }}"
                         class="border-b-2 border-transparent px-6 py-4 text-sm font-medium text-gray-300 hover:text-white">
                         {{ __('collector.home.collections_tab') }}
                     </a>

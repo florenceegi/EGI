@@ -4,13 +4,14 @@
     $user = App\Helpers\FegiAuth::user();
 
     // Routing dinamico basato su usertype
+    // P0-8: Use nick_name to avoid middleware redirect (same as creator tabs fix)
     $userHomeRoute =
         $user && $user->id
             ? match ($user->usertype ?? 'creator') {
-                'creator' => route('creator.home', $user->id),
-                'collector' => route('collector.home', $user->id),
-                'company' => route('company.home', $user->id),
-                default => route('creator.home', $user->id),
+                'creator' => route('creator.home', $user->nick_name ?? $user->id),
+                'collector' => route('collector.home', $user->nick_name ?? $user->id),
+                'company' => route('company.home', $user->nick_name ?? $user->id),
+                default => route('creator.home', $user->nick_name ?? $user->id),
             }
             : '#';
 @endphp
