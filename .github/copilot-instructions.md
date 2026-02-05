@@ -162,7 +162,7 @@ class ExampleController extends Controller
 
 **IMPORTANT**: When migrating to atomic translations, update ALL 6 languages (P0-9).
 
-**See**: `docs/FlorenceEGI/Implementation/TECHNICAL_DEBT.md` - UTM Dynamic Parameter Caching Issue
+**See**: `docs/FlorenceEGI/debiti_tecnici.md` - UTM Dynamic Parameter Caching Issue
 
 ---
 
@@ -186,6 +186,7 @@ class ExampleController extends Controller
 | USE Pipeline | `python_ai_service/app/services/use_pipeline.py` |
 | RAG-Fortress | `python_ai_service/app/services/rag_fortress/` |
 | GDPR Enums | `laravel_backend/app/Enums/Gdpr/` |
+| Debiti Tecnici | `docs/FlorenceEGI/debiti_tecnici.md` |
 | Stato progetto | `docs/Core/00_NATAN_LOC_STATO_DELLARTE.md` |
 | Architettura | `docs/Core/01_PLATFORME_ARCHITECTURE.md` |
 | Anti-hallucination | `docs/Core/03_ANTI_HALLUCINATION_TECH.md` |
