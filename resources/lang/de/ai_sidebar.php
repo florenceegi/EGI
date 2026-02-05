@@ -14,7 +14,7 @@ return [
     'close' => 'Schließen',
     'send' => 'Senden',
     'chat_placeholder' => 'Frag etwas...',
-    'assistant_name' => 'EGI Assistent',
+    'assistant_name' => 'Natan',
     'quick_actions_label' => 'Empfohlene nächste Schritte:',
 
     // Messages (programmatic AI)
