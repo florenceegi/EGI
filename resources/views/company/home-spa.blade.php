@@ -148,7 +148,8 @@
                         </div>
                         {{-- Edit Avatar Button - Owner Only --}}
                         @if (auth()->check() && auth()->id() === $company->id)
-                            <button type="button" onclick="openImageModal('company-avatar-modal')" id="edit-avatar-btn-mobile"
+                            <button type="button" onclick="openImageModal('company-avatar-modal')"
+                                id="edit-avatar-btn-mobile"
                                 class="absolute -bottom-1 -left-1 touch-manipulation rounded-full bg-[#1E3A5F] p-1.5 shadow-lg ring-2 ring-gray-900 transition-all hover:bg-[#2a4d7a]"
                                 title="{{ __('company.profile.edit_avatar') }}">
                                 <svg class="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor"
@@ -231,7 +232,8 @@
                         </div>
                         {{-- Edit Avatar Button - Owner Only --}}
                         @if (auth()->check() && auth()->id() === $company->id)
-                            <button type="button" onclick="openImageModal('company-avatar-modal')" id="edit-avatar-btn-desktop"
+                            <button type="button" onclick="openImageModal('company-avatar-modal')"
+                                id="edit-avatar-btn-desktop"
                                 class="absolute -bottom-2 -left-2 rounded-full bg-[#1E3A5F] p-2 shadow-lg ring-2 ring-gray-900 transition-all hover:scale-110 hover:bg-[#2a4d7a]"
                                 title="{{ __('company.profile.edit_avatar') }}">
                                 <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor"
@@ -579,42 +581,26 @@
 
     {{-- AI Sidebar - Onboarding Assistant (Owner Only) --}}
     @if (!empty($onboardingChecklist))
-        <x-ai-sidebar 
-            :user="$company" 
-            :userType="'company'" 
-            :checklist="$onboardingChecklist" 
-        />
+        <x-ai-sidebar :user="$company" :userType="'company'" :checklist="$onboardingChecklist" />
     @endif
 
     {{-- Image Upload Modals (only for owner) --}}
     @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $company->id)
         {{-- Banner Upload Modal --}}
-        <x-modals.image-upload-modal
-            modalId="company-banner-modal"
-            type="banner"
-            collection="creator_banners"
+        <x-modals.image-upload-modal modalId="company-banner-modal" type="banner" collection="creator_banners"
             uploadRoute="{{ route('creator.upload-banner') }}"
             setCurrentRoute="{{ route('creator.set-current-banner') }}"
-            deleteRoute="{{ route('creator.delete-banner') }}"
-            :currentImage="auth()->user()->getCurrentCreatorBanner()"
-            :allImages="auth()->user()->getAllCreatorBanners()"
+            deleteRoute="{{ route('creator.delete-banner') }}" :currentImage="auth()->user()->getCurrentCreatorBanner()" :allImages="auth()->user()->getAllCreatorBanners()"
             title="{{ __('profile.upload_new_banner') }}"
-            helpText="{{ __('profile.supported_formats_with_size') }}"
-        />
+            helpText="{{ __('profile.supported_formats_with_size') }}" />
 
         {{-- Avatar Upload Modal --}}
-        <x-modals.image-upload-modal
-            modalId="company-avatar-modal"
-            type="avatar"
-            collection="profile_image"
+        <x-modals.image-upload-modal modalId="company-avatar-modal" type="avatar" collection="profile_image"
             uploadRoute="{{ route('profile.upload-image') }}"
             setCurrentRoute="{{ route('profile.set-current-image') }}"
-            deleteRoute="{{ route('profile.delete-image') }}"
-            :currentImage="auth()->user()->getCurrentProfileImage()"
-            :allImages="auth()->user()->getAllProfileImages()"
+            deleteRoute="{{ route('profile.delete-image') }}" :currentImage="auth()->user()->getCurrentProfileImage()" :allImages="auth()->user()->getAllProfileImages()"
             title="{{ __('profile.upload_new_avatar') }}"
-            helpText="{{ __('profile.supported_formats_with_size') }}"
-        />
+            helpText="{{ __('profile.supported_formats_with_size') }}" />
 
         {{-- Include JS Manager --}}
         <script src="{{ asset('js/home-page-image-manager.js') }}" defer></script>

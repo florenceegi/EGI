@@ -173,8 +173,8 @@ class CompanyHomeController extends Controller {
             'sort' => $sort,
             'view' => $view,
             'canSwitchPortfolioMode' => $canSwitchPortfolioMode,
-            'onboardingChecklist' => auth()->check() && auth()->id() === $company->id 
-                ? $this->onboardingService->getChecklist($company, 'company') 
+            'onboardingChecklist' => auth()->check() && auth()->id() === $company->id
+                ? $this->onboardingService->getChecklist($company, 'company')
                 : [],
         ])->with('activeTab', 'portfolio');
     }

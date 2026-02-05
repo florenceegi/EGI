@@ -19,8 +19,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @author EGI Team
  * @version 1.0.0
  */
-class OnboardingChecklistController extends Controller
-{
+class OnboardingChecklistController extends Controller {
     /**
      * @var OnboardingChecklistService
      */
@@ -53,8 +52,7 @@ class OnboardingChecklistController extends Controller
      * @param int $userId
      * @return JsonResponse
      */
-    public function getChecklist(Request $request, string $userType, int $userId): JsonResponse
-    {
+    public function getChecklist(Request $request, string $userType, int $userId): JsonResponse {
         // Validate user type
         if (!in_array($userType, ['creator', 'company', 'collector'])) {
             return response()->json([
@@ -103,8 +101,7 @@ class OnboardingChecklistController extends Controller
      * @param int $userId
      * @return JsonResponse
      */
-    public function refreshChecklist(Request $request, string $userType, int $userId): JsonResponse
-    {
+    public function refreshChecklist(Request $request, string $userType, int $userId): JsonResponse {
         // Validate user type
         if (!in_array($userType, ['creator', 'company', 'collector'])) {
             return response()->json([
@@ -159,8 +156,7 @@ class OnboardingChecklistController extends Controller
      * @param int $userId
      * @return JsonResponse
      */
-    public function getProgress(Request $request, string $userType, int $userId): JsonResponse
-    {
+    public function getProgress(Request $request, string $userType, int $userId): JsonResponse {
         // Validate user type
         if (!in_array($userType, ['creator', 'company', 'collector'])) {
             return response()->json([

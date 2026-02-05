@@ -216,14 +216,18 @@
             case "avatar-upload-modal":
                 // Check for creator/company/collector avatar modals
                 if (window.openImageModal) {
-                    const userType = document.getElementById('ai-sidebar')?.dataset.userType || 'creator';
+                    const userType =
+                        document.getElementById("ai-sidebar")?.dataset
+                            .userType || "creator";
                     window.openImageModal(`${userType}-avatar-modal`);
                 }
                 break;
             case "banner-upload-modal":
                 // Check for creator/company/collector banner modals
                 if (window.openImageModal) {
-                    const userType = document.getElementById('ai-sidebar')?.dataset.userType || 'creator';
+                    const userType =
+                        document.getElementById("ai-sidebar")?.dataset
+                            .userType || "creator";
                     window.openImageModal(`${userType}-banner-modal`);
                 }
                 break;

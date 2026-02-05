@@ -141,7 +141,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'showDirectMint'])
         ->name('egi.mint-direct');
 
-    Route::post('/egi/{id}/mint-direct', function($id, \Illuminate\Http\Request $request) {
+    Route::post('/egi/{id}/mint-direct', function ($id, \Illuminate\Http\Request $request) {
         \Log::channel('stack')->emergency('🔴 ROUTE HIT: egi.mint-direct.process', [
             'id' => $id,
             'user_id' => Auth::id(),

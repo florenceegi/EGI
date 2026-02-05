@@ -22,8 +22,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-06-24
  * @context registration
  */
-class RegistrationRequest extends FormRequest
-{
+class RegistrationRequest extends FormRequest {
     /**
      * Ultra Error Manager instance for unified error handling
      * @var ErrorManagerInterface
@@ -35,8 +34,7 @@ class RegistrationRequest extends FormRequest
      * 🎯 Purpose: Initialize UEM dependency for validation error orchestration
      * 🛡️ Security: Ensures error manager is available before validation runs
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->errorManager = app(ErrorManagerInterface::class);
     }
@@ -47,8 +45,7 @@ class RegistrationRequest extends FormRequest
      * @return bool Always true for registration (public endpoint)
      * @oracode-dimension access-control
      */
-    public function authorize(): bool
-    {
+    public function authorize(): bool {
         return true; // Registration is public
     }
 
@@ -65,8 +62,7 @@ class RegistrationRequest extends FormRequest
      * @community-impact Ensures data quality for platform ecosystem
      * @transparency-level High - all rules are explicit and auditable
      */
-    public function rules(): array
-    {
+    public function rules(): array {
         // 🎯 Dynamic user types from config with fallback
         $allowedUserTypes = config('app.fegi_user_type', []);
 
@@ -125,8 +121,7 @@ class RegistrationRequest extends FormRequest
      * @oracode-dimension user-experience
      * @narrative-coherence Maintains consistent voice across all form errors
      */
-    public function messages(): array
-    {
+    public function messages(): array {
         return [
             'email.unique' => __('validation.custom.email.unique'),
             'email.email' => __('validation.custom.email.email'),
@@ -156,8 +151,7 @@ class RegistrationRequest extends FormRequest
      * @return array<string, string> Localized field attributes
      * @oracode-dimension user-experience
      */
-    public function attributes(): array
-    {
+    public function attributes(): array {
         return [
             'email' => __('validation.attributes.email'),
             'password' => __('validation.attributes.password'),
@@ -194,8 +188,7 @@ class RegistrationRequest extends FormRequest
      * @transparency-level Medium - logs validation attempts without exposing sensitive data
      * @narrative-coherence Maintains FlorenceEGI's professional error handling standards
      */
-    protected function failedValidation(Validator $validator): void
-    {
+    protected function failedValidation(Validator $validator): void {
         $errors = $validator->errors()->toArray();
 
         // Map Laravel validation errors to UEM domain codes
@@ -231,8 +224,7 @@ class RegistrationRequest extends FormRequest
      * @value-flow Translates technical validation to business domain language
      * @transparency-level High - mapping logic is explicit and auditable
      */
-    private function mapValidationToUemCode(array $errors): string
-    {
+    private function mapValidationToUemCode(array $errors): string {
         // Priority to most specific email errors
         if (isset($errors['email'])) {
             foreach ($errors['email'] as $error) {

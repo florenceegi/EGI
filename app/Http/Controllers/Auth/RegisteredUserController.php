@@ -115,7 +115,7 @@ class RegisteredUserController extends Controller {
         try {
             // ═══ GET VALIDATED DATA ═══
             $validated = $request->validated();
-            
+
             // Normalize 'epp_entity' to 'epp' for internal logic consistency
             if (isset($validated['user_type']) && $validated['user_type'] === 'epp_entity') {
                 $validated['user_type'] = 'epp';
@@ -193,7 +193,7 @@ class RegisteredUserController extends Controller {
             // Route depends on user type and requires dynamic parameters (user ID or nickname)
             $user = $result['user'];
             $userType = $validated['user_type'];
-            
+
             // Determine redirect URL based on user type
             // Determine redirect URL based on user type using centralized service
             $redirectUrl = $this->authRedirectService->getRedirectUrl($user);

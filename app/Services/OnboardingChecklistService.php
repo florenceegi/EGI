@@ -18,8 +18,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @version 1.0.0
  * @date 2025-01-XX
  */
-class OnboardingChecklistService
-{
+class OnboardingChecklistService {
     /**
      * Cache TTL in seconds (5 minutes)
      */
@@ -36,8 +35,7 @@ class OnboardingChecklistService
      *
      * @param UltraLogManager $logger
      */
-    public function __construct(UltraLogManager $logger)
-    {
+    public function __construct(UltraLogManager $logger) {
         $this->logger = $logger;
     }
 
@@ -48,8 +46,7 @@ class OnboardingChecklistService
      * @param string $userType 'creator' | 'company' | 'collector'
      * @return array Checklist items with completion status
      */
-    public function getChecklist(User $user, string $userType): array
-    {
+    public function getChecklist(User $user, string $userType): array {
         $cacheKey = "onboarding_checklist_" . self::CACHE_VERSION . "_{$userType}_{$user->id}";
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($user, $userType) {
@@ -69,8 +66,7 @@ class OnboardingChecklistService
      * @param string $userType
      * @return array Fresh checklist
      */
-    public function refreshChecklist(User $user, string $userType): array
-    {
+    public function refreshChecklist(User $user, string $userType): array {
         $cacheKey = "onboarding_checklist_" . self::CACHE_VERSION . "_{$userType}_{$user->id}";
         Cache::forget($cacheKey);
 
@@ -84,8 +80,7 @@ class OnboardingChecklistService
      * @param string $userType
      * @return array ['completed' => int, 'total' => int, 'percent' => int]
      */
-    public function getProgress(User $user, string $userType): array
-    {
+    public function getProgress(User $user, string $userType): array {
         $checklist = $this->getChecklist($user, $userType);
         $completed = collect($checklist)->where('completed', true)->count();
         $total = count($checklist);
@@ -103,8 +98,7 @@ class OnboardingChecklistService
      * @param User $user
      * @return array
      */
-    protected function getCreatorChecklist(User $user): array
-    {
+    protected function getCreatorChecklist(User $user): array {
         $items = [];
 
         // 1. Configure payments (Stripe) - PRIORITY: First thing for selling
@@ -201,8 +195,7 @@ class OnboardingChecklistService
      * @param User $user
      * @return array
      */
-    protected function getCompanyChecklist(User $user): array
-    {
+    protected function getCompanyChecklist(User $user): array {
         $items = [];
 
         // 1. Configure payments (Stripe) - PRIORITY: First thing for selling
@@ -286,8 +279,7 @@ class OnboardingChecklistService
      * @param User $user
      * @return array
      */
-    protected function getCollectorChecklist(User $user): array
-    {
+    protected function getCollectorChecklist(User $user): array {
         $items = [];
 
         // 1. Verify email
@@ -359,18 +351,16 @@ class OnboardingChecklistService
      * @param User $user
      * @return bool
      */
-    protected function hasAvatar(User $user): bool
-    {
-        // Check profile_photo_path or avatar relationship
-        if (!empty($user->profile_photo_path)) {
-            return true;
+    protected function hasAvatar(User $user): bool {
+        // P0-4: Verifico metodo esiste + P0-6: Verified via read_file
+        // PRIMARY: Check via getCurrentProfileImage (Spatie Media - source of truth)
+        if (method_exists($user, 'getCurrentProfileImage')) {
+            return $user->getCurrentProfileImage() !== null;
         }
 
-        // Check via getAvatarUrl method if exists
-        if (method_exists($user, 'getAvatarUrl')) {
-            $avatarUrl = $user->getAvatarUrl();
-            // Check if it's not a default avatar
-            return $avatarUrl && !str_contains($avatarUrl, 'default') && !str_contains($avatarUrl, 'gravatar');
+        // FALLBACK: Check profile_photo_path (legacy)
+        if (!empty($user->profile_photo_path)) {
+            return true;
         }
 
         return false;
@@ -382,8 +372,7 @@ class OnboardingChecklistService
      * @param User $user
      * @return bool
      */
-    protected function hasBanner(User $user): bool
-    {
+    protected function hasBanner(User $user): bool {
         // Check banner_path or similar field
         if (!empty($user->banner_path)) {
             return true;
@@ -404,8 +393,7 @@ class OnboardingChecklistService
      * @param User $user
      * @return bool
      */
-    protected function hasBio(User $user): bool
-    {
+    protected function hasBio(User $user): bool {
         // Check bio field
         if (!empty($user->bio) && strlen(trim($user->bio)) > 10) {
             return true;
@@ -426,8 +414,7 @@ class OnboardingChecklistService
      * @param User $user
      * @return bool
      */
-    protected function hasStripeConnected(User $user): bool
-    {
+    protected function hasStripeConnected(User $user): bool {
         // Check stripe_account_id
         if (!empty($user->stripe_account_id)) {
             return true;
@@ -447,8 +434,7 @@ class OnboardingChecklistService
      * @param User $user
      * @return bool
      */
-    protected function hasCollection(User $user): bool
-    {
+    protected function hasCollection(User $user): bool {
         return Collection::where('creator_id', $user->id)->exists();
     }
 
@@ -458,8 +444,7 @@ class OnboardingChecklistService
      * @param User $user
      * @return bool
      */
-    protected function hasEgi(User $user): bool
-    {
+    protected function hasEgi(User $user): bool {
         // Check via egis relationship
         if (method_exists($user, 'egis')) {
             return $user->egis()->exists();
@@ -475,8 +460,7 @@ class OnboardingChecklistService
      * @param User $user
      * @return bool
      */
-    protected function hasSocialLinks(User $user): bool
-    {
+    protected function hasSocialLinks(User $user): bool {
         // Check social_links JSON field
         if (!empty($user->social_links)) {
             $links = is_array($user->social_links) ? $user->social_links : json_decode($user->social_links, true);
