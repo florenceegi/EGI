@@ -207,7 +207,20 @@ class BiographyWebController extends Controller {
         $walletAddress = FegiAuth::getWallet();
 
         $biographyOwner = $this->resolveCreator($creator_id); // Proprietario della biografia
-        $biography = Biography::where('user_id', $biographyOwner->id)->first();
+        
+        // P0-8: Fix biography selection logic
+        // 1. Try to get public biography first (most recent if multiple)
+        // 2. If no public biography and user is owner, get most recent biography
+        // 3. Otherwise, null (show "no biography" message)
+        $isOwner = FegiAuth::check() && $biographyOwner->id === $userId;
+        
+        $biography = Biography::where('user_id', $biographyOwner->id)
+            ->when(!$isOwner, function ($query) {
+                // For non-owners, only show public biographies
+                $query->where('is_public', true);
+            })
+            ->orderBy('updated_at', 'desc')
+            ->first();
 
         // Check if biography exists - show graceful message instead of 404
         if (!$biography) {
