@@ -32,7 +32,10 @@ class CreatorNicknameRedirect {
             // Se il creator esiste e ha un nick_name, reindirizza SEMPRE (anche con spazi)
             if ($creator && !empty($creator->nick_name)) {
                 $currentUrl = $request->fullUrl();
-                $encodedNickname = urlencode($creator->nick_name); // Codifica il nick_name per URL
+                // P0-8: Use rawurlencode() instead of urlencode()
+                // urlencode() converts spaces to '+' which doesn't match route regex
+                // rawurlencode() converts spaces to '%20' which matches [%20] in regex
+                $encodedNickname = rawurlencode($creator->nick_name);
                 $newUrl = str_replace("/creator/{$creatorId}", "/creator/{$encodedNickname}", $currentUrl);
 
                 return redirect($newUrl, 301); // Redirect permanente
