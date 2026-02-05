@@ -273,23 +273,23 @@
         <nav class="sticky top-0 z-40 border-b border-gray-800 bg-gray-900/95 backdrop-blur-md">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="scrollbar-hide flex overflow-x-auto" id="creator-tabs">
-                    <button data-tab="portfolio" data-url="{{ route('creator.portfolio', $creator->id) }}"
+                    <button data-tab="portfolio" data-url="{{ route('creator.portfolio', $creator->nick_name ?? $creator->id) }}"
                         class="creator-tab {{ ($activeTab ?? 'portfolio') === 'portfolio' ? 'active text-oro-fiorentino border-oro-fiorentino' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('creator.home.nav.portfolio') }}
                     </button>
-                    <button data-tab="collections" data-url="{{ route('creator.collections', $creator->id) }}"
+                    <button data-tab="collections" data-url="{{ route('creator.collections', $creator->nick_name ?? $creator->id) }}"
                         class="creator-tab {{ ($activeTab ?? '') === 'collections' ? 'active text-oro-fiorentino border-oro-fiorentino' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('creator.home.nav.collections') }}
                     </button>
-                    <button data-tab="biography" data-url="{{ route('creator.biography', $creator->id) }}"
+                    <button data-tab="biography" data-url="{{ route('creator.biography', $creator->nick_name ?? $creator->id) }}"
                         class="creator-tab {{ ($activeTab ?? '') === 'biography' ? 'active text-oro-fiorentino border-oro-fiorentino' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('creator.home.nav.biography') }}
                     </button>
-                    <button data-tab="impact" data-url="{{ route('creator.impact', $creator->id) }}"
+                    <button data-tab="impact" data-url="{{ route('creator.impact', $creator->nick_name ?? $creator->id) }}"
                         class="creator-tab {{ ($activeTab ?? '') === 'impact' ? 'active text-oro-fiorentino border-oro-fiorentino' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('creator.home.nav.impact') }}
                     </button>
-                    <button data-tab="community" data-url="{{ route('creator.community', $creator->id) }}"
+                    <button data-tab="community" data-url="{{ route('creator.community', $creator->nick_name ?? $creator->id) }}"
                         class="creator-tab {{ ($activeTab ?? '') === 'community' ? 'active text-oro-fiorentino border-oro-fiorentino' : 'text-gray-300 border-transparent' }} whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium hover:text-white">
                         {{ __('creator.home.nav.community') }}
                     </button>
