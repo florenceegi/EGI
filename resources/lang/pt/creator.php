@@ -80,6 +80,13 @@ return [
         'back_to_profile' => 'Voltar ao perfil',
     ],
 
+    // PROFILE - Gestão de Imagens de Perfil
+    // =========================================================================
+    'profile' => [
+        'edit_avatar' => 'Editar avatar',
+        'edit_banner' => 'Editar banner',
+    ],
+
     // 🎯 Sistema Commissioner - Top Activator
     'top_activator' => 'Melhor Ativador',
 

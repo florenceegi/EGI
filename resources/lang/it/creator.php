@@ -177,6 +177,13 @@ return [
         'back_to_profile' => 'Torna al profilo',
     ],
 
+    // PROFILE - Gestione Immagini Profilo
+    // =========================================================================
+    'profile' => [
+        'edit_avatar' => 'Modifica avatar',
+        'edit_banner' => 'Modifica banner',
+    ],
+
     // 🎯 Sistema Commissioner - Top Activator
     'top_activator' => 'Miglior Attivatore',
 

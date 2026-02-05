@@ -138,6 +138,13 @@ return [
         'discover_button' => 'Marktplatz Erkunden',
     ],
 
+    // PROFILE - Profilbildverwaltung
+    // =========================================================================
+    'profile' => [
+        'edit_avatar' => 'Avatar bearbeiten',
+        'edit_banner' => 'Banner bearbeiten',
+    ],
+
     // Index Page
     'index' => [
         'page_title' => 'EGI-Sammler',

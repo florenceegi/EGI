@@ -236,6 +236,13 @@ return [
         'bar_aria' => 'Azioni rapide per i Committenti',
     ],
 
+    // PROFILE - Gestione Immagini Profilo
+    // =========================================================================
+    'profile' => [
+        'edit_avatar' => 'Modifica avatar',
+        'edit_banner' => 'Modifica banner',
+    ],
+
     // Why Section
     'why' => [
         'title' => 'Perché il Committente è necessario',

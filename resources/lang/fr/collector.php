@@ -67,4 +67,11 @@ return [
             'button' => 'Devenir un Activateur',
         ],
     ],
+
+    // PROFILE - Gestion des Images de Profil
+    // =========================================================================
+    'profile' => [
+        'edit_avatar' => 'Modifier l\'avatar',
+        'edit_banner' => 'Modifier la bannière',
+    ],
 ];

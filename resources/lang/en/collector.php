@@ -138,6 +138,13 @@ return [
         'discover_button' => 'Explore Marketplace',
     ],
 
+    // PROFILE - Profile Images Management
+    // =========================================================================
+    'profile' => [
+        'edit_avatar' => 'Edit avatar',
+        'edit_banner' => 'Edit banner',
+    ],
+
     // Index Page
     'index' => [
         'page_title' => 'EGI Collectors',

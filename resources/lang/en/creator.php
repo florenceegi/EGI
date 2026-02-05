@@ -173,6 +173,13 @@ return [
         'back_to_profile' => 'Back to profile',
     ],
 
+    // PROFILE - Profile Images Management
+    // =========================================================================
+    'profile' => [
+        'edit_avatar' => 'Edit avatar',
+        'edit_banner' => 'Edit banner',
+    ],
+
     // 🎯 Commissioner System - Top Activator
     'top_activator' => 'Top Activator',
 

@@ -138,6 +138,13 @@ return [
         'discover_button' => 'Explorar Mercado',
     ],
 
+    // PROFILE - Gestão de Imagens de Perfil
+    // =========================================================================
+    'profile' => [
+        'edit_avatar' => 'Editar avatar',
+        'edit_banner' => 'Editar banner',
+    ],
+
     // Index Page
     'index' => [
         'page_title' => 'Colecionadores EGI',

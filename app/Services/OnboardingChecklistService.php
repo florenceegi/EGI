@@ -23,7 +23,7 @@ class OnboardingChecklistService {
      * Cache TTL in seconds (5 minutes)
      */
     private const CACHE_TTL = 300;
-    private const CACHE_VERSION = 'v2';
+    private const CACHE_VERSION = 'v3'; // v3: Fix hasBanner() to use getCurrentCreatorBanner()
 
     /**
      * @var UltraLogManager
@@ -373,15 +373,15 @@ class OnboardingChecklistService {
      * @return bool
      */
     protected function hasBanner(User $user): bool {
-        // Check banner_path or similar field
-        if (!empty($user->banner_path)) {
-            return true;
+        // P0-4: Verifico metodo esiste + P0-6: Verified via grep_search
+        // PRIMARY: Check via getCurrentCreatorBanner (Spatie Media - source of truth)
+        if (method_exists($user, 'getCurrentCreatorBanner')) {
+            return $user->getCurrentCreatorBanner() !== null;
         }
 
-        // Check for creator banner
-        if (method_exists($user, 'getCreatorBannerUrl')) {
-            $bannerUrl = $user->getCreatorBannerUrl('banner');
-            return !empty($bannerUrl);
+        // FALLBACK: Check banner_path (legacy)
+        if (!empty($user->banner_path)) {
+            return true;
         }
 
         return false;
