@@ -8,7 +8,7 @@
 
 return [
     // General
-    'title' => 'Assistente AI',
+    'title' => 'Natan',
     'subtitle' => 'Ti aiuto a completare il profilo',
     'toggle_title' => 'Apri assistente onboarding',
     'close' => 'Chiudi',

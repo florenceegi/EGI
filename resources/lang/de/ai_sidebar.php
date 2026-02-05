@@ -8,7 +8,7 @@
 
 return [
     // General
-    'title' => 'KI-Assistent',
+    'title' => 'Natan',
     'subtitle' => 'Hilft dir, dein Profil zu vervollständigen',
     'toggle_title' => 'Onboarding-Assistent öffnen',
     'close' => 'Schließen',
