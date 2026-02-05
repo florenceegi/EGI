@@ -1,4 +1,116 @@
-# Technical Debt - Notification System
+# Technical Debt - Platform Issues
+
+## 🔴 Ultra Translation Manager - Dynamic Parameter Caching Issue
+
+**Status**: Active Issue (Workaround Implemented)  
+**Priority**: Medium (affects user experience)  
+**Created**: 2026-02-05  
+**Component**: Ultra Translation Manager (UTM)
+
+### Description
+Ultra Translation Manager caches translated strings aggressively to improve performance. However, when translations use dynamic parameters (`__('key', ['param' => $value])`), UTM may cache the translation with the **first user's data** and serve the same cached string to ALL subsequent users.
+
+### Real-World Example
+```php
+// Translation file:
+'greeting' => 'Ciao :name! Sono qui per aiutarti.'
+
+// Blade view:
+{{ __('ai_sidebar.greeting', ['name' => $user->name]) }}
+
+// BUG: First user "Mario" logs in → cached as "Ciao Mario! Sono qui..."
+// Then user "Luigi" logs in → sees "Ciao Mario! Sono qui..." (WRONG!)
+```
+
+### Impact
+- **Data Leakage**: Users see other users' names/data in translated strings
+- **Personalization Broken**: User-specific greetings show wrong names
+- **Cache Invalidation Required**: Need frequent cache clears to fix
+- **Affects All Dynamic Translations**: Not limited to specific components
+
+### Root Cause
+UTM's caching strategy doesn't account for dynamic parameter variations. The cache key is based on:
+- Translation key (`ai_sidebar.greeting`)
+- Locale (`it`, `en`, etc.)
+
+But NOT on parameter values (`name => Mario` vs `name => Luigi`).
+
+### Current Workaround: Atomic Translations
+Split translations into static parts + Blade variables:
+
+```php
+// Translation file (ATOMIC):
+'greeting' => 'Ciao',
+'greeting_suffix' => '! Sono qui per aiutarti.',
+
+// Blade view:
+{{ __('ai_sidebar.greeting') }} {{ $user->name }}{{ __('ai_sidebar.greeting_suffix') }}
+// Result: "Ciao" + MARIO + "! Sono qui..." (always fresh)
+```
+
+**Pros**:
+- ✅ Works reliably with UTM caching
+- ✅ No cache invalidation needed
+- ✅ Performance maintained
+
+**Cons**:
+- ❌ More verbose translation keys
+- ❌ Harder to maintain (split sentences)
+- ❌ Less natural for translators
+
+### Proper Solution (TODO)
+Investigate and implement ONE of these approaches:
+
+#### Option 1: UTM Cache Key Enhancement
+Modify UTM to include parameter values in cache key:
+```php
+// Current cache key:
+$cacheKey = "utm.{$locale}.{$key}";
+
+// Proposed cache key:
+$cacheKey = "utm.{$locale}.{$key}." . md5(json_encode($parameters));
+```
+
+**Pros**: Minimal code changes, preserves current translation syntax  
+**Cons**: May increase cache size, requires UTM core modification
+
+#### Option 2: Disable Caching for Dynamic Translations
+Add flag to bypass cache for specific translations:
+```php
+__('ai_sidebar.greeting', ['name' => $user->name], false); // No cache
+```
+
+**Pros**: Granular control, backward compatible  
+**Cons**: Performance impact on frequently used translations
+
+#### Option 3: Per-User Translation Cache
+Use Laravel's tagged cache with user ID:
+```php
+Cache::tags(["translations", "user:{$userId}"])->remember(...)
+```
+
+**Pros**: Correct caching per user, fast lookups  
+**Cons**: Significant cache memory usage in multi-tenant environment
+
+### Investigation Tasks
+1. [ ] Review UTM source code to understand caching implementation
+2. [ ] Benchmark performance impact of proposed solutions
+3. [ ] Test cache invalidation strategies
+4. [ ] Discuss with UTM maintainers (if external package)
+5. [ ] Create POC for preferred solution
+
+### Affected Areas
+- AI Sidebar (fixed with atomic translations)
+- User greetings/personalization across platform
+- Dynamic notification messages
+- Any user-specific translated content
+
+### Notes
+This issue was discovered during AI Sidebar implementation (2026-02-05) when user "Fabio" saw greeting for previous user "CamiciaSmartì". Atomic translation workaround successfully deployed across all 6 languages.
+
+**CRITICAL**: Always use atomic translations for user-specific data until proper UTM fix is implemented.
+
+---
 
 ## 🔴 Push Notifications (Non-Critical)
 

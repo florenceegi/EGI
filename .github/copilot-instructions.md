@@ -121,24 +121,48 @@ class ExampleController extends Controller
 
 ---
 
-## ⚡ Livewire & Translations (CRITICAL)
+## ⚡ Translations with Ultra Translation Manager (CRITICAL)
 
-**PROBLEM**: Livewire's DOM diffing often fails to update translated strings with dynamic parameters (`__('key', ['param' => $val])`), causing STALE texts (caching).
+**PROBLEM**: Ultra Translation Manager (UTM) caches translated strings aggressively. When using dynamic parameters (`__('key', ['param' => $val])`), UTM may cache the translation with the FIRST user's data and serve the same cached string to ALL subsequent users, causing **STALE/WRONG data** (e.g., greeting "Ciao Mario" shown to user "Luigi").
 
-**RULE**: Use **Atomic Translations**.
-Split sentences into static translated parts and raw Blade variables.
+**This affects ANY dynamic translation**, not just Livewire components:
+- Blade views with user-specific data
+- Controllers passing variables to translations
+- Any context where parameters change per request
 
-❌ **BAD (Livewire Fails)**:
+**RULE**: Use **Atomic Translations** (split static text + dynamic variables).
+
+❌ **BAD (UTM caches with first user's data)**:
 ```php
-{{ __('messages.sold', ['item' => $item->name]) }}
+{{ __('messages.greeting', ['name' => $user->name]) }}
+// Translation: "Ciao :name!"
+// UTM may cache "Ciao Mario!" and show it to ALL users
 ```
 
-✅ **GOOD (Atomic & Robust)**:
+✅ **GOOD (Atomic & Cache-Safe)**:
 ```php
-{{ __('messages.user') }} {{ $user->name }} {{ __('messages.bought') }} {{ $item->name }}
+{{ __('messages.greeting') }} {{ $user->name }}{{ __('messages.greeting_suffix') }}
+// Translations: "Ciao" + VARIABLE + "!"
+// Static parts cached, dynamic parts always fresh
 ```
 
-**NEVER** use array parameter injection inside a Livewire Component view.
+**Migration Pattern**:
+```php
+// OLD translation file:
+'greeting' => 'Hello :name! Welcome back.',
+'progress' => 'You completed :count of :total items.',
+
+// NEW atomic translations:
+'greeting' => 'Hello',
+'greeting_suffix' => '! Welcome back.',
+'progress_intro' => 'You completed',
+'progress_of' => 'of',
+'progress_suffix' => ' items.',
+```
+
+**IMPORTANT**: When migrating to atomic translations, update ALL 6 languages (P0-9).
+
+**See**: `docs/FlorenceEGI/Implementation/TECHNICAL_DEBT.md` - UTM Dynamic Parameter Caching Issue
 
 ---
 
@@ -243,3 +267,16 @@ cd python_ai_service && uvicorn app.main:app --reload --port=8080  # Python
 ---
 
 **OS3.0 - "Less talk, more code. Ship it."**
+
+
+## **💎 FIRMA STANDARD**
+
+```php
+/**
+ * @package App\Http\Controllers\[Area]
+ * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+ * @version 1.0.0 (FlorenceEGI - [Context])
+ * @date 2025-10-28
+ * @purpose [Clear, specific purpose]
+ */
+```
