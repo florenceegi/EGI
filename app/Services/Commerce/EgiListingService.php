@@ -5,11 +5,16 @@ namespace App\Services\Commerce;
 use App\Models\Egi;
 use App\Enums\Commerce\CommercialStatusEnum;
 use App\Enums\Commerce\DeliveryPolicyEnum;
+use App\Services\Payment\MerchantAccountResolver;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class EgiListingService
 {
+    public function __construct(
+        private readonly MerchantAccountResolver $merchantAccountResolver
+    ) {
+    }
     /**
      * Determine if shipping is required for this EGI (Option B).
      *
@@ -40,36 +45,53 @@ class EgiListingService
      */
     public function validateSellable(Egi $egi): bool
     {
+        $egi->loadMissing(['collection', 'owner']);
+
         // 1. Collection must be commercial enabled
         if ($egi->collection->commercial_status !== CommercialStatusEnum::COMMERCIAL_ENABLED) {
-            throw ValidationException::withMessages(['collection' => 'Collection is not enabled for commerce.']);
+            throw ValidationException::withMessages(['collection' => __('commerce.listing.errors.commerce_disabled')]);
         }
 
         // 2. Delivery Policy Enforcement
         $policy = $egi->collection->delivery_policy;
         
         if ($policy === DeliveryPolicyEnum::DIGITAL_ONLY && $egi->is_physical) {
-            throw ValidationException::withMessages(['is_physical' => 'Collection policy is DIGITAL ONLY. Physical items not allowed.']);
+              throw ValidationException::withMessages(['is_physical' => __('commerce.listing.errors.policy_digital_only')]);
         }
 
         if ($policy === DeliveryPolicyEnum::PHYSICAL_REQUIRED && !$egi->is_physical) {
              // Exception: If utility provides physical aspect, it might be allowed?
              // Spec says: "se collection.delivery_policy == PHYSICAL_REQUIRED e egi.is_physical == false -> blocca"
-             throw ValidationException::withMessages(['is_physical' => 'Collection policy is PHYSICAL REQUIRED. Item must be physical.']);
+               throw ValidationException::withMessages(['is_physical' => __('commerce.listing.errors.policy_physical_required')]);
         }
 
         // 3. Shipping Profile Completeness
         if ($this->shippingRequiredForEgi($egi)) {
             $profile = $egi->shipping_profile;
             if (empty($profile) || empty($profile['weight_g']) || empty($profile['dimensions_mm'])) {
-                throw ValidationException::withMessages(['shipping_profile' => 'Shipping profile is incomplete but required.']);
+                throw ValidationException::withMessages(['shipping_profile' => __('commerce.listing.errors.shipping_profile_incomplete')]);
             }
         }
 
         // 4. Sale Mode Check
         if ($egi->sale_mode === 'not_for_sale' && $egi->is_sellable) {
             // If marked sellable, it must have a valid mode
-             throw ValidationException::withMessages(['sale_mode' => 'Sale mode must be Fixed Price or Auction.']);
+             throw ValidationException::withMessages(['sale_mode' => __('commerce.listing.errors.sale_mode_invalid')]);
+        }
+
+        // 5. Seller PSP must be configured (secondary market)
+        if ($egi->isMinted()) {
+            $seller = $egi->owner;
+            if (!$seller) {
+                throw ValidationException::withMessages(['payment' => __('commerce.listing.errors.merchant_not_configured')]);
+            }
+
+            $stripeValidation = $this->merchantAccountResolver->validateUserWallets($seller, 'stripe');
+            $paypalValidation = $this->merchantAccountResolver->validateUserWallets($seller, 'paypal');
+
+            if (!$stripeValidation['can_accept_payments'] && !$paypalValidation['can_accept_payments']) {
+                throw ValidationException::withMessages(['payment' => __('commerce.listing.errors.merchant_not_configured')]);
+            }
         }
 
         return true;

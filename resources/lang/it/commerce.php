@@ -76,6 +76,14 @@ return [
         'conflict_digital' => '⚠️ Conflitto: La collezione permette solo articoli digitali',
         'conflict_physical' => '⚠️ Conflitto: La collezione richiede articoli fisici',
         'configure_button' => 'Configura Listing',
+        'errors' => [
+            'commerce_disabled' => 'Collezione non abilitata al commercio.',
+            'policy_digital_only' => 'La collezione consente solo articoli digitali.',
+            'policy_physical_required' => 'La collezione richiede articoli fisici.',
+            'shipping_profile_incomplete' => 'Profilo di spedizione incompleto.',
+            'sale_mode_invalid' => 'La modalità di vendita deve essere Prezzo Fisso o Asta.',
+            'merchant_not_configured' => 'Nessun metodo di pagamento valido per il venditore.',
+        ],
         'messages' => [
             'updated' => 'Listing aggiornato con successo.',
             'published' => 'EGI ora è in vendita!',
