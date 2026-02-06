@@ -22,6 +22,74 @@
     @endpush
 
     <x-slot name="platformInfoButtons">
+        {{-- Payment Settings (Owner Only) --}}
+        @if (auth()->check() && auth()->id() === $collector->id)
+            {{-- DESKTOP: Bottone completo con carta di credito --}}
+            <div class="absolute bottom-4 right-4 z-30 hidden md:block">
+                <button onclick="window.paymentModal.open()"
+                    aria-label="{{ __('payment.settings_title') }}"
+                    class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-600 via-yellow-500 to-orange-600 p-[2px] shadow-xl shadow-amber-500/40 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(251,191,36,0.6)]">
+                    <div
+                        class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transition-transform duration-700 group-hover:translate-x-full">
+                    </div>
+                    <div class="relative rounded-xl bg-gradient-to-br from-gray-900 to-black px-4 py-2.5">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="relative h-8 w-12 overflow-hidden rounded-md bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 shadow-lg shadow-amber-500/40 transition-all duration-500 group-hover:rotate-6 group-hover:scale-110">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-black/20">
+                                </div>
+                                <div
+                                    class="absolute left-1 top-1 h-2.5 w-3 rounded-sm bg-gradient-to-br from-yellow-200 via-amber-300 to-yellow-600 shadow-inner">
+                                    <div class="grid h-full w-full grid-cols-3 gap-[0.5px] p-[1px]">
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="absolute bottom-1 left-1 text-[6px] font-bold tracking-wide text-white/90 drop-shadow">
+                                    •••• 4242</div>
+                                <div class="absolute bottom-1 right-1 flex gap-[1px]">
+                                    <div class="h-1 w-1 rounded-full bg-red-500/80"></div>
+                                    <div class="h-1 w-1 rounded-full bg-yellow-500/80"></div>
+                                </div>
+                                <div
+                                    class="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800">
+                                </div>
+                            </div>
+                            <span
+                                class="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 bg-clip-text text-sm font-bold text-transparent">{{ __('payment.settings_title') }}</span>
+                            <div
+                                class="ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400 shadow-lg shadow-amber-400/80">
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+
+            {{-- MOBILE: FAB compatto --}}
+            <div id="payment-fab-mobile-collector" class="fixed bottom-20 right-4 z-50 md:hidden">
+                <button onclick="window.paymentModal.open()"
+                    aria-label="{{ __('payment.settings_title') }}"
+                    class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 via-yellow-500 to-orange-500 shadow-lg shadow-amber-500/50 transition-all duration-300 active:scale-95">
+                    <div
+                        class="relative h-7 w-10 rounded bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 shadow-inner">
+                        <div
+                            class="absolute left-1 top-1 h-2 w-2.5 rounded-sm bg-gradient-to-br from-yellow-200 to-amber-400">
+                        </div>
+                        <div class="absolute bottom-1 left-1 text-[5px] font-bold text-white/80">••••</div>
+                    </div>
+                    <div
+                        class="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full bg-green-400 shadow-lg shadow-green-400/80">
+                    </div>
+                </button>
+            </div>
+        @endif
+
         <div class="absolute inset-0 opacity-60" aria-hidden="true">
             <div class="absolute inset-0">
                 @php
@@ -166,8 +234,11 @@
         <x-ai-sidebar :user="$collector" :userType="'collector'" :checklist="$onboardingChecklist" />
     @endif
 
+    {{-- Payment Settings Modal --}}
+    <x-payment-settings-modal />
+
     {{-- Image Upload Modals (only for owner) --}}
-    @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $collector->id)
+    @if (auth()->check() && auth()->id() === $collector->id)
         {{-- Banner Upload Modal --}}
         <x-modals.image-upload-modal modalId="collector-banner-modal" type="banner" collection="creator_banners"
             uploadRoute="{{ route('creator.upload-banner') }}"
