@@ -509,13 +509,13 @@ Route::prefix('collector')->name('collector.')->group(function () {
     Route::get('/', [\App\Http\Controllers\CollectorHomeController::class, 'index'])->name('index');
 
     // Collector public profiles and portfolio
-    Route::get('/{id}', [\App\Http\Controllers\CollectorHomeController::class, 'home'])->name('home')->where('id', '[0-9]+');
-    Route::get('/{id}/portfolio', [\App\Http\Controllers\CollectorHomeController::class, 'portfolio'])->name('portfolio')->where('id', '[0-9]+');
-    Route::get('/{id}/collections', [\App\Http\Controllers\CollectorHomeController::class, 'collections'])->name('collections')->where('id', '[0-9]+');
-    Route::get('/{id}/collection/{collection}', [\App\Http\Controllers\CollectorHomeController::class, 'showCollection'])->name('collection.show')->where(['id' => '[0-9]+', 'collection' => '[0-9]+']);
+    Route::get('/{id}', [\App\Http\Controllers\CollectorHomeController::class, 'home'])->name('home')->where('id', '[A-Za-z0-9_-]+');
+    Route::get('/{id}/portfolio', [\App\Http\Controllers\CollectorHomeController::class, 'portfolio'])->name('portfolio')->where('id', '[A-Za-z0-9_-]+');
+    Route::get('/{id}/collections', [\App\Http\Controllers\CollectorHomeController::class, 'collections'])->name('collections')->where('id', '[A-Za-z0-9_-]+');
+    Route::get('/{id}/collection/{collection}', [\App\Http\Controllers\CollectorHomeController::class, 'showCollection'])->name('collection.show')->where(['id' => '[A-Za-z0-9_-]+', 'collection' => '[0-9]+']);
 
     // API endpoints for collector stats
-    Route::get('/{id}/stats', [\App\Http\Controllers\CollectorHomeController::class, 'getStats'])->name('stats')->where('id', '[0-9]+');
+    Route::get('/{id}/stats', [\App\Http\Controllers\CollectorHomeController::class, 'getStats'])->name('stats')->where('id', '[A-Za-z0-9_-]+');
 
     // Placeholder for future features
     Route::get('/under-construction', [\App\Http\Controllers\CollectorHomeController::class, 'underConstruction'])->name('under-construction');

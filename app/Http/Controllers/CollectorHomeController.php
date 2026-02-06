@@ -57,7 +57,7 @@ class CollectorHomeController extends Controller {
      * 🎯 Purpose: Show collector's main showcase page with stats and recent acquisitions
      * 📤 Output: Collector home view with stats and featured owned content
      */
-    public function home(int $id, Request $request): View {
+    public function home(string $id, Request $request): View {
         return $this->portfolio($id, $request);
     }
 
@@ -138,8 +138,8 @@ class CollectorHomeController extends Controller {
      * 🚀 Enhancement: Uses PortfolioService for accurate ownership tracking
      * 🔒 Privacy: Owner viewing own portfolio sees all EGIs (including unpublished)
      */
-    public function portfolio(int $id, Request $request): View {
-        $collector = User::findOrFail($id);
+    public function portfolio(string $id, Request $request): View {
+        $collector = $this->resolveCollector($id);
 
         if (!$collector->isCollector()) {
             abort(404, 'User is not a collector');
@@ -235,8 +235,8 @@ class CollectorHomeController extends Controller {
      * 🎯 Purpose: Show collections organized by creator/collection groups
      * 📤 Output: Collections view grouped by collection origin
      */
-    public function collections(int $id): View {
-        $collector = User::findOrFail($id);
+    public function collections(string $id): View {
+        $collector = $this->resolveCollector($id);
 
         if (!$collector->isCollector()) {
             abort(404, 'User is not a collector');
@@ -253,8 +253,8 @@ class CollectorHomeController extends Controller {
      * 🎯 Purpose: Display specific collection with collector's purchased items
      * 📤 Output: Collection detail view filtered for collector's purchased items
      */
-    public function showCollection(int $id, int $collection): View {
-        $collector = User::findOrFail($id);
+    public function showCollection(string $id, int $collection): View {
+        $collector = $this->resolveCollector($id);
         $collection = Collection::with([
             'creator',
             'egis' => function ($query) use ($collector) {
@@ -296,8 +296,8 @@ class CollectorHomeController extends Controller {
      * 🎯 Purpose: Return collector statistics as JSON for AJAX/API calls
      * 📤 Output: JSON response with collector stats
      */
-    public function getStats(int $id): JsonResponse {
-        $collector = User::findOrFail($id);
+    public function getStats(string $id): JsonResponse {
+        $collector = $this->resolveCollector($id);
 
         if (!$collector->isCollector()) {
             return $this->errorManager->handle('USER_NOT_COLLECTOR', [
@@ -317,5 +317,23 @@ class CollectorHomeController extends Controller {
                 'profile_photo_url' => $collector->profile_photo_url
             ]
         ]);
+    }
+
+    /**
+     * Resolve collector by numeric id or nick_name.
+     *
+     * @param string $id
+     * @return User
+     */
+    private function resolveCollector(string $id): User {
+        $collector = ctype_digit($id)
+            ? User::findOrFail((int) $id)
+            : User::where('nick_name', $id)->firstOrFail();
+
+        if (!$collector->isCollector()) {
+            abort(404, 'User is not a collector');
+        }
+
+        return $collector;
     }
 }
