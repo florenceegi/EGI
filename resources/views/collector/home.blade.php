@@ -21,7 +21,7 @@
 
     <x-slot name="platformInfoButtons">
         {{-- Payment Settings (Owner Only) --}}
-        @if (auth()->check() && auth()->id() === $collector->id)
+        @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $collector->id)
             <div class="absolute bottom-4 right-4 z-30 hidden md:block">
                 <button onclick="window.paymentModal.open()"
                     aria-label="{{ __('payment.settings_title') }}"
@@ -464,7 +464,7 @@
         </section>
     </x-slot>
 
-    @if (auth()->check() && auth()->id() === $collector->id)
+    @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $collector->id)
         @include('components.payment-settings-modal')
     @endif
 
@@ -474,7 +474,7 @@
         <x-modals.image-upload-modal modalId="collector-banner-modal" type="banner" collection="creator_banners"
             uploadRoute="{{ route('creator.upload-banner') }}"
             setCurrentRoute="{{ route('creator.set-current-banner') }}"
-            deleteRoute="{{ route('creator.delete-banner') }}" :currentImage="auth()->user()->getCurrentCreatorBanner()" :allImages="auth()->user()->getAllCreatorBanners()"
+            deleteRoute="{{ route('creator.delete-banner') }}" :currentImage="\App\Helpers\FegiAuth::user()->getCurrentCreatorBanner()" :allImages="\App\Helpers\FegiAuth::user()->getAllCreatorBanners()"
             title="{{ __('profile.upload_new_banner') }}"
             helpText="{{ __('profile.supported_formats_with_size') }}" />
 
@@ -482,7 +482,7 @@
         <x-modals.image-upload-modal modalId="collector-avatar-modal" type="avatar" collection="profile_image"
             uploadRoute="{{ route('profile.upload-image') }}"
             setCurrentRoute="{{ route('profile.set-current-image') }}"
-            deleteRoute="{{ route('profile.delete-image') }}" :currentImage="auth()->user()->getCurrentProfileImage()" :allImages="auth()->user()->getAllProfileImages()"
+            deleteRoute="{{ route('profile.delete-image') }}" :currentImage="\App\Helpers\FegiAuth::user()->getCurrentProfileImage()" :allImages="\App\Helpers\FegiAuth::user()->getAllProfileImages()"
             title="{{ __('profile.upload_new_avatar') }}"
             helpText="{{ __('profile.supported_formats_with_size') }}" />
 
