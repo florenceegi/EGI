@@ -5,6 +5,7 @@ namespace App\Services\Payment;
 use App\Exceptions\Payment\MerchantAccountNotConfiguredException;
 use App\Models\Collection;
 use App\Models\Egi;
+use App\Models\User;
 use App\Models\Wallet;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Ultra\UltraLogManager\UltraLogManager;
@@ -110,6 +111,82 @@ class MerchantAccountResolver {
         return array_filter([
             'provider' => $provider,
             'collection_id' => $collection->id,
+            'wallet_id' => $wallet->id,
+            'stripe_account_id' => $provider === 'stripe' ? $accountId : null,
+            'paypal_merchant_id' => $provider === 'paypal' ? $accountId : null,
+        ], static fn($value) => $value !== null && $value !== '');
+    }
+
+    /**
+     * Resolve merchant PSP account configuration for a given user and provider.
+     *
+     * @param User $user
+     * @param string $provider Provider identifier (stripe|paypal)
+     * @return array{
+     *     provider: string,
+     *     wallet_id: int,
+     *     stripe_account_id?: string,
+     *     paypal_merchant_id?: string
+     * }
+     *
+     * @throws MerchantAccountNotConfiguredException
+     */
+    public function resolveForUserAndProvider(User $user, string $provider): array {
+        $provider = strtolower($provider);
+
+        $wallets = $this->collectUserWallets($user);
+
+        $wallet = match ($provider) {
+            'stripe' => $wallets->first(function (Wallet $wallet) use ($user) {
+                $hasDestination = $wallet->destinations->contains(function ($destination) {
+                    return $destination->payment_type === \App\Enums\Payment\PaymentTypeEnum::STRIPE->value
+                        && filled($destination->destination_value);
+                });
+                if ($hasDestination) return true;
+
+                return filled($user->stripe_account_id) || filled($wallet->stripe_account_id);
+            }),
+            'paypal' => $wallets->first(function (Wallet $wallet) {
+                $hasDestination = $wallet->destinations->contains(function ($destination) {
+                    return $destination->payment_type === \App\Enums\Payment\PaymentTypeEnum::PAYPAL->value
+                        && filled($destination->destination_value);
+                });
+                if ($hasDestination) return true;
+
+                return filled($wallet->paypal_merchant_id);
+            }),
+            default => null,
+        };
+
+        if (!$wallet) {
+            $this->logger->warning('Merchant PSP configuration missing (user)', [
+                'provider' => $provider,
+                'user_id' => $user->id,
+            ]);
+
+            $this->errorManager->handle('MINT_PAYMENT_PROVIDER_UNAVAILABLE', [
+                'provider' => $provider,
+                'user_id' => $user->id,
+                'reason' => 'merchant_account_missing',
+            ]);
+
+            throw new MerchantAccountNotConfiguredException(provider: $provider);
+        }
+
+        $accountId = null;
+        if ($provider === 'stripe') {
+            $dest = $wallet->destinations->firstWhere('payment_type', \App\Enums\Payment\PaymentTypeEnum::STRIPE->value);
+            $accountId = $dest?->destination_value
+                ?? $user->stripe_account_id
+                ?? $wallet->stripe_account_id;
+        } elseif ($provider === 'paypal') {
+            $dest = $wallet->destinations->firstWhere('payment_type', \App\Enums\Payment\PaymentTypeEnum::PAYPAL->value);
+            $accountId = $dest?->destination_value
+                ?? $wallet->paypal_merchant_id;
+        }
+
+        return array_filter([
+            'provider' => $provider,
             'wallet_id' => $wallet->id,
             'stripe_account_id' => $provider === 'stripe' ? $accountId : null,
             'paypal_merchant_id' => $provider === 'paypal' ? $accountId : null,
@@ -348,6 +425,23 @@ class MerchantAccountResolver {
 
         return $wallets
             ->merge($ownerWallets)
+            ->unique('id')
+            ->sortByDesc(fn(Wallet $wallet) => $wallet->updated_at?->timestamp ?? 0)
+            ->values();
+    }
+
+    /**
+     * Collect wallets associated with a user (primary + all wallets).
+     *
+     * @param User $user
+     * @return \Illuminate\Support\Collection<int, Wallet>
+     */
+    private function collectUserWallets(User $user) {
+        $wallets = $user->relationLoaded('wallets')
+            ? $user->wallets
+            : $user->wallets()->with('destinations')->get();
+
+        return $wallets
             ->unique('id')
             ->sortByDesc(fn(Wallet $wallet) => $wallet->updated_at?->timestamp ?? 0)
             ->values();

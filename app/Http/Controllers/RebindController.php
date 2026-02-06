@@ -32,6 +32,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use RuntimeException;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
@@ -205,6 +206,8 @@ class RebindController extends Controller {
      */
     public function process(int $id, Request $request) {
         try {
+            $egi = Egi::with(['owner', 'collection'])->findOrFail($id);
+
             // 1. Check shipping requirements FIRST
             $shippingRequired = $this->listingService->shippingRequiredForEgi($egi);
             $shippingAddressSnapshot = null;
@@ -298,7 +301,7 @@ class RebindController extends Controller {
                         'egili_transaction_id' => $egiliPayment['transaction_id'] ?? null,
                         'amount_egili' => $egiliPayment['amount_egili'] // Store actual tokens paid in metadata
                     ];
-                } catch (\RuntimeException $egiliException) {
+                } catch (RuntimeException $egiliException) {
                     $reason = $egiliException->getMessage();
 
                     $this->logger->warning('REBIND_EGILI_PAYMENT_FAILED', [
@@ -333,8 +336,13 @@ class RebindController extends Controller {
 
                 try {
                     if ($paymentService instanceof StripeRealPaymentService || $paymentService instanceof PayPalRealPaymentService) {
+                        $seller = $egi->owner;
+                        if (!$seller) {
+                            throw new RuntimeException('seller_not_found');
+                        }
+
                         $merchantContext = $this->merchantAccountResolver
-                            ->resolveForEgiAndProvider($egi, $paymentMethod);
+                            ->resolveForUserAndProvider($seller, $paymentMethod);
                     }
                 } catch (MerchantAccountNotConfiguredException $merchantException) {
                     return redirect()->back()->withErrors(['error' => __('rebind.errors.merchant_not_configured')]);
@@ -652,17 +660,17 @@ class RebindController extends Controller {
      * @param Egi $egi
      * @param float $amountEur
      * @return array
-     * @throws \RuntimeException
+    * @throws RuntimeException
      */
     private function handleEgiliRebindPayment(Egi $egi, float $amountEur): array {
         if (!$egi->payment_by_egili) {
-            throw new \RuntimeException('egili_disabled');
+            throw new RuntimeException('egili_disabled');
         }
 
         $user = Auth::user();
 
         if (!$user) {
-            throw new \RuntimeException('unauthenticated');
+            throw new RuntimeException('unauthenticated');
         }
 
         /** @var EgiliService $egiliService */
@@ -670,7 +678,7 @@ class RebindController extends Controller {
         $requiredEgili = max($egiliService->fromEur($amountEur), 1);
 
         if (!$egiliService->canSpend($user, $requiredEgili)) {
-            throw new \RuntimeException('insufficient_egili');
+            throw new RuntimeException('insufficient_egili');
         }
 
         $reference = 'EGL-REBIND-' . strtoupper(Str::random(12));
