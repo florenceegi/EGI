@@ -23,7 +23,7 @@ class OnboardingChecklistService {
      * Cache TTL in seconds (5 minutes)
      */
     private const CACHE_TTL = 300;
-    private const CACHE_VERSION = 'v3'; // v3: Fix hasBanner() to use getCurrentCreatorBanner()
+    private const CACHE_VERSION = 'v4'; // v4: Added stripe payment task for Collectors
 
     /**
      * @var UltraLogManager
@@ -282,7 +282,19 @@ class OnboardingChecklistService {
     protected function getCollectorChecklist(User $user): array {
         $items = [];
 
-        // 1. Verify email
+        // 1. Configure payments (Stripe) - NEW: Collectors can now receive payments
+        $items[] = [
+            'id' => 'stripe',
+            'title_key' => 'ai_sidebar.steps.stripe.title',
+            'description_key' => 'ai_sidebar.steps.stripe.description',
+            'completed' => $this->hasStripeConnected($user),
+            'icon' => '💳',
+            'action' => null,
+            'modal' => 'payment-modal',
+            'priority' => 1,
+        ];
+
+        // 2. Verify email
         $items[] = [
             'id' => 'verify_email',
             'title_key' => 'ai_sidebar.steps.verify_email.title',
@@ -291,10 +303,10 @@ class OnboardingChecklistService {
             'icon' => '📧',
             'action' => route('verification.notice'),
             'modal' => null,
-            'priority' => 1,
+            'priority' => 2,
         ];
 
-        // 2. Upload avatar
+        // 3. Upload avatar
         $items[] = [
             'id' => 'avatar',
             'title_key' => 'ai_sidebar.steps.avatar.title',
@@ -303,10 +315,10 @@ class OnboardingChecklistService {
             'icon' => '👤',
             'action' => null,
             'modal' => 'avatar-upload-modal',
-            'priority' => 2,
+            'priority' => 3,
         ];
 
-        // 3. Upload banner
+        // 4. Upload banner
         $items[] = [
             'id' => 'banner',
             'title_key' => 'ai_sidebar.steps.banner.title',
@@ -315,10 +327,10 @@ class OnboardingChecklistService {
             'icon' => '🖼️',
             'action' => null,
             'modal' => 'banner-upload-modal',
-            'priority' => 3,
+            'priority' => 4,
         ];
 
-        // 4. Write bio
+        // 5. Write bio
         $items[] = [
             'id' => 'bio',
             'title_key' => 'ai_sidebar.steps.bio.title',
@@ -327,10 +339,10 @@ class OnboardingChecklistService {
             'icon' => '✍️',
             'action' => null,
             'modal' => 'bio-edit-modal',
-            'priority' => 4,
+            'priority' => 5,
         ];
 
-        // 5. Add social links
+        // 6. Add social links
         $items[] = [
             'id' => 'social_links',
             'title_key' => 'ai_sidebar.steps.social_links.title',
@@ -339,7 +351,7 @@ class OnboardingChecklistService {
             'icon' => '🔗',
             'action' => null,
             'modal' => 'social-links-modal',
-            'priority' => 5,
+            'priority' => 6,
         ];
 
         return collect($items)->sortBy('priority')->values()->toArray();
