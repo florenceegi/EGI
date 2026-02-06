@@ -21,20 +21,12 @@ Il sistema di pagamenti non distingue più rigidamente tra Ruoli Utente, ma perm
 *   **Company (Aziende):** Possono **scegliere** tra profilo **Contributor** (per benefici etici) o profilo **Normal** (business puro).
 
 ### 1. Profilo CONTRIBUTOR (Modello Etico)
-*Accessibile a Creator e Company. Sblocca benefici ecosistema e visibilità.*
 
-**Struttura Base:**
-| Destinatario | Percentuale | Note |
-|--------------|-------------|------|
-| Owner | 68% (o 88%) | Royalty netta venditore |
-| EPP | 20% o 0% | Vedi opzioni sotto |
-| Natan (Piattaforma) | 10% | Infrastruttura tecnologica |
-| Frangette | 2% | Sviluppo ecosistema (Obbligatorio) |
+✅ **IMPLEMENTATO** in `app/Enums/Fees/FeeStructureEnum.php` (CONTRIBUTOR_MINT, CONTRIBUTOR_REBIND)
 
-### 1. Profilo CONTRIBUTOR (Modello Etico)
 *Accessibile a Creator e Company. Nessun costo fisso di abbonamento.*
 
-**Struttura Unica:**
+**Struttura Mint:**
 | Destinatario | Percentuale | Note |
 |--------------|-------------|------|
 | Owner | 68% | Royalty netta venditore |
@@ -44,9 +36,12 @@ Il sistema di pagamenti non distingue più rigidamente tra Ruoli Utente, ma perm
 | **Abbonamento** | **NESSUNO** | Profilo gratuito |
 
 ### 2. Profilo NORMAL (Modello Business)
+
+✅ **IMPLEMENTATO** in `app/Enums/Fees/FeeStructureEnum.php` (NORMAL_MINT, NORMAL_REBIND)
+
 *Esclusivo per Company. Nessun beneficio etico aggiuntivo.*
 
-**Struttura Unica:**
+**Struttura Mint:**
 | Destinatario | Percentuale | Note |
 |--------------|-------------|------|
 | Company | 90% | Esente da EPP e Frangette |
@@ -74,19 +69,16 @@ Le fee di rivendita seguono il profilo della Collection originale.
 
 ### Riepilogo Differenze
 
-| Aspetto | Profilo CONTRIBUTOR | Profilo NORMAL |
-| :--- | :--- | :--- |
-| **Target Utente** | Creator & Company (Etiche) | Solo Company |
-| **Frangette (2%)** | ✅ Obbligatorio | ❌ Esente |
-### Riepilogo Differenze
+✅ **Implementazione verificata vs** `FeeStructureEnum.php`
 
 | Aspetto | Profilo CONTRIBUTOR | Profilo NORMAL |
 | :--- | :--- | :--- |
 | **Target Utente** | Creator & Company (Etiche) | Solo Company |
-| **Frangette (2%)** | ✅ **Sì (2%)** | ❌ **No (0%)** |
+| **Frangette** | ✅ **Sì (2%)** | ❌ **No (0%)** |
 | **EPP Royalty** | ✅ **Sì (20%)** | ❌ **No (0%)** |
 | **Abbonamento** | ❌ **No (Gratis)** | ✅ **Obbligatorio** |
-| **Royalty Netta Base** | 68% | 90% |
+| **Royalty Netta Base (Mint)** | 68% | 90% |
+| **Creator Royalty (Rebind)** | 4.5% | 6.0% |
 
 ---
 
