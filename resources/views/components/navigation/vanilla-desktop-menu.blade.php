@@ -9,7 +9,7 @@
         $user && $user->id
             ? match ($user->usertype ?? 'creator') {
                 'creator' => route('creator.home', $user->nick_name ?? $user->id),
-                'collector' => route('collector.home', $user->nick_name ?? $user->id),
+                'collector' => route('collector.home', $user->id),
                 'company' => route('company.home', $user->nick_name ?? $user->id),
                 default => route('creator.home', $user->nick_name ?? $user->id),
             }

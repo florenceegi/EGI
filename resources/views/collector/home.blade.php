@@ -1,6 +1,10 @@
 @vite(['resources/css/creator-home.css'])
 
 <x-guest-layout :title="$collector->name . ' - ' . __('collector.home.title_suffix')" :metaDescription="__('collector.home.meta_description', ['name' => $collector->name])">
+    @php
+        $viewerId = \App\Helpers\FegiAuth::id() ?? auth()->id();
+        $isOwnerViewing = $viewerId !== null && (int) $viewerId === (int) $collector->id;
+    @endphp
 
     @push('head')
         <script type="application/ld+json">
@@ -21,7 +25,7 @@
 
     <x-slot name="platformInfoButtons">
         {{-- Payment Settings (Owner Only) --}}
-        @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $collector->id)
+        @if ($isOwnerViewing)
             <div class="absolute bottom-4 right-4 z-30 hidden md:block">
                 <button onclick="window.paymentModal.open()"
                     aria-label="{{ __('payment.settings_title') }}"
@@ -107,7 +111,7 @@
                 <div class="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
 
                 {{-- Edit Banner Button (only for owner) --}}
-                @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $collector->id)
+                @if ($isOwnerViewing)
                     <div class="absolute right-4 top-4 z-10">
                         <button onclick="openImageModal('collector-banner-modal')"
                             class="hover:bg-oro-fiorentino rounded-lg bg-gray-900/80 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:text-gray-900">
@@ -140,7 +144,7 @@
                         </div>
 
                         {{-- Edit Avatar Button Mobile (only for owner) --}}
-                        @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $collector->id)
+                        @if ($isOwnerViewing)
                             <button onclick="openImageModal('collector-avatar-modal')"
                                 class="bg-oro-fiorentino absolute bottom-0 right-0 rounded-full p-1.5 text-gray-900 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,7 +244,7 @@
                         </div>
 
                         {{-- Edit Avatar Button Desktop (only for owner) --}}
-                        @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $collector->id)
+                        @if ($isOwnerViewing)
                             <button onclick="openImageModal('collector-avatar-modal')"
                                 class="bg-oro-fiorentino hover:bg-oro-fiorentino/90 absolute bottom-0 right-0 rounded-full p-2 text-gray-900 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -464,12 +468,12 @@
         </section>
     </x-slot>
 
-    @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $collector->id)
+    @if ($isOwnerViewing)
         @include('components.payment-settings-modal')
     @endif
 
     {{-- Image Upload Modals (only for owner) --}}
-    @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $collector->id)
+    @if ($isOwnerViewing)
         {{-- Banner Upload Modal --}}
         <x-modals.image-upload-modal modalId="collector-banner-modal" type="banner" collection="creator_banners"
             uploadRoute="{{ route('creator.upload-banner') }}"
