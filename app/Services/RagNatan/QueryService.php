@@ -1,0 +1,277 @@
+<?php
+
+namespace App\Services\RagNatan;
+
+use App\Models\RagNatan\Query;
+use App\Models\RagNatan\Response;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+
+/**
+ * Query Service
+ *
+ * Handles user query management, logging, and analytics.
+ * Manages the full query-response lifecycle.
+ */
+class QueryService
+{
+    public function __construct(
+        private CacheService $cacheService,
+        private ResponseGenerationService $responseService
+    ) {}
+
+    /**
+     * Process a user query with full RAG pipeline.
+     */
+    public function processQuery(
+        string $question,
+        ?User $user = null,
+        string $language = 'it',
+        ?array $context = [],
+        ?array $options = []
+    ): array {
+        $startTime = microtime(true);
+
+        // Check cache first
+        $cachedResponse = $this->cacheService->lookup($question, $language, $context);
+
+        if ($cachedResponse) {
+            $query = $this->logQuery($question, $user, $language, $context, $cachedResponse);
+
+            return [
+                'query_id' => $query->id,
+                'query_uuid' => $query->uuid,
+                'response_id' => $cachedResponse->id,
+                'response_uuid' => $cachedResponse->uuid,
+                'answer' => $cachedResponse->answer,
+                'answer_html' => $cachedResponse->answer_html,
+                'urs_score' => $cachedResponse->urs_score,
+                'sources' => $cachedResponse->sources,
+                'cached' => true,
+                'response_time_ms' => (int) ((microtime(true) - $startTime) * 1000),
+            ];
+        }
+
+        // Not in cache, generate new response
+        $responseData = $this->responseService->generateResponse(
+            $question,
+            $language,
+            $context,
+            $options
+        );
+
+        // Create response record
+        $response = Response::create([
+            'uuid' => Str::uuid()->toString(),
+            'query_id' => null, // Will be set after query creation
+            'answer' => $responseData['answer'],
+            'answer_html' => $responseData['answer_html'] ?? null,
+            'urs_score' => $responseData['urs_score'] ?? null,
+            'urs_explanation' => $responseData['urs_explanation'] ?? null,
+            'claims_used' => $responseData['claims_used'] ?? [],
+            'gaps_detected' => $responseData['gaps_detected'] ?? [],
+            'hallucinations' => $responseData['hallucinations'] ?? [],
+            'sources_used' => $responseData['sources_used'] ?? [],
+            'processing_time_ms' => $responseData['processing_time_ms'],
+            'tokens_input' => $responseData['tokens_input'] ?? null,
+            'tokens_output' => $responseData['tokens_output'] ?? null,
+            'cost_usd' => $responseData['cost_usd'] ?? null,
+            'model_used' => $responseData['model_used'] ?? null,
+            'stage_timings' => $responseData['stage_timings'] ?? [],
+            'is_cached' => false,
+        ]);
+
+        // Log query
+        $query = $this->logQuery($question, $user, $language, $context, $response);
+
+        // Update response with query_id
+        $response->update(['query_id' => $query->id]);
+
+        // Store sources
+        if (isset($responseData['sources'])) {
+            $this->responseService->storeSources($response, $responseData['sources']);
+        }
+
+        // Cache the response
+        $this->cacheService->store($question, $language, $response, $context);
+
+        $totalTime = (int) ((microtime(true) - $startTime) * 1000);
+
+        return [
+            'query_id' => $query->id,
+            'query_uuid' => $query->uuid,
+            'response_id' => $response->id,
+            'response_uuid' => $response->uuid,
+            'answer' => $response->answer,
+            'answer_html' => $response->answer_html,
+            'urs_score' => $response->urs_score,
+            'sources' => $response->sources,
+            'cached' => false,
+            'response_time_ms' => $totalTime,
+            'processing_breakdown' => $responseData['stage_timings'] ?? [],
+        ];
+    }
+
+    /**
+     * Log a query.
+     */
+    private function logQuery(
+        string $question,
+        ?User $user,
+        string $language,
+        ?array $context,
+        ?Response $response
+    ): Query {
+        $questionHash = $this->cacheService->generateQuestionHash($question);
+
+        return Query::create([
+            'uuid' => Str::uuid()->toString(),
+            'user_id' => $user?->id,
+            'response_id' => $response?->id,
+            'question' => $question,
+            'question_hash' => $questionHash,
+            'language' => $language,
+            'context' => $context ?? [],
+            'urs_score' => $response?->urs_score,
+            'answer_length' => $response ? strlen($response->answer) : null,
+            'chunks_used' => $response ? $response->sources()->count() : null,
+            'response_time_ms' => $response?->processing_time_ms,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'session_id' => session()->getId(),
+            'responded_at' => $response ? now() : null,
+        ]);
+    }
+
+    /**
+     * Record user feedback on a query.
+     */
+    public function recordFeedback(
+        int $queryId,
+        bool $wasHelpful,
+        ?string $feedbackText = null
+    ): Query {
+        $query = Query::findOrFail($queryId);
+
+        $query->update([
+            'was_helpful' => $wasHelpful,
+            'feedback_text' => $feedbackText,
+        ]);
+
+        return $query;
+    }
+
+    /**
+     * Get query by UUID.
+     */
+    public function getByUuid(string $uuid): ?Query
+    {
+        return Query::where('uuid', $uuid)->first();
+    }
+
+    /**
+     * Get user query history.
+     */
+    public function getUserHistory(User $user, int $limit = 50): \Illuminate\Support\Collection
+    {
+        return Query::where('user_id', $user->id)
+            ->with('response')
+            ->orderByDesc('created_at')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Get popular queries.
+     */
+    public function getPopularQueries(int $limit = 20, int $days = 30): array
+    {
+        $since = now()->subDays($days);
+
+        return DB::table('rag_natan.queries')
+            ->select('question', DB::raw('COUNT(*) as count'))
+            ->where('created_at', '>=', $since)
+            ->groupBy('question')
+            ->orderByDesc('count')
+            ->limit($limit)
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * Get query analytics.
+     */
+    public function getAnalytics(int $days = 30): array
+    {
+        $since = now()->subDays($days);
+
+        $totalQueries = Query::where('created_at', '>=', $since)->count();
+        $uniqueUsers = Query::where('created_at', '>=', $since)
+            ->whereNotNull('user_id')
+            ->distinct('user_id')
+            ->count('user_id');
+
+        $avgResponseTime = Query::where('created_at', '>=', $since)
+            ->whereNotNull('response_time_ms')
+            ->avg('response_time_ms');
+
+        $avgUrsScore = Query::where('created_at', '>=', $since)
+            ->whereNotNull('urs_score')
+            ->avg('urs_score');
+
+        $helpfulRate = Query::where('created_at', '>=', $since)
+            ->whereNotNull('was_helpful')
+            ->selectRaw('
+                COUNT(*) as total_feedback,
+                SUM(CASE WHEN was_helpful THEN 1 ELSE 0 END) as helpful_count
+            ')
+            ->first();
+
+        $languageDistribution = Query::where('created_at', '>=', $since)
+            ->select('language', DB::raw('COUNT(*) as count'))
+            ->groupBy('language')
+            ->get();
+
+        return [
+            'period_days' => $days,
+            'total_queries' => $totalQueries,
+            'unique_users' => $uniqueUsers,
+            'avg_response_time_ms' => round($avgResponseTime ?? 0, 2),
+            'avg_urs_score' => round($avgUrsScore ?? 0, 2),
+            'feedback' => [
+                'total' => $helpfulRate->total_feedback ?? 0,
+                'helpful' => $helpfulRate->helpful_count ?? 0,
+                'helpful_rate' => $helpfulRate->total_feedback > 0
+                    ? round(($helpfulRate->helpful_count / $helpfulRate->total_feedback) * 100, 2)
+                    : 0,
+            ],
+            'language_distribution' => $languageDistribution,
+        ];
+    }
+
+    /**
+     * Find similar queries.
+     */
+    public function findSimilarQueries(string $question, int $limit = 10): \Illuminate\Support\Collection
+    {
+        $questionHash = $this->cacheService->generateQuestionHash($question);
+
+        // Find exact matches first
+        $exactMatches = Query::where('question_hash', $questionHash)
+            ->with('response')
+            ->orderByDesc('created_at')
+            ->limit($limit)
+            ->get();
+
+        if ($exactMatches->isNotEmpty()) {
+            return $exactMatches;
+        }
+
+        // Fall back to fuzzy matching (could use trigram similarity in future)
+        // For now, just return recent queries
+        return Query::orderByDesc('created_at')
+            ->limit($limit)
+            ->get();
+    }
+}
