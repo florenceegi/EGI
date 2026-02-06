@@ -59,6 +59,11 @@
     - `show()` (checkout)
     - `process()` (pagamento + trasferimento proprietà)
 
+**PSP Seller (collector)**
+
+- Risoluzione PSP sul **venditore** via `MerchantAccountResolver::resolveForUserAndProvider()`.
+- Validazione PSP del venditore in `show()`/`process()` via `validateUserWallets()`.
+
 **Distribuzioni rebind**
 
 - `PaymentDistribution` con percentuali da wallet collection (campo `royalty_rebind`)
@@ -182,13 +187,13 @@ Consentire ai **collector** di vendere sul mercato secondario (rebind), quindi *
 #### C) Checkout rebind (Buyer)
 1. Buyer seleziona EGI in rebind.
 2. `RebindController::show()` prepara checkout.
-3. Vengono validati i metodi PSP della collection.
+3. Vengono validati i metodi PSP del **seller (collector)**.
 4. Se PSP OK → mostra opzioni pagamento.
 
 #### D) Pagamento rebind (PSP)
 1. Buyer paga con Stripe/PayPal.
 2. PSP conferma pagamento (webhook).
-3. `RebindController::process()` crea `PaymentDistribution`.
+3. `RebindController::process()` risolve PSP sul seller e crea `PaymentDistribution`.
 
 **Output atteso**:
 - Distribuzione venditore (collector) + royalties rebind.
