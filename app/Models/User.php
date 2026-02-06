@@ -658,12 +658,13 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
 
     /**
      * Check if user is a seller (can configure payment methods).
-     * Collectors are buyers only and don't need payment configuration.
+     * Collectors can sell on secondary market and need payment configuration.
      *
      * @return bool
      */
     public function isSeller(): bool {
-        return !in_array($this->usertype, ['collector']);
+        return \App\Enums\User\MerchantUserTypeEnum::isMerchant($this->usertype)
+            || $this->usertype === 'collector';
     }
 
     /**

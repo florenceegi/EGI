@@ -61,7 +61,7 @@ class PaymentSettingsController extends Controller
         try {
             $user = Auth::user();
 
-            // Collectors are buyers - no payment settings needed
+            // Access restricted to users who can receive payments (including collectors for rebind)
             if (!$user->isSeller()) {
                 return redirect()->route('home')
                     ->with('error', __('payment.settings_restricted_to_sellers'));

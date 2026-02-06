@@ -846,7 +846,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/account/invoices/{id}/pdf', [App\Http\Controllers\InvoiceController::class, 'downloadPdf'])
             ->name('account.invoices.download.pdf');
 
-        // Payment Settings Routes (Sellers only - Collectors excluded)
+        // Payment Settings Routes (Sellers + Collectors)
         Route::prefix('settings/payments')->name('settings.payments.')->group(function () {
             Route::get('/modal', [App\Http\Controllers\PaymentSettingsController::class, 'modal'])
                 ->name('modal');
