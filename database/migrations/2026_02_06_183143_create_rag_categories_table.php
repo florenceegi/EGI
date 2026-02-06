@@ -10,15 +10,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * Create rag_categories table for hierarchical document categorization.
+     * Create categories table for hierarchical document categorization.
      * Supports i18n via translation keys, visual organization (icon, color),
      * and category-based filtering in RAG queries.
+     *
+     * Schema: rag_natan.categories
      *
      * @see docs/AI_ANALYSIS/EGI_POSTGRESQL_RAG_SCHEMA_DESIGN.md
      */
     public function up(): void
     {
-        Schema::create('rag_categories', function (Blueprint $table) {
+        // Set search_path to rag_natan schema
+        DB::statement('SET search_path TO rag_natan, public');
+
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
 
             // Core Fields
@@ -31,7 +36,7 @@ return new class extends Migration
             $table->string('color', 7)->nullable();              // Hex color: '#D4A574' (Oro Fiorentino)
 
             // Hierarchical Structure
-            $table->foreignId('parent_id')->nullable()->constrained('rag_categories')->onDelete('set null');
+            $table->foreignId('parent_id')->nullable()->constrained('rag_natan.categories')->onDelete('set null');
             $table->integer('sort_order')->default(0);          // Display order
 
             // Status
@@ -50,7 +55,10 @@ return new class extends Migration
         });
 
         // GIN index for JSONB metadata (full-text search on metadata)
-        DB::statement('CREATE INDEX idx_rag_categories_metadata ON rag_categories USING gin(metadata)');
+        DB::statement('CREATE INDEX idx_categories_metadata ON rag_natan.categories USING gin(metadata)');
+
+        // Reset search_path to default
+        DB::statement('SET search_path TO core, public');
     }
 
     /**
@@ -58,6 +66,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rag_categories');
+        DB::statement('SET search_path TO rag_natan, public');
+        Schema::dropIfExists('categories');
+        DB::statement('SET search_path TO core, public');
     }
 };

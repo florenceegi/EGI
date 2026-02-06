@@ -10,19 +10,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * Create rag_documents table - Master documents table for RAG system.
+     * Create documents table - Master documents table for RAG system.
      * Supports multi-language content, full-text search, hierarchical categorization,
      * and flexible metadata via JSONB.
+     *
+     * Schema: rag_natan.documents
      *
      * @see docs/AI_ANALYSIS/EGI_POSTGRESQL_RAG_SCHEMA_DESIGN.md
      */
     public function up(): void
     {
-        Schema::create('rag_documents', function (Blueprint $table) {
+        // Set search_path to rag_natan schema
+        DB::statement('SET search_path TO rag_natan, public');
+
+        Schema::create('documents', function (Blueprint $table) {
             $table->id();
 
             // Public identifier (UUID) - added via raw SQL below
-            $table->foreignId('category_id')->nullable()->constrained('rag_categories')->onDelete('set null');
+            $table->foreignId('category_id')->nullable()->constrained('rag_natan.categories')->onDelete('set null');
 
             // Core Fields
             $table->string('title', 500);
@@ -55,38 +60,38 @@ return new class extends Migration
         });
 
         // Add UUID column with default gen_random_uuid() and unique constraint
-        DB::statement('ALTER TABLE rag_documents ADD COLUMN uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL');
+        DB::statement('ALTER TABLE rag_natan.documents ADD COLUMN uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL');
 
         // Add PostgreSQL array columns (TEXT[])
-        DB::statement('ALTER TABLE rag_documents ADD COLUMN tags TEXT[]');
-        DB::statement('ALTER TABLE rag_documents ADD COLUMN keywords TEXT[]');
+        DB::statement('ALTER TABLE rag_natan.documents ADD COLUMN tags TEXT[]');
+        DB::statement('ALTER TABLE rag_natan.documents ADD COLUMN keywords TEXT[]');
 
         // Add tsvector column for full-text search
-        DB::statement('ALTER TABLE rag_documents ADD COLUMN search_vector tsvector');
+        DB::statement('ALTER TABLE rag_natan.documents ADD COLUMN search_vector tsvector');
 
         // Add CHECK constraints
-        DB::statement("ALTER TABLE rag_documents ADD CONSTRAINT rag_documents_language_check CHECK (language IN ('it', 'en', 'de', 'es', 'fr', 'pt'))");
-        DB::statement("ALTER TABLE rag_documents ADD CONSTRAINT rag_documents_status_check CHECK (status IN ('draft', 'published', 'archived'))");
+        DB::statement("ALTER TABLE rag_natan.documents ADD CONSTRAINT documents_language_check CHECK (language IN ('it', 'en', 'de', 'es', 'fr', 'pt'))");
+        DB::statement("ALTER TABLE rag_natan.documents ADD CONSTRAINT documents_status_check CHECK (status IN ('draft', 'published', 'archived'))");
 
         // Add UNIQUE constraint (slug, language)
-        DB::statement('ALTER TABLE rag_documents ADD CONSTRAINT rag_documents_slug_language_unique UNIQUE (slug, language)');
+        DB::statement('ALTER TABLE rag_natan.documents ADD CONSTRAINT documents_slug_language_unique UNIQUE (slug, language)');
 
         // Indexes for Performance
-        DB::statement('CREATE INDEX idx_rag_documents_category ON rag_documents(category_id) WHERE category_id IS NOT NULL');
-        DB::statement('CREATE INDEX idx_rag_documents_language ON rag_documents(language)');
-        DB::statement('CREATE INDEX idx_rag_documents_status ON rag_documents(status) WHERE status = \'published\'');
-        DB::statement('CREATE INDEX idx_rag_documents_type ON rag_documents(document_type) WHERE document_type IS NOT NULL');
-        DB::statement('CREATE INDEX idx_rag_documents_tags ON rag_documents USING gin(tags)');
-        DB::statement('CREATE INDEX idx_rag_documents_keywords ON rag_documents USING gin(keywords)');
-        DB::statement('CREATE INDEX idx_rag_documents_metadata ON rag_documents USING gin(metadata)');
-        DB::statement('CREATE INDEX idx_rag_documents_created ON rag_documents(created_at DESC)');
+        DB::statement('CREATE INDEX idx_documents_category ON rag_natan.documents(category_id) WHERE category_id IS NOT NULL');
+        DB::statement('CREATE INDEX idx_documents_language ON rag_natan.documents(language)');
+        DB::statement('CREATE INDEX idx_documents_status ON rag_natan.documents(status) WHERE status = \'published\'');
+        DB::statement('CREATE INDEX idx_documents_type ON rag_natan.documents(document_type) WHERE document_type IS NOT NULL');
+        DB::statement('CREATE INDEX idx_documents_tags ON rag_natan.documents USING gin(tags)');
+        DB::statement('CREATE INDEX idx_documents_keywords ON rag_natan.documents USING gin(keywords)');
+        DB::statement('CREATE INDEX idx_documents_metadata ON rag_natan.documents USING gin(metadata)');
+        DB::statement('CREATE INDEX idx_documents_created ON rag_natan.documents(created_at DESC)');
 
         // Full-Text Search Index (GIN for tsvector)
-        DB::statement('CREATE INDEX idx_rag_documents_search_vector ON rag_documents USING gin(search_vector)');
+        DB::statement('CREATE INDEX idx_documents_search_vector ON rag_natan.documents USING gin(search_vector)');
 
         // Trigger Function to auto-update search_vector
         DB::statement("
-            CREATE OR REPLACE FUNCTION rag_documents_search_vector_trigger() RETURNS trigger AS \$\$
+            CREATE OR REPLACE FUNCTION rag_natan.documents_search_vector_trigger() RETURNS trigger AS \$\$
             BEGIN
                 NEW.search_vector :=
                     setweight(to_tsvector('italian', coalesce(NEW.title, '')), 'A') ||
@@ -100,16 +105,16 @@ return new class extends Migration
         ");
 
         DB::statement("
-            CREATE TRIGGER rag_documents_search_vector_update
+            CREATE TRIGGER documents_search_vector_update
                 BEFORE INSERT OR UPDATE OF title, excerpt, content, tags, keywords
-                ON rag_documents
+                ON rag_natan.documents
                 FOR EACH ROW
-                EXECUTE FUNCTION rag_documents_search_vector_trigger();
+                EXECUTE FUNCTION rag_natan.documents_search_vector_trigger();
         ");
 
         // Trigger Function to auto-update updated_at
         DB::statement("
-            CREATE OR REPLACE FUNCTION update_updated_at_column() RETURNS trigger AS \$\$
+            CREATE OR REPLACE FUNCTION rag_natan.update_updated_at_column() RETURNS trigger AS \$\$
             BEGIN
                 NEW.updated_at = NOW();
                 RETURN NEW;
@@ -118,11 +123,14 @@ return new class extends Migration
         ");
 
         DB::statement("
-            CREATE TRIGGER rag_documents_updated_at
-                BEFORE UPDATE ON rag_documents
+            CREATE TRIGGER documents_updated_at
+                BEFORE UPDATE ON rag_natan.documents
                 FOR EACH ROW
-                EXECUTE FUNCTION update_updated_at_column();
+                EXECUTE FUNCTION rag_natan.update_updated_at_column();
         ");
+
+        // Reset search_path to default
+        DB::statement('SET search_path TO core, public');
     }
 
     /**
@@ -130,15 +138,19 @@ return new class extends Migration
      */
     public function down(): void
     {
+        DB::statement('SET search_path TO rag_natan, public');
+
         // Drop triggers first
-        DB::statement('DROP TRIGGER IF EXISTS rag_documents_updated_at ON rag_documents');
-        DB::statement('DROP TRIGGER IF EXISTS rag_documents_search_vector_update ON rag_documents');
+        DB::statement('DROP TRIGGER IF EXISTS documents_updated_at ON rag_natan.documents');
+        DB::statement('DROP TRIGGER IF EXISTS documents_search_vector_update ON rag_natan.documents');
 
         // Drop trigger functions
-        DB::statement('DROP FUNCTION IF EXISTS update_updated_at_column()');
-        DB::statement('DROP FUNCTION IF EXISTS rag_documents_search_vector_trigger()');
+        DB::statement('DROP FUNCTION IF EXISTS rag_natan.update_updated_at_column()');
+        DB::statement('DROP FUNCTION IF EXISTS rag_natan.documents_search_vector_trigger()');
 
         // Drop table (cascade will drop all indexes and constraints)
-        Schema::dropIfExists('rag_documents');
+        Schema::dropIfExists('documents');
+
+        DB::statement('SET search_path TO core, public');
     }
 };
