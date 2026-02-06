@@ -201,9 +201,9 @@ NATAN è integrato con:
 
 ## Market Engine
 
-NATAN include un **Market Engine** dual-layer per analisi e attivazione.
+⚠️ **ROADMAP FUTURE**: Le seguenti funzionalità sono pianificate ma non ancora implementate nella versione corrente.
 
-### Valuation Engine
+### Valuation Engine (Pianificato)
 
 **Analisi dati on-chain** per:
 
@@ -223,7 +223,7 @@ Valore_Stimato = (Prezzo_Base × Moltiplicatore_Rarità × Trend_Mercato) + Sent
 
 ---
 
-### Activation Engine
+### Activation Engine (Pianificato)
 
 **Attivazione campagne e azioni automatiche** (sempre con consenso):
 
@@ -241,7 +241,7 @@ Valore_Stimato = (Prezzo_Base × Moltiplicatore_Rarità × Trend_Mercato) + Sent
 
 ---
 
-### Esempi Pratici di Trigger
+### Esempi Pratici di Trigger (Pianificato)
 
 #### Trigger On-Chain (Creator)
 
@@ -321,6 +321,362 @@ NATAN guida utente passo-passo:
 
 ---
 
+## Sistema RAG - Implementazione Tecnica
+
+✅ **IMPLEMENTATO**: Sistema RAG completo con vector search, full-text search e generazione risposte AI.
+
+### Architettura Database
+
+**Schema dedicato**: `rag_natan` (PostgreSQL con pgvector extension)
+
+#### Tabelle Core
+
+1. **categories** - Categorizzazione gerarchica documenti
+   - Supporto parent/child per tassonomia multi-livello
+   - Metadata JSONB per flessibilità
+
+2. **documents** - Documenti master indicizzati
+   - Full-text search (tsvector con GIN index)
+   - Tag e keywords (array PostgreSQL)
+   - Multi-language support (it, en, de, es, fr, pt)
+   - Metadata JSONB per campi custom
+
+3. **chunks** - Segmenti documentali per embedding
+   - Smart chunking (512 tokens con 128 overlap)
+   - Sentence boundary detection
+   - Section tracking per contesto
+
+4. **embeddings** - Vettori semantici (1:1 con chunks)
+   - Vector dimensione 1536 (OpenAI text-embedding-3-small)
+   - IVFFlat index per similarity search scalabile
+
+5. **queries** - Log query utente con analytics
+   - Tracking: user_id, question_hash, language, context
+   - Metriche: response_time, URS score, feedback
+
+6. **responses** - Risposte RAG generate
+   - Answer (text + HTML)
+   - **URS Score** (Unified Reliability Score 0-100)
+   - Claims used, gaps detected, hallucinations
+   - Token usage e costo per trasparenza
+
+7. **sources** - Citation N:M (responses ↔ chunks)
+   - Exact quotes e relevance score
+   - Citation order per presentazione
+
+8. **query_cache** - Performance cache con TTL
+   - SHA256 hashing per deduplication
+   - Hit counter e auto-cleanup
+   - Context-aware caching
+
+---
+
+### Pipeline RAG Completa
+
+#### 1. Document Indexing
+
+**Service**: `DocumentIndexingService`
+
+```
+1. Upload documento (PDF, Markdown, testo)
+2. Smart chunking:
+   - Estrazione sezioni (markdown headers)
+   - Chunking con overlap (512/128 tokens)
+   - Sentence boundary detection
+3. Embedding generation (batch processing)
+4. Storage in rag_natan.documents + chunks + embeddings
+```
+
+**Features**:
+- Bulk indexing per grandi volumi
+- Re-indexing con versioning
+- Metadata extraction automatica
+
+---
+
+#### 2. Embedding Generation
+
+**Service**: `EmbeddingService`
+
+- **Model**: OpenAI `text-embedding-3-small`
+- **Dimensioni**: 1536
+- **Batch size**: 100 chunks per request
+- **Rate limiting**: gestione automatica
+- **Token estimation**: prevenzione overflow (max 8191 tokens)
+
+**API Integration**:
+```php
+POST https://api.openai.com/v1/embeddings
+{
+  "model": "text-embedding-3-small",
+  "input": ["testo1", "testo2", ...],
+  "dimensions": 1536
+}
+```
+
+---
+
+#### 3. Search & Retrieval
+
+**Service**: `SearchService`
+
+##### Vector Similarity Search
+- **Algoritmo**: Cosine distance (`<->` operator pgvector)
+- **Performance**: IVFFlat index per dataset 10k-1M vettori
+- **Output**: Top-K chunks con similarity score 0-100%
+
+##### Full-Text Search
+- **Engine**: PostgreSQL `tsvector` + GIN index
+- **Ranking**: `ts_rank` per rilevanza
+- **Multi-language**: stemming italiano, inglese, etc.
+
+##### Hybrid Search (Raccomandato)
+- **Combina**: vector search (70%) + full-text (30%)
+- **Re-ranking**: scoring combinato per massima accuracy
+- **Deduplication**: merge risultati con normalizzazione
+
+**Esempio Query**:
+```php
+$results = $searchService->hybridSearch(
+    "Come funziona il rebind degli EGI?",
+    language: 'it',
+    limit: 10
+);
+```
+
+---
+
+#### 4. Response Generation
+
+**Service**: `ResponseGenerationService`
+
+##### LLM Support Multi-Model
+
+**Claude Sonnet 4.5** (Raccomandato)
+- Model: `claude-sonnet-4-5-20250929`
+- Max tokens: 4096
+- Cost: $0.003/1K input, $0.015/1K output
+- Anthropic API
+
+**OpenAI GPT**
+- Models: `gpt-4-turbo`, `gpt-3.5-turbo`
+- Max tokens: 4096
+- OpenAI API
+
+##### Pipeline Generazione
+
+```
+1. Retrieve top-K chunks (hybrid search)
+2. Build context da chunks rilevanti
+3. Generate prompt con:
+   - System prompt (multi-language)
+   - Context formattato con fonti
+   - User question
+4. LLM call (Claude/GPT)
+5. Calculate URS score (quality metrics)
+6. Format answer (markdown → HTML)
+7. Store sources con citations
+```
+
+##### URS Score (Unified Reliability Score)
+
+**Algoritmo di qualità** 0-100:
+- Base score: 50
+- +20 per numero fonti (più fonti = più affidabile)
+- +20 per average similarity chunks
+- +10 per lunghezza risposta ragionevole (200-2000 char)
+
+**Interpretazione**:
+- **90-100**: Risposta altamente affidabile con fonti eccellenti
+- **70-89**: Risposta buona con fonti sufficienti
+- **50-69**: Risposta accettabile ma fonti limitate
+- **0-49**: Risposta insufficiente, poche fonti
+
+---
+
+#### 5. Query Management & Analytics
+
+**Service**: `QueryService`
+
+##### Orchestrazione Completa
+
+```
+User Question
+    ↓
+Check Cache (SHA256 hash)
+    ↓ (miss)
+Retrieve Chunks (SearchService)
+    ↓
+Generate Response (ResponseGenerationService)
+    ↓
+Store Query + Response + Sources
+    ↓
+Cache Result (TTL 24h)
+    ↓
+Return to User
+```
+
+##### Analytics Tracking
+
+**Per ogni query**:
+- User ID, session ID, IP address
+- Question hash (deduplication)
+- Language e context
+- Response time (ms)
+- URS score
+- User feedback (helpful/unhelpful)
+
+**Dashboard metriche**:
+- Total queries, unique users
+- Avg response time, avg URS score
+- Helpful rate (% feedback positivo)
+- Language distribution
+- Popular queries (top 20)
+
+---
+
+#### 6. Caching & Performance
+
+**Service**: `CacheService`
+
+##### Strategie Cache
+
+**Question-based**:
+- Key: SHA256(question + language + context)
+- TTL: 24h default (configurabile)
+- Hit counter tracking
+
+**Document invalidation**:
+- Quando documento aggiornato → invalida cache queries correlate
+- Category invalidation → cascade
+
+**Auto-cleanup**:
+- Expired entries (TTL scaduto)
+- Stale entries (>7 giorni)
+- Low-value pruning (hit_count ≤ 2, age > 24h)
+
+##### Performance Features
+
+- **Extend TTL**: cache hit frequenti → TTL +48h automatico
+- **Warm cache**: pre-populate per domande comuni
+- **Stats dashboard**: hit rate, top cached queries
+
+---
+
+### Stack Tecnologico
+
+**Backend**:
+- Laravel 11 + PHP 8.4
+- PostgreSQL 15+ con pgvector 0.8.0
+- Eloquent ORM con custom casts
+
+**AI/ML**:
+- OpenAI API (embeddings)
+- Anthropic Claude API (generation)
+- Fallback: OpenAI GPT models
+
+**Infrastructure**:
+- Vector dimensione: 1536 (text-embedding-3-small)
+- IVFFlat index per scaling (10k-1M documenti)
+- GIN indexes per full-text + array search
+- JSONB per metadata flessibili
+
+---
+
+### Utilizzo API Services
+
+#### Indicizzare Documenti
+
+```php
+use App\Services\RagNatan\DocumentIndexingService;
+
+$indexer = app(DocumentIndexingService::class);
+
+$document = $indexer->indexDocument(
+    title: 'Guida Rebind EGI',
+    content: $markdown_content,
+    categoryId: 1,
+    language: 'it',
+    tags: ['rebind', 'royalty', 'blockchain'],
+    keywords: ['EGI', 'Algorand', 'NFT']
+);
+```
+
+#### Eseguire Query RAG
+
+```php
+use App\Services\RagNatan\QueryService;
+
+$queryService = app(QueryService::class);
+
+$result = $queryService->processQuery(
+    question: 'Come funziona il sistema di royalty rebind?',
+    user: auth()->user(),
+    language: 'it',
+    context: ['section' => 'payments']
+);
+
+// Output
+[
+    'query_id' => 123,
+    'answer' => 'Il sistema rebind prevede...',
+    'answer_html' => '<div>Il sistema rebind...</div>',
+    'urs_score' => 87.5,
+    'sources' => [...],
+    'cached' => false,
+    'response_time_ms' => 1250
+]
+```
+
+#### Ricerca Avanzata
+
+```php
+use App\Services\RagNatan\SearchService;
+
+$search = app(SearchService::class);
+
+// Hybrid search (vector + full-text)
+$chunks = $search->hybridSearch(
+    query: 'royalty creator',
+    language: 'italian',
+    limit: 10,
+    vectorWeight: 0.7,  // 70% vector
+    textWeight: 0.3     // 30% full-text
+);
+
+foreach ($chunks as $chunk) {
+    echo "Score: {$chunk->hybrid_score}%\n";
+    echo "Document: {$chunk->document->title}\n";
+    echo "Text: {$chunk->text}\n";
+}
+```
+
+---
+
+### Roadmap Sistema RAG
+
+✅ **Implementato** (Versione 1.0):
+- Vector search con pgvector
+- Full-text search PostgreSQL
+- Hybrid search
+- Multi-model LLM (Claude + OpenAI)
+- URS quality scoring
+- Query caching con analytics
+- Multi-language (6 lingue)
+
+🔄 **In Sviluppo** (Versione 1.1):
+- Re-ranking avanzato con cross-encoder
+- Fine-tuning embeddings custom
+- Semantic caching (cache basato su similarità semantica, non solo hash esatto)
+
+📋 **Pianificato** (Versione 2.0):
+- Multi-modal RAG (PDF, immagini, video)
+- Conversational RAG (memoria chat multi-turn)
+- RAG personalizzato per user (preferenze apprese)
+- A/B testing risposte per ottimizzazione
+
+---
+
 ## In Sintesi
 
 NATAN è:
@@ -328,7 +684,20 @@ NATAN è:
 - ✅ **Assistente cognitivo** (non automa)
 - ✅ **Trasparente e etico** (Oracode OS3.0 + GDPR)
 - ✅ **Personalizzato** (impara gusto e obiettivi)
-- ✅ **Dual-layer** (analisi valuation + attivazione campagne)
-- ✅ **Multi-tenant** (supporta marketplace arte, notarizzazione, RAG per PA)
+- ✅ **Sistema RAG completo** (vector search + full-text + AI generation)
+- ✅ **Multi-model AI** (Claude Sonnet 4.5 + OpenAI)
+- ✅ **Multi-tenant** (marketplace arte, notarizzazione, RAG per PA)
+- 🔄 **Dual-layer analytics** (valuation + activation) - **In Roadmap**
+
+### Stack Tecnico Implementato
+
+**Database**: PostgreSQL 15+ con pgvector 0.8.0
+**Schema**: `rag_natan.*` (8 tabelle)
+**Embeddings**: OpenAI text-embedding-3-small (1536 dim)
+**LLM**: Claude Sonnet 4.5 (primary), OpenAI GPT (fallback)
+**Search**: Hybrid (vector similarity + full-text)
+**Quality**: URS Score 0-100 per ogni risposta
+**Performance**: Query cache con TTL, analytics completi
+**Languages**: 6 lingue (it, en, de, es, fr, pt)
 
 > _"NATAN non decide per te. NATAN illumina le tue decisioni."_
