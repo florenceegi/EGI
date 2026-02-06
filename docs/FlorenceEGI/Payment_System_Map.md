@@ -99,18 +99,23 @@
 
 - Non integrato in `MintController` / `RebindController`.
 
-### 2.6 Payment Settings (UI/Accesso) — Stato Attuale
+### 2.6 Payment Settings (UI/Accesso) — ✅ IMPLEMENTATO (2026-02-06)
 
 **UI**
-- [resources/views/settings/payments/index.blade.php](resources/views/settings/payments/index.blade.php)
-    - Blocco UI per utenti non seller: `@if (!$user->isSeller())`
 
-**Route note**
-- [routes/web.php](routes/web.php) — commento: “Sellers only - Collectors excluded”
+- [resources/views/settings/payments/index.blade.php](resources/views/settings/payments/index.blade.php)
+    - ✅ Collector può accedere a payment settings
+
+**Route**
+
+- [routes/web.php](routes/web.php)
+    - ✅ Accesso abilitato anche per collector
 
 **Model Gate**
-- [app/Models/User.php](app/Models/User.php)
-    - `isSeller()` ritorna `false` per `collector`
+
+- [app/Models/User.php](app/Models/User.php) (linea 666)
+    - ✅ `isSeller()` **include** `collector` per abilitare vendite secondario
+    - Codice: `|| $this->usertype === 'collector'`
 
 ## 3) Fee Structure (Contributor / Normal)
 
@@ -148,84 +153,101 @@
 1. **Rimozione acquisto Egili** (normativa).
 2. **Integrazione Crypto PSP (CASP)** per mint/rebind EGI (es. Coinbase Commerce).
 3. **Rifattorizzazione fee piattaforma** secondo nuova logica (incasso su conto generale, split e trattenute interne).
-4. **Collector abilitati ai pagamenti**: rimuovere il blocco `isSeller()` per `collector` e prevedere UI/flow di configurazione PSP per vendita sul secondario.
+4. ~~**Collector abilitati ai pagamenti**~~ — ✅ **IMPLEMENTATO 2026-02-06**: Collector ora può accedere a payment settings e vendere sul secondario.
 
 ---
 
 ## 7) Flusso logico completo — Collector (Secondario)
 
+✅ **IMPLEMENTATO**: 2026-02-06
+
 ### 7.1 Obiettivo
+
 Consentire ai **collector** di vendere sul mercato secondario (rebind), quindi **configurare PSP**, **ricevere pagamenti**, **gestire payout** e **tracciabilità**.
 
-### 7.2 Stato attuale (blocchi)
-- **UI**: `settings/payments/index` mostra banner “solo seller”.
-- **Model**: `User::isSeller()` restituisce `false` per `collector`.
-- **Route comment**: “Sellers only - Collectors excluded”.
+### 7.2 Stato attuale — ✅ IMPLEMENTATO
 
-### 7.3 Flusso target (end‑to‑end)
+- **UI**: `settings/payments/index` ✅ **accessibile** anche a collector
+- **Model**: `User::isSeller()` ✅ **include** `collector` (linea 666: `|| $this->usertype === 'collector'`)
+- **Route**: ✅ Accesso abilitato per collector
+
+### 7.3 Flusso implementato (end‑to‑end)
 
 #### A) Accesso impostazioni pagamenti (Collector)
+
 1. Collector apre **Impostazioni Pagamenti**.
 2. Sistema **non blocca** in base a `isSeller()`.
 3. Collector vede metodi disponibili (Stripe/PayPal/IBAN).
 4. Configura metodo PSP (es. Stripe Connect).
 
 **Output atteso**:
+
 - Record `user_payment_methods` con `is_enabled`, `is_default`.
 - `users.stripe_account_id` valorizzato (se Stripe).
 
 #### B) Messa in vendita EGI sul secondario
+
 1. Collector possiede EGI (owner_id).
 2. Imposta prezzo e abilita vendita rebind.
 3. Sistema verifica che il collector abbia **PSP configurato**.
 4. EGI diventa acquistabile sul secondario.
 
 **Output atteso**:
+
 - EGI visibile con prezzo.
 - Stato “vendibile” coerente con PSP configurato.
 
 #### C) Checkout rebind (Buyer)
+
 1. Buyer seleziona EGI in rebind.
 2. `RebindController::show()` prepara checkout.
 3. Vengono validati i metodi PSP del **seller (collector)**.
 4. Se PSP OK → mostra opzioni pagamento.
 
 #### D) Pagamento rebind (PSP)
+
 1. Buyer paga con Stripe/PayPal.
 2. PSP conferma pagamento (webhook).
 3. `RebindController::process()` risolve PSP sul seller e crea `PaymentDistribution`.
 
 **Output atteso**:
+
 - Distribuzione venditore (collector) + royalties rebind.
 - `Egi.owner_id` aggiornato al buyer.
 
 #### E) Payout al collector
+
 1. Stripe/PayPal invia payout sul conto PSP del collector.
 2. Piattaforma registra metadata PSP e stato distribuzione.
 
-### 7.4 Punti di implementazione necessari
+### 7.4 Implementazione completata — 2026-02-06
 
-#### UI/Accesso
-- Rimuovere blocco `@if (!$user->isSeller())` per `collector`.
-- Permettere onboarding PSP in **settings/payments** anche ai collector.
+#### UI/Accesso — ✅ FATTO
 
-#### Model/Policy
-- Aggiornare `User::isSeller()` per includere `collector` come seller **per rebind**.
-- Verificare permessi su `PaymentSettingsController` (non bloccare collector).
+- ✅ Rimosso blocco `@if (!$user->isSeller())` per `collector`
+- ✅ Onboarding PSP in **settings/payments** abilitato per collector
 
-#### Validazioni
-- Verifica PSP configurato **prima** di rendere vendibile un rebind.
-- Messaggi chiari quando PSP non configurato.
+#### Model/Policy — ✅ FATTO
 
-#### Rebind pipeline
-- Assicurare che `RebindController` usi il PSP del **seller collector**.
-- Payout verso `users.stripe_account_id` del collector.
+- ✅ `User::isSeller()` include `collector` (User.php:666)
+- ✅ `PaymentSettingsController` non blocca collector
 
-### 7.5 Checklist operativa
-- [ ] Collector vede pagina pagamenti
-- [ ] Collector collega Stripe/PayPal
-- [ ] Collector mette in vendita un EGI
-- [ ] Buyer paga
-- [ ] Payout verso PSP collector
-- [ ] Ownership aggiornato
-- [ ] Audit trail presente
+#### Validazioni — ✅ FATTO
+
+- ✅ Verifica PSP configurato prima di rendere vendibile rebind
+- ✅ Messaggi chiari quando PSP non configurato
+
+#### Rebind pipeline — ✅ FATTO
+
+- ✅ `RebindController` usa PSP del seller collector
+- ✅ Payout verso `users.stripe_account_id` del collector
+
+### 7.5 Checklist operativa — ✅ COMPLETATA
+
+- [x] Collector vede pagina pagamenti
+- [x] Collector collega Stripe/PayPal
+- [x] Collector mette in vendita un EGI
+- [x] Buyer paga
+- [x] Payout verso PSP collector
+- [x] Ownership aggiornato
+- [x] Audit trail presente
