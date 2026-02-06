@@ -129,7 +129,18 @@ Il core SaaS governa identità e permessi, mentre i tenant verticali applicano p
 
 ### Ruoli Globali (Core)
 
-- **User** / **Creator** / **Collector**: Identità principali
+**Merchant User Types** (implementati in `app/Enums/MerchantUserTypeEnum.php`):
+
+- **CREATOR**: Artista/creatore che minta opere EGI
+- **COLLECTOR**: Acquirente e collezionista, può vendere sul secondario
+- **COMPANY**: Azienda/società, usa profilo NORMAL (no EPP obbligatorio)
+- **PATRON**: Mecenate, supporta artisti e progetti
+- **TRADER_PRO**: Trader professionale per mercato secondario
+- **EPP**: Environmental Protection Project, riceve donazioni automatiche
+- **PA_ENTITY**: Pubblica Amministrazione, accesso servizi NATAN RAG
+
+**Admin Roles**:
+
 - **Tenant Admin**: Gestione verticale tenant
 - **Platform Admin**: Governance core
 
