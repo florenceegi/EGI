@@ -190,11 +190,13 @@ Decisione Strategica
 
 ## Fee Dinamiche (Economia Rigenerativa)
 
+📋 **PIANIFICATO**: Funzionalità in roadmap, non ancora implementata nella versione corrente.
+
 ### Principio
 
 Le commissioni **si riducono** al crescere della community, creando un'economia virtuosa.
 
-### Formula
+### Formula (Pianificata)
 
 ```
 Fee_Attuale = Fee_Base × (1 - Community_Discount)
@@ -209,12 +211,21 @@ Community_Discount = min(User_Count / 10000 × 0.1, 0.5)
 - Community 10.000 utenti → Discount 10% → Fee finale 9%
 - Community 50.000 utenti → Discount MAX 50% → Fee finale 5%
 
-### Vantaggi
+### Vantaggi (Quando Implementato)
 
 - **Incentivo crescita**: Più utenti = meno costi per tutti
 - **Network effect**: Valore aumenta con dimensione rete
 - **Sostenibilità**: Compensazione volume/prezzo
 - **Fairness**: Early adopter pagano di più, late adopter meno (ma early hanno vantaggi first-mover)
+
+### Stato Attuale
+
+**Fee fisse** configurate in `config/egi.php`:
+- Royalty rebind creator: 4.5%
+- EPP mint: 20%
+- EPP rebind: 0.8%
+- Natan platform: 0.7%
+- Frangette APS: 0.1%
 
 ---
 
