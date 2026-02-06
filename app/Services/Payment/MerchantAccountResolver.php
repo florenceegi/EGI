@@ -194,6 +194,95 @@ class MerchantAccountResolver {
     }
 
     /**
+     * Validate ALL user wallets for payment acceptance (user PSP validation)
+     *
+     * @param User $user
+     * @param string $provider Provider identifier (stripe|paypal)
+     * @return array{
+     *     provider: string,
+     *     all_valid: bool,
+     *     can_accept_payments: bool,
+     *     total_wallets: int,
+     *     valid_wallets: int,
+     *     invalid_wallets: array,
+     *     provider_enabled: bool,
+     *     errors: array
+     * }
+     */
+    public function validateUserWallets(User $user, string $provider): array {
+        $provider = strtolower($provider);
+
+        $providerEnabled = match ($provider) {
+            'stripe' => (bool) config('algorand.payments.stripe_enabled', false),
+            'paypal' => (bool) config('algorand.payments.paypal_enabled', false),
+            default => false,
+        };
+
+        if (!$providerEnabled) {
+            $this->logger->info('Provider not enabled in configuration (user)', [
+                'provider' => $provider,
+                'user_id' => $user->id,
+            ]);
+
+            return [
+                'provider' => $provider,
+                'all_valid' => false,
+                'can_accept_payments' => false,
+                'total_wallets' => 0,
+                'valid_wallets' => 0,
+                'invalid_wallets' => [],
+                'provider_enabled' => false,
+                'errors' => ['provider_disabled'],
+            ];
+        }
+
+        $wallets = $this->collectUserWallets($user);
+
+        if ($wallets->isEmpty()) {
+            return [
+                'provider' => $provider,
+                'all_valid' => false,
+                'can_accept_payments' => false,
+                'total_wallets' => 0,
+                'valid_wallets' => 0,
+                'invalid_wallets' => [],
+                'provider_enabled' => true,
+                'errors' => ['no_wallets'],
+            ];
+        }
+
+        $invalidWallets = [];
+        $validCount = 0;
+
+        foreach ($wallets as $wallet) {
+            $result = $this->validateSingleWallet($wallet, $provider);
+            if ($result['valid']) {
+                $validCount++;
+                continue;
+            }
+
+            $invalidWallets[] = [
+                'wallet_id' => $wallet->id,
+                'error' => $result['error'] ?? 'unknown_error',
+            ];
+        }
+
+        $allValid = $validCount === $wallets->count();
+        $canAccept = $validCount > 0;
+
+        return [
+            'provider' => $provider,
+            'all_valid' => $allValid,
+            'can_accept_payments' => $canAccept,
+            'total_wallets' => $wallets->count(),
+            'valid_wallets' => $validCount,
+            'invalid_wallets' => $invalidWallets,
+            'provider_enabled' => true,
+            'errors' => $canAccept ? [] : array_values(array_unique(array_column($invalidWallets, 'error'))),
+        ];
+    }
+
+    /**
      * Validate ALL collection wallets for payment acceptance (MULTI-WALLET SPLIT PAYMENT)
      *
      * This method validates EVERY wallet in the collection to ensure split payments will succeed.

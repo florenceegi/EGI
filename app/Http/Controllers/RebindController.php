@@ -144,8 +144,15 @@ class RebindController extends Controller {
             }
 
             // Validate payment methods
-            $stripeValidation = $this->merchantAccountResolver->validateAllCollectionWallets($egi, 'stripe');
-            $paypalValidation = $this->merchantAccountResolver->validateAllCollectionWallets($egi, 'paypal');
+            $seller = $egi->owner;
+            if (!$seller) {
+                return redirect()
+                    ->route('egis.show', $egi->id)
+                    ->withErrors(['error' => __('rebind.errors.checkout_error')]);
+            }
+
+            $stripeValidation = $this->merchantAccountResolver->validateUserWallets($seller, 'stripe');
+            $paypalValidation = $this->merchantAccountResolver->validateUserWallets($seller, 'paypal');
 
             $stripeMerchantAvailable = $stripeValidation['can_accept_payments'];
             $paypalAvailable = $paypalValidation['can_accept_payments'];
@@ -321,6 +328,16 @@ class RebindController extends Controller {
                 }
             } else {
                 // Stripe or PayPal payment
+                $seller = $egi->owner;
+                if (!$seller) {
+                    return redirect()->back()->withErrors(['error' => __('rebind.errors.merchant_not_configured')]);
+                }
+
+                $merchantValidation = $this->merchantAccountResolver->validateUserWallets($seller, $paymentMethod);
+                if (!$merchantValidation['can_accept_payments']) {
+                    return redirect()->back()->withErrors(['error' => __('rebind.errors.merchant_not_configured')]);
+                }
+
                 try {
                     $paymentService = $this->paymentFactory->create($paymentMethod);
                 } catch (\Throwable $factoryException) {
