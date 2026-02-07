@@ -72,4 +72,28 @@ return [
     'embedding.batch_failed' => 'Fehler bei Batch-Embedding-Generierung',
     'embedding.stored' => 'Embedding in Datenbank gespeichert',
     'embedding.store_failed' => 'Fehler beim Speichern des Embeddings in Datenbank',
+
+    // === QUERY OPERATIONS ===
+    'query.processing_started' => 'Benutzeranfrage-Verarbeitung wird gestartet',
+    'query.cache_hit' => 'Antwort im Cache gefunden',
+    'query.cache_miss' => 'Antwort nicht im Cache, neue Antwort wird generiert',
+    'query.response_created' => 'Antwort erfolgreich erstellt',
+    'query.processing_completed' => 'Anfrage-Verarbeitung abgeschlossen',
+    'query.processing_failed' => 'Anfrage-Verarbeitung fehlgeschlagen',
+    'query.recording_feedback' => 'Benutzerfeedback wird aufgezeichnet',
+    'query.feedback_recorded' => 'Feedback erfolgreich aufgezeichnet',
+    'query.feedback_recording_failed' => 'Fehler beim Aufzeichnen des Feedbacks',
+    'query.fetching_user_history' => 'Benutzeranfrage-Verlauf wird abgerufen',
+    'query.user_history_fetched' => 'Benutzerverlauf erfolgreich abgerufen',
+    'query.user_history_failed' => 'Fehler beim Abrufen des Benutzerverlaufs',
+    'query.fetching_analytics' => 'Anfrage-Analytics werden abgerufen',
+    'query.analytics_fetched' => 'Analytics erfolgreich abgerufen',
+    'query.analytics_failed' => 'Fehler beim Abrufen der Analytics',
+
+    // === RESPONSE GENERATION ===
+    'response.claude_api_error' => 'Claude API-Fehler bei Antwortgenerierung',
+    'response.claude_exception' => 'Ausnahme während Claude-Aufruf',
+    'response.openai_api_error' => 'OpenAI API-Fehler bei Antwortgenerierung',
+    'response.openai_exception' => 'Ausnahme während OpenAI-Aufruf',
+    'error.response_generation_failed' => 'Fehler beim Generieren der Antwort. Bitte versuchen Sie es später erneut.',
 ];

@@ -72,4 +72,28 @@ return [
     'embedding.batch_failed' => 'Erro durante geração de embeddings em lote',
     'embedding.stored' => 'Embedding salvo no banco de dados',
     'embedding.store_failed' => 'Erro ao salvar embedding no banco de dados',
+
+    // === QUERY OPERATIONS ===
+    'query.processing_started' => 'Iniciando processamento de consulta do usuário',
+    'query.cache_hit' => 'Resposta encontrada em cache',
+    'query.cache_miss' => 'Resposta não em cache, gerando nova resposta',
+    'query.response_created' => 'Resposta criada com sucesso',
+    'query.processing_completed' => 'Processamento de consulta concluído',
+    'query.processing_failed' => 'Falha no processamento da consulta',
+    'query.recording_feedback' => 'Registrando feedback do usuário',
+    'query.feedback_recorded' => 'Feedback registrado com sucesso',
+    'query.feedback_recording_failed' => 'Erro ao registrar feedback',
+    'query.fetching_user_history' => 'Recuperando histórico de consultas do usuário',
+    'query.user_history_fetched' => 'Histórico do usuário recuperado com sucesso',
+    'query.user_history_failed' => 'Erro ao recuperar histórico do usuário',
+    'query.fetching_analytics' => 'Recuperando analytics de consultas',
+    'query.analytics_fetched' => 'Analytics recuperados com sucesso',
+    'query.analytics_failed' => 'Erro ao recuperar analytics',
+
+    // === RESPONSE GENERATION ===
+    'response.claude_api_error' => 'Erro da API Claude durante geração de resposta',
+    'response.claude_exception' => 'Exceção durante chamada ao Claude',
+    'response.openai_api_error' => 'Erro da API OpenAI durante geração de resposta',
+    'response.openai_exception' => 'Exceção durante chamada ao OpenAI',
+    'error.response_generation_failed' => 'Erro ao gerar resposta. Tente novamente mais tarde.',
 ];

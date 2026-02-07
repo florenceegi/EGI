@@ -6,17 +6,28 @@ use App\Models\RagNatan\QueryCache;
 use App\Models\RagNatan\Response;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * Cache Service
  *
  * Manages query result caching for RAG performance optimization.
  * Handles cache lookup, storage, invalidation, and cleanup.
+ * Adheres to Ultra Standards for logging and error handling.
+ *
+ * @package App\Services\RagNatan
+ * @author Padmin D. Curtis (AI Partner OS3.0)
  */
 class CacheService
 {
     private const DEFAULT_TTL_HOURS = 24;
     private const STALE_THRESHOLD_DAYS = 7;
+
+    public function __construct(
+        private UltraLogManager $logger,
+        private ErrorManagerInterface $errorManager
+    ) {}
 
     /**
      * Generate cache key from question and context.

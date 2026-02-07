@@ -7,17 +7,25 @@ use App\Models\RagNatan\Document;
 use App\Models\RagNatan\Embedding;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * Search Service
  *
  * Handles vector similarity search and full-text search.
  * Supports hybrid search combining both methods.
+ * Adheres to Ultra Standards for logging and error handling.
+ *
+ * @package App\Services\RagNatan
+ * @author Padmin D. Curtis (AI Partner OS3.0)
  */
 class SearchService
 {
     public function __construct(
-        private EmbeddingService $embeddingService
+        private EmbeddingService $embeddingService,
+        private UltraLogManager $logger,
+        private ErrorManagerInterface $errorManager
     ) {}
 
     /**

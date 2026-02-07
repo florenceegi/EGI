@@ -73,4 +73,28 @@ return [
     'embedding.batch_failed' => 'Error during batch embedding generation',
     'embedding.stored' => 'Embedding saved to database',
     'embedding.store_failed' => 'Error saving embedding to database',
+
+    // === QUERY OPERATIONS ===
+    'query.processing_started' => 'Starting user query processing',
+    'query.cache_hit' => 'Response found in cache',
+    'query.cache_miss' => 'Response not in cache, generating new response',
+    'query.response_created' => 'Response created successfully',
+    'query.processing_completed' => 'Query processing completed',
+    'query.processing_failed' => 'Query processing failed',
+    'query.recording_feedback' => 'Recording user feedback',
+    'query.feedback_recorded' => 'Feedback recorded successfully',
+    'query.feedback_recording_failed' => 'Error recording feedback',
+    'query.fetching_user_history' => 'Fetching user query history',
+    'query.user_history_fetched' => 'User history fetched successfully',
+    'query.user_history_failed' => 'Error fetching user history',
+    'query.fetching_analytics' => 'Fetching query analytics',
+    'query.analytics_fetched' => 'Analytics fetched successfully',
+    'query.analytics_failed' => 'Error fetching analytics',
+
+    // === RESPONSE GENERATION ===
+    'response.claude_api_error' => 'Claude API error during response generation',
+    'response.claude_exception' => 'Exception during Claude call',
+    'response.openai_api_error' => 'OpenAI API error during response generation',
+    'response.openai_exception' => 'Exception during OpenAI call',
+    'error.response_generation_failed' => 'Error generating response. Please try again later.',
 ];

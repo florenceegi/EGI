@@ -6,13 +6,18 @@ use App\Models\RagNatan\Chunk;
 use App\Models\RagNatan\Response;
 use App\Models\RagNatan\Source;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * Response Generation Service
  *
  * Generates RAG responses using retrieved context.
  * Supports Claude and OpenAI models with quality scoring (URS).
+ * Adheres to Ultra Standards for logging and error handling.
+ *
+ * @package App\Services\RagNatan
+ * @author Padmin D. Curtis (AI Partner OS3.0)
  */
 class ResponseGenerationService
 {
@@ -21,7 +26,9 @@ class ResponseGenerationService
     private const MIN_SIMILARITY_SCORE = 70.0;
 
     public function __construct(
-        private SearchService $searchService
+        private SearchService $searchService,
+        private UltraLogManager $logger,
+        private ErrorManagerInterface $errorManager
     ) {}
 
     /**
@@ -190,11 +197,15 @@ class ResponseGenerationService
             ]);
 
             if (!$response->successful()) {
-                Log::error('Claude API error', [
+                $this->logger->error('rag.response.claude_api_error', [
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
-                throw new \RuntimeException('Failed to generate response: ' . $response->body());
+                $this->errorManager->handle('RAG_CLAUDE_API_FAILED', [
+                    'status' => $response->status(),
+                    'error' => $response->body()
+                ], new \RuntimeException($response->body()));
+                throw new \RuntimeException(__('rag.error.response_generation_failed'));
             }
 
             $data = $response->json();
@@ -207,7 +218,13 @@ class ResponseGenerationService
                 ],
             ];
         } catch (\Exception $e) {
-            Log::error('Exception calling Claude', ['message' => $e->getMessage()]);
+            $this->logger->error('rag.response.claude_exception', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->errorManager->handle('RAG_CLAUDE_EXCEPTION', [
+                'error' => $e->getMessage()
+            ], $e);
             throw $e;
         }
     }
@@ -246,11 +263,15 @@ class ResponseGenerationService
             ]);
 
             if (!$response->successful()) {
-                Log::error('OpenAI API error', [
+                $this->logger->error('rag.response.openai_api_error', [
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
-                throw new \RuntimeException('Failed to generate response: ' . $response->body());
+                $this->errorManager->handle('RAG_OPENAI_API_FAILED', [
+                    'status' => $response->status(),
+                    'error' => $response->body()
+                ], new \RuntimeException($response->body()));
+                throw new \RuntimeException(__('rag.error.response_generation_failed'));
             }
 
             $data = $response->json();
@@ -263,7 +284,13 @@ class ResponseGenerationService
                 ],
             ];
         } catch (\Exception $e) {
-            Log::error('Exception calling OpenAI', ['message' => $e->getMessage()]);
+            $this->logger->error('rag.response.openai_exception', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->errorManager->handle('RAG_OPENAI_EXCEPTION', [
+                'error' => $e->getMessage()
+            ], $e);
             throw $e;
         }
     }

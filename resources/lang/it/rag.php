@@ -72,4 +72,28 @@ return [
     'error.bulk_index_failed' => 'Errore durante indicizzazione massiva. Alcuni documenti potrebbero non essere stati indicizzati.',
     'error.embedding_failed' => 'Errore durante generazione embeddings. Verifica la configurazione OpenAI.',
     'error.chunking_failed' => 'Errore durante suddivisione contenuto in chunks.',
+
+    // === QUERY OPERATIONS ===
+    'query.processing_started' => 'Avvio elaborazione query utente',
+    'query.cache_hit' => 'Risposta trovata in cache',
+    'query.cache_miss' => 'Risposta non in cache, generazione nuova risposta',
+    'query.response_created' => 'Risposta creata con successo',
+    'query.processing_completed' => 'Elaborazione query completata',
+    'query.processing_failed' => 'Errore durante elaborazione query',
+    'query.recording_feedback' => 'Registrazione feedback utente',
+    'query.feedback_recorded' => 'Feedback registrato con successo',
+    'query.feedback_recording_failed' => 'Errore durante registrazione feedback',
+    'query.fetching_user_history' => 'Recupero cronologia query utente',
+    'query.user_history_fetched' => 'Cronologia utente recuperata',
+    'query.user_history_failed' => 'Errore durante recupero cronologia',
+    'query.fetching_analytics' => 'Recupero analytics query',
+    'query.analytics_fetched' => 'Analytics recuperati con successo',
+    'query.analytics_failed' => 'Errore durante recupero analytics',
+
+    // === RESPONSE GENERATION ===
+    'response.claude_api_error' => 'Errore API Claude durante generazione risposta',
+    'response.claude_exception' => 'Eccezione durante chiamata Claude',
+    'response.openai_api_error' => 'Errore API OpenAI durante generazione risposta',
+    'response.openai_exception' => 'Eccezione durante chiamata OpenAI',
+    'error.response_generation_failed' => 'Errore durante generazione risposta. Riprova più tardi.',
 ];
