@@ -5,15 +5,22 @@ namespace App\Services\RagNatan;
 use App\Models\RagNatan\Category;
 use App\Models\RagNatan\Chunk;
 use App\Models\RagNatan\Document;
+use App\Enums\Gdpr\GdprActivityCategory;
+use App\Services\Gdpr\AuditLogService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * Document Indexing Service
  *
- * Handles document ingestion, chunking, and indexing for RAG.
+ * Handles document ingestion, chunking, and indexing for RAG (Retrieval-Augmented Generation).
  * Supports multiple chunking strategies and metadata extraction.
+ * Adheres to Ultra Standards for logging, error handling, and GDPR compliance.
+ *
+ * @package App\Services\RagNatan
+ * @author Padmin D. Curtis (AI Partner OS3.0)
  */
 class DocumentIndexingService
 {
@@ -22,11 +29,16 @@ class DocumentIndexingService
     private const CHARS_PER_TOKEN = 4; // Rough approximation
 
     public function __construct(
-        private EmbeddingService $embeddingService
+        private EmbeddingService $embeddingService,
+        private UltraLogManager $logger,
+        private ErrorManagerInterface $errorManager,
+        private AuditLogService $auditService
     ) {}
 
     /**
      * Index a new document.
+     *
+     * @throws \Exception
      */
     public function indexDocument(
         string $title,
@@ -39,17 +51,22 @@ class DocumentIndexingService
         ?string $source = null,
         ?string $author = null
     ): Document {
-        Log::info('[RAG] Starting document indexing', ['title' => $title]);
+        try {
+            $this->logger->info('rag.indexing.started', [
+                'title' => $title,
+                'language' => $language,
+                'category_id' => $categoryId
+            ]);
 
-        // TEMPORARY: Removed DB::transaction to debug blocking issue
-        // Will re-add once the issue is resolved
-        Log::info('[RAG] Creating document record');
+            // TEMPORARY: Removed DB::transaction to debug blocking issue
+            // Will re-add once the issue is resolved
+            $this->logger->info('rag.indexing.creating_document', ['title' => $title]);
 
-        // Clean content for UTF-8
-        $cleanContent = mb_convert_encoding($content, 'UTF-8', 'UTF-8');
+            // Clean content for UTF-8
+            $cleanContent = mb_convert_encoding($content, 'UTF-8', 'UTF-8');
 
-        // Create document
-        $document = Document::create([
+            // Create document
+            $document = Document::create([
                 'uuid' => Str::uuid()->toString(),
                 'category_id' => $categoryId,
                 'title' => $title,
@@ -67,67 +84,164 @@ class DocumentIndexingService
                 'is_indexed' => false,
             ]);
 
-            Log::info('[RAG] Document created', ['id' => $document->id]);
-
-            // Create chunks
-            Log::info('[RAG] Creating chunks');
-            $chunks = $this->createChunks($document);
-            Log::info('[RAG] Chunks created', ['count' => $chunks->count()]);
-
-            // Generate embeddings
-            Log::info('[RAG] Starting embedding generation');
-            $this->embeddingService->embedChunks($chunks);
-            Log::info('[RAG] Embeddings generated');
-
-            // Mark as indexed
-            $document->update(['is_indexed' => true]);
-
-        Log::info('[RAG] Document indexed successfully', [
-            'document_id' => $document->id,
-            'title' => $title,
-            'chunks_count' => $chunks->count(),
-        ]);
-
-        return $document->fresh();
-    }
-
-    /**
-     * Re-index existing document.
-     */
-    public function reindexDocument(Document $document): Document
-    {
-        return DB::transaction(function () use ($document) {
-            // Delete old chunks and embeddings
-            foreach ($document->chunks as $chunk) {
-                $chunk->embedding?->delete();
-                $chunk->delete();
-            }
-
-            // Update document metadata
-            $document->update([
-                'char_count' => strlen($document->content),
-                'token_count' => $this->estimateTokens($document->content),
-                'version' => $document->version + 1,
-                'is_indexed' => false,
+            $this->logger->info('rag.indexing.document_created', [
+                'document_id' => $document->id,
+                'title' => $title
             ]);
 
-            // Create new chunks
+            // Create chunks
+            $this->logger->info('rag.indexing.creating_chunks', ['document_id' => $document->id]);
             $chunks = $this->createChunks($document);
+            $this->logger->info('rag.indexing.chunks_created', [
+                'document_id' => $document->id,
+                'chunks_count' => $chunks->count()
+            ]);
 
             // Generate embeddings
+            $this->logger->info('rag.indexing.generating_embeddings', [
+                'document_id' => $document->id,
+                'chunks_count' => $chunks->count()
+            ]);
             $this->embeddingService->embedChunks($chunks);
+            $this->logger->info('rag.indexing.embeddings_generated', [
+                'document_id' => $document->id
+            ]);
 
             // Mark as indexed
             $document->update(['is_indexed' => true]);
 
-            Log::info('Document re-indexed', [
+            // GDPR Audit: Log system action for document indexing
+            $this->auditService->logSystemAction(
+                null,
+                'rag_document_indexed',
+                [
+                    'document_id' => $document->id,
+                    'title' => $title,
+                    'chunks_count' => $chunks->count(),
+                    'language' => $language,
+                    'category_id' => $categoryId
+                ],
+                GdprActivityCategory::AI_PROCESSING
+            );
+
+            $this->logger->info('rag.indexing.completed', [
                 'document_id' => $document->id,
-                'version' => $document->version,
+                'title' => $title,
                 'chunks_count' => $chunks->count(),
             ]);
 
             return $document->fresh();
-        });
+        } catch (\Exception $e) {
+            // Log error with structured context
+            $this->logger->error('rag.indexing.failed', [
+                'title' => $title,
+                'language' => $language,
+                'category_id' => $categoryId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Log with ErrorManager for monitoring (but don't use return value)
+            $this->errorManager->handle('RAG_INDEX_DOCUMENT_FAILED', [
+                'title' => $title,
+                'language' => $language,
+                'category_id' => $categoryId,
+                'error' => $e->getMessage()
+            ], $e);
+
+            // Re-throw exception for caller to handle
+            throw $e;
+        }
+    }
+
+    /**
+     * Re-index existing document.
+     *
+     * @throws \Exception
+     */
+    public function reindexDocument(Document $document): Document
+    {
+        try {
+            $this->logger->info('rag.reindexing.started', [
+                'document_id' => $document->id,
+                'title' => $document->title,
+                'current_version' => $document->version
+            ]);
+
+            return DB::transaction(function () use ($document) {
+                // Delete old chunks and embeddings
+                $this->logger->info('rag.reindexing.deleting_old_chunks', [
+                    'document_id' => $document->id,
+                    'chunks_count' => $document->chunks->count()
+                ]);
+
+                foreach ($document->chunks as $chunk) {
+                    $chunk->embedding?->delete();
+                    $chunk->delete();
+                }
+
+                // Update document metadata
+                $document->update([
+                    'char_count' => strlen($document->content),
+                    'token_count' => $this->estimateTokens($document->content),
+                    'version' => $document->version + 1,
+                    'is_indexed' => false,
+                ]);
+
+                $this->logger->info('rag.reindexing.creating_new_chunks', [
+                    'document_id' => $document->id,
+                    'new_version' => $document->version
+                ]);
+
+                // Create new chunks
+                $chunks = $this->createChunks($document);
+
+                // Generate embeddings
+                $this->logger->info('rag.reindexing.generating_embeddings', [
+                    'document_id' => $document->id,
+                    'chunks_count' => $chunks->count()
+                ]);
+                $this->embeddingService->embedChunks($chunks);
+
+                // Mark as indexed
+                $document->update(['is_indexed' => true]);
+
+                // GDPR Audit: Log system action for document re-indexing
+                $this->auditService->logSystemAction(
+                    null,
+                    'rag_document_reindexed',
+                    [
+                        'document_id' => $document->id,
+                        'title' => $document->title,
+                        'version' => $document->version,
+                        'chunks_count' => $chunks->count(),
+                    ],
+                    GdprActivityCategory::AI_PROCESSING
+                );
+
+                $this->logger->info('rag.reindexing.completed', [
+                    'document_id' => $document->id,
+                    'version' => $document->version,
+                    'chunks_count' => $chunks->count(),
+                ]);
+
+                return $document->fresh();
+            });
+        } catch (\Exception $e) {
+            $this->logger->error('rag.reindexing.failed', [
+                'document_id' => $document->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->errorManager->handle('RAG_REINDEX_DOCUMENT_FAILED', [
+                'document_id' => $document->id,
+                'title' => $document->title,
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
     }
 
     /**
@@ -147,21 +261,21 @@ class DocumentIndexingService
         // Try to split by sections first (if content has clear structure)
         $sections = $this->extractSections($content);
 
-        Log::info('[RAG] Sections count check', ['count' => count($sections)]);
+        $this->logger->debug('rag.chunking.sections_count_check', ['count' => count($sections)]);
 
         if (count($sections) > 1) {
             // Process each section separately
-            Log::info('[RAG] Processing multiple sections');
+            $this->logger->debug('rag.chunking.processing_multiple_sections');
             $chunkOrder = 0;
             foreach ($sections as $sectionIdx => $section) {
-                Log::info('[RAG] Processing section', ['index' => $sectionIdx]);
+                $this->logger->debug('rag.chunking.processing_section', ['index' => $sectionIdx]);
                 $sectionChunks = $this->chunkText(
                     $section['content'],
                     $chunkSize,
                     $overlap,
                     $section['title']
                 );
-                Log::info('[RAG] Section chunked', ['chunks' => count($sectionChunks)]);
+                $this->logger->debug('rag.chunking.section_chunked', ['chunks' => count($sectionChunks)]);
 
                 foreach ($sectionChunks as $chunkData) {
                     $chunks->push($this->createChunk(
@@ -176,9 +290,9 @@ class DocumentIndexingService
             }
         } else {
             // Single section, chunk normally
-            Log::info('[RAG] Processing single section');
+            $this->logger->debug('rag.chunking.processing_single_section');
             $textChunks = $this->chunkText($content, $chunkSize, $overlap);
-            Log::info('[RAG] Text chunked', ['chunks' => count($textChunks)]);
+            $this->logger->debug('rag.chunking.text_chunked', ['chunks' => count($textChunks)]);
 
             foreach ($textChunks as $index => $chunkData) {
                 $chunks->push($this->createChunk(
@@ -199,11 +313,11 @@ class DocumentIndexingService
      */
     private function extractSections(string $content): array
     {
-        Log::info('[RAG] Extracting sections', ['content_length' => strlen($content)]);
+        $this->logger->debug('rag.chunking.extracting_sections', ['content_length' => strlen($content)]);
 
         // Look for markdown headers (# Title)
         $lines = explode("\n", $content);
-        Log::info('[RAG] Lines count', ['count' => count($lines)]);
+        $this->logger->debug('rag.chunking.lines_count', ['count' => count($lines)]);
 
         $sections = [];
         $currentSection = ['title' => null, 'content' => ''];
@@ -228,7 +342,7 @@ class DocumentIndexingService
             $sections[] = $currentSection;
         }
 
-        Log::info('[RAG] Sections extracted', ['sections_count' => count($sections)]);
+        $this->logger->debug('rag.chunking.sections_extracted', ['sections_count' => count($sections)]);
 
         return $sections ?: [['title' => null, 'content' => $content]];
     }
@@ -329,7 +443,7 @@ class DocumentIndexingService
         int $charEnd,
         ?string $sectionTitle = null
     ): Chunk {
-        Log::info('[RAG] Creating chunk', ['order' => $chunkOrder, 'text_length' => strlen($text)]);
+        $this->logger->debug('rag.chunking.creating_chunk', ['order' => $chunkOrder, 'text_length' => strlen($text)]);
 
         // Clean text for UTF-8
         $cleanText = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
@@ -347,7 +461,7 @@ class DocumentIndexingService
             'language' => $document->language,
         ]);
 
-        Log::info('[RAG] Chunk created', ['id' => $chunk->id]);
+        $this->logger->debug('rag.chunking.chunk_created', ['id' => $chunk->id]);
 
         return $chunk;
     }
@@ -365,7 +479,11 @@ class DocumentIndexingService
      */
     public function bulkIndex(array $documents): array
     {
+        $this->logger->info('rag.bulk_indexing.started', ['documents_count' => count($documents)]);
+
         $results = [];
+        $successCount = 0;
+        $failureCount = 0;
 
         foreach ($documents as $docData) {
             try {
@@ -386,39 +504,111 @@ class DocumentIndexingService
                     'document_id' => $document->id,
                     'title' => $document->title,
                 ];
+                $successCount++;
             } catch (\Exception $e) {
-                Log::error('Failed to index document', [
+                $this->logger->error('rag.bulk_indexing.document_failed', [
                     'title' => $docData['title'],
                     'error' => $e->getMessage(),
                 ]);
+
+                $this->errorManager->handle('RAG_BULK_INDEX_DOCUMENT_FAILED', [
+                    'title' => $docData['title'],
+                    'error' => $e->getMessage()
+                ], $e);
 
                 $results[] = [
                     'success' => false,
                     'title' => $docData['title'],
                     'error' => $e->getMessage(),
                 ];
+                $failureCount++;
             }
         }
+
+        // GDPR Audit: Log bulk indexing operation
+        $this->auditService->logSystemAction(
+            null,
+            'rag_bulk_index_completed',
+            [
+                'total_documents' => count($documents),
+                'success_count' => $successCount,
+                'failure_count' => $failureCount
+            ],
+            GdprActivityCategory::AI_PROCESSING
+        );
+
+        $this->logger->info('rag.bulk_indexing.completed', [
+            'total' => count($documents),
+            'success' => $successCount,
+            'failed' => $failureCount
+        ]);
 
         return $results;
     }
 
     /**
      * Delete document and all associated data.
+     *
+     * @throws \Exception
      */
     public function deleteDocument(Document $document): bool
     {
-        return DB::transaction(function () use ($document) {
-            // Delete embeddings
-            foreach ($document->chunks as $chunk) {
-                $chunk->embedding?->delete();
-            }
+        try {
+            $this->logger->info('rag.delete.started', [
+                'document_id' => $document->id,
+                'title' => $document->title,
+                'chunks_count' => $document->chunks->count()
+            ]);
 
-            // Delete chunks (will cascade)
-            $document->chunks()->delete();
+            $documentId = $document->id;
+            $documentTitle = $document->title;
+            $chunksCount = $document->chunks->count();
 
-            // Delete document
-            return $document->delete();
-        });
+            $result = DB::transaction(function () use ($document) {
+                // Delete embeddings
+                foreach ($document->chunks as $chunk) {
+                    $chunk->embedding?->delete();
+                }
+
+                // Delete chunks (will cascade)
+                $document->chunks()->delete();
+
+                // Delete document
+                return $document->delete();
+            });
+
+            // GDPR Audit: Log document deletion
+            $this->auditService->logSystemAction(
+                null,
+                'rag_document_deleted',
+                [
+                    'document_id' => $documentId,
+                    'title' => $documentTitle,
+                    'chunks_deleted' => $chunksCount
+                ],
+                GdprActivityCategory::DATA_DELETION
+            );
+
+            $this->logger->info('rag.delete.completed', [
+                'document_id' => $documentId,
+                'title' => $documentTitle
+            ]);
+
+            return $result;
+        } catch (\Exception $e) {
+            $this->logger->error('rag.delete.failed', [
+                'document_id' => $document->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->errorManager->handle('RAG_DELETE_DOCUMENT_FAILED', [
+                'document_id' => $document->id,
+                'title' => $document->title,
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
     }
 }

@@ -5,13 +5,18 @@ namespace App\Services\RagNatan;
 use App\Models\RagNatan\Chunk;
 use App\Models\RagNatan\Embedding;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * Embedding Service
  *
  * Generates vector embeddings using OpenAI text-embedding-3-small.
  * Handles embedding creation, updates, and batch processing.
+ * Adheres to Ultra Standards for logging and error handling.
+ *
+ * @package App\Services\RagNatan
+ * @author Padmin D. Curtis (AI Partner OS3.0)
  */
 class EmbeddingService
 {
@@ -19,6 +24,11 @@ class EmbeddingService
     private const EMBEDDING_DIMENSIONS = 1536;
     private const BATCH_SIZE = 100; // OpenAI allows up to 2048 inputs per request
     private const MAX_TOKENS = 8191; // text-embedding-3-small max tokens
+
+    public function __construct(
+        private UltraLogManager $logger,
+        private ErrorManagerInterface $errorManager
+    ) {}
 
     /**
      * Generate embedding for a single text.
@@ -33,20 +43,28 @@ class EmbeddingService
      *
      * @param array<string> $texts
      * @return array<array<float>>
+     * @throws \RuntimeException
      */
     public function generateEmbeddings(array $texts): array
     {
         if (empty($texts)) {
+            $this->logger->debug('rag.embedding.empty_input');
             return [];
         }
 
         $apiKey = config('services.openai.api_key');
 
         if (!$apiKey) {
-            throw new \RuntimeException('OpenAI API key not configured');
+            $this->logger->error('rag.embedding.missing_api_key');
+            throw new \RuntimeException(__('rag.error.embedding_failed'));
         }
 
         try {
+            $this->logger->info('rag.embedding.generating', [
+                'texts_count' => count($texts),
+                'model' => self::EMBEDDING_MODEL
+            ]);
+
             $response = Http::withHeaders([
                 'Authorization' => "Bearer {$apiKey}",
                 'Content-Type' => 'application/json',
@@ -57,11 +75,19 @@ class EmbeddingService
             ]);
 
             if (!$response->successful()) {
-                Log::error('OpenAI embedding API error', [
+                $this->logger->error('rag.embedding.api_error', [
                     'status' => $response->status(),
                     'body' => $response->body(),
+                    'texts_count' => count($texts)
                 ]);
-                throw new \RuntimeException('Failed to generate embeddings: ' . $response->body());
+
+                $this->errorManager->handle('RAG_EMBEDDING_API_FAILED', [
+                    'status' => $response->status(),
+                    'texts_count' => count($texts),
+                    'error' => $response->body()
+                ], new \RuntimeException($response->body()));
+
+                throw new \RuntimeException(__('rag.error.embedding_failed'));
             }
 
             $data = $response->json();
@@ -71,12 +97,27 @@ class EmbeddingService
                 $embeddings[] = $item['embedding'];
             }
 
+            $this->logger->info('rag.embedding.generated', [
+                'embeddings_count' => count($embeddings),
+                'dimensions' => self::EMBEDDING_DIMENSIONS
+            ]);
+
             return $embeddings;
+        } catch (\RuntimeException $e) {
+            // Re-throw RuntimeException as-is
+            throw $e;
         } catch (\Exception $e) {
-            Log::error('Exception generating embeddings', [
+            $this->logger->error('rag.embedding.exception', [
                 'message' => $e->getMessage(),
                 'texts_count' => count($texts),
+                'trace' => $e->getTraceAsString()
             ]);
+
+            $this->errorManager->handle('RAG_EMBEDDING_EXCEPTION', [
+                'texts_count' => count($texts),
+                'error' => $e->getMessage()
+            ], $e);
+
             throw $e;
         }
     }
@@ -96,28 +137,61 @@ class EmbeddingService
      *
      * @param \Illuminate\Support\Collection<Chunk> $chunks
      * @return int Number of embeddings created
+     * @throws \Exception
      */
     public function embedChunks($chunks): int
     {
-        $count = 0;
-        $batches = $chunks->chunk(self::BATCH_SIZE);
+        $totalChunks = $chunks->count();
+        $this->logger->info('rag.embedding.batch_started', [
+            'total_chunks' => $totalChunks,
+            'batch_size' => self::BATCH_SIZE
+        ]);
 
-        foreach ($batches as $batch) {
-            $texts = $batch->pluck('text')->toArray();
-            $vectors = $this->generateEmbeddings($texts);
+        try {
+            $count = 0;
+            $batches = $chunks->chunk(self::BATCH_SIZE);
 
-            foreach ($batch as $index => $chunk) {
-                $this->storeEmbedding($chunk->id, $vectors[$index]);
-                $count++;
+            foreach ($batches as $batchIndex => $batch) {
+                $this->logger->debug('rag.embedding.processing_batch', [
+                    'batch_number' => $batchIndex + 1,
+                    'batch_size' => $batch->count(),
+                    'total_batches' => $batches->count()
+                ]);
+
+                $texts = $batch->pluck('text')->toArray();
+                $vectors = $this->generateEmbeddings($texts);
+
+                foreach ($batch as $index => $chunk) {
+                    $this->storeEmbedding($chunk->id, $vectors[$index]);
+                    $count++;
+                }
+
+                // Rate limiting: small delay between batches
+                if ($batches->count() > 1) {
+                    usleep(100000); // 100ms delay
+                }
             }
 
-            // Rate limiting: small delay between batches
-            if ($batches->count() > 1) {
-                usleep(100000); // 100ms delay
-            }
+            $this->logger->info('rag.embedding.batch_completed', [
+                'total_embeddings' => $count,
+                'batches_processed' => $batches->count()
+            ]);
+
+            return $count;
+        } catch (\Exception $e) {
+            $this->logger->error('rag.embedding.batch_failed', [
+                'total_chunks' => $totalChunks,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->errorManager->handle('RAG_EMBEDDING_BATCH_FAILED', [
+                'total_chunks' => $totalChunks,
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
         }
-
-        return $count;
     }
 
     /**
@@ -125,16 +199,39 @@ class EmbeddingService
      */
     private function storeEmbedding(int $chunkId, array $vector): Embedding
     {
-        $vectorString = '[' . implode(',', $vector) . ']';
+        try {
+            $vectorString = '[' . implode(',', $vector) . ']';
 
-        return Embedding::updateOrCreate(
-            ['chunk_id' => $chunkId],
-            [
-                'embedding' => $vectorString,
-                'model' => self::EMBEDDING_MODEL,
-                'model_version' => 'text-embedding-3-small-2024',
-            ]
-        );
+            $embedding = Embedding::updateOrCreate(
+                ['chunk_id' => $chunkId],
+                [
+                    'embedding' => $vectorString,
+                    'model' => self::EMBEDDING_MODEL,
+                    'model_version' => 'text-embedding-3-small-2024',
+                ]
+            );
+
+            $this->logger->debug('rag.embedding.stored', [
+                'chunk_id' => $chunkId,
+                'embedding_id' => $embedding->id,
+                'dimensions' => count($vector)
+            ]);
+
+            return $embedding;
+        } catch (\Exception $e) {
+            $this->logger->error('rag.embedding.store_failed', [
+                'chunk_id' => $chunkId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->errorManager->handle('RAG_EMBEDDING_STORE_FAILED', [
+                'chunk_id' => $chunkId,
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
     }
 
     /**
