@@ -39,8 +39,7 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
     /**
      * Get the shipping addresses for the user.
      */
-    public function shippingAddresses(): HasMany
-    {
+    public function shippingAddresses(): HasMany {
         return $this->hasMany(UserShippingAddress::class);
     }
     use HasApiTokens;
@@ -1433,7 +1432,7 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
         if (!$currentBanner) {
             return null;
         }
-        
+
         // Force relative URL to avoid domain mismatch
         $url = $currentBanner->getUrl($conversion);
         return parse_url($url, PHP_URL_PATH);
@@ -1487,7 +1486,7 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
     public function setCurrentProfileImage(Media $media): bool {
         // 1. Pointer Update: Set ID in database
         $this->update(['current_profile_image_id' => $media->id]);
-        
+
         // 2. Jetstream Logic: Update profile_photo_path for navbar compatibility
         // We use the MEDIA URL (relative) directly
         $url = $media->getUrl(); // e.g. /storage/1/file.jpg

@@ -69,8 +69,8 @@ class Document extends Model
      * The attributes that should be cast.
      */
     protected $casts = [
-        'tags' => 'array',          // PostgreSQL TEXT[]
-        'keywords' => 'array',      // PostgreSQL TEXT[]
+        'tags' => \App\Casts\PostgreSqlArray::class,          // PostgreSQL TEXT[]
+        'keywords' => \App\Casts\PostgreSqlArray::class,      // PostgreSQL TEXT[]
         'metadata' => 'array',      // PostgreSQL JSONB
         'view_count' => 'integer',
         'helpful_count' => 'integer',

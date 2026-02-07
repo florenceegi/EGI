@@ -53,7 +53,7 @@ class MerchantAccountResolver {
             'stripe' => $wallets->first(function (Wallet $wallet) {
                 // Check WalletDestination first (New Architecture)
                 $hasDestination = $wallet->destinations->contains(function ($destination) {
-                    return $destination->payment_type === \App\Enums\Payment\PaymentTypeEnum::STRIPE->value 
+                    return $destination->payment_type === \App\Enums\Payment\PaymentTypeEnum::STRIPE->value
                         && filled($destination->destination_value);
                 });
                 if ($hasDestination) return true;
@@ -64,7 +64,7 @@ class MerchantAccountResolver {
             'paypal' => $wallets->first(function (Wallet $wallet) {
                 // Check WalletDestination first
                 $hasDestination = $wallet->destinations->contains(function ($destination) {
-                    return $destination->payment_type === \App\Enums\Payment\PaymentTypeEnum::PAYPAL->value 
+                    return $destination->payment_type === \App\Enums\Payment\PaymentTypeEnum::PAYPAL->value
                         && filled($destination->destination_value);
                 });
                 if ($hasDestination) return true;
@@ -98,13 +98,13 @@ class MerchantAccountResolver {
         // Resolve Account ID prioritizing WalletDestination
         $accountId = null;
         if ($provider === 'stripe') {
-             $dest = $wallet->destinations->firstWhere('payment_type', \App\Enums\Payment\PaymentTypeEnum::STRIPE->value);
-             $accountId = $dest?->destination_value 
-                ?? $wallet->user?->stripe_account_id 
+            $dest = $wallet->destinations->firstWhere('payment_type', \App\Enums\Payment\PaymentTypeEnum::STRIPE->value);
+            $accountId = $dest?->destination_value
+                ?? $wallet->user?->stripe_account_id
                 ?? $wallet->stripe_account_id;
         } elseif ($provider === 'paypal') {
-             $dest = $wallet->destinations->firstWhere('payment_type', \App\Enums\Payment\PaymentTypeEnum::PAYPAL->value);
-             $accountId = $dest?->destination_value 
+            $dest = $wallet->destinations->firstWhere('payment_type', \App\Enums\Payment\PaymentTypeEnum::PAYPAL->value);
+            $accountId = $dest?->destination_value
                 ?? $wallet->paypal_merchant_id;
         }
 
@@ -349,7 +349,7 @@ class MerchantAccountResolver {
 
         // Filter wallets configured for this provider via WalletDestination
         $providerWallets = $wallets->filter(function (Wallet $wallet) use ($provider) {
-             $paymentType = match ($provider) {
+            $paymentType = match ($provider) {
                 'stripe' => \App\Enums\Payment\PaymentTypeEnum::STRIPE,
                 'paypal' => \App\Enums\Payment\PaymentTypeEnum::PAYPAL,
                 default => null,
@@ -443,7 +443,7 @@ class MerchantAccountResolver {
                 // Retrieve Stripe Account ID from WalletDestinations
                 $destination = $wallet->destinations->firstWhere('payment_type', \App\Enums\Payment\PaymentTypeEnum::STRIPE->value);
                 $accountId = $destination?->destination_value;
-                
+
                 // FALLBACK: Legacy check for User model (to be removed once fully migrated)
                 if (empty($accountId)) {
                     $accountId = $wallet->user?->stripe_account_id ?? $wallet->stripe_account_id;
@@ -478,7 +478,7 @@ class MerchantAccountResolver {
 
                 return ['valid' => false, 'account_id' => $accountId, 'error' => 'charges_disabled'];
             }
-// ... (rest of method)
+            // ... (rest of method)
 
             if ($provider === 'paypal') {
                 // PayPal validation not yet implemented

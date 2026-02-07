@@ -244,9 +244,9 @@ class RebindController extends Controller {
             $availability = $this->availabilityService->checkAvailability($egi, Auth::user());
 
             if (!$availability['can_rebind']) {
-               // ... (existing warning code) ...
-               // (This block is unchanged, just context for placement)
-                 $this->logger->warning('REBIND_PROCESS_NOT_AVAILABLE', [
+                // ... (existing warning code) ...
+                // (This block is unchanged, just context for placement)
+                $this->logger->warning('REBIND_PROCESS_NOT_AVAILABLE', [
                     'user_id' => Auth::id(),
                     'egi_id' => $egi->id,
                     'reason' => $availability['rebind_reason'] ?? 'unknown',
@@ -263,13 +263,13 @@ class RebindController extends Controller {
                     ->route('egis.show', $egi->id)
                     ->withErrors(['error' => __('rebind.errors.not_available')]);
             }
-            
+
             // ... (price check code unchanged) ...
-             $paymentAmountEur = $egi->price ?? 0;
+            $paymentAmountEur = $egi->price ?? 0;
 
             if ($paymentAmountEur <= 0) {
-                 // ... (existing price error code) ...
-                  $this->logger->error('REBIND_INVALID_PRICE', [
+                // ... (existing price error code) ...
+                $this->logger->error('REBIND_INVALID_PRICE', [
                     'user_id' => Auth::id(),
                     'egi_id' => $egi->id,
                     'price' => $paymentAmountEur,
@@ -484,19 +484,19 @@ class RebindController extends Controller {
             // We need to fetch the previous owner User object
             $previousOwner = \App\Models\User::find($previousOwnerId);
             if ($previousOwner && $egi->blockchain) {
-                 // Refresh relation to ensuring buyer is loaded correctly
-                 $egi->blockchain->load('buyer');
-                 
-                 // Create Payload Shipping Record (Persistent Notification Data)
-                 $payload = \App\Models\NotificationPayloadShipping::create([
-                     'egi_blockchain_id' => $egi->blockchain->id,
-                     'seller_id' => $previousOwnerId,
-                     'buyer_id' => $newOwnerId,
-                     'shipping_address_snapshot' => $egi->blockchain->shipping_address_snapshot,
-                     'status' => 'pending'
-                 ]);
-                 
-                 $previousOwner->notify(new EgiSoldNotification($payload));
+                // Refresh relation to ensuring buyer is loaded correctly
+                $egi->blockchain->load('buyer');
+
+                // Create Payload Shipping Record (Persistent Notification Data)
+                $payload = \App\Models\NotificationPayloadShipping::create([
+                    'egi_blockchain_id' => $egi->blockchain->id,
+                    'seller_id' => $previousOwnerId,
+                    'buyer_id' => $newOwnerId,
+                    'shipping_address_snapshot' => $egi->blockchain->shipping_address_snapshot,
+                    'status' => 'pending'
+                ]);
+
+                $previousOwner->notify(new EgiSoldNotification($payload));
             }
 
             // GDPR audit log
@@ -543,7 +543,7 @@ class RebindController extends Controller {
 
             $totalRoyaltyPercentage = 0.0;
             $royaltyDistributions = [];
-            
+
             // Database-Driven Royalties (Source of Truth: Wallets Table)
             // This supports both Contributor and Normal profiles automatically
             $collectionWallets = $egi->collection->wallets;
@@ -556,7 +556,7 @@ class RebindController extends Controller {
 
                 $percentage = (float)$wallet->royalty_rebind;
                 $amount = round($paymentAmountEur * ($percentage / 100), 2);
-                
+
                 if ($amount <= 0) continue;
 
                 $userId = $wallet->user_id;
@@ -564,11 +564,11 @@ class RebindController extends Controller {
                 // Fallback for Reader/Legacy wallets if user_id missing (shouldn't happen on new logic)
                 if (!$userId) {
                     if ($wallet->platform_role === 'Creator') {
-                         $userId = $egi->collection->creator_id;
+                        $userId = $egi->collection->creator_id;
                     } elseif ($wallet->platform_role === 'Natan' || $wallet->platform_role === 'Ass_Frangette') {
-                         $userId = config('egi.default_ids.natan_user_id');
+                        $userId = config('egi.default_ids.natan_user_id');
                     } elseif ($wallet->platform_role === 'EPP') {
-                         $userId = config('egi.default_ids.epp_user_id');
+                        $userId = config('egi.default_ids.epp_user_id');
                     }
                 }
 
@@ -581,20 +581,20 @@ class RebindController extends Controller {
                     'amount' => $amount,
                     'percentage' => $percentage
                 ];
-                
+
                 $totalRoyaltyPercentage += $percentage;
             }
 
             // Deduct total royalties from seller share
             // Ensure seller doesn't go negative (edge case protection)
             $totalRoyaltyAmount = collect($royaltyDistributions)->sum('amount');
-            
+
             if ($totalRoyaltyAmount > 0 && $totalRoyaltyAmount < $paidAmountRecorded) {
                 // Update Seller Distribution
                 $rebindDistribution->amount_eur -= $totalRoyaltyAmount;
                 $rebindDistribution->percentage = 100.0 - $totalRoyaltyPercentage;
                 $rebindDistribution->save();
-                
+
                 // Create Royalty Distributions
                 foreach ($royaltyDistributions as $dist) {
                     PaymentDistribution::create([
@@ -605,7 +605,7 @@ class RebindController extends Controller {
                         'buyer_user_id' => $newOwnerId,
                         'user_id' => $dist['user_id'],
                         'wallet_id' => $dist['wallet_id'],
-                        'user_type' => match($dist['role']) { // Map roles to UserTypeEnum
+                        'user_type' => match ($dist['role']) { // Map roles to UserTypeEnum
                             'Creator' => UserTypeEnum::CREATOR,
                             'EPP' => UserTypeEnum::EPP,
                             'Natan' => UserTypeEnum::NATAN,
@@ -677,7 +677,7 @@ class RebindController extends Controller {
      * @param Egi $egi
      * @param float $amountEur
      * @return array
-    * @throws RuntimeException
+     * @throws RuntimeException
      */
     private function handleEgiliRebindPayment(Egi $egi, float $amountEur): array {
         if (!$egi->payment_by_egili) {

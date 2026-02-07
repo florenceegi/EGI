@@ -39,23 +39,22 @@ class DocumentIndexingService
         ?string $source = null,
         ?string $author = null
     ): Document {
-        return DB::transaction(function () use (
-            $title,
-            $content,
-            $categoryId,
-            $language,
-            $metadata,
-            $tags,
-            $keywords,
-            $source,
-            $author
-        ) {
-            // Create document
-            $document = Document::create([
+        Log::info('[RAG] Starting document indexing', ['title' => $title]);
+
+        // TEMPORARY: Removed DB::transaction to debug blocking issue
+        // Will re-add once the issue is resolved
+        Log::info('[RAG] Creating document record');
+
+        // Clean content for UTF-8
+        $cleanContent = mb_convert_encoding($content, 'UTF-8', 'UTF-8');
+
+        // Create document
+        $document = Document::create([
                 'uuid' => Str::uuid()->toString(),
                 'category_id' => $categoryId,
                 'title' => $title,
-                'content' => $content,
+                'slug' => Str::slug($title),
+                'content' => $cleanContent,
                 'language' => $language,
                 'tags' => $tags,
                 'keywords' => $keywords,
@@ -68,23 +67,28 @@ class DocumentIndexingService
                 'is_indexed' => false,
             ]);
 
+            Log::info('[RAG] Document created', ['id' => $document->id]);
+
             // Create chunks
+            Log::info('[RAG] Creating chunks');
             $chunks = $this->createChunks($document);
+            Log::info('[RAG] Chunks created', ['count' => $chunks->count()]);
 
             // Generate embeddings
+            Log::info('[RAG] Starting embedding generation');
             $this->embeddingService->embedChunks($chunks);
+            Log::info('[RAG] Embeddings generated');
 
             // Mark as indexed
             $document->update(['is_indexed' => true]);
 
-            Log::info('Document indexed', [
-                'document_id' => $document->id,
-                'title' => $title,
-                'chunks_count' => $chunks->count(),
-            ]);
+        Log::info('[RAG] Document indexed successfully', [
+            'document_id' => $document->id,
+            'title' => $title,
+            'chunks_count' => $chunks->count(),
+        ]);
 
-            return $document->fresh();
-        });
+        return $document->fresh();
     }
 
     /**
@@ -143,16 +147,21 @@ class DocumentIndexingService
         // Try to split by sections first (if content has clear structure)
         $sections = $this->extractSections($content);
 
+        Log::info('[RAG] Sections count check', ['count' => count($sections)]);
+
         if (count($sections) > 1) {
             // Process each section separately
+            Log::info('[RAG] Processing multiple sections');
             $chunkOrder = 0;
-            foreach ($sections as $section) {
+            foreach ($sections as $sectionIdx => $section) {
+                Log::info('[RAG] Processing section', ['index' => $sectionIdx]);
                 $sectionChunks = $this->chunkText(
                     $section['content'],
                     $chunkSize,
                     $overlap,
                     $section['title']
                 );
+                Log::info('[RAG] Section chunked', ['chunks' => count($sectionChunks)]);
 
                 foreach ($sectionChunks as $chunkData) {
                     $chunks->push($this->createChunk(
@@ -167,7 +176,10 @@ class DocumentIndexingService
             }
         } else {
             // Single section, chunk normally
+            Log::info('[RAG] Processing single section');
             $textChunks = $this->chunkText($content, $chunkSize, $overlap);
+            Log::info('[RAG] Text chunked', ['chunks' => count($textChunks)]);
+
             foreach ($textChunks as $index => $chunkData) {
                 $chunks->push($this->createChunk(
                     $document,
@@ -187,12 +199,16 @@ class DocumentIndexingService
      */
     private function extractSections(string $content): array
     {
+        Log::info('[RAG] Extracting sections', ['content_length' => strlen($content)]);
+
         // Look for markdown headers (# Title)
         $lines = explode("\n", $content);
+        Log::info('[RAG] Lines count', ['count' => count($lines)]);
+
         $sections = [];
         $currentSection = ['title' => null, 'content' => ''];
 
-        foreach ($lines as $line) {
+        foreach ($lines as $lineNum => $line) {
             if (preg_match('/^#+\s+(.+)$/', $line, $matches)) {
                 // New section found
                 if (!empty($currentSection['content'])) {
@@ -211,6 +227,8 @@ class DocumentIndexingService
         if (!empty($currentSection['content'])) {
             $sections[] = $currentSection;
         }
+
+        Log::info('[RAG] Sections extracted', ['sections_count' => count($sections)]);
 
         return $sections ?: [['title' => null, 'content' => $content]];
     }
@@ -252,7 +270,17 @@ class DocumentIndexingService
                 ];
             }
 
-            $start = $end - $overlapChars;
+            // Ensure we always advance (prevent infinite loop)
+            $newStart = $end - $overlapChars;
+            $minAdvance = max(100, $chunkSizeChars / 4); // Advance at least 25% of chunk size
+            if ($newStart <= $start) {
+                $newStart = $start + $minAdvance;
+            }
+            // If we've reached the end, stop
+            if ($end >= $textLength) {
+                break;
+            }
+            $start = $newStart;
         }
 
         return $chunks;
@@ -301,16 +329,27 @@ class DocumentIndexingService
         int $charEnd,
         ?string $sectionTitle = null
     ): Chunk {
-        return Chunk::create([
+        Log::info('[RAG] Creating chunk', ['order' => $chunkOrder, 'text_length' => strlen($text)]);
+
+        // Clean text for UTF-8
+        $cleanText = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
+        $cleanText = preg_replace('/[\x00-\x1F\x7F-\x9F]/u', '', $cleanText);
+
+        $chunk = Chunk::create([
             'uuid' => Str::uuid()->toString(),
             'document_id' => $document->id,
-            'text' => $text,
+            'text' => $cleanText,
             'section_title' => $sectionTitle,
             'chunk_order' => $chunkOrder,
             'char_start' => $charStart,
             'char_end' => $charEnd,
             'token_count' => $this->estimateTokens($text),
+            'language' => $document->language,
         ]);
+
+        Log::info('[RAG] Chunk created', ['id' => $chunk->id]);
+
+        return $chunk;
     }
 
     /**

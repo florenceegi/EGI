@@ -15,14 +15,13 @@ use App\Enums\Gdpr\GdprActivityCategory;
 
 /**
  * PaymentSettingsController
- * 
+ *
  * Manages user and collection payment method configurations.
  * Adheres to Ultra Standards for logging, error handling, and GDPR compliance.
- * 
+ *
  * @package App\Http\Controllers
  */
-class PaymentSettingsController extends Controller
-{
+class PaymentSettingsController extends Controller {
     /**
      * @var array Available payment methods on the platform
      */
@@ -51,13 +50,13 @@ class PaymentSettingsController extends Controller
         protected ErrorManagerInterface $errorManager,
         protected UltraLogManager $logger,
         protected AuditLogService $auditService
-    ) {}
+    ) {
+    }
 
     /**
      * Display the payment settings page
      */
-    public function index()
-    {
+    public function index() {
         try {
             $user = Auth::user();
 
@@ -91,8 +90,7 @@ class PaymentSettingsController extends Controller
     /**
      * Toggle a payment method on/off
      */
-    public function toggle(Request $request, string $method)
-    {
+    public function toggle(Request $request, string $method) {
         try {
             $user = Auth::user();
 
@@ -123,7 +121,7 @@ class PaymentSettingsController extends Controller
             return response()->json([
                 'success' => true,
                 'is_enabled' => $paymentMethod->is_enabled,
-                'message' => $paymentMethod->is_enabled 
+                'message' => $paymentMethod->is_enabled
                     ? __('payment.method_enabled', ['method' => self::AVAILABLE_METHODS[$method]['name']])
                     : __('payment.method_disabled', ['method' => self::AVAILABLE_METHODS[$method]['name']])
             ]);
@@ -135,8 +133,7 @@ class PaymentSettingsController extends Controller
     /**
      * Set a payment method as default
      */
-    public function setDefault(Request $request, string $method)
-    {
+    public function setDefault(Request $request, string $method) {
         try {
             $user = Auth::user();
 
@@ -174,8 +171,7 @@ class PaymentSettingsController extends Controller
     /**
      * Update bank transfer configuration (IBAN)
      */
-    public function updateBankConfig(Request $request)
-    {
+    public function updateBankConfig(Request $request) {
         try {
             $user = Auth::user();
 
@@ -214,9 +210,9 @@ class PaymentSettingsController extends Controller
                     ]
                 ]
             );
-            
-            // Legacy: also update UserPaymentMethod for backward compatibility if needed, 
-            // but for now we focus on the new architecture. 
+
+            // Legacy: also update UserPaymentMethod for backward compatibility if needed,
+            // but for now we focus on the new architecture.
             // Use the UserPaymentMethod only if strictly required by other legacy parts not yet refactored.
             // ... (Skipping legacy update as per instruction to use WalletDestination)
 
@@ -242,8 +238,7 @@ class PaymentSettingsController extends Controller
     /**
      * Update Stripe configuration (Manual Account ID)
      */
-    public function updateStripeConfig(Request $request)
-    {
+    public function updateStripeConfig(Request $request) {
         try {
             $user = Auth::user();
 
@@ -304,8 +299,7 @@ class PaymentSettingsController extends Controller
     /**
      * Get available payment methods for API
      */
-    public function getAvailable()
-    {
+    public function getAvailable() {
         try {
             $user = Auth::user();
 
@@ -345,8 +339,7 @@ class PaymentSettingsController extends Controller
     /**
      * Display the payment settings modal content.
      */
-    public function modal(): View
-    {
+    public function modal(): View {
         $user = Auth::user();
 
         // 1. Get User Payment Methods (from DB) - Legacy fallback
@@ -354,20 +347,20 @@ class PaymentSettingsController extends Controller
 
         // 2. Load Wallet Destinations (New Source of Truth)
         $wallet = $user->primaryWallet;
-        $destinations = $wallet 
-            ? $wallet->destinations()->get()->keyBy('payment_type') 
+        $destinations = $wallet
+            ? $wallet->destinations()->get()->keyBy('payment_type')
             : collect();
 
         // 3. Resolve Stripe Configuration
         $stripeDest = $destinations->get(\App\Enums\Payment\PaymentTypeEnum::STRIPE->value);
         $stripeAccountId = $stripeDest?->destination_value;
-        
+
         // 4. Resolve Bank Configuration
         $bankDest = $destinations->get(\App\Enums\Payment\PaymentTypeEnum::BANK_TRANSFER->value);
         $bankDetails = [
             // Decrypted value via accessor if accessible, otherwise direct decryption if needed
             // The model accessor is getDecryptedValueAttribute
-            'iban' => $bankDest?->decrypted_value, 
+            'iban' => $bankDest?->decrypted_value,
             'bic' => $bankDest?->metadata['bic'] ?? null,
             'holder' => $bankDest?->metadata['holder'] ?? null,
         ];
@@ -389,8 +382,7 @@ class PaymentSettingsController extends Controller
     /**
      * Display the payment settings page for a specific collection
      */
-    public function indexCollection(Collection $collection)
-    {
+    public function indexCollection(Collection $collection) {
         try {
             $this->authorize('update', $collection);
 
@@ -422,8 +414,7 @@ class PaymentSettingsController extends Controller
     /**
      * Toggle a payment method for a collection
      */
-    public function toggleCollection(Request $request, Collection $collection, string $method)
-    {
+    public function toggleCollection(Request $request, Collection $collection, string $method) {
         try {
             $this->authorize('update', $collection);
 
@@ -449,7 +440,7 @@ class PaymentSettingsController extends Controller
             return response()->json([
                 'success' => true,
                 'is_enabled' => $paymentMethod->is_enabled,
-                'message' => $paymentMethod->is_enabled 
+                'message' => $paymentMethod->is_enabled
                     ? __('payment.collection_method_enabled', ['method' => self::AVAILABLE_METHODS[$method]['name']])
                     : __('payment.collection_method_disabled', ['method' => self::AVAILABLE_METHODS[$method]['name']])
             ]);
@@ -461,8 +452,7 @@ class PaymentSettingsController extends Controller
     /**
      * Set a payment method as default for a collection
      */
-    public function setDefaultCollection(Request $request, Collection $collection, string $method)
-    {
+    public function setDefaultCollection(Request $request, Collection $collection, string $method) {
         try {
             $this->authorize('update', $collection);
 
@@ -493,8 +483,7 @@ class PaymentSettingsController extends Controller
     /**
      * Update bank transfer configuration for a collection
      */
-    public function updateBankConfigCollection(Request $request, Collection $collection)
-    {
+    public function updateBankConfigCollection(Request $request, Collection $collection) {
         try {
             $this->authorize('update', $collection);
 
@@ -532,7 +521,7 @@ class PaymentSettingsController extends Controller
             );
 
             $this->logger->info('[Payment][Collection] Bank details updated', [
-                'collection_id' => $collection->id, 
+                'collection_id' => $collection->id,
                 'user_id' => Auth::id()
             ]);
 
@@ -552,10 +541,9 @@ class PaymentSettingsController extends Controller
     /**
      * Helper to log actions efficiently
      */
-    private function logAction($user, $action, $data)
-    {
+    private function logAction($user, $action, $data) {
         $this->logger->info("[Payment] {$action}", array_merge(['user_id' => $user->id], $data));
-        
+
         $this->auditService->logUserAction(
             $user,
             $action,
@@ -567,8 +555,7 @@ class PaymentSettingsController extends Controller
     /**
      * Helper to log collection actions efficiently
      */
-    private function logCollectionAction($collection, $action, $data)
-    {
+    private function logCollectionAction($collection, $action, $data) {
         $user = Auth::user();
         $this->logger->info("[Payment][Collection] {$action}", array_merge([
             'user_id' => $user->id,
@@ -586,8 +573,7 @@ class PaymentSettingsController extends Controller
     /**
      * Helper to handle JSON errors consistently
      */
-    private function jsonError(string $code, \Exception $e)
-    {
+    private function jsonError(string $code, \Exception $e) {
         // Log the full error safely
         $this->errorManager->handle($code, [
             'user_id' => Auth::id() ?? 'guest',
@@ -597,7 +583,7 @@ class PaymentSettingsController extends Controller
         // Return user-friendly JSON (masking internal error if production, though check app config if needed)
         // For simple controllers, message is enough. Exception code 403/400 used if thrown explicitly.
         $status = $e->getCode() && is_int($e->getCode()) && $e->getCode() >= 400 ? $e->getCode() : 500;
-        
+
         return response()->json([
             'success' => false,
             'message' => $e->getMessage() ?: __('payment.generic_error')

@@ -9,8 +9,7 @@ use App\Services\Payment\MerchantAccountResolver;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-class EgiListingService
-{
+class EgiListingService {
     public function __construct(
         private readonly MerchantAccountResolver $merchantAccountResolver
     ) {
@@ -21,8 +20,7 @@ class EgiListingService
      * @param Egi $egi
      * @return bool
      */
-    public function shippingRequiredForEgi(Egi $egi): bool
-    {
+    public function shippingRequiredForEgi(Egi $egi): bool {
         // 1. Explicitly physical
         if ($egi->is_physical) {
             return true;
@@ -43,8 +41,7 @@ class EgiListingService
      * @return bool
      * @throws ValidationException
      */
-    public function validateSellable(Egi $egi): bool
-    {
+    public function validateSellable(Egi $egi): bool {
         $egi->loadMissing(['collection', 'owner']);
 
         // 1. Collection must be commercial enabled
@@ -54,15 +51,15 @@ class EgiListingService
 
         // 2. Delivery Policy Enforcement
         $policy = $egi->collection->delivery_policy;
-        
+
         if ($policy === DeliveryPolicyEnum::DIGITAL_ONLY && $egi->is_physical) {
-              throw ValidationException::withMessages(['is_physical' => __('commerce.listing.errors.policy_digital_only')]);
+            throw ValidationException::withMessages(['is_physical' => __('commerce.listing.errors.policy_digital_only')]);
         }
 
         if ($policy === DeliveryPolicyEnum::PHYSICAL_REQUIRED && !$egi->is_physical) {
-             // Exception: If utility provides physical aspect, it might be allowed?
-             // Spec says: "se collection.delivery_policy == PHYSICAL_REQUIRED e egi.is_physical == false -> blocca"
-               throw ValidationException::withMessages(['is_physical' => __('commerce.listing.errors.policy_physical_required')]);
+            // Exception: If utility provides physical aspect, it might be allowed?
+            // Spec says: "se collection.delivery_policy == PHYSICAL_REQUIRED e egi.is_physical == false -> blocca"
+            throw ValidationException::withMessages(['is_physical' => __('commerce.listing.errors.policy_physical_required')]);
         }
 
         // 3. Shipping Profile Completeness
@@ -76,7 +73,7 @@ class EgiListingService
         // 4. Sale Mode Check
         if ($egi->sale_mode === 'not_for_sale' && $egi->is_sellable) {
             // If marked sellable, it must have a valid mode
-             throw ValidationException::withMessages(['sale_mode' => __('commerce.listing.errors.sale_mode_invalid')]);
+            throw ValidationException::withMessages(['sale_mode' => __('commerce.listing.errors.sale_mode_invalid')]);
         }
 
         // 5. Seller PSP must be configured (secondary market)
@@ -104,8 +101,7 @@ class EgiListingService
      * @param array $data
      * @return Egi
      */
-    public function updateListing(Egi $egi, array $data): Egi
-    {
+    public function updateListing(Egi $egi, array $data): Egi {
         // Custom validation for Shipping Profile structure
         $shippingRules = [];
         if (($data['is_physical'] ?? false) || ($egi->utility && $egi->utility->requires_fulfillment)) {
