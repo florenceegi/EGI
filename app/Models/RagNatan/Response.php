@@ -80,7 +80,7 @@ class Response extends Model
         'served_from_cache_at' => 'datetime',
     ];
 
-    public function query(): BelongsTo
+    public function queryRecord(): BelongsTo
     {
         return $this->belongsTo(Query::class, 'query_id');
     }

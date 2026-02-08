@@ -105,19 +105,39 @@ class QueryService
                 $options
             );
 
+            // Create query record first (required for response.query_id foreign key)
+            $questionHash = $this->cacheService->generateQuestionHash($question);
+
+            $queryRecord = Query::create([
+                'uuid' => Str::uuid()->toString(),
+                'user_id' => $user?->id,
+                'question' => $question,
+                'question_hash' => $questionHash,
+                'language' => $language,
+                'context' => $context ?? [],
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'session_id' => session()->getId(),
+            ]);
+
+            // Extract source IDs from sources array
+            $sourcesUsed = isset($responseData['sources']) && is_array($responseData['sources'])
+                ? array_column($responseData['sources'], 'chunk_id')
+                : [];
+
             // Create response record
             $response = Response::create([
                 'uuid' => Str::uuid()->toString(),
-                'query_id' => null, // Will be set after query creation
+                'query_id' => $queryRecord->id,
                 'answer' => $responseData['answer'],
                 'answer_html' => $responseData['answer_html'] ?? null,
-                'urs_score' => $responseData['urs_score'] ?? null,
+                'urs_score' => $responseData['urs_score'] ?? 0,
                 'urs_explanation' => $responseData['urs_explanation'] ?? null,
                 'claims_used' => $responseData['claims_used'] ?? [],
                 'gaps_detected' => $responseData['gaps_detected'] ?? [],
                 'hallucinations' => $responseData['hallucinations'] ?? [],
-                'sources_used' => $responseData['sources_used'] ?? [],
-                'processing_time_ms' => $responseData['processing_time_ms'],
+                'sources_used' => $sourcesUsed,
+                'processing_time_ms' => $responseData['processing_time_ms'] ?? 0,
                 'tokens_input' => $responseData['tokens_input'] ?? null,
                 'tokens_output' => $responseData['tokens_output'] ?? null,
                 'cost_usd' => $responseData['cost_usd'] ?? null,
@@ -127,15 +147,21 @@ class QueryService
             ]);
 
             $this->logger->info('rag.query.response_created', [
+                'query_id' => $queryRecord->id,
                 'response_id' => $response->id,
                 'urs_score' => $response->urs_score
             ]);
 
-            // Log query
-            $query = $this->logQuery($question, $user, $language, $context, $response);
-
-            // Update response with query_id
-            $response->update(['query_id' => $query->id]);
+            // Update query with response-derived fields
+            $queryRecord->update([
+                'response_id' => $response->id,
+                'urs_score' => $response->urs_score,
+                'answer_length' => strlen($response->answer),
+                'chunks_used' => $response->sources()->count(),
+                'response_time_ms' => $response->processing_time_ms,
+                'responded_at' => now(),
+            ]);
+            $query = $queryRecord;
 
             // Store sources
             if (isset($responseData['sources'])) {

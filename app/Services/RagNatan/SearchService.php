@@ -111,18 +111,37 @@ class SearchService
         string $language = 'italian',
         int $limit = 20
     ): Collection {
+        $pgLanguage = $this->mapLanguageToPostgres($language);
+
         return Chunk::whereRaw(
             "to_tsvector(?, text) @@ plainto_tsquery(?, ?)",
-            [$language, $language, $searchTerm]
+            [$pgLanguage, $pgLanguage, $searchTerm]
         )
             ->selectRaw(
                 "*, ts_rank(to_tsvector(?, text), plainto_tsquery(?, ?)) as rank",
-                [$language, $language, $searchTerm]
+                [$pgLanguage, $pgLanguage, $searchTerm]
             )
             ->with(['document', 'embedding'])
             ->orderByDesc('rank')
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * Map ISO language codes to PostgreSQL text search configurations.
+     */
+    private function mapLanguageToPostgres(string $language): string
+    {
+        $mapping = [
+            'it' => 'italian',
+            'en' => 'english',
+            'de' => 'german',
+            'es' => 'spanish',
+            'fr' => 'french',
+            'pt' => 'portuguese',
+        ];
+
+        return $mapping[$language] ?? 'simple';
     }
 
     /**

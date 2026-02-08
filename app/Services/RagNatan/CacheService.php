@@ -83,7 +83,7 @@ class CacheService
         string $language,
         Response $response,
         ?array $context = null,
-        int $ttlHours = null
+        ?int $ttlHours = null
     ): QueryCache {
         $cacheKey = $this->generateCacheKey($question, $language, $context);
         $questionHash = $this->generateQuestionHash($question);
@@ -164,7 +164,7 @@ class CacheService
     /**
      * Mark old cache entries as stale.
      */
-    public function markStale(int $days = null): int
+    public function markStale(?int $days = null): int
     {
         $days = $days ?? self::STALE_THRESHOLD_DAYS;
         $threshold = now()->subDays($days);

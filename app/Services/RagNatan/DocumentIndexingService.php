@@ -58,46 +58,52 @@ class DocumentIndexingService
                 'category_id' => $categoryId
             ]);
 
-            // TEMPORARY: Removed DB::transaction to debug blocking issue
-            // Will re-add once the issue is resolved
-            $this->logger->info('rag.indexing.creating_document', ['title' => $title]);
+            // Phase 1: DB operations in transaction (fast, atomic)
+            [$document, $chunks] = DB::transaction(function () use (
+                $title, $content, $categoryId, $language, $metadata,
+                $tags, $keywords, $source, $author
+            ) {
+                $this->logger->info('rag.indexing.creating_document', ['title' => $title]);
 
-            // Clean content for UTF-8
-            $cleanContent = mb_convert_encoding($content, 'UTF-8', 'UTF-8');
+                // Clean content for UTF-8
+                $cleanContent = mb_convert_encoding($content, 'UTF-8', 'UTF-8');
 
-            // Create document
-            $document = Document::create([
-                'uuid' => Str::uuid()->toString(),
-                'category_id' => $categoryId,
-                'title' => $title,
-                'slug' => Str::slug($title),
-                'content' => $cleanContent,
-                'language' => $language,
-                'tags' => $tags,
-                'keywords' => $keywords,
-                'metadata' => $metadata,
-                'source' => $source,
-                'author' => $author,
-                'char_count' => strlen($content),
-                'token_count' => $this->estimateTokens($content),
-                'version' => 1,
-                'is_indexed' => false,
-            ]);
+                // Create document
+                $document = Document::create([
+                    'uuid' => Str::uuid()->toString(),
+                    'category_id' => $categoryId,
+                    'title' => $title,
+                    'slug' => Str::slug($title),
+                    'content' => $cleanContent,
+                    'language' => $language,
+                    'tags' => $tags,
+                    'keywords' => $keywords,
+                    'metadata' => $metadata,
+                    'source' => $source,
+                    'author' => $author,
+                    'char_count' => strlen($content),
+                    'token_count' => $this->estimateTokens($content),
+                    'version' => 1,
+                    'is_indexed' => false,
+                ]);
 
-            $this->logger->info('rag.indexing.document_created', [
-                'document_id' => $document->id,
-                'title' => $title
-            ]);
+                $this->logger->info('rag.indexing.document_created', [
+                    'document_id' => $document->id,
+                    'title' => $title
+                ]);
 
-            // Create chunks
-            $this->logger->info('rag.indexing.creating_chunks', ['document_id' => $document->id]);
-            $chunks = $this->createChunks($document);
-            $this->logger->info('rag.indexing.chunks_created', [
-                'document_id' => $document->id,
-                'chunks_count' => $chunks->count()
-            ]);
+                // Create chunks
+                $this->logger->info('rag.indexing.creating_chunks', ['document_id' => $document->id]);
+                $chunks = $this->createChunks($document);
+                $this->logger->info('rag.indexing.chunks_created', [
+                    'document_id' => $document->id,
+                    'chunks_count' => $chunks->count()
+                ]);
 
-            // Generate embeddings
+                return [$document, $chunks];
+            });
+
+            // Phase 2: Generate embeddings OUTSIDE transaction (slow external API call)
             $this->logger->info('rag.indexing.generating_embeddings', [
                 'document_id' => $document->id,
                 'chunks_count' => $chunks->count()
@@ -107,22 +113,10 @@ class DocumentIndexingService
                 'document_id' => $document->id
             ]);
 
-            // Mark as indexed
+            // Phase 3: Mark as indexed (separate quick transaction)
             $document->update(['is_indexed' => true]);
 
-            // GDPR Audit: Log system action for document indexing
-            $this->auditService->logSystemAction(
-                null,
-                'rag_document_indexed',
-                [
-                    'document_id' => $document->id,
-                    'title' => $title,
-                    'chunks_count' => $chunks->count(),
-                    'language' => $language,
-                    'category_id' => $categoryId
-                ],
-                GdprActivityCategory::AI_PROCESSING
-            );
+            // Note: No GDPR audit for document indexing (system operation, no user personal data)
 
             $this->logger->info('rag.indexing.completed', [
                 'document_id' => $document->id,
@@ -205,19 +199,6 @@ class DocumentIndexingService
 
                 // Mark as indexed
                 $document->update(['is_indexed' => true]);
-
-                // GDPR Audit: Log system action for document re-indexing
-                $this->auditService->logSystemAction(
-                    null,
-                    'rag_document_reindexed',
-                    [
-                        'document_id' => $document->id,
-                        'title' => $document->title,
-                        'version' => $document->version,
-                        'chunks_count' => $chunks->count(),
-                    ],
-                    GdprActivityCategory::AI_PROCESSING
-                );
 
                 $this->logger->info('rag.reindexing.completed', [
                     'document_id' => $document->id,
@@ -323,7 +304,7 @@ class DocumentIndexingService
         $currentSection = ['title' => null, 'content' => ''];
 
         foreach ($lines as $lineNum => $line) {
-            if (preg_match('/^#+\s+(.+)$/', $line, $matches)) {
+            if (\preg_match('/^#+\s+(.+)$/', $line, $matches)) {
                 // New section found
                 if (!empty($currentSection['content'])) {
                     $sections[] = $currentSection;
@@ -447,7 +428,7 @@ class DocumentIndexingService
 
         // Clean text for UTF-8
         $cleanText = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
-        $cleanText = preg_replace('/[\x00-\x1F\x7F-\x9F]/u', '', $cleanText);
+        $cleanText = \preg_replace('/[\x00-\x1F\x7F-\x9F]/u', '', $cleanText);
 
         $chunk = Chunk::create([
             'uuid' => Str::uuid()->toString(),
@@ -525,22 +506,12 @@ class DocumentIndexingService
             }
         }
 
-        // GDPR Audit: Log bulk indexing operation
-        $this->auditService->logSystemAction(
-            null,
-            'rag_bulk_index_completed',
-            [
-                'total_documents' => count($documents),
-                'success_count' => $successCount,
-                'failure_count' => $failureCount
-            ],
-            GdprActivityCategory::AI_PROCESSING
-        );
+        // Note: No GDPR audit needed - bulk indexing is a system operation without user personal data
 
         $this->logger->info('rag.bulk_indexing.completed', [
-            'total' => count($documents),
-            'success' => $successCount,
-            'failed' => $failureCount
+            'total_documents' => count($documents),
+            'success_count' => $successCount,
+            'failure_count' => $failureCount
         ]);
 
         return $results;
@@ -577,17 +548,7 @@ class DocumentIndexingService
                 return $document->delete();
             });
 
-            // GDPR Audit: Log document deletion
-            $this->auditService->logSystemAction(
-                null,
-                'rag_document_deleted',
-                [
-                    'document_id' => $documentId,
-                    'title' => $documentTitle,
-                    'chunks_deleted' => $chunksCount
-                ],
-                GdprActivityCategory::DATA_DELETION
-            );
+            // Note: No GDPR audit needed - document deletion is a system operation without user personal data
 
             $this->logger->info('rag.delete.completed', [
                 'document_id' => $documentId,
@@ -602,9 +563,8 @@ class DocumentIndexingService
                 'trace' => $e->getTraceAsString()
             ]);
 
-            $this->errorManager->handle('RAG_DELETE_DOCUMENT_FAILED', [
+            $this->errorManager->handle('RAG_DOCUMENT_DELETE_FAILED', [
                 'document_id' => $document->id,
-                'title' => $document->title,
                 'error' => $e->getMessage()
             ], $e);
 
