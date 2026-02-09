@@ -61,8 +61,8 @@ return [
             'description' => 'Racconta chi sei e cosa crei',
         ],
         'company_about' => [
-            'title' => 'Scrivi la tua bio',
-            'description' => 'Racconta chi sei e cosa crei',
+            'title' => 'Completa il "Chi siamo"',
+            'description' => 'Racconta la tua azienda e cosa fate',
         ],
         'stripe' => [
             'title' => 'Configura i pagamenti',
