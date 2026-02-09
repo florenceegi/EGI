@@ -735,7 +735,9 @@ PROMPT;
         }
 
         // Get view configuration
-        $viewConfig = config("ai_view_contexts.views.{$viewId}");
+        // Note: Cannot use config("ai_view_contexts.views.{$viewId}") because $viewId contains dots
+        // Laravel interprets dots as nesting levels, so 'company.portfolio' becomes company->portfolio
+        $viewConfig = config('ai_view_contexts')['views'][$viewId] ?? null;
 
         if (!$viewConfig) {
             $this->logger->warning('[ArtAdvisorService] View context not found', [
