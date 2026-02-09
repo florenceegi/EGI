@@ -22,6 +22,12 @@ return new class extends Migration
         // Set search_path to rag_natan schema
         DB::statement('SET search_path TO rag_natan, core, public');
 
+        // Skip if table already exists (for idempotent migrations)
+        if (Schema::hasTable('query_cache')) {
+            DB::statement('SET search_path TO core, public');
+            return;
+        }
+
         Schema::create('query_cache', function (Blueprint $table) {
             $table->id();
 
