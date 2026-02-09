@@ -5,7 +5,7 @@
     @push('head')
         {{-- Page Context for AI Sidebar --}}
         <script>
-            window.currentView = 'company.dashboard';
+            window.currentView = 'company.portfolio';
         </script>
 
         <style>

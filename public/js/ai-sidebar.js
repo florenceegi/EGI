@@ -298,7 +298,7 @@
     function inferViewFromPath(pathname, archetype) {
         // Company routes
         if (pathname.match(/^\/company\/\d+$/) || pathname.match(/^\/company\/[\w-]+$/)) {
-            return "company.dashboard";
+            return "company.portfolio";
         }
         if (pathname.match(/^\/company\/\d+\/collections/) || pathname.match(/^\/company\/[\w-]+\/collections/)) {
             return "company.collections";
@@ -313,7 +313,7 @@
         // Creator routes
         if (pathname === "/creator/dashboard" || pathname === "/dashboard") {
             if (archetype === "creator") return "creator.dashboard";
-            if (archetype === "company") return "company.dashboard";
+            if (archetype === "company") return "company.portfolio";
             if (archetype === "collector") return "collector.dashboard";
         }
 

@@ -9,6 +9,143 @@
  */
 
 return [
+    // === CATEGORIES ===
+    'categories' => [
+        // TIER 1 - CRITICAL
+        'getting_started' => [
+            'name' => 'Guia Rápido',
+            'description' => 'Primeiros passos na plataforma FlorenceEGI'
+        ],
+        'security' => [
+            'name' => 'Segurança e Conta',
+            'description' => 'Gestão de conta, palavras-passe, autenticação e segurança'
+        ],
+        'privacy_gdpr' => [
+            'name' => 'Privacidade e RGPD',
+            'description' => 'Proteção de dados pessoais, consentimentos e direitos RGPD'
+        ],
+        'troubleshooting' => [
+            'name' => 'Resolução de Problemas',
+            'description' => 'FAQ e soluções para problemas comuns'
+        ],
+        'support' => [
+            'name' => 'Ajuda e Suporte',
+            'description' => 'Como contactar o suporte e obter assistência'
+        ],
+
+        // CORE FUNCTIONAL
+        'platform' => [
+            'name' => 'Plataforma',
+            'description' => 'Fundamentos, visão e arquitetura da plataforma FlorenceEGI'
+        ],
+        'architecture' => [
+            'name' => 'Arquitetura Técnica',
+            'description' => 'Arquitetura técnica, stack tecnológico e padrões de design'
+        ],
+        'payments' => [
+            'name' => 'Pagamentos',
+            'description' => 'Sistema de pagamentos, Stripe, métodos de pagamento e transações'
+        ],
+        'billing' => [
+            'name' => 'Faturação',
+            'description' => 'Faturas, recibos e documentação fiscal'
+        ],
+        'royalty' => [
+            'name' => 'Royalties',
+            'description' => 'Sistema de royalties, cálculo e distribuição automática'
+        ],
+        'fiscal' => [
+            'name' => 'Fiscalidade',
+            'description' => 'Gestão fiscal, impostos e conformidade fiscal'
+        ],
+        'blockchain' => [
+            'name' => 'Blockchain',
+            'description' => 'Tecnologia blockchain, NFTs e certificação de obras'
+        ],
+        'wallet' => [
+            'name' => 'Carteira e Cripto',
+            'description' => 'Gestão de carteira, criptomoedas e transações blockchain'
+        ],
+        'rebind' => [
+            'name' => 'Mercado Secundário',
+            'description' => 'Rebind, revenda de obras e mercado secundário'
+        ],
+        'collections' => [
+            'name' => 'Coleções',
+            'description' => 'Gestão de coleções, carregamento e organização de obras'
+        ],
+
+        // TIER 2 - IMPORTANT
+        'media_management' => [
+            'name' => 'Gestão de Média',
+            'description' => 'Carregamento, otimização e gestão de imagens e vídeos'
+        ],
+        'verification_kyc' => [
+            'name' => 'Verificação e KYC',
+            'description' => 'Processo de verificação de identidade e KYC'
+        ],
+        'search_discovery' => [
+            'name' => 'Pesquisa e Descoberta',
+            'description' => 'Pesquisa de obras, filtros e algoritmos de descoberta'
+        ],
+        'quality_standards' => [
+            'name' => 'Padrões de Qualidade',
+            'description' => 'Diretrizes de qualidade para obras e conteúdos'
+        ],
+        'legal_compliance' => [
+            'name' => 'Legal e Conformidade',
+            'description' => 'Aspetos legais, termos de serviço e conformidade regulamentar'
+        ],
+        'refunds_disputes' => [
+            'name' => 'Reembolsos e Disputas',
+            'description' => 'Gestão de reembolsos, reclamações e disputas'
+        ],
+
+        // TIER 3 - NICE-TO-HAVE
+        'export_import' => [
+            'name' => 'Exportar/Importar Dados',
+            'description' => 'Exportação e importação de dados pessoais'
+        ],
+        'social_features' => [
+            'name' => 'Funcionalidades Sociais',
+            'description' => 'Perfis, seguidores, interações sociais'
+        ],
+        'promotions' => [
+            'name' => 'Promoções e Marketing',
+            'description' => 'Ferramentas promocionais, cupões e marketing'
+        ],
+        'mobile_app' => [
+            'name' => 'App Móvel',
+            'description' => 'Aplicação móvel e funcionalidades'
+        ],
+        'api_advanced' => [
+            'name' => 'API e Funcionalidades Avançadas',
+            'description' => 'APIs para programadores e funcionalidades avançadas'
+        ],
+        'accessibility' => [
+            'name' => 'Acessibilidade',
+            'description' => 'Funcionalidades de acessibilidade para utilizadores com deficiências'
+        ],
+
+        // SPECIALIZED
+        'ai_natan' => [
+            'name' => 'IA e NATAN',
+            'description' => 'Sistema IA NATAN, assistente virtual e funcionalidades inteligentes'
+        ],
+        'oracode' => [
+            'name' => 'Oracode OS3.0',
+            'description' => 'Framework Oracode, padrões e standards de desenvolvimento'
+        ],
+        'development' => [
+            'name' => 'Desenvolvimento e Programadores',
+            'description' => 'Documentação técnica para programadores'
+        ],
+        'glossary' => [
+            'name' => 'Glossário',
+            'description' => 'Terminologia, definições e glossário técnico'
+        ],
+    ],
+
     // === DOCUMENT INDEXING ===
     'indexing.started' => 'Iniciando indexação de documento',
     'indexing.creating_document' => 'Criando registro de documento',

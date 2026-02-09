@@ -23,12 +23,12 @@ return [
         |--------------------------------------------------------------------------
         */
 
-        'company.dashboard' => [
-            'translation_key' => 'ai_contexts.company.dashboard',
+        'company.portfolio' => [
+            'translation_key' => 'ai_contexts.company.portfolio',
             'archetype' => 'company',
-            'controller' => 'App\Http\Controllers\Company\CompanyController',
-            'route_name' => 'company.home',
-            'rag_boost_terms' => 'company collections commerce analytics products tokenization dashboard overview',
+            'controller' => 'App\Http\Controllers\CompanyHomeController',
+            'route_name' => 'company.portfolio',
+            'rag_boost_terms' => 'company portfolio collections EGI created owned stats reservations',
             'priority' => 'high',
             'languages' => ['it', 'en', 'de', 'es', 'fr', 'pt'],
         ],

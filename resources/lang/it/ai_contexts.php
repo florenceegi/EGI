@@ -27,8 +27,8 @@ return [
     */
 
     'company' => [
-        'dashboard' => [
-            'title' => 'Company Home - Portfolio Aziendale',
+        'portfolio' => [
+            'title' => 'Company Portfolio - EGI Created & Owned',
             'description' => 'Pagina home della Company che mostra il portfolio di EGI creati e posseduti, con accesso a gestione collections, about aziendale e impact ambientale.',
 
             /*
