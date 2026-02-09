@@ -1,0 +1,87 @@
+<?php
+
+return [
+    /*
+    |--------------------------------------------------------------------------
+    | AI View Contexts Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Maps each view identifier to its translation key and metadata.
+    | The context is injected into AI prompts to provide accurate,
+    | view-specific guidance based on actual codebase analysis.
+    |
+    | @see resources/lang/{locale}/ai_contexts.php for translated content
+    | @author FlorenceEGI Dev Team
+    | @version 1.0.0
+    | @date 2026-02-09
+    */
+
+    'views' => [
+        /*
+        |--------------------------------------------------------------------------
+        | Company Views
+        |--------------------------------------------------------------------------
+        */
+
+        'company.dashboard' => [
+            'translation_key' => 'ai_contexts.company.dashboard',
+            'archetype' => 'company',
+            'controller' => 'App\Http\Controllers\Company\CompanyController',
+            'route_name' => 'company.home',
+            'rag_boost_terms' => 'company collections commerce analytics products tokenization dashboard overview',
+            'priority' => 'high',
+            'languages' => ['it', 'en', 'de', 'es', 'fr', 'pt'],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Future Views (Template)
+        |--------------------------------------------------------------------------
+        |
+        | Add more views following the same structure:
+        |
+        | 'creator.dashboard' => [...],
+        | 'collector.marketplace' => [...],
+        | 'epp.projects.index' => [...],
+        | etc.
+        */
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Context Injection Settings
+    |--------------------------------------------------------------------------
+    */
+
+    'injection' => [
+        // Enable/disable view context injection
+        'enabled' => env('AI_VIEW_CONTEXT_ENABLED', true),
+
+        // Use generic prompt if view context not found
+        'fallback_on_missing' => true,
+
+        // Cache translated contexts for performance
+        'cache_enabled' => env('AI_VIEW_CONTEXT_CACHE', true),
+        'cache_ttl' => 3600, // 1 hour
+
+        // Log when view context is used (for debugging)
+        'log_usage' => env('AI_VIEW_CONTEXT_LOG', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Context Format Settings
+    |--------------------------------------------------------------------------
+    */
+
+    'format' => [
+        // Include route names in context
+        'include_routes' => true,
+
+        // Include controller info in context (for debugging)
+        'include_controller_info' => env('APP_DEBUG', false),
+
+        // Maximum context length (characters) to prevent token overflow
+        'max_length' => 4000,
+    ],
+];

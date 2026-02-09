@@ -3,6 +3,11 @@
 <x-guest-layout :title="$company->name . ' - Portfolio'" :metaDescription="__('company.home.meta_description', ['name' => $company->name])">
 
     @push('head')
+        {{-- Page Context for AI Sidebar --}}
+        <script>
+            window.currentView = 'company.dashboard';
+        </script>
+
         <style>
             /* Company Corporate Palette */
             :root {

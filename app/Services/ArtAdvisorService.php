@@ -88,6 +88,22 @@ class ArtAdvisorService {
                 }
             }
 
+            // View Context Injection for Platform Assistant (NEW)
+            if ($expertId === 'platform' && !empty($context['page_context'])) {
+                $viewContextData = $this->getViewContext(
+                    $context['page_context']['view'] ?? null,
+                    $context['page_context']['lang'] ?? 'it'
+                );
+                if ($viewContextData) {
+                    $context['view_context'] = $viewContextData;
+                    $this->logger->info('[ArtAdvisorService] View context injected', [
+                        'view' => $context['page_context']['view'],
+                        'lang' => $context['page_context']['lang'] ?? 'it',
+                        'context_length' => strlen($viewContextData),
+                    ]);
+                }
+            }
+
             // Build system prompt based on expert
             $systemPrompt = $this->buildExpertPrompt($expertId, $context);
 
@@ -168,7 +184,10 @@ class ArtAdvisorService {
     private function buildExpertPrompt(string $expertId, array $context): string {
         $basePrompt = match ($expertId) {
             'creative' => $this->buildCreativeAdvisorPrompt(),
-            'platform' => $this->buildPlatformAssistantPrompt($context['rag_knowledge'] ?? null),
+            'platform' => $this->buildPlatformAssistantPrompt(
+                $context['rag_knowledge'] ?? null,
+                $context['view_context'] ?? null
+            ),
             default => $this->buildCreativeAdvisorPrompt(),
         };
 
@@ -354,8 +373,9 @@ PROMPT;
      * Build Platform Assistant prompt (Help & Guide)
      *
      * @param array|null $ragKnowledge RAG knowledge retrieval results (optional)
+     * @param string|null $viewContext View-specific context from translations (optional)
      */
-    private function buildPlatformAssistantPrompt(?array $ragKnowledge = null): string {
+    private function buildPlatformAssistantPrompt(?array $ragKnowledge = null, ?string $viewContext = null): string {
         // Get base knowledge sections (static)
         $knowledgeBase = PlatformKnowledgeSection::getFormattedForAI(null, 'it');
 
@@ -365,10 +385,17 @@ PROMPT;
             $knowledgeBase .= "\n\n" . $ragKnowledge['formatted'];
         }
 
-        // Knowledge availability warning
-        $knowledgeStatus = $hasRagKnowledge
-            ? "✅ KNOWLEDGE BASE AVAILABLE - Use ONLY this documentation to answer."
-            : "⚠️ NO RELEVANT DOCUMENTATION FOUND - Admit you don't have information.";
+        // Prepare view context section (100% accurate, from codebase analysis)
+        $hasViewContext = !empty($viewContext);
+        $viewContextSection = $hasViewContext ? $viewContext : '';
+
+        // Knowledge availability status
+        $knowledgeStatus = match (true) {
+            $hasViewContext && $hasRagKnowledge => "✅ VIEW CONTEXT (100% accurate) + RAG KNOWLEDGE AVAILABLE",
+            $hasViewContext && !$hasRagKnowledge => "✅ VIEW CONTEXT AVAILABLE (no RAG results) - Use view context primarily",
+            !$hasViewContext && $hasRagKnowledge => "✅ RAG KNOWLEDGE AVAILABLE (no view context) - Use RAG docs",
+            default => "⚠️ NO CONTEXT - Admit you don't have specific information",
+        };
 
         return <<<PROMPT
 # IDENTITY & ROLE
@@ -395,11 +422,15 @@ Help users accomplish their goals on FlorenceEGI by:
 4. Suggesting best practices **from official documentation**
 5. Answering "how to" questions **with exact references to sources**
 
+# 📍 CURRENT PAGE CONTEXT (100% Accurate - Codebase Analysis)
+
+{$viewContextSection}
+
 # KNOWLEDGE BASE STATUS
 
 {$knowledgeStatus}
 
-## Available Documentation:
+## General Platform Documentation (RAG):
 
 {$knowledgeBase}
 
@@ -680,6 +711,158 @@ PROMPT;
         }
 
         return $contextPrompt;
+    }
+
+    /**
+     * Get view-specific context from translation files
+     *
+     * Retrieves detailed, codebase-analyzed context for a specific view.
+     * Context is 100% accurate as it's generated from controller/view analysis.
+     *
+     * @param string|null $viewId View identifier (e.g., 'company.dashboard')
+     * @param string $lang Language code (default: 'it')
+     * @return string|null Formatted view context or null if not found
+     */
+    private function getViewContext(?string $viewId, string $lang = 'it'): ?string
+    {
+        if (empty($viewId)) {
+            return null;
+        }
+
+        // Check if view context injection is enabled
+        if (!config('ai_view_contexts.injection.enabled', true)) {
+            return null;
+        }
+
+        // Get view configuration
+        $viewConfig = config("ai_view_contexts.views.{$viewId}");
+
+        if (!$viewConfig) {
+            $this->logger->warning('[ArtAdvisorService] View context not found', [
+                'view_id' => $viewId,
+            ]);
+
+            return config('ai_view_contexts.injection.fallback_on_missing', true)
+                ? null  // Use generic prompt
+                : "# VIEW CONTEXT\n\nNo specific context available for view: {$viewId}";
+        }
+
+        // Get translation key
+        $translationKey = $viewConfig['translation_key'];
+
+        // Retrieve translated context
+        $context = trans($translationKey, [], $lang);
+
+        if (!is_array($context) || empty($context)) {
+            $this->logger->warning('[ArtAdvisorService] View context translation missing', [
+                'view_id' => $viewId,
+                'translation_key' => $translationKey,
+                'lang' => $lang,
+            ]);
+            return null;
+        }
+
+        // Format context as structured markdown
+        return $this->formatViewContext($context, $viewConfig);
+    }
+
+    /**
+     * Format view context as structured markdown for AI prompt
+     *
+     * @param array $context Context data from translations
+     * @param array $viewConfig View configuration
+     * @return string Formatted markdown
+     */
+    private function formatViewContext(array $context, array $viewConfig): string
+    {
+        $formatted = "## {$context['title']}\n\n";
+        $formatted .= "**Descrizione**: {$context['description']}\n\n";
+
+        // Features section
+        if (!empty($context['features'])) {
+            $formatted .= "### FUNZIONALITÀ DISPONIBILI IN QUESTA PAGINA\n\n";
+
+            foreach ($context['features'] as $featureKey => $feature) {
+                $formatted .= "#### {$feature['name']}\n";
+                $formatted .= "{$feature['description']}\n\n";
+
+                // Actions
+                if (!empty($feature['actions'])) {
+                    $formatted .= "**Azioni possibili:**\n";
+                    foreach ($feature['actions'] as $action) {
+                        $formatted .= "- {$action}\n";
+                    }
+                    $formatted .= "\n";
+                }
+
+                // UI Elements (if present)
+                if (!empty($feature['ui_elements'])) {
+                    $formatted .= "**Elementi UI:**\n";
+                    foreach ($feature['ui_elements'] as $element) {
+                        $formatted .= "- {$element}\n";
+                    }
+                    $formatted .= "\n";
+                }
+
+                // Stats shown (if present)
+                if (!empty($feature['stats_shown'])) {
+                    $formatted .= "**Statistiche mostrate:**\n";
+                    foreach ($feature['stats_shown'] as $stat) {
+                        $formatted .= "- {$stat}\n";
+                    }
+                    $formatted .= "\n";
+                }
+            }
+        }
+
+        // Common Questions
+        if (!empty($context['common_questions'])) {
+            $formatted .= "### DOMANDE FREQUENTI (con risposte immediate)\n\n";
+
+            foreach ($context['common_questions'] as $qa) {
+                $formatted .= "**Q**: {$qa['q']}\n";
+                $formatted .= "**A**: {$qa['a']}\n\n";
+            }
+        }
+
+        // Tips
+        if (!empty($context['tips'])) {
+            $formatted .= "### TIPS & BEST PRACTICES\n\n";
+            foreach ($context['tips'] as $tip) {
+                $formatted .= "💡 {$tip}\n";
+            }
+            $formatted .= "\n";
+        }
+
+        // Warnings
+        if (!empty($context['warnings'])) {
+            $formatted .= "### ⚠️ ATTENZIONI IMPORTANTI\n\n";
+            foreach ($context['warnings'] as $warning) {
+                $formatted .= "⚠️ {$warning}\n";
+            }
+            $formatted .= "\n";
+        }
+
+        // Technical info (if debug mode)
+        if (config('ai_view_contexts.format.include_controller_info', false) && !empty($context['technical_info'])) {
+            $formatted .= "### Technical Info (Debug)\n";
+            $formatted .= "- Controller: {$context['technical_info']['controller']}\n";
+            $formatted .= "- Route: {$context['technical_info']['route_pattern']}\n";
+            $formatted .= "\n";
+        }
+
+        // Trim to max length to prevent token overflow
+        $maxLength = config('ai_view_contexts.format.max_length', 4000);
+        if (strlen($formatted) > $maxLength) {
+            $formatted = substr($formatted, 0, $maxLength) . "\n\n[Context truncated due to length...]";
+
+            $this->logger->warning('[ArtAdvisorService] View context truncated', [
+                'original_length' => strlen($formatted),
+                'max_length' => $maxLength,
+            ]);
+        }
+
+        return $formatted;
     }
 
     /**

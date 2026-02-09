@@ -261,6 +261,90 @@
     }
 
     /**
+     * Get current page context for AI
+     * Extracts view identifier and language from page
+     *
+     * @returns {Object} Page context {view, lang, route, archetype}
+     */
+    function getPageContext() {
+        // Get language from HTML lang attribute
+        const lang = document.documentElement.lang || "it";
+
+        // Get archetype from sidebar data attribute
+        const archetype = state.userType || "guest";
+
+        // Get current route from pathname
+        const pathname = window.location.pathname;
+
+        // Detect view from window.currentView (if set by blade template)
+        // or infer from pathname
+        let view = window.currentView || inferViewFromPath(pathname, archetype);
+
+        return {
+            view: view,
+            lang: lang,
+            route: pathname,
+            archetype: archetype,
+        };
+    }
+
+    /**
+     * Infer view identifier from URL pathname and archetype
+     *
+     * @param {string} pathname Current URL pathname
+     * @param {string} archetype User archetype (company, creator, collector, etc.)
+     * @returns {string|null} View identifier or null
+     */
+    function inferViewFromPath(pathname, archetype) {
+        // Company routes
+        if (pathname.match(/^\/company\/\d+$/) || pathname.match(/^\/company\/[\w-]+$/)) {
+            return "company.dashboard";
+        }
+        if (pathname.match(/^\/company\/\d+\/collections/) || pathname.match(/^\/company\/[\w-]+\/collections/)) {
+            return "company.collections";
+        }
+        if (pathname.match(/^\/company\/\d+\/about/) || pathname.match(/^\/company\/[\w-]+\/about/)) {
+            return "company.about";
+        }
+        if (pathname.match(/^\/company\/\d+\/impact/) || pathname.match(/^\/company\/[\w-]+\/impact/)) {
+            return "company.impact";
+        }
+
+        // Creator routes
+        if (pathname === "/creator/dashboard" || pathname === "/dashboard") {
+            if (archetype === "creator") return "creator.dashboard";
+            if (archetype === "company") return "company.dashboard";
+            if (archetype === "collector") return "collector.dashboard";
+        }
+
+        // Collector routes
+        if (pathname === "/collector/marketplace") {
+            return "collector.marketplace";
+        }
+
+        // EPP routes
+        if (pathname === "/epp/dashboard") {
+            return "epp.dashboard";
+        }
+
+        // PA routes
+        if (pathname === "/pa/dashboard") {
+            return "pa.dashboard";
+        }
+
+        // Collections routes
+        if (pathname.match(/^\/collections\/\d+$/)) {
+            return "collection.show";
+        }
+        if (pathname === "/collections/create") {
+            return "collection.create";
+        }
+
+        // Default: no specific view detected
+        return null;
+    }
+
+    /**
      * Handle chat form submit (real AI question)
      */
     async function handleChatSubmit(e) {
@@ -296,6 +380,7 @@
                         user_type: state.userType,
                         user_id: state.userId,
                         mode: "onboarding_help",
+                        page_context: getPageContext(), // NEW: inject page context
                     },
                     expert: "platform",
                 }),
