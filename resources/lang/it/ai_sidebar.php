@@ -60,6 +60,10 @@ return [
             'title' => 'Scrivi la tua bio',
             'description' => 'Racconta chi sei e cosa crei',
         ],
+        'company_about' => [
+            'title' => 'Scrivi la tua bio',
+            'description' => 'Racconta chi sei e cosa crei',
+        ],
         'stripe' => [
             'title' => 'Configura i pagamenti',
             'description' => 'Collega Stripe per ricevere pagamenti',

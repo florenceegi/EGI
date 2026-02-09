@@ -234,15 +234,15 @@ class OnboardingChecklistService {
             'priority' => 3,
         ];
 
-        // 4. Write company bio
+        // 4. Write company about (NOT bio - companies use organizationData->about)
         $items[] = [
-            'id' => 'bio',
-            'title_key' => 'ai_sidebar.steps.bio.title',
-            'description_key' => 'ai_sidebar.steps.bio.description',
-            'completed' => $this->hasBio($user),
+            'id' => 'about',
+            'title_key' => 'ai_sidebar.steps.company_about.title',
+            'description_key' => 'ai_sidebar.steps.company_about.description',
+            'completed' => $this->hasCompanyAbout($user),
             'icon' => '✍️',
-            'action' => null,
-            'modal' => 'bio-edit-modal',
+            'action' => route('company.about', $user->id),
+            'modal' => null, // No modal - redirect to About tab
             'priority' => 4,
         ];
 
@@ -415,6 +415,23 @@ class OnboardingChecklistService {
         if (method_exists($user, 'biography') && $user->biography) {
             $content = $user->biography->content ?? '';
             return strlen(trim($content)) > 10;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if company has about (organizationData->about)
+     * Companies don't use bio, they use organizationData->about
+     *
+     * @param User $user
+     * @return bool
+     */
+    protected function hasCompanyAbout(User $user): bool {
+        // Check organizationData relationship
+        if (method_exists($user, 'organizationData') && $user->organizationData) {
+            $about = $user->organizationData->about ?? '';
+            return !empty($about) && strlen(trim($about)) > 10;
         }
 
         return false;
