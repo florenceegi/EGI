@@ -134,7 +134,7 @@ class ArtAdvisorController extends Controller {
         $sentences = preg_split('/(?<=[.!?])\s+/', $message, -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($sentences as $sentence) {
-            $this->sendSSE('chunk', ['text' => $sentence . ' ']);
+            $this->sendSSE('chunk', ['content' => $sentence . ' ']);
             flush();
 
             // Small delay for natural feel (10ms per sentence)

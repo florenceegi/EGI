@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\PlatformKnowledgeSection;
 use App\Services\AnthropicService;
+use App\Services\RagNatan\SearchService as RagSearchService;
 use Illuminate\Support\Facades\Auth;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -16,12 +17,13 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *
  * @package App\Services
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - AI Art Advisor)
- * @date 2025-10-29
- * @purpose Multi-expert AI assistant for creators and collectors
+ * @version 2.0.0 (FlorenceEGI - AI Art Advisor + RAG Integration)
+ * @date 2025-02-09
+ * @purpose Multi-expert AI assistant for creators and collectors with RAG knowledge base
  */
 class ArtAdvisorService {
     private AnthropicService $anthropic;
+    private RagSearchService $ragSearch;
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
 
@@ -35,10 +37,12 @@ class ArtAdvisorService {
 
     public function __construct(
         AnthropicService $anthropic,
+        RagSearchService $ragSearch,
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager
     ) {
         $this->anthropic = $anthropic;
+        $this->ragSearch = $ragSearch;
         $this->logger = $logger;
         $this->errorManager = $errorManager;
     }
@@ -70,6 +74,18 @@ class ArtAdvisorService {
             // Validate expert
             if (!isset(self::EXPERTS[$expertId])) {
                 throw new \InvalidArgumentException("Unknown expert: {$expertId}");
+            }
+
+            // RAG Knowledge Retrieval for Platform Assistant
+            if ($expertId === 'platform' && !empty($userMessage)) {
+                $ragResults = $this->searchRagKnowledge($userMessage);
+                if (!empty($ragResults)) {
+                    $context['rag_knowledge'] = $ragResults;
+                    $this->logger->info('[ArtAdvisorService] RAG knowledge retrieved', [
+                        'chunks_count' => count($ragResults['chunks']),
+                        'avg_similarity' => $ragResults['avg_similarity'] ?? 0,
+                    ]);
+                }
             }
 
             // Build system prompt based on expert
@@ -152,7 +168,7 @@ class ArtAdvisorService {
     private function buildExpertPrompt(string $expertId, array $context): string {
         $basePrompt = match ($expertId) {
             'creative' => $this->buildCreativeAdvisorPrompt(),
-            'platform' => $this->buildPlatformAssistantPrompt(),
+            'platform' => $this->buildPlatformAssistantPrompt($context['rag_knowledge'] ?? null),
             default => $this->buildCreativeAdvisorPrompt(),
         };
 
@@ -336,10 +352,17 @@ PROMPT;
 
     /**
      * Build Platform Assistant prompt (Help & Guide)
+     *
+     * @param array|null $ragKnowledge RAG knowledge retrieval results (optional)
      */
-    private function buildPlatformAssistantPrompt(): string {
-        // Get knowledge base for platform assistant
+    private function buildPlatformAssistantPrompt(?array $ragKnowledge = null): string {
+        // Get base knowledge sections (static)
         $knowledgeBase = PlatformKnowledgeSection::getFormattedForAI(null, 'it');
+
+        // Add RAG knowledge if available (dynamic, query-specific)
+        if (!empty($ragKnowledge['formatted'])) {
+            $knowledgeBase .= "\n\n" . $ragKnowledge['formatted'];
+        }
 
         return <<<PROMPT
 # IDENTITY & ROLE
@@ -540,6 +563,78 @@ PROMPT;
         }
 
         return $contextPrompt;
+    }
+
+    /**
+     * Search RAG knowledge base for relevant content
+     *
+     * Performs semantic search on rag_natan.documents to find relevant chunks
+     * based on user question. Returns top-k most similar chunks with metadata.
+     *
+     * @param string $userMessage User's question
+     * @param int $limit Max chunks to return
+     * @return array ['chunks' => array, 'avg_similarity' => float, 'formatted' => string]
+     */
+    private function searchRagKnowledge(string $userMessage, int $limit = 10): array
+    {
+        try {
+            $this->logger->info('[ArtAdvisorService] Searching RAG knowledge base', [
+                'query_length' => strlen($userMessage),
+                'limit' => $limit,
+            ]);
+
+            // Perform semantic search (vector similarity)
+            $chunks = $this->ragSearch->searchByText($userMessage, $limit, maxDistance: 1.5);
+
+            if ($chunks->isEmpty()) {
+                $this->logger->warning('[ArtAdvisorService] No RAG results found');
+                return [];
+            }
+
+            // Calculate average similarity
+            $avgSimilarity = $chunks->avg('similarity_score') ?? 0;
+
+            // Format chunks for AI prompt
+            $formattedChunks = [];
+            $formatted = "# RAG KNOWLEDGE BASE - RELEVANT DOCUMENTATION\n\n";
+            $formatted .= "Retrieved " . $chunks->count() . " relevant sections ";
+            $formatted .= "(avg similarity: " . round($avgSimilarity, 1) . "%):\n\n";
+
+            foreach ($chunks as $index => $chunk) {
+                $document = $chunk->document;
+                $chunkNum = $index + 1;
+
+                // Add to formatted string
+                $formatted .= "## [{$chunkNum}] {$document->title}\n";
+                $formatted .= "**Category**: {$document->category->name}\n";
+                $formatted .= "**Relevance**: " . round($chunk->similarity_score, 1) . "%\n\n";
+                $formatted .= "{$chunk->text}\n\n";
+                $formatted .= "---\n\n";
+
+                // Add to array for metadata
+                $formattedChunks[] = [
+                    'document_id' => $document->id,
+                    'document_title' => $document->title,
+                    'category' => $document->category->name ?? 'uncategorized',
+                    'chunk_id' => $chunk->id,
+                    'text' => $chunk->text,
+                    'similarity' => $chunk->similarity_score,
+                ];
+            }
+
+            return [
+                'chunks' => $formattedChunks,
+                'avg_similarity' => $avgSimilarity,
+                'formatted' => $formatted,
+            ];
+        } catch (\Exception $e) {
+            $this->logger->error('[ArtAdvisorService] RAG search failed', [
+                'error' => $e->getMessage(),
+            ]);
+
+            // Return empty on error - graceful degradation
+            return [];
+        }
     }
 
     /**
