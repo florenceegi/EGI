@@ -368,7 +368,7 @@
         const typingId = showTypingIndicator();
 
         try {
-            // Call Art Advisor API
+            // Call Natan AI API
             const response = await fetch("/art-advisor/chat", {
                 method: "POST",
                 headers: {

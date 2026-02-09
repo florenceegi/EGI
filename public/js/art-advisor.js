@@ -1,5 +1,5 @@
 /**
- * AI Art Advisor - Frontend Logic
+ * Natan AI Assistant - Frontend Logic
  *
  * Handles modal interaction, SSE streaming, expert selection,
  * and action buttons (copy/apply).
@@ -305,7 +305,7 @@
     function showWelcomeMessage() {
         const welcomeMessages = {
             general:
-                "Ciao! Sono il tuo AI Art Advisor. Come posso aiutarti oggi?",
+                "Ciao! Sono Natan, l'assistente AI di FlorenceEGI. Come posso aiutarti oggi?",
             generate_description:
                 "Perfetto! Creiamo una descrizione efficace per la tua opera. Dimmi:\n\n1. **Che emozione** vuoi trasmettere? (calma, energia, mistero, gioia...)\n2. **A chi è rivolta?** (collezionisti luxury, giovani creator, corporate/PA...)\n3. **Preferisci enfatizzare**: tecnica artistica o concept/storytelling?\n4. Vuoi che **analizzi visivamente l'immagine** per dettagli precisi?",
             suggest_traits:
