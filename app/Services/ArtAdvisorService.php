@@ -89,18 +89,36 @@ class ArtAdvisorService {
             }
 
             // View Context Injection for Platform Assistant (NEW)
-            if ($expertId === 'platform' && !empty($context['page_context'])) {
-                $viewContextData = $this->getViewContext(
-                    $context['page_context']['view'] ?? null,
-                    $context['page_context']['lang'] ?? 'it'
-                );
-                if ($viewContextData) {
-                    $context['view_context'] = $viewContextData;
-                    $this->logger->info('[ArtAdvisorService] View context injected', [
-                        'view' => $context['page_context']['view'],
-                        'lang' => $context['page_context']['lang'] ?? 'it',
-                        'context_length' => strlen($viewContextData),
+            if ($expertId === 'platform') {
+                if (empty($context['page_context'])) {
+                    $this->logger->warning('[ArtAdvisorService] ⚠️ NO page_context received from frontend!', [
+                        'context_keys' => array_keys($context),
                     ]);
+                } else {
+                    $this->logger->info('[ArtAdvisorService] 📍 Page context received', [
+                        'view' => $context['page_context']['view'] ?? 'NULL',
+                        'lang' => $context['page_context']['lang'] ?? 'NULL',
+                        'route' => $context['page_context']['route'] ?? 'NULL',
+                        'archetype' => $context['page_context']['archetype'] ?? 'NULL',
+                    ]);
+
+                    $viewContextData = $this->getViewContext(
+                        $context['page_context']['view'] ?? null,
+                        $context['page_context']['lang'] ?? 'it'
+                    );
+
+                    if ($viewContextData) {
+                        $context['view_context'] = $viewContextData;
+                        $this->logger->info('[ArtAdvisorService] ✅ View context injected successfully', [
+                            'view' => $context['page_context']['view'],
+                            'context_length' => strlen($viewContextData),
+                            'first_100_chars' => substr($viewContextData, 0, 100),
+                        ]);
+                    } else {
+                        $this->logger->error('[ArtAdvisorService] ❌ View context is NULL after getViewContext()', [
+                            'view' => $context['page_context']['view'],
+                        ]);
+                    }
                 }
             }
 
@@ -737,17 +755,32 @@ PROMPT;
         // Get view configuration
         // Note: Cannot use config("ai_view_contexts.views.{$viewId}") because $viewId contains dots
         // Laravel interprets dots as nesting levels, so 'company.portfolio' becomes company->portfolio
-        $viewConfig = config('ai_view_contexts')['views'][$viewId] ?? null;
+        $allConfig = config('ai_view_contexts');
+
+        $this->logger->info('[ArtAdvisorService] Loading view config', [
+            'view_id' => $viewId,
+            'config_loaded' => is_array($allConfig),
+            'has_views_key' => isset($allConfig['views']),
+            'available_views' => is_array($allConfig['views'] ?? null) ? array_keys($allConfig['views']) : [],
+        ]);
+
+        $viewConfig = $allConfig['views'][$viewId] ?? null;
 
         if (!$viewConfig) {
-            $this->logger->warning('[ArtAdvisorService] View context not found', [
+            $this->logger->error('[ArtAdvisorService] ❌ View config NOT FOUND', [
                 'view_id' => $viewId,
+                'searched_in' => array_keys($allConfig['views'] ?? []),
             ]);
 
             return config('ai_view_contexts.injection.fallback_on_missing', true)
                 ? null  // Use generic prompt
                 : "# VIEW CONTEXT\n\nNo specific context available for view: {$viewId}";
         }
+
+        $this->logger->info('[ArtAdvisorService] ✅ View config found', [
+            'view_id' => $viewId,
+            'translation_key' => $viewConfig['translation_key'],
+        ]);
 
         // Get translation key
         $translationKey = $viewConfig['translation_key'];
@@ -756,13 +789,21 @@ PROMPT;
         $context = trans($translationKey, [], $lang);
 
         if (!is_array($context) || empty($context)) {
-            $this->logger->warning('[ArtAdvisorService] View context translation missing', [
+            $this->logger->error('[ArtAdvisorService] ❌ Translation missing or invalid', [
                 'view_id' => $viewId,
                 'translation_key' => $translationKey,
                 'lang' => $lang,
+                'context_type' => gettype($context),
             ]);
             return null;
         }
+
+        $this->logger->info('[ArtAdvisorService] ✅ Translation loaded', [
+            'translation_key' => $translationKey,
+            'has_title' => isset($context['title']),
+            'has_features' => isset($context['features']),
+            'features_count' => is_array($context['features'] ?? null) ? count($context['features']) : 0,
+        ]);
 
         // Format context as structured markdown
         return $this->formatViewContext($context, $viewConfig);
