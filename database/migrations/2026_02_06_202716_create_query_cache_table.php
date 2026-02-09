@@ -19,14 +19,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Set search_path to rag_natan schema
-        DB::statement('SET search_path TO rag_natan, core, public');
+        // Check if table exists in rag_natan schema BEFORE setting search_path
+        $tableExists = DB::select("
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables
+                WHERE table_schema = 'rag_natan'
+                AND table_name = 'query_cache'
+            ) as exists
+        ")[0]->exists;
 
-        // Skip if table already exists (for idempotent migrations)
-        if (Schema::hasTable('query_cache')) {
-            DB::statement('SET search_path TO core, public');
+        if ($tableExists) {
+            // Table already exists, skip creation
             return;
         }
+
+        // Set search_path to rag_natan schema
+        DB::statement('SET search_path TO rag_natan, core, public');
 
         Schema::create('query_cache', function (Blueprint $table) {
             $table->id();
