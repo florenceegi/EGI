@@ -394,13 +394,17 @@ PROMPT;
      * @param string|null $viewContext View-specific context from translations (optional)
      */
     private function buildPlatformAssistantPrompt(?array $ragKnowledge = null, ?string $viewContext = null): string {
-        // Get base knowledge sections (static)
-        $knowledgeBase = PlatformKnowledgeSection::getFormattedForAI(null, 'it');
+        // DISABLED: Static knowledge table (obsolete, conflicts with RAG)
+        // Use ONLY RAG system for accurate, up-to-date information
+        // $knowledgeBase = PlatformKnowledgeSection::getFormattedForAI(null, 'it');
 
-        // Add RAG knowledge if available (dynamic, query-specific)
+        // Use RAG knowledge ONLY (dynamic, query-specific, always correct)
         $hasRagKnowledge = !empty($ragKnowledge['formatted']);
         if ($hasRagKnowledge) {
-            $knowledgeBase .= "\n\n" . $ragKnowledge['formatted'];
+            $knowledgeBase = $ragKnowledge['formatted'];
+        } else {
+            // No knowledge available - fallback to empty
+            $knowledgeBase = "# PLATFORM KNOWLEDGE\n\nNo documentation retrieved for this query. Please ask more specific questions.";
         }
 
         // Prepare view context section (100% accurate, from codebase analysis)
