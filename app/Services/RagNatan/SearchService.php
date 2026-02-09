@@ -46,7 +46,7 @@ class SearchService
             ->orderBy('distance');
 
         if ($maxDistance !== null) {
-            $query->havingRaw('(embedding <-> ?) <= ?', [$vectorString, $maxDistance]);
+            $query->whereRaw('(embedding <-> ?) <= ?', [$vectorString, $maxDistance]);
         }
 
         $results = $query->limit($limit)->get();
