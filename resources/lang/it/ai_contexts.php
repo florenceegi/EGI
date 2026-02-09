@@ -280,6 +280,16 @@ return [
                     'q' => 'Qual è la differenza tra Created e Owned?',
                     'a' => 'Created = EGI mintati da te come company (sei il creator originale). Owned = EGI che hai acquistato da altri creators sul mercato secondario (sei owner ma non creator). Il tuo nome appare come creator negli EGI Created, come owner negli Owned.',
                 ],
+
+                'epp_company' => [
+                    'q' => 'Gli EPP sono obbligatori per le Company?',
+                    'a' => 'NO. Per le Company gli EPP sono OPZIONALI. A differenza dei Creator (per cui EPP 20% è obbligatorio), le Company possono scegliere: (1) Supportare un EPP con percentuale variabile a loro scelta, oppure (2) Offrire abbonamenti ai loro contenuti, oppure (3) Nessuno dei due. Le Company hanno piena flessibilità nella scelta del modello di sostenibilità.',
+                ],
+
+                'epp_listino' => [
+                    'q' => 'Quali percentuali EPP può scegliere una Company?',
+                    'a' => 'Le Company possono scegliere liberamente la percentuale da destinare all\'EPP selezionato. Non esiste un minimo obbligatorio. Tipicamente si sceglie tra 5% e 20%, ma ogni Company decide autonomamente in base alla propria strategia di sostenibilità e posizionamento di brand.',
+                ],
             ],
 
             /*
@@ -306,6 +316,7 @@ return [
             */
 
             'warnings' => [
+                'IMPORTANTE: Company ≠ Creator. Per le Company gli EPP sono OPZIONALI (non obbligatori). Creator devono usare EPP 20%, Company scelgono liberamente.',
                 'Il bottone "Payment Settings" è visibile SOLO se sei l\'owner della company',
                 'Non puoi editare About di altre company, solo della tua',
                 'Stats mostrate variano in base a modalità Portfolio (Created vs Owned)',
