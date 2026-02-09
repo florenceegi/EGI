@@ -296,8 +296,8 @@
      * @returns {string|null} View identifier or null
      */
     function inferViewFromPath(pathname, archetype) {
-        // Company routes
-        if (pathname.match(/^\/company\/\d+$/) || pathname.match(/^\/company\/[\w-]+$/)) {
+        // Company routes - CHECK SPECIFIC ROUTES FIRST (longest match first)
+        if (pathname.match(/^\/company\/\d+\/portfolio/) || pathname.match(/^\/company\/[\w-]+\/portfolio/)) {
             return "company.portfolio";
         }
         if (pathname.match(/^\/company\/\d+\/collections/) || pathname.match(/^\/company\/[\w-]+\/collections/)) {
@@ -308,6 +308,10 @@
         }
         if (pathname.match(/^\/company\/\d+\/impact/) || pathname.match(/^\/company\/[\w-]+\/impact/)) {
             return "company.impact";
+        }
+        // Company home (redirects to portfolio) - FALLBACK
+        if (pathname.match(/^\/company\/\d+$/) || pathname.match(/^\/company\/[\w-]+$/)) {
+            return "company.portfolio";
         }
 
         // Creator routes
