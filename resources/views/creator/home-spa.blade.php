@@ -335,6 +335,9 @@
 
     {{-- VANILLA JAVASCRIPT --}}
     <script>
+        // View identifier for AI context
+        window.currentView = 'creator.portfolio';
+
         (function() {
             const tabs = document.querySelectorAll('.creator-tab');
             const contentContainer = document.getElementById('content-container');

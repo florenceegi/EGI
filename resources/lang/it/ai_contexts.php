@@ -355,9 +355,215 @@ return [
         // etc.
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | CREATOR ARCHETYPE
+    |--------------------------------------------------------------------------
+    */
+
+    'creator' => [
+        'portfolio' => [
+            'title' => 'Creator Portfolio - Works & Biography',
+            'description' => 'Pagina home del Creator che mostra il portfolio di opere create e possedute, con accesso a collections, biography, impact ambientale e community.',
+
+            'features' => [
+                'portfolio_tabs' => [
+                    'name' => 'Portfolio a Doppia Modalità',
+                    'description' => 'Visualizza opere in due modalità separate: Created (create dal creator) e Owned (acquistate da altri).',
+                    'source' => 'CreatorHomeController::portfolio() - lines 71-193',
+                    'actions' => [
+                        'Visualizza "Portfolio Created": tutte le opere mintate dal creator',
+                        'Switch a "Portfolio Owned": opere acquistate sul mercato secondario',
+                        'Filtra opere per collection specifica',
+                        'Cerca opere per titolo (barra search)',
+                        'Ordina per: Latest, Title, Price (High/Low)',
+                        'Cambia vista: Grid o List',
+                    ],
+                    'ui_elements' => [
+                        'Tab "Created" (default) - mostra opere create (exclude clones)',
+                        'Tab "Owned" - mostra opere possedute ma non create',
+                        'Barra search con placeholder',
+                        'Dropdown "Sort by" (latest, title, price_high, price_low)',
+                        'Toggle Grid/List view',
+                        'Dropdown "Collection filter"',
+                    ],
+                    'stats_shown' => [
+                        'Total Works (opere in modalità corrente)',
+                        'Total Collections associate',
+                        'Total Patrons (supporters)',
+                    ],
+                    'route' => '/creator/{id}/portfolio',
+                ],
+
+                'payment_settings' => [
+                    'name' => 'Configurazione Pagamenti (Solo Owner)',
+                    'description' => 'Bottone visibile solo all\'owner per configurare metodi pagamento (Stripe, Bank Transfer).',
+                    'source' => 'creator/home-spa.blade.php - lines 8-74',
+                    'visibility' => 'Solo se auth()->id() === creator->id',
+                    'actions' => [
+                        'Click bottone "Payment Settings" (desktop: bottom-right, mobile: FAB)',
+                        'Apri modal configurazione pagamenti',
+                        'Configura Stripe account',
+                        'Configura Bank Transfer (IBAN)',
+                    ],
+                ],
+
+                'onboarding_checklist' => [
+                    'name' => 'Checklist Onboarding (Solo Owner)',
+                    'description' => 'Sidebar con checklist passi onboarding per nuovi creator.',
+                    'source' => 'CreatorHomeController::portfolio() - lines 170-173',
+                    'visibility' => 'Solo se auth()->id() === creator->id',
+                    'steps' => ['stripe', 'avatar', 'banner', 'bio', 'collection', 'first_egi', 'social_links'],
+                ],
+            ],
+
+            'common_questions' => [
+                'cosa_vedo_portfolio' => [
+                    'q' => 'Cosa vedo nel Portfolio del Creator?',
+                    'a' => 'Tab "Created" mostra tutte le opere che il creator ha creato e mintato. Tab "Owned" mostra opere che il creator ha acquistato da altri artisti. Cloni (PT) sono esclusi da "Created".',
+                ],
+
+                'differenza_created_owned' => [
+                    'q' => 'Qual è la differenza tra Created e Owned per un Creator?',
+                    'a' => 'Created = opere mintate dal creator (è l\'autore originale). Owned = opere acquistate da altri creator sul mercato secondario (il creator è owner ma non autore).',
+                ],
+
+                'epp_creator' => [
+                    'q' => 'Gli EPP sono obbligatori per i Creator?',
+                    'a' => 'SÌ. Per i Creator gli EPP sono OBBLIGATORI al 20%. Ogni collection deve destinare il 20% del ricavato a un progetto EPP selezionato. Questo è un requisito fondamentale per tutti i Creator sulla piattaforma FlorenceEGI.',
+                ],
+
+                'cosa_biography' => [
+                    'q' => 'Cosa trovo nella Biography?',
+                    'a' => 'La Biography è la sezione dove il creator racconta il proprio percorso artistico, background, stile creativo e vision. È il luogo dove scoprire la storia dietro le opere.',
+                ],
+
+                'dove_configuro_pagamenti' => [
+                    'q' => 'Dove configuro i metodi di pagamento come Creator?',
+                    'a' => 'Se sei owner, vedi bottone "Payment Settings" in basso a destra (desktop) o FAB arancione (mobile). Click per aprire modal configurazione Stripe o Bank Transfer.',
+                ],
+            ],
+
+            'warnings' => [
+                'IMPORTANTE: Creator ≠ Company. Per i Creator gli EPP sono OBBLIGATORI al 20%. Le Company invece possono scegliere liberamente (EPP opzionale o abbonamenti).',
+                'Il bottone "Payment Settings" è visibile SOLO se sei l\'owner del profilo creator',
+                'Stats mostrate variano in base a modalità Portfolio (Created vs Owned)',
+                'EGI cloni (PT) NON appaiono in tab "Created" ma possono apparire in "Owned" se li possiedi',
+            ],
+
+            'technical_info' => [
+                'controller' => 'App\\Http\\Controllers\\CreatorHomeController',
+                'main_method' => 'portfolio()',
+                'view' => 'creator.home-spa',
+                'route_name' => 'creator.portfolio',
+                'route_pattern' => '/creator/{id}/portfolio',
+                'archetype_required' => 'creator',
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | COLLECTOR ARCHETYPE
+    |--------------------------------------------------------------------------
+    */
+
+    'collector' => [
+        'portfolio' => [
+            'title' => 'Collector Portfolio - Purchased Works',
+            'description' => 'Pagina home del Collector che mostra il portfolio di opere acquistate/prenotate, con accesso a collections e statistiche personali.',
+
+            'features' => [
+                'portfolio_main' => [
+                    'name' => 'Portfolio Acquisti',
+                    'description' => 'Visualizza tutte le opere acquistate o prenotate dal collector tramite reservations.',
+                    'source' => 'CollectorHomeController::portfolio() - lines 141-231',
+                    'actions' => [
+                        'Visualizza tutte le opere acquistate/prenotate',
+                        'Filtra opere per collection specifica',
+                        'Filtra opere per creator specifico',
+                        'Cerca opere per titolo (barra search)',
+                        'Ordina per: Latest, Title, Price (High/Low)',
+                        'Cambia vista: Grid o List',
+                    ],
+                    'stats_shown' => [
+                        'Total Owned EGIs (opere possedute)',
+                        'Total Spent (spesa totale in EUR)',
+                        'Collections Represented (collections da cui hai acquistato)',
+                        'Active Reservations (prenotazioni attive)',
+                    ],
+                    'route' => '/collector/{id}/portfolio',
+                ],
+
+                'payment_settings' => [
+                    'name' => 'Configurazione Pagamenti (Solo Owner)',
+                    'description' => 'Bottone visibile solo all\'owner per configurare metodi pagamento. NUOVO: Collector può ora ricevere pagamenti da rivendite.',
+                    'source' => 'collector/portfolio.blade.php - lines 26-91',
+                    'visibility' => 'Solo se auth()->id() === collector->id',
+                    'actions' => [
+                        'Click bottone "Payment Settings" (desktop: bottom-right, mobile: FAB)',
+                        'Configura Stripe account per ricevere pagamenti da rivendite',
+                        'Configura Bank Transfer (IBAN)',
+                    ],
+                ],
+
+                'onboarding_checklist' => [
+                    'name' => 'Checklist Onboarding (Solo Owner)',
+                    'description' => 'Sidebar con checklist passi onboarding per nuovi collector.',
+                    'source' => 'CollectorHomeController::portfolio() - lines 213-216',
+                    'visibility' => 'Solo se auth()->id() === collector->id',
+                    'steps' => ['stripe', 'verify_email', 'avatar', 'banner', 'bio', 'social_links'],
+                    'note' => 'NO collection/first_egi (collector non crea opere)',
+                ],
+            ],
+
+            'common_questions' => [
+                'cosa_vedo_portfolio' => [
+                    'q' => 'Cosa vedo nel Portfolio del Collector?',
+                    'a' => 'Il Portfolio mostra tutte le opere che hai acquistato o prenotato tramite reservations. Include opere da diversi creator e collections. Si concentra sugli ACQUISTI, non su opere create (i Collector non creano opere).',
+                ],
+
+                'epp_collector' => [
+                    'q' => 'Gli EPP riguardano anche i Collector?',
+                    'a' => 'NO. Gli EPP sono destinati SOLO a Creator e Company (venditori). I Collector sono ACQUIRENTI, quindi non hanno obblighi o opzioni EPP. Quando acquisti un\'opera, l\'EPP è già incluso nel prezzo dal creator/company.',
+                ],
+
+                'differenza_collector_creator' => [
+                    'q' => 'Qual è la differenza tra Collector e Creator?',
+                    'a' => 'Creator CREA opere originali e le minta sulla piattaforma (artisti). Collector ACQUISTA opere create da altri (appassionati, collezionisti). Creator ha EPP obbligatorio 20%, Collector no.',
+                ],
+
+                'posso_vendere_opere' => [
+                    'q' => 'Posso rivendere opere come Collector?',
+                    'a' => 'SÌ. Puoi rivendere opere sul mercato secondario. Per ricevere pagamenti, configura i metodi di pagamento tramite il bottone "Payment Settings" (disponibile per Collector owner).',
+                ],
+
+                'dove_configuro_pagamenti' => [
+                    'q' => 'Dove configuro i metodi di pagamento come Collector?',
+                    'a' => 'Se sei owner, vedi bottone "Payment Settings" in basso a destra (desktop) o FAB arancione (mobile). Configura Stripe o Bank Transfer per ricevere pagamenti da rivendite sul mercato secondario.',
+                ],
+            ],
+
+            'warnings' => [
+                'IMPORTANTE: Collector ≠ Creator. I Collector ACQUISTANO opere, non le creano. Non hanno EPP obbligatori.',
+                'Il bottone "Payment Settings" è visibile SOLO se sei l\'owner del profilo collector',
+                'Portfolio mostra SOLO opere acquistate/prenotate, non opere create',
+                'Stats mostrano Total Spent (spesa totale), non ricavi',
+                'Per rivendere opere sul mercato secondario, devi configurare metodi pagamento',
+            ],
+
+            'technical_info' => [
+                'controller' => 'App\\Http\\Controllers\\CollectorHomeController',
+                'main_method' => 'portfolio()',
+                'view' => 'collector.portfolio',
+                'route_name' => 'collector.home',
+                'route_pattern' => '/collector/{id}',
+                'archetype_required' => 'collector',
+            ],
+        ],
+    ],
+
     // Altri archetipi (da aggiungere in futuro)
-    // 'creator' => [...],
-    // 'collector' => [...],
     // 'epp' => [...],
     // 'pa' => [...],
 ];

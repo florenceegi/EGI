@@ -35,14 +35,45 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Creator Views
+        |--------------------------------------------------------------------------
+        */
+
+        'creator.portfolio' => [
+            'translation_key' => 'ai_contexts.creator.portfolio',
+            'archetype' => 'creator',
+            'controller' => 'App\Http\Controllers\CreatorHomeController',
+            'route_name' => 'creator.portfolio',
+            'rag_boost_terms' => 'creator portfolio works biography EPP collections created owned artist',
+            'priority' => 'high',
+            'languages' => ['it', 'en', 'de', 'es', 'fr', 'pt'],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Collector Views
+        |--------------------------------------------------------------------------
+        */
+
+        'collector.portfolio' => [
+            'translation_key' => 'ai_contexts.collector.portfolio',
+            'archetype' => 'collector',
+            'controller' => 'App\Http\Controllers\CollectorHomeController',
+            'route_name' => 'collector.home', // Route redirects to portfolio
+            'rag_boost_terms' => 'collector portfolio purchased owned acquisitions reservations buyer',
+            'priority' => 'high',
+            'languages' => ['it', 'en', 'de', 'es', 'fr', 'pt'],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
         | Future Views (Template)
         |--------------------------------------------------------------------------
         |
         | Add more views following the same structure:
         |
-        | 'creator.dashboard' => [...],
-        | 'collector.marketplace' => [...],
         | 'epp.projects.index' => [...],
+        | 'pa.dashboard' => [...],
         | etc.
         */
     ],

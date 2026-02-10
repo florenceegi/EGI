@@ -258,4 +258,9 @@
         {{-- Include JS Manager --}}
         <script src="{{ asset('js/home-page-image-manager.js') }}" defer></script>
     @endif
+
+    {{-- View identifier for AI context --}}
+    <script>
+        window.currentView = 'collector.portfolio';
+    </script>
 </x-guest-layout>
