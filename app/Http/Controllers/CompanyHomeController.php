@@ -248,7 +248,12 @@ class CompanyHomeController extends Controller {
             return view('company.partials.collections-content', compact('company', 'collections', 'stats'));
         }
 
-        return view('company.home-spa', compact('company', 'collections', 'stats'))
+        // Get onboarding checklist for owner
+        $onboardingChecklist = auth()->check() && auth()->id() === $company->id
+            ? $this->onboardingService->getChecklist($company, 'company')
+            : [];
+
+        return view('company.home-spa', compact('company', 'collections', 'stats', 'onboardingChecklist'))
             ->with('activeTab', 'collections');
     }
 
@@ -268,7 +273,12 @@ class CompanyHomeController extends Controller {
             return view('company.partials.about-content', compact('company', 'stats'));
         }
 
-        return view('company.home-spa', compact('company', 'stats'))
+        // Get onboarding checklist for owner
+        $onboardingChecklist = auth()->check() && auth()->id() === $company->id
+            ? $this->onboardingService->getChecklist($company, 'company')
+            : [];
+
+        return view('company.home-spa', compact('company', 'stats', 'onboardingChecklist'))
             ->with('activeTab', 'about');
     }
 
@@ -319,7 +329,12 @@ class CompanyHomeController extends Controller {
             return view('company.partials.impact-content', compact('company', 'stats'));
         }
 
-        return view('company.home-spa', compact('company', 'stats'))
+        // Get onboarding checklist for owner
+        $onboardingChecklist = auth()->check() && auth()->id() === $company->id
+            ? $this->onboardingService->getChecklist($company, 'company')
+            : [];
+
+        return view('company.home-spa', compact('company', 'stats', 'onboardingChecklist'))
             ->with('activeTab', 'impact');
     }
 

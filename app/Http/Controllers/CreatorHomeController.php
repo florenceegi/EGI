@@ -321,7 +321,12 @@ class CreatorHomeController extends Controller {
             return view('creator.partials.collections-content', compact('creator', 'collections', 'stats'));
         }
 
-        return view('creator.home-spa', compact('creator', 'collections', 'stats'))
+        // Get onboarding checklist for owner
+        $onboardingChecklist = auth()->check() && auth()->id() === $creator->id
+            ? $this->onboardingService->getChecklist($creator, 'creator')
+            : [];
+
+        return view('creator.home-spa', compact('creator', 'collections', 'stats', 'onboardingChecklist'))
             ->with('activeTab', 'collections');
     }
 
@@ -347,7 +352,12 @@ class CreatorHomeController extends Controller {
             return view('creator.partials.biography-content', compact('creator', 'stats'));
         }
 
-        return view('creator.home-spa', compact('creator', 'stats'))
+        // Get onboarding checklist for owner
+        $onboardingChecklist = auth()->check() && auth()->id() === $creator->id
+            ? $this->onboardingService->getChecklist($creator, 'creator')
+            : [];
+
+        return view('creator.home-spa', compact('creator', 'stats', 'onboardingChecklist'))
             ->with('activeTab', 'biography');
     }
 
@@ -374,7 +384,12 @@ class CreatorHomeController extends Controller {
             return view('creator.partials.impact-content', compact('creator', 'stats'));
         }
 
-        return view('creator.home-spa', compact('creator', 'stats'))
+        // Get onboarding checklist for owner
+        $onboardingChecklist = auth()->check() && auth()->id() === $creator->id
+            ? $this->onboardingService->getChecklist($creator, 'creator')
+            : [];
+
+        return view('creator.home-spa', compact('creator', 'stats', 'onboardingChecklist'))
             ->with('activeTab', 'impact');
     }
 
@@ -400,7 +415,12 @@ class CreatorHomeController extends Controller {
             return view('creator.partials.community-content', compact('creator', 'stats'));
         }
 
-        return view('creator.home-spa', compact('creator', 'stats'))
+        // Get onboarding checklist for owner
+        $onboardingChecklist = auth()->check() && auth()->id() === $creator->id
+            ? $this->onboardingService->getChecklist($creator, 'creator')
+            : [];
+
+        return view('creator.home-spa', compact('creator', 'stats', 'onboardingChecklist'))
             ->with('activeTab', 'community');
     }
 
