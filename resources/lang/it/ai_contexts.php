@@ -349,8 +349,69 @@ return [
             ],
         ],
 
+        'collections' => [
+            'title' => 'Company Collections - Brand Catalog',
+            'description' => 'Pagina Collections della Company che mostra tutte le collections pubblicate con numero opere per collection.',
+
+            'features' => [
+                'collections_grid' => [
+                    'name' => 'Griglia Collections Aziendali',
+                    'description' => 'Visualizza tutte le collections pubblicate dalla company in formato grid.',
+                    'source' => 'CompanyHomeController::collections() - lines 232-253',
+                    'actions' => [
+                        'Visualizza tutte le collections pubblicate',
+                        'Click su collection card per vedere dettagli',
+                        'Vedi numero EGI originali per collection',
+                    ],
+                    'ui_elements' => [
+                        'Grid responsive (1-4 colonne)',
+                        'Collection cards con immagine, titolo, conteggio EGI',
+                        'Empty state se nessuna collection',
+                    ],
+                    'stats_shown' => [
+                        'Total collections pubblicate',
+                        'Total EGI in tutte le collections',
+                        'Total supporters (placeholder)',
+                    ],
+                    'route' => '/company/{id}/collections',
+                ],
+            ],
+
+            'common_questions' => [
+                'cosa_sono_collections' => [
+                    'q' => 'Cosa sono le Collections della Company?',
+                    'a' => 'Le Collections sono cataloghi tematici che raggruppano prodotti/EGI aziendali. Ogni collection rappresenta una linea di prodotto, una campagna o una categoria specifica del brand. Le Company possono creare e gestire collections per organizzare il proprio catalogo.',
+                ],
+
+                'epp_collections_company' => [
+                    'q' => 'Le Collections Company devono avere un EPP?',
+                    'a' => 'NO, è OPZIONALE. Le Company possono scegliere liberamente se associare un EPP alle proprie collections (con percentuale variabile) oppure offrire abbonamenti, oppure nessuno dei due. La scelta è flessibile.',
+                ],
+
+                'come_creare_collection' => [
+                    'q' => 'Come creo una nuova Collection come Company?',
+                    'a' => 'Se sei owner della company, vai al menu di gestione (non visibile in questa pagina pubblica) e seleziona "Crea Collection". Potrai definire nome, descrizione, EPP opzionale e iniziare ad aggiungere EGI.',
+                ],
+            ],
+
+            'warnings' => [
+                'Questa pagina mostra SOLO collections pubblicate (is_published = true)',
+                'Visitors pubblici vedono le collections ma non possono modificarle',
+                'Owner può creare/modificare collections dal pannello di gestione (non da questa pagina)',
+                'EPP è OPZIONALE per Company collections (diverso da Creator dove è obbligatorio 20%)',
+            ],
+
+            'technical_info' => [
+                'controller' => 'App\\Http\\Controllers\\CompanyHomeController',
+                'main_method' => 'collections()',
+                'view' => 'company.partials.collections-content',
+                'route_name' => 'company.collections',
+                'route_pattern' => '/company/{id}/collections',
+                'archetype_required' => 'company',
+            ],
+        ],
+
         // Altri view contexts (da aggiungere in futuro)
-        // 'collections' => [...],
         // 'about' => [...],
         // etc.
     ],
@@ -457,6 +518,73 @@ return [
                 'view' => 'creator.home-spa',
                 'route_name' => 'creator.portfolio',
                 'route_pattern' => '/creator/{id}/portfolio',
+                'archetype_required' => 'creator',
+            ],
+        ],
+
+        'collections' => [
+            'title' => 'Creator Collections - Artistic Series',
+            'description' => 'Pagina Collections del Creator che mostra tutte le collections artistiche pubblicate con numero opere per collection.',
+
+            'features' => [
+                'collections_grid' => [
+                    'name' => 'Griglia Collections Artistiche',
+                    'description' => 'Visualizza tutte le collections pubblicate dal creator in formato grid.',
+                    'source' => 'CreatorHomeController::collectionsSection() - lines 301-326',
+                    'actions' => [
+                        'Visualizza tutte le collections pubblicate',
+                        'Click su collection card per vedere dettagli',
+                        'Vedi numero opere originali per collection',
+                    ],
+                    'ui_elements' => [
+                        'Grid responsive (1-4 colonne)',
+                        'Collection cards con immagine, titolo, conteggio opere',
+                        'Empty state se nessuna collection',
+                    ],
+                    'stats_shown' => [
+                        'Total collections pubblicate',
+                        'Total opere in tutte le collections',
+                        'Total supporters (placeholder)',
+                    ],
+                    'route' => '/creator/{id}/collections',
+                ],
+            ],
+
+            'common_questions' => [
+                'cosa_sono_collections' => [
+                    'q' => 'Cosa sono le Collections del Creator?',
+                    'a' => 'Le Collections sono serie artistiche che raggruppano opere tematicamente correlate. Ogni collection rappresenta un progetto artistico, una serie creativa o un tema specifico. I Creator possono creare e gestire collections per organizzare il proprio lavoro.',
+                ],
+
+                'epp_collections_creator' => [
+                    'q' => 'Le Collections Creator devono avere un EPP?',
+                    'a' => 'SÌ, è OBBLIGATORIO. Ogni collection del Creator deve destinare il 20% del ricavato a un progetto EPP selezionato. Questo è un requisito fondamentale per tutti i Creator sulla piattaforma FlorenceEGI.',
+                ],
+
+                'come_creare_collection' => [
+                    'q' => 'Come creo una nuova Collection come Creator?',
+                    'a' => 'Se sei owner del profilo creator, vai al menu di gestione e seleziona "Crea Collection". Dovrai definire nome, descrizione, selezionare un progetto EPP (20% obbligatorio) e iniziare ad aggiungere le tue opere.',
+                ],
+
+                'differenza_company_creator' => [
+                    'q' => 'Differenza tra Collections Creator e Company?',
+                    'a' => 'Creator: collections ARTISTICHE con EPP obbligatorio 20%, focus su serie creative e vision artistica. Company: collections BRAND/PRODOTTO con EPP opzionale, focus su cataloghi e linee di prodotto. Creator = arte, Company = business.',
+                ],
+            ],
+
+            'warnings' => [
+                'IMPORTANTE: EPP è OBBLIGATORIO 20% per TUTTE le collections Creator (diverso da Company dove è opzionale)',
+                'Questa pagina mostra SOLO collections pubblicate (is_published = true)',
+                'Visitors pubblici vedono le collections ma non possono modificarle',
+                'Owner può creare/modificare collections dal pannello di gestione',
+            ],
+
+            'technical_info' => [
+                'controller' => 'App\\Http\\Controllers\\CreatorHomeController',
+                'main_method' => 'collectionsSection()',
+                'view' => 'creator.partials.collections-content',
+                'route_name' => 'creator.collections',
+                'route_pattern' => '/creator/{id}/collections',
                 'archetype_required' => 'creator',
             ],
         ],

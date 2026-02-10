@@ -33,6 +33,16 @@ return [
             'languages' => ['it', 'en', 'de', 'es', 'fr', 'pt'],
         ],
 
+        'company.collections' => [
+            'translation_key' => 'ai_contexts.company.collections',
+            'archetype' => 'company',
+            'controller' => 'App\Http\Controllers\CompanyHomeController',
+            'route_name' => 'company.collections',
+            'rag_boost_terms' => 'company collections brand products catalog organization',
+            'priority' => 'high',
+            'languages' => ['it', 'en', 'de', 'es', 'fr', 'pt'],
+        ],
+
         /*
         |--------------------------------------------------------------------------
         | Creator Views
@@ -45,6 +55,16 @@ return [
             'controller' => 'App\Http\Controllers\CreatorHomeController',
             'route_name' => 'creator.portfolio',
             'rag_boost_terms' => 'creator portfolio works biography EPP collections created owned artist',
+            'priority' => 'high',
+            'languages' => ['it', 'en', 'de', 'es', 'fr', 'pt'],
+        ],
+
+        'creator.collections' => [
+            'translation_key' => 'ai_contexts.creator.collections',
+            'archetype' => 'creator',
+            'controller' => 'App\Http\Controllers\CreatorHomeController',
+            'route_name' => 'creator.collections',
+            'rag_boost_terms' => 'creator collections artistic works series creative vision EPP',
             'priority' => 'high',
             'languages' => ['it', 'en', 'de', 'es', 'fr', 'pt'],
         ],

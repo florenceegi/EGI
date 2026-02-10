@@ -398,6 +398,17 @@
                 activeButton.classList.add('active', 'text-[#C9A227]', 'border-[#C9A227]');
                 activeButton.classList.remove('text-gray-300', 'border-transparent');
 
+                // Update AI context based on active tab
+                if (url.includes('/portfolio')) {
+                    window.currentView = 'company.portfolio';
+                } else if (url.includes('/collections')) {
+                    window.currentView = 'company.collections';
+                } else if (url.includes('/about')) {
+                    window.currentView = 'company.about';
+                } else if (url.includes('/impact')) {
+                    window.currentView = 'company.impact';
+                }
+
                 showLoader();
 
                 fetch(url + '?partial=1', {

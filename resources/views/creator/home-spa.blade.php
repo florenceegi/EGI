@@ -377,6 +377,19 @@
                 activeButton.classList.add('active', 'text-oro-fiorentino', 'border-oro-fiorentino');
                 activeButton.classList.remove('text-gray-300', 'border-transparent');
 
+                // Update AI context based on active tab
+                if (url.includes('/portfolio')) {
+                    window.currentView = 'creator.portfolio';
+                } else if (url.includes('/collections')) {
+                    window.currentView = 'creator.collections';
+                } else if (url.includes('/biography')) {
+                    window.currentView = 'creator.biography';
+                } else if (url.includes('/impact')) {
+                    window.currentView = 'creator.impact';
+                } else if (url.includes('/community')) {
+                    window.currentView = 'creator.community';
+                }
+
                 showLoader();
 
                 fetch(url + '?partial=1', {
