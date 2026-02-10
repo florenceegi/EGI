@@ -691,6 +691,193 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Collection Public Page
+    |--------------------------------------------------------------------------
+    */
+
+    'collection' => [
+        'show' => [
+            'title' => 'Pagina Collection - Gallery EGI Pubblica',
+            'description' => 'Pagina pubblica di dettaglio di una singola collection, visibile a tutti (visitor, collector, creator). Mostra gli EGI della collection, informazioni sul creator, eventuale progetto EPP collegato, statistiche.',
+
+            'features' => [
+                'collection_info' => [
+                    'name' => 'Informazioni Collection',
+                    'description' => 'Hero banner con titolo, descrizione, creator info, banner image personalizzabile (solo owner).',
+                    'source' => 'CollectionsController::show() - lines 191-261, collections/show.blade.php',
+                    'actions' => [
+                        'Visualizza nome e descrizione collection',
+                        'Vedi avatar e nome del creator (cliccabile per andare al suo profilo)',
+                        'Badge "Official EPP Collection" se è una collection istituzionale EPP',
+                        'Upload banner (solo se sei il creator/owner della collection)',
+                        'Breadcrumb per tornare all\'indice collections',
+                    ],
+                ],
+
+                'egi_grid' => [
+                    'name' => 'Griglia EGI della Collection',
+                    'description' => 'Grid di tutti gli EGI appartenenti alla collection, con preview immagine, titolo, ID.',
+                    'source' => 'collections/show.blade.php - lines 484-571',
+                    'actions' => [
+                        'Visualizza tutti gli EGI in grid responsive (2 col mobile, 4 desktop, 5 widescreen)',
+                        'Click su EGI per andare alla pagina dettaglio EGI',
+                        'View mode switcher (grid/list/holders/traits) - solo in show normale',
+                        'Sort EGI per: Position, Newest, Oldest, Price Low-High, Price High-Low',
+                        'Filtra EGI se sei il creator (vedi anche unpublished), visitor vede solo published',
+                    ],
+                ],
+
+                'epp_project' => [
+                    'name' => 'Progetto Ambientale EPP',
+                    'description' => 'Se la collection supporta un progetto EPP, mostra dettagli del progetto ambientale (ARF/APR/BPE).',
+                    'source' => 'collections/show.blade.php - lines 376-493',
+                    'actions' => [
+                        'Vedi nome, descrizione, avatar del progetto EPP',
+                        'Progress bar della completion percentage del progetto',
+                        'Badge tipo progetto (ARF = Foreste, APR = Acqua, BPE = Biodiversità)',
+                        'Info organizzazione EPP che gestisce il progetto',
+                        'Percentuale di vendita che va al progetto (20% creator obbligatorio, company volontario)',
+                    ],
+                ],
+
+                'payment_stats' => [
+                    'name' => 'Statistiche Payment Distribution',
+                    'description' => 'Mostra come vengono distribuiti i pagamenti delle vendite EGI (creator, EPP, platform fee).',
+                    'source' => 'collections/show.blade.php - lines 45-62, x-hero-banner-stats component',
+                    'actions' => [
+                        'Visualizza split percentuali pagamenti (desktop & mobile)',
+                        'Vedi quanto va al creator, quanto all\'EPP, quanto alla piattaforma',
+                    ],
+                ],
+
+                'actions_owner' => [
+                    'name' => 'Azioni Owner (Solo Creator)',
+                    'description' => 'Se sei il creator della collection, hai accesso a funzionalità extra di gestione.',
+                    'source' => 'collections/show.blade.php - lines 176-214',
+                    'actions' => [
+                        'Edit: Modifica nome, descrizione, visibility della collection (modale)',
+                        'Dashboard: Apri dashboard monetization (EPP, subscription, stats)',
+                        'Commerce Setup: Configura wizard commerce per vendite',
+                        'Team Management: Gestisci team members con permission (create_team)',
+                        'Share: Condividi link collection (copy to clipboard o native share API)',
+                        'Like: Like/unlike collection (tutti possono farlo, non solo owner)',
+                    ],
+                ],
+
+                'related_collections' => [
+                    'name' => 'Collezioni Correlate',
+                    'description' => 'Mostra altre collections dello stesso creator per discovery.',
+                    'source' => 'collections/show.blade.php - lines 617-633',
+                    'actions' => [
+                        'Vedi fino a 3 altre collections dello stesso creator',
+                        'Click per navigare ad altra collection',
+                    ],
+                ],
+            ],
+
+            'workflow_steps' => [
+                [
+                    'step' => 1,
+                    'title' => 'Esplora la Collection',
+                    'description' => 'Scrolla la gallery EGI, leggi descrizione collection e info sul creator.',
+                ],
+                [
+                    'step' => 2,
+                    'title' => 'Seleziona un EGI di Interesse',
+                    'description' => 'Click su EGI card per aprire pagina dettaglio EGI e vedere prezzo, traits, disponibilità.',
+                ],
+                [
+                    'step' => 3,
+                    'title' => 'Acquista o Riserva EGI',
+                    'description' => 'Dalla pagina EGI, acquista direttamente (se abilitato) o fai reservation se serve approval creator.',
+                ],
+                [
+                    'step' => 4,
+                    'title' => 'Supporta il Progetto EPP (Se Presente)',
+                    'description' => 'Se la collection ha EPP, una percentuale della tua spesa va automaticamente al progetto ambientale.',
+                ],
+            ],
+
+            'user_tasks' => [
+                'first_time' => [
+                    'Leggi descrizione collection per capire il tema e lo stile',
+                    'Guarda chi è il creator (click sull\'avatar per vedere il suo profilo completo)',
+                    'Se c\'è un EPP, scopri quale progetto ambientale stai supportando',
+                    'Esplora la gallery EGI e familiarizza con i sorting/filtering',
+                ],
+                'experienced' => [
+                    'Usa view selector per passare da grid a list a holders view',
+                    'Usa sorting per trovare velocemente EGI per prezzo o data',
+                    'Check dashboard monetization se sei owner (gestisci EPP, subscription)',
+                    'Invita team members se sei owner (team management button)',
+                ],
+            ],
+
+            'common_questions' => [
+                'come_acquistare' => [
+                    'q' => 'Come acquisto un EGI da questa collection?',
+                    'a' => 'Click su qualsiasi EGI card nella gallery per aprire la pagina dettaglio. Lì troverai il pulsante "Acquista" o "Riserva" (se serve approvazione creator). Segui il checkout flow con pagamento Stripe o Egili (valuta interna).',
+                ],
+                'epp_cosa' => [
+                    'q' => 'Cos\'è l\'EPP mostrato in questa collection?',
+                    'a' => 'EPP = Enhanced Percentage Program (Ecological Goods Invent). È un progetto ambientale verificato (Riforestazione ARF, Protezione Acqua APR, Biodiversità BPE) che riceve una percentuale delle vendite. Per Creator è OBBLIGATORIO 20%. Per Company è VOLONTARIO (scelgono loro la %)',
+                ],
+                'creator_contact' => [
+                    'q' => 'Come posso contattare il creator di questa collection?',
+                    'a' => 'Click sull\'avatar o nome del creator nell\'hero banner per andare al suo profilo. Da lì troverai eventuali link social (Instagram, Twitter, Website) e potrai vedere tutte le sue altre collections.',
+                ],
+                'differenza_view' => [
+                    'q' => 'Cosa cambia tra Grid, List e Holders view?',
+                    'a' => 'Grid = card visuale con immagine (default). List = riga compatta con info tabellare. Holders = mostra i collector che possiedono EGI di questa collection. Traits = metadata attributi (coming soon).',
+                ],
+                'owner_dashboard' => [
+                    'q' => 'A cosa serve il bottone Dashboard (solo owner)?',
+                    'a' => 'Se sei il creator, Dashboard ti permette di: 1) Gestire monetizzazione (EPP selection, subscription tier), 2) Vedere statistiche vendite, 3) Configurare commerce setup wizard. È il centro controllo della collection.',
+                ],
+                'posso_rivendere' => [
+                    'q' => 'Posso rivendere un EGI che ho comprato da questa collection?',
+                    'a' => 'SÌ! Gli EGI sono NFT trasferibili. Vai al tuo portfolio Owned, click sull\'EGI e usa "Sell" o "Transfer". Il mercato secondario è fully supported con royalty al creator originale.',
+                ],
+            ],
+
+            'tips' => [
+                'Usa il sorting "Price Low to High" per trovare entry point economici nella collection',
+                'Se vedi un EPP badge verde, significa che stai supportando progetti ambientali reali acquistando',
+                'Controlla "Related Collections" in fondo per scoprire altri lavori dello stesso creator',
+                'Il creator vede anche EGI non pubblicati (drafts), tu come visitor vedi solo published',
+            ],
+
+            'warnings' => [
+                'Solo il creator può modificare nome/descrizione/banner della collection',
+                'Solo il creator può configurare EPP e monetizzazione (Dashboard)',
+                'Gli EGI in questa gallery possono avere diversi stati (published, reserved, sold)',
+                'Se la collection ha subscription attiva, il creator può mintare unlimited EGI (no per-mint fee)',
+            ],
+
+            'technical_info' => [
+                'controller' => 'App\Http\Controllers\CollectionsController',
+                'methods' => ['show($id)'],
+                'route_name' => 'collections.show',
+                'route_pattern' => '/collections/{id}',
+                'views' => [
+                    'collections.show' => 'Vista normale con dashboard, monetization, view switcher',
+                    'collections.show-epp' => 'Vista semplificata per EPP institutional collections',
+                ],
+                'models' => ['Collection', 'Egi', 'EppProject', 'User (creator)'],
+                'permissions' => [
+                    'create_collection' => 'Edit, Dashboard, Upload banner, Commerce setup',
+                    'create_team' => 'Team Management button',
+                ],
+                'eager_loading' => [
+                    'creator', 'epp', 'eppProject', 'egis', 'likes', 'reservations',
+                ],
+                'filtering' => 'Creator sees all EGIs (published + unpublished), visitors see only published',
+            ],
+        ],
+    ],
+
     // Altri archetipi (da aggiungere in futuro)
     // 'epp' => [...],
     // 'pa' => [...],

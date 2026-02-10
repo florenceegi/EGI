@@ -87,6 +87,22 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Collection Views
+        |--------------------------------------------------------------------------
+        */
+
+        'collection.show' => [
+            'translation_key' => 'ai_contexts.collection.show',
+            'archetype' => 'public', // Visible to all users
+            'controller' => 'App\Http\Controllers\CollectionsController',
+            'route_name' => 'collections.show',
+            'rag_boost_terms' => 'collection EGI gallery creator EPP environmental project purchase reserve',
+            'priority' => 'high',
+            'languages' => ['it', 'en', 'de', 'es', 'fr', 'pt'],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
         | Future Views (Template)
         |--------------------------------------------------------------------------
         |

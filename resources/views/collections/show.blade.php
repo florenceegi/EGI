@@ -20,6 +20,14 @@ $isEppCollection = $collection->creator && in_array($collection->creator->userty
 <x-collection-layout :title="$collection->collection_name . ' | FlorenceEGI'" :metaDescription="Str::limit($collection->description, 155) ??
     __('collection.show.details_for_collection') . ' ' . $collection->collection_name">
 
+    {{-- Set View Context for AI Sidebar --}}
+    @push('scripts')
+        <script>
+            // Set current view context for AI
+            window.currentView = 'collection.show';
+        </script>
+    @endpush
+
     {{-- Schema.org ottimizzato --}}
     <x-slot name="schemaMarkup">
         <script type="application/ld+json">
@@ -648,6 +656,20 @@ if (auth()->check()) {
             </button>
         </div>
     </div>
+
+    {{-- 🤖 AI Art Advisor Modal (Available to All Users) --}}
+    <x-art-advisor-modal
+        :context="[
+            'collection_id' => $collection->id,
+            'collection_name' => $collection->collection_name,
+            'creator_name' => $collection->creator->name ?? 'Unknown',
+            'egis_count' => $collection->egis_count ?? 0,
+            'has_epp' => $collection->eppProject ? true : false,
+            'epp_name' => $collection->eppProject->name ?? null,
+        ]"
+        :mode="'general'"
+        :auto-open="false"
+    />
 
     {{-- JavaScript Enhancements --}}
     @push('scripts')
@@ -1518,6 +1540,9 @@ if (auth()->check()) {
                 @apply transition-opacity duration-200;
             }
         </style>
+
+        {{-- AI Art Advisor Script --}}
+        <script src="{{ asset('js/art-advisor.js') }}" defer></script>
     @endpush
 
 </x-collection-layout>
