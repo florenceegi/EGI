@@ -273,12 +273,220 @@ class CollectionsController extends Controller {
             $onboardingChecklist = $this->onboardingService->getChecklist($collection->creator, $userType);
         }
 
+        // Generate context-aware AI sidebar message based on user role
+        $sidebarContextMessage = $this->generateCollectionSidebarContext($collection);
+
         // Se è una collezione EPP (tipo environmental), usa la vista semplificata
         if ($collection->type === 'environmental') {
-            return view('collections.show-epp', compact('collection', 'onboardingChecklist'));
+            return view('collections.show-epp', compact('collection', 'onboardingChecklist', 'sidebarContextMessage'));
         }
 
-        return view('collections.show', compact('collection', 'onboardingChecklist'));
+        return view('collections.show', compact('collection', 'onboardingChecklist', 'sidebarContextMessage'));
+    }
+
+    /**
+     * Generate context-aware AI sidebar message for collection page.
+     *
+     * Creates personalized welcome message based on user role:
+     * - Owner: Collection management, optimization, monetization guidance
+     * - Visitor: Marketing, value proposition, purchase process
+     * - Guest: Platform introduction, registration CTA
+     *
+     * @param Collection $collection The collection being viewed
+     * @return string HTML message for sidebar context
+     */
+    protected function generateCollectionSidebarContext(Collection $collection): string
+    {
+        $isOwner = auth()->check() && $collection->creator && auth()->id() === $collection->creator->id;
+        $isLoggedIn = auth()->check();
+
+        // Prepare common data
+        $data = [
+            'collection_name' => $collection->name,
+            'egi_count' => $collection->egis_count ?? $collection->egis->count(),
+            'creator_name' => $collection->creator->name ?? 'Creatore',
+        ];
+
+        // OWNER VIEW - Management & Optimization
+        if ($isOwner) {
+            $publishedCount = $collection->egis->where('is_published', true)->count();
+            $draftCount = $collection->egis->where('is_published', false)->count();
+            $soldCount = $collection->egis->where('status', 'sold')->count();
+
+            $ownerData = array_merge($data, [
+                'name' => $collection->creator->name,
+                'published_count' => $publishedCount,
+                'draft_count' => $draftCount,
+                'sold_count' => $soldCount,
+            ]);
+
+            return $this->renderSidebarMessage('collection.show.sidebar_contexts.owner', $ownerData);
+        }
+
+        // VISITOR VIEW - Marketing & Conversion
+        if ($isLoggedIn) {
+            $availableCount = $collection->egis->where('is_published', true)->where('status', 'available')->count();
+            $eppName = $collection->epp->name ?? null;
+
+            $visitorData = array_merge($data, [
+                'name' => auth()->user()->name,
+                'available_count' => $availableCount,
+                'epp_name' => $eppName,
+                'creator_type_label' => $this->getCreatorTypeLabel($collection->creator),
+                'creator_url' => $this->getCreatorProfileUrl($collection->creator),
+            ]);
+
+            return $this->renderSidebarMessage('collection.show.sidebar_contexts.visitor', $visitorData);
+        }
+
+        // GUEST VIEW - Platform Introduction & Registration CTA
+        return $this->renderSidebarMessage('collection.show.sidebar_contexts.guest', $data);
+    }
+
+    /**
+     * Render sidebar message from translation keys with variable interpolation.
+     *
+     * @param string $contextPath Translation path (e.g., 'collection.show.owner')
+     * @param array $data Variables to interpolate
+     * @return string HTML message
+     */
+    protected function renderSidebarMessage(string $contextPath, array $data): string
+    {
+        $context = __("ai_contexts.{$contextPath}");
+
+        if (!is_array($context)) {
+            return '<p>' . __('ai_sidebar.default_message') . '</p>';
+        }
+
+        $html = [];
+
+        // Greeting
+        if (isset($context['greeting'])) {
+            $html[] = '<p>' . $this->interpolate($context['greeting'], $data) . '</p>';
+        }
+
+        // Intro
+        if (isset($context['intro'])) {
+            $html[] = '<p>' . $this->interpolate($context['intro'], $data) . '</p>';
+        }
+
+        // Status (Owner only)
+        if (isset($context['status_title'])) {
+            $html[] = '<p class="mt-3"><strong>' . $context['status_title'] . '</strong></p>';
+            $html[] = '<ul class="ml-4 list-disc space-y-1 text-gray-300">';
+            foreach (['status_egis', 'status_published', 'status_drafts', 'status_sold'] as $key) {
+                if (isset($context[$key])) {
+                    $html[] = '<li>' . $this->interpolate($context[$key], $data) . '</li>';
+                }
+            }
+            $html[] = '</ul>';
+        }
+
+        // Actions (Owner only)
+        if (isset($context['actions_title']) && isset($context['actions'])) {
+            $html[] = '<p class="mt-3"><strong>' . $context['actions_title'] . '</strong></p>';
+            $html[] = '<ul class="ml-4 list-disc space-y-1 text-sm text-gray-300">';
+            foreach ($context['actions'] as $action) {
+                $html[] = '<li>' . $action . '</li>';
+            }
+            $html[] = '</ul>';
+        }
+
+        // Value Props (Visitor only)
+        if (isset($context['value_title']) && isset($context['value_props'])) {
+            $html[] = '<p class="mt-3"><strong>' . $context['value_title'] . '</strong></p>';
+            $html[] = '<ul class="ml-4 list-disc space-y-1 text-sm text-gray-300">';
+            foreach ($context['value_props'] as $prop) {
+                $html[] = '<li>' . $prop . '</li>';
+            }
+            $html[] = '</ul>';
+        }
+
+        // Why Join (Guest only)
+        if (isset($context['why_join_title']) && isset($context['why_join_reasons'])) {
+            $html[] = '<p class="mt-3"><strong>' . $context['why_join_title'] . '</strong></p>';
+            $html[] = '<ul class="ml-4 list-disc space-y-1 text-sm text-gray-300">';
+            foreach ($context['why_join_reasons'] as $reason) {
+                $html[] = '<li>' . $reason . '</li>';
+            }
+            $html[] = '</ul>';
+        }
+
+        // Help Offer
+        if (isset($context['help_offer'])) {
+            $html[] = '<p class="mt-3">' . $this->interpolate($context['help_offer'], $data) . '</p>';
+        }
+
+        // CTA
+        if (isset($context['cta'])) {
+            $html[] = '<p class="mt-2 text-sm text-indigo-300">' . $this->interpolate($context['cta'], $data) . '</p>';
+        }
+
+        // CTA Register (Guest only)
+        if (isset($context['cta_register'])) {
+            $html[] = '<div class="mt-4">' . $context['cta_register'] . '</div>';
+        }
+
+        return implode("\n", $html);
+    }
+
+    /**
+     * Interpolate variables in translation strings.
+     *
+     * @param string $string String with :var placeholders
+     * @param array $data Associative array of variables
+     * @return string Interpolated string
+     */
+    protected function interpolate(string $string, array $data): string
+    {
+        foreach ($data as $key => $value) {
+            $string = str_replace(":{$key}", $value ?? '', $string);
+        }
+        return $string;
+    }
+
+    /**
+     * Get creator type label for display.
+     *
+     * @param mixed $creator User model
+     * @return string Localized creator type
+     */
+    protected function getCreatorTypeLabel($creator): string
+    {
+        if (!$creator) {
+            return __('ai_contexts.collection.show.sidebar_contexts.unknown_creator');
+        }
+
+        $usertype = $creator->usertype ?? 'creator';
+
+        return match (strtolower($usertype)) {
+            'company' => __('ai_contexts.collection.show.sidebar_contexts.creator_types.company'),
+            'creator' => __('ai_contexts.collection.show.sidebar_contexts.creator_types.creator'),
+            'collector' => __('ai_contexts.collection.show.sidebar_contexts.creator_types.collector'),
+            default => __('ai_contexts.collection.show.sidebar_contexts.creator_types.creator'),
+        };
+    }
+
+    /**
+     * Get creator profile URL.
+     *
+     * @param mixed $creator User model
+     * @return string Profile URL
+     */
+    protected function getCreatorProfileUrl($creator): string
+    {
+        if (!$creator) {
+            return '#';
+        }
+
+        $usertype = strtolower($creator->usertype ?? 'creator');
+
+        return match ($usertype) {
+            'company' => route('company.portfolio', ['nick_name' => $creator->nick_name]),
+            'creator' => route('creator.portfolio', ['nick_name' => $creator->nick_name]),
+            'collector' => route('collector.home', ['nick_name' => $creator->nick_name]),
+            default => '#',
+        };
     }
 
     /**

@@ -22,6 +22,8 @@
     'user' => null,
     'userType' => 'creator',
     'checklist' => [],
+    'contextMessage' => null, // Optional: Custom page-specific message
+    'showChecklist' => true,  // Optional: Toggle checklist section
 ])
 
 @php
@@ -29,10 +31,13 @@
     $completedCount = collect($checklist)->where('completed', true)->count();
     $totalCount = count($checklist);
     $progressPercent = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
+
+    // Show sidebar if: owner with checklist OR custom context message provided
+    $shouldShowSidebar = ($isOwner && $totalCount > 0) || $contextMessage;
 @endphp
 
-{{-- Show only to profile owner --}}
-@if ($isOwner && $totalCount > 0)
+{{-- Show to profile owner with checklist OR when custom context message is provided --}}
+@if ($shouldShowSidebar)
     @push('styles')
         <style>
             /* AI Sidebar Animations */
@@ -168,7 +173,7 @@
         <div class="flex-1 overflow-hidden border-b border-gray-700/50">
             {{-- AI Message Area --}}
             <div id="ai-sidebar-chat" class="h-full overflow-y-auto p-4 pt-8">
-                {{-- Initial AI message - Discorsivo basato su cosa manca --}}
+                {{-- Initial AI message - Context-aware or checklist-based --}}
                 <div class="ai-message rounded-xl bg-gradient-to-r from-indigo-900/30 to-purple-900/30 p-4">
                     <div class="mb-3 flex items-center gap-2">
                         <div
@@ -178,60 +183,67 @@
                         <span class="text-xs font-medium text-indigo-300">{{ __('ai_sidebar.assistant_name') }}</span>
                     </div>
 
-                    {{-- Messaggio discorsivo generato in PHP --}}
-                    @php
-                        $incompleteItems = collect($checklist)->where('completed', false);
-                        $completedItems = collect($checklist)->where('completed', true);
-                        $totalIncomplete = $incompleteItems->count();
-                    @endphp
+                    @if ($contextMessage)
+                        {{-- Custom page-specific message --}}
+                        <div class="space-y-3 text-base font-normal leading-relaxed text-gray-200">
+                            {!! $contextMessage !!}
+                        </div>
+                    @else
+                        {{-- Messaggio discorsivo generato in PHP basato su checklist --}}
+                        @php
+                            $incompleteItems = collect($checklist)->where('completed', false);
+                            $completedItems = collect($checklist)->where('completed', true);
+                            $totalIncomplete = $incompleteItems->count();
+                        @endphp
 
-                    <div class="space-y-3 text-base font-normal leading-relaxed text-gray-200">
-                        @if ($totalIncomplete === 0)
-                            {{-- Tutto completato --}}
-                            <p>🎉 <strong>{{ __('ai_sidebar.discourse.complete_title') }}</strong></p>
-                            <p>{{ __('ai_sidebar.discourse.complete_text') }}</p>
-                        @else
-                            {{-- Saluto e stato --}}
-                            <p>{{ __('ai_sidebar.discourse.greeting') }}
-                                <strong>{{ $user->name }}</strong>{{ __('ai_sidebar.discourse.greeting_suffix') }}
-                            </p>
+                        <div class="space-y-3 text-base font-normal leading-relaxed text-gray-200">
+                            @if ($totalIncomplete === 0)
+                                {{-- Tutto completato --}}
+                                <p>🎉 <strong>{{ __('ai_sidebar.discourse.complete_title') }}</strong></p>
+                                <p>{{ __('ai_sidebar.discourse.complete_text') }}</p>
+                            @else
+                                {{-- Saluto e stato --}}
+                                <p>{{ __('ai_sidebar.discourse.greeting') }}
+                                    <strong>{{ $user->name }}</strong>{{ __('ai_sidebar.discourse.greeting_suffix') }}
+                                </p>
 
-                            <p>{{ __('ai_sidebar.discourse.progress_intro') }}
-                                <strong>{{ $completedItems->count() }}</strong>
-                                {{ __('ai_sidebar.discourse.progress_of') }}
-                                <strong>{{ $totalCount }}</strong>{{ __('ai_sidebar.discourse.progress_suffix') }}
-                            </p>
-                            </p>
+                                <p>{{ __('ai_sidebar.discourse.progress_intro') }}
+                                    <strong>{{ $completedItems->count() }}</strong>
+                                    {{ __('ai_sidebar.discourse.progress_of') }}
+                                    <strong>{{ $totalCount }}</strong>{{ __('ai_sidebar.discourse.progress_suffix') }}
+                                </p>
+                                </p>
 
-                            {{-- Analisi di cosa manca --}}
-                            <p><strong>{{ __('ai_sidebar.discourse.missing_title') }}</strong></p>
+                                {{-- Analisi di cosa manca --}}
+                                <p><strong>{{ __('ai_sidebar.discourse.missing_title') }}</strong></p>
 
-                            <ul class="ml-4 list-disc space-y-1 text-gray-300">
-                                @foreach ($incompleteItems as $item)
-                                    <li>{{ __($item['title_key']) }}</li>
-                                @endforeach
-                            </ul>
+                                <ul class="ml-4 list-disc space-y-1 text-gray-300">
+                                    @foreach ($incompleteItems as $item)
+                                        <li>{{ __($item['title_key']) }}</li>
+                                    @endforeach
+                                </ul>
 
-                            {{-- Suggerimento prioritario --}}
-                            @php
-                                $firstIncomplete = $incompleteItems->first();
-                            @endphp
+                                {{-- Suggerimento prioritario --}}
+                                @php
+                                    $firstIncomplete = $incompleteItems->first();
+                                @endphp
 
-                            @if ($firstIncomplete)
-                                <p class="mt-3 border-l-2 border-indigo-500 pl-3 text-indigo-200">
-                                    💡 {{ __('ai_sidebar.discourse.suggestion_intro') }}
-                                    <strong>{{ __($firstIncomplete['title_key']) }}</strong>.
-                                    @if (isset($firstIncomplete['description_key']))
-                                        {{ __($firstIncomplete['description_key']) }}
-                                    @endif
+                                @if ($firstIncomplete)
+                                    <p class="mt-3 border-l-2 border-indigo-500 pl-3 text-indigo-200">
+                                        💡 {{ __('ai_sidebar.discourse.suggestion_intro') }}
+                                        <strong>{{ __($firstIncomplete['title_key']) }}</strong>.
+                                        @if (isset($firstIncomplete['description_key']))
+                                            {{ __($firstIncomplete['description_key']) }}
+                                        @endif
+                                    </p>
+                                @endif
+
+                                <p class="mt-2 text-xs text-gray-400">
+                                    {{ __('ai_sidebar.discourse.click_hint') }}
                                 </p>
                             @endif
-
-                            <p class="mt-2 text-xs text-gray-400">
-                                {{ __('ai_sidebar.discourse.click_hint') }}
-                            </p>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -254,66 +266,68 @@
         </div>
 
         {{-- Checklist Section (Bottom) - Stripe-style --}}
-        <div class="max-h-[40%] overflow-y-auto">
-            {{-- Progress Header --}}
-            <div class="sticky top-0 border-b border-gray-700/50 bg-gray-900/95 px-4 py-3 backdrop-blur">
-                <div class="mb-2 flex items-center justify-between">
-                    <span class="text-xs font-medium text-gray-400">{{ __('ai_sidebar.checklist.progress') }}</span>
-                    <span class="text-xs font-semibold text-white">{{ $completedCount }}/{{ $totalCount }}</span>
+        @if ($showChecklist && $totalCount > 0)
+            <div class="max-h-[40%] overflow-y-auto">
+                {{-- Progress Header --}}
+                <div class="sticky top-0 border-b border-gray-700/50 bg-gray-900/95 px-4 py-3 backdrop-blur">
+                    <div class="mb-2 flex items-center justify-between">
+                        <span class="text-xs font-medium text-gray-400">{{ __('ai_sidebar.checklist.progress') }}</span>
+                        <span class="text-xs font-semibold text-white">{{ $completedCount }}/{{ $totalCount }}</span>
+                    </div>
+                    <div class="h-1.5 overflow-hidden rounded-full bg-gray-700">
+                        <div class="progress-fill h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
+                            style="width: {{ $progressPercent }}%"></div>
+                    </div>
                 </div>
-                <div class="h-1.5 overflow-hidden rounded-full bg-gray-700">
-                    <div class="progress-fill h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
-                        style="width: {{ $progressPercent }}%"></div>
-                </div>
-            </div>
 
-            {{-- Checklist Items --}}
-            <ul id="ai-sidebar-checklist" class="divide-y divide-gray-700/50 p-2">
-                @foreach ($checklist as $index => $item)
-                    <li class="checklist-item {{ $item['completed'] ? 'completed' : '' }} cursor-pointer rounded-lg px-3 py-2.5"
-                        data-step-id="{{ $item['id'] }}" data-action="{{ $item['action'] ?? '' }}"
-                        data-modal="{{ $item['modal'] ?? '' }}">
-                        <div class="flex items-start gap-3">
-                            {{-- Status Icon --}}
-                            <div
-                                class="{{ $item['completed'] ? 'bg-green-500' : 'border-2 border-gray-500' }} mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full">
-                                @if ($item['completed'])
-                                    <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                @else
-                                    <span class="text-[10px] font-bold text-gray-500">{{ $index + 1 }}</span>
-                                @endif
-                            </div>
+                {{-- Checklist Items --}}
+                <ul id="ai-sidebar-checklist" class="divide-y divide-gray-700/50 p-2">
+                    @foreach ($checklist as $index => $item)
+                        <li class="checklist-item {{ $item['completed'] ? 'completed' : '' }} cursor-pointer rounded-lg px-3 py-2.5"
+                            data-step-id="{{ $item['id'] }}" data-action="{{ $item['action'] ?? '' }}"
+                            data-modal="{{ $item['modal'] ?? '' }}">
+                            <div class="flex items-start gap-3">
+                                {{-- Status Icon --}}
+                                <div
+                                    class="{{ $item['completed'] ? 'bg-green-500' : 'border-2 border-gray-500' }} mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full">
+                                    @if ($item['completed'])
+                                        <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    @else
+                                        <span class="text-[10px] font-bold text-gray-500">{{ $index + 1 }}</span>
+                                    @endif
+                                </div>
 
-                            {{-- Content --}}
-                            <div class="min-w-0 flex-1">
-                                <p
-                                    class="{{ $item['completed'] ? 'text-gray-500 line-through' : 'text-white' }} text-sm font-medium">
-                                    {{ __($item['title_key']) }}
-                                </p>
-                                @if (!$item['completed'] && isset($item['description_key']))
-                                    <p class="mt-0.5 truncate text-xs text-gray-400">
-                                        {{ __($item['description_key']) }}
+                                {{-- Content --}}
+                                <div class="min-w-0 flex-1">
+                                    <p
+                                        class="{{ $item['completed'] ? 'text-gray-500 line-through' : 'text-white' }} text-sm font-medium">
+                                        {{ __($item['title_key']) }}
                                     </p>
+                                    @if (!$item['completed'] && isset($item['description_key']))
+                                        <p class="mt-0.5 truncate text-xs text-gray-400">
+                                            {{ __($item['description_key']) }}
+                                        </p>
+                                    @endif
+                                </div>
+
+                                {{-- Arrow for incomplete items --}}
+                                @if (!$item['completed'])
+                                    <svg class="h-4 w-4 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
+                                    </svg>
                                 @endif
                             </div>
-
-                            {{-- Arrow for incomplete items --}}
-                            @if (!$item['completed'])
-                                <svg class="h-4 w-4 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
-                            @endif
-                        </div>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </aside>
 @endif
 

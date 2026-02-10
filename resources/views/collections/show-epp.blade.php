@@ -613,14 +613,22 @@ $isEppCollection = $collection->creator && in_array($collection->creator->userty
         </div>
     </div>
 
-    {{-- 🤖 AI Sidebar - Onboarding Assistant (Owner Only) --}}
-    @if ($collection->creator && !empty($onboardingChecklist))
-        <x-ai-sidebar
-            :user="$collection->creator"
-            :userType="in_array($collection->creator->usertype, ['company', 'Company']) ? 'company' : 'creator'"
-            :checklist="$onboardingChecklist"
-        />
-    @endif
+    {{-- 🤖 AI Sidebar - Context-Aware Assistant (Owner/Visitor/Guest) --}}
+    @php
+        $isOwner = auth()->check() && $collection->creator && auth()->id() === $collection->creator->id;
+        $sidebarUser = $isOwner ? $collection->creator : (auth()->user() ?? $collection->creator);
+        $sidebarUserType = $isOwner
+            ? (in_array($collection->creator->usertype, ['company', 'Company']) ? 'company' : 'creator')
+            : (auth()->check() ? (auth()->user()->usertype ?? 'creator') : 'creator');
+    @endphp
+
+    <x-ai-sidebar
+        :user="$sidebarUser"
+        :userType="$sidebarUserType"
+        :checklist="$isOwner ? $onboardingChecklist : []"
+        :contextMessage="$sidebarContextMessage"
+        :showChecklist="$isOwner"
+    />
 
     {{-- JavaScript Enhancements --}}
     @push('scripts')

@@ -26,6 +26,8 @@ return [
         'all_done' => 'Alle Einrichtungsschritte abgeschlossen!',
     ],
 
+    'default_message' => 'Hallo! Ich bin Natan, dein KI-Assistent. Ich kann dir bei allen Fragen zur Plattform, deinen Werken und vielem mehr helfen. Frag einfach!',
+
     // Checklist
     'checklist' => [
         'progress' => 'Einrichtungsfortschritt',

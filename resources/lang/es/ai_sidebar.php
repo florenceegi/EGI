@@ -26,6 +26,8 @@ return [
         'all_done' => '¡Todos los pasos completados!',
     ],
 
+    'default_message' => '¡Hola! Soy Natan, tu asistente IA. Puedo ayudarte con cualquier pregunta sobre la plataforma, tus obras y mucho más. ¡Pregúntame!',
+
     // Checklist
     'checklist' => [
         'progress' => 'Progreso de configuración',

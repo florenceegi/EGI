@@ -26,6 +26,8 @@ return [
         'all_done' => 'All setup steps completed!',
     ],
 
+    'default_message' => 'Hi! I\'m Natan, your AI assistant. I can help you with any questions about the platform, your works and much more. Feel free to ask!',
+
     // Checklist
     'checklist' => [
         'progress' => 'Setup progress',
