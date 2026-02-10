@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use App\Services\CollectionService;
+use App\Services\OnboardingChecklistService;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -36,6 +37,19 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @since 1.0.0
  */
 class CollectionsController extends Controller {
+    /**
+     * @var OnboardingChecklistService
+     */
+    protected OnboardingChecklistService $onboardingService;
+
+    /**
+     * Constructor with dependency injection
+     *
+     * @param OnboardingChecklistService $onboardingService
+     */
+    public function __construct(OnboardingChecklistService $onboardingService) {
+        $this->onboardingService = $onboardingService;
+    }
     /**
      * Display a paginated listing of collections.
      *
@@ -252,12 +266,19 @@ class CollectionsController extends Controller {
         // Usa il conteggio ottimizzato invece del query aggiuntivo
         // $collection->likes_count è già disponibile tramite withCount
 
-        // Se è una collezione EPP (tipo environmental), usa la vista semplificata
-        if ($collection->type === 'environmental') {
-            return view('collections.show-epp', compact('collection'));
+        // Get onboarding checklist for owner (creator or company)
+        $onboardingChecklist = [];
+        if ($collection->creator && auth()->check() && auth()->id() === $collection->creator->id) {
+            $userType = in_array($collection->creator->usertype, ['company', 'Company']) ? 'company' : 'creator';
+            $onboardingChecklist = $this->onboardingService->getChecklist($collection->creator, $userType);
         }
 
-        return view('collections.show', compact('collection'));
+        // Se è una collezione EPP (tipo environmental), usa la vista semplificata
+        if ($collection->type === 'environmental') {
+            return view('collections.show-epp', compact('collection', 'onboardingChecklist'));
+        }
+
+        return view('collections.show', compact('collection', 'onboardingChecklist'));
     }
 
     /**

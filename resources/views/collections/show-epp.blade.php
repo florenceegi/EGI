@@ -614,11 +614,11 @@ $isEppCollection = $collection->creator && in_array($collection->creator->userty
     </div>
 
     {{-- 🤖 AI Sidebar - Onboarding Assistant (Owner Only) --}}
-    @if ($collection->creator)
+    @if ($collection->creator && !empty($onboardingChecklist))
         <x-ai-sidebar
             :user="$collection->creator"
-            :userType="$collection->creator->usertype === 'company' ? 'company' : 'creator'"
-            :checklist="[]"
+            :userType="in_array($collection->creator->usertype, ['company', 'Company']) ? 'company' : 'creator'"
+            :checklist="$onboardingChecklist"
         />
     @endif
 
