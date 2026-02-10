@@ -657,19 +657,14 @@ if (auth()->check()) {
         </div>
     </div>
 
-    {{-- 🤖 AI Art Advisor Modal (Available to All Users) --}}
-    <x-art-advisor-modal
-        :context="[
-            'collection_id' => $collection->id,
-            'collection_name' => $collection->collection_name,
-            'creator_name' => $collection->creator->name ?? 'Unknown',
-            'egis_count' => $collection->egis_count ?? 0,
-            'has_epp' => $collection->eppProject ? true : false,
-            'epp_name' => $collection->eppProject->name ?? null,
-        ]"
-        :mode="'general'"
-        :auto-open="false"
-    />
+    {{-- 🤖 AI Sidebar - Onboarding Assistant (Owner Only) --}}
+    @if ($collection->creator)
+        <x-ai-sidebar
+            :user="$collection->creator"
+            :userType="$collection->creator->usertype === 'company' ? 'company' : 'creator'"
+            :checklist="[]"
+        />
+    @endif
 
     {{-- JavaScript Enhancements --}}
     @push('scripts')
@@ -1540,9 +1535,6 @@ if (auth()->check()) {
                 @apply transition-opacity duration-200;
             }
         </style>
-
-        {{-- AI Art Advisor Script --}}
-        <script src="{{ asset('js/art-advisor.js') }}" defer></script>
     @endpush
 
 </x-collection-layout>
