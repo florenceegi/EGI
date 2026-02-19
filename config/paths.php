@@ -2,26 +2,26 @@
 // config/paths.php
 
 return [
-    'default_hosting' => env('DEFAULT_HOSTING', 'Local'),
+    'default_hosting' => env('DEFAULT_HOSTING', 'AWS'),
 
     'hosting' => [
         'Local' => [
             'url' => '/storage/',
             'disk' => 'public',
-            'is_default' => true,
-            'is_active' => true,
+            'is_default' => false,
+            'is_active' => false,
         ],
         'Digital Ocean' => [
             'url' => env('BUCKET_PATH_FILE_FOLDER_READ', 'https://frangettediskspace.fra1.digitaloceanspaces.com'),
             'disk' => 'do',
             'is_default' => false,
-            'is_active' => true,
+            'is_active' => false,
         ],
         'AWS' => [
-            'url' => env('AWS_URL', 'https://aws.example.com'),
+            'url' => env('AWS_URL', 'https://media.florenceegi.com'),
             'disk' => 's3',
-            'is_default' => false,
-            'is_active' => false,
+            'is_default' => true,
+            'is_active' => true,
         ],
         'IPFS' => [
             'url' => 'https://ipfs.io/ipfs/',
