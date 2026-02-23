@@ -37,11 +37,11 @@ return [
     'create_your_gallery_aria' => 'Regístrate para crear tu galería EGI',
 
     // Meta Tags para home.blade.php
-    'page_title' => 'FlorenceEGI – El Nuevo Renacimiento Ecológico Digital',
+    'page_title' => 'FlorenceEGI – Vende una vez. Gana para siempre. Genera Equilibrio.',
     'meta_description' => 'Descubre FlorenceEGI, el ecosistema donde el arte genera valor compartido y contribuye activamente a la protección y restauración ambiental. Participa en el cambio.',
 
     // Collection Hero Banner (collection-hero-banner.blade.php)
-    'hero_banner_title' => 'FlorenceEGI – El nuevo Renacimiento ecológico digital.',
+    'hero_banner_title' => 'FlorenceEGI – Vende una vez. Gana para siempre. Genera Equilibrio.',
     'hero_banner_subtitle' => 'Donde la participación transforma el mercado en virtud.',
     'hero_banner_cta' => 'Cada obra que compras financia iniciativas reales para proteger nuestro ambiente.',
     'by' => 'por',
