@@ -561,12 +561,14 @@ class EgiUploadHandler {
 
             try {
                 // Generate optimized variants using the ImageOptimizationManager
+                // Use configured storage disks (aligned with S3 migration)
+                $optimizationDisks = Config::get('egi.storage.disks', ['s3']);
                 $optimizedVariants = $this->imageOptimizationManager->optimizeImage(
                     $file,
                     $basePath,
                     $egi->key_file,
                     [], // Use default variants
-                    ['local', 'public'] // Save to both disks
+                    $optimizationDisks
                 );
 
                 $this->logger->info('[EGI Upload] Image optimization completed successfully', [
@@ -840,8 +842,16 @@ class EgiUploadHandler {
                 }
 
                 // Attempt storage with appropriate visibility
+                // S3 con CloudFront usa 'private' (CloudFront serve via OAC),
+                // e non passiamo visibility per evitare errori ACL su bucket S3
                 $visibility = Config::get("egi.storage.visibility.{$disk}", 'public');
-                $success = Storage::disk($disk)->put($pathKey, $contents, $visibility);
+                $diskDriver = Config::get("filesystems.disks.{$disk}.driver", 'local');
+
+                if ($diskDriver === 's3' && $visibility === 'private') {
+                    $success = Storage::disk($disk)->put($pathKey, $contents);
+                } else {
+                    $success = Storage::disk($disk)->put($pathKey, $contents, $visibility);
+                }
 
                 if (!$success) {
                     throw new Exception("Storage::put returned false for disk '{$disk}'");

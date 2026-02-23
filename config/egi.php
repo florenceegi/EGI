@@ -220,15 +220,27 @@ return [
          * @env EGI_STORAGE_DISKS (comma-separated string, e.g., "do,local_backup")
          * @type array
          */
-        'disks' => explode(',', env('EGI_STORAGE_DISKS', 'do,public')), // Example default
+        'disks' => explode(',', env('EGI_STORAGE_DISKS', 's3')),
 
         /**
          * Array of disk names from the 'disks' list that are considered critical.
          * Failure to save to any critical disk will cause the entire upload to fail and rollback.
-         * @env EGI_CRITICAL_DISKS (comma-separated string, e.g., "do")
+         * @env EGI_CRITICAL_DISKS (comma-separated string, e.g., "s3")
          * @type array
          */
-        'critical_disks' => explode(',', env('EGI_CRITICAL_DISKS', 'public')), // Example default
+        'critical_disks' => explode(',', env('EGI_CRITICAL_DISKS', 's3')),
+
+        /**
+         * Visibility per disk. Per S3 con CloudFront, usare 'private' perché
+         * CloudFront serve i file tramite Origin Access Control.
+         * @type array
+         */
+        'visibility' => [
+            's3' => env('EGI_S3_VISIBILITY', 'private'),
+            'public' => 'public',
+            'local' => 'public',
+            'do' => 'public',
+        ],
     ],
 
     /**

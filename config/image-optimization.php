@@ -50,7 +50,7 @@ return [
     /**
      * Storage disk da verificare in ordine di priorità
      */
-    'storage_disks' => ['public', 'do', 's3'],
+    'storage_disks' => ['s3', 'public', 'do'],
 
     /**
      * Fallback behavior
