@@ -337,6 +337,9 @@ class HomeController extends Controller {
     private function getLatestCollections($excludeIds) {
         return Collection::where('is_published', true)
             ->whereNotIn('id', $excludeIds)
+            ->whereHas('creator', function ($query) {
+                $query->where('usertype', 'creator'); // Escludi EPP e PA Entity
+            })
             ->with(['creator'])
             ->withCount('egis')
             ->latest()

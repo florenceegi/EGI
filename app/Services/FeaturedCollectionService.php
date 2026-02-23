@@ -115,6 +115,9 @@ class FeaturedCollectionService {
     public function getRandomCollections(int $limit = self::MAX_CAROUSEL_ITEMS): IlluminateCollection {
         try {
             $collections = Collection::where('is_published', true)
+                ->whereHas('creator', function ($query) {
+                    $query->where('usertype', 'creator'); // Escludi EPP e PA Entity
+                })
                 ->with(['creator', 'media']) // Include anche media per verificare immagini
                 ->withCount('egis') // Conteggio egis
                 ->inRandomOrder() // Ordinamento casuale
@@ -290,6 +293,9 @@ class FeaturedCollectionService {
      */
     private function getFallbackRandomCollections(int $limit): IlluminateCollection {
         return Collection::where('is_published', true)
+            ->whereHas('creator', function ($query) {
+                $query->where('usertype', 'creator');
+            })
             ->with(['creator', 'media'])
             ->withCount('egis')
             ->orderBy('updated_at', 'desc')
