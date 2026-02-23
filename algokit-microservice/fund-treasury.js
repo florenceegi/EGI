@@ -1,4 +1,5 @@
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 const algosdk = require("algosdk");
 
 // Algorand Sandbox connection
@@ -14,9 +15,9 @@ const kmdPort = 4002;
 const kmdClient = new algosdk.Kmd(kmdToken, kmdServer, kmdPort);
 
 // Treasury wallet to fund (Derived from Mnemonic for consistency)
-const treasuryMnemonic = process.env.TREASURY_MNEMONIC;
+const treasuryMnemonic = process.env.ALGORAND_TREASURY_MNEMONIC;
 if (!treasuryMnemonic) {
-    console.error("❌ CRITICAL ERROR: TREASURY_MNEMONIC environment variable is missing!");
+    console.error("❌ CRITICAL ERROR: ALGORAND_TREASURY_MNEMONIC environment variable is missing!");
     process.exit(1);
 }
 const treasuryAccount = algosdk.mnemonicToSecretKey(treasuryMnemonic);
