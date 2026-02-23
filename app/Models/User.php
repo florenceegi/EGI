@@ -1574,15 +1574,21 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
 
     /**
      * @Oracode Method: Get Default Profile Photo URL
-     * 🎯 Purpose: Get DiceBear generated avatar URL basato su identificatore unico
+     * 🎯 Purpose: Get DiceBear Adventurer avatar basato su seed unico e genere utente
      * 📤 Returns: URL string for default avatar
-     * � Logic: Usa wallet come seed se disponibile, altrimenti nome o fallback
      */
     public function defaultProfilePhotoUrl(): string {
-        // Usa wallet come identificatore unico se disponibile, altrimenti nome
         $seed = urlencode($this->wallet ?? $this->name ?? "user-{$this->id}");
+        $gender = $this->personalData?->gender;
 
-        return "https://api.dicebear.com/7.x/bottts/png?seed={$seed}&backgroundColor=transparent&size=512";
+        // Capelli lunghi per female, corti per male, mix per altri/non specificato
+        $hairParam = match ($gender) {
+            'female' => '&hair=long01,long02,long03,long04,long05,long06,long07,long08,long09,long10,long11,long12,long13,long14,long15,long16,long17,long18,long19,long20',
+            'male'   => '&hair=short01,short02,short03,short04,short05,short06,short07,short08,short09,short10,short11,short12,short13,short14,short15,short16,short17,short18,short19',
+            default  => '',
+        };
+
+        return "https://api.dicebear.com/9.x/adventurer/png?seed={$seed}&backgroundColor=transparent&size=512{$hairParam}";
     }
 
     // ======================== COLLECTOR RELATIONSHIPS ========================
