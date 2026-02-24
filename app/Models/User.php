@@ -1442,9 +1442,7 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
             return null;
         }
 
-        // Force relative URL to avoid domain mismatch
-        $url = $currentBanner->getUrl($conversion);
-        return parse_url($url, PHP_URL_PATH);
+        return $currentBanner->getUrl($conversion);
     }
 
     /**
