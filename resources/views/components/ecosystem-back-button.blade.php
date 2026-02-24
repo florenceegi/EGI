@@ -11,7 +11,7 @@
     Implementazione vanilla JS — zero dipendenze, P0-0 compliant.
 --}}
 
-<div id="egi-ecosystem-back" class="hidden items-center">
+<div id="egi-ecosystem-back" style="display:none; align-items:center;">
     <a
         id="egi-ecosystem-back-link"
         href="#"
@@ -24,7 +24,7 @@
 </div>
 
 <script>
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
     var REFS = {
         hub:   { name: 'Florence EGI',      url: 'https://florenceegi.com' },
         art:   { name: 'Florence Art EGI',  url: 'https://art.florenceegi.com' },
@@ -39,9 +39,8 @@
         if (wrap && link && name) {
             link.href = REFS[ref].url;
             name.textContent = REFS[ref].name;
-            wrap.classList.remove('hidden');
-            wrap.classList.add('flex');
+            wrap.style.display = 'flex';
         }
     }
-})();
+});
 </script>

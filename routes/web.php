@@ -332,8 +332,9 @@ if (config('app.debug')) {
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return redirect('/home');
+Route::get('/', function (\Illuminate\Http\Request $request) {
+    $qs = $request->getQueryString();
+    return redirect('/home' . ($qs ? '?' . $qs : ''));
 });
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
