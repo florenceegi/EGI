@@ -903,6 +903,15 @@ class User extends Authenticatable implements HasMedia { // MODIFIED
     }
 
     /**
+     * Get DSA complaints submitted by this user.
+     *
+     * @return HasMany
+     */
+    public function complaints(): HasMany {
+        return $this->hasMany(Complaint::class, 'reporter_user_id');
+    }
+
+    /**
      * Get GDPR audit logs where this user is the data subject.
      *
      * @return HasMany

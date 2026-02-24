@@ -49,6 +49,12 @@
         ];
     }
 
+    // DSA Complaints - All authenticated users (Art. 16 & 20 Reg. UE 2022/2065)
+    $accountActions[] = [
+        'label' => __('menu.dsa_complaints'),
+        'href' => route('complaints.index'),
+    ];
+
     $creatorOnboardingSummaryUrl = \Illuminate\Support\Facades\Route::has('creator.onboarding.summary')
         ? route('creator.onboarding.summary')
         : null;

@@ -190,12 +190,27 @@ This issue was discovered during AI Sidebar implementation (2026-02-05) when use
 
 ## 4. Sistema Gestione Reclami e Segnalazioni (DSA Compliance)
 
-### 🔴 Notice-and-Action e Complaint Management — URGENTE
+### 🟡 Notice-and-Action e Complaint Management — IMPLEMENTAZIONE TECNICA PENDENTE
 
-**Status**: Not Implemented
-**Priority**: HIGH (compliance obbligatoria)
+**Status**: Partially Implemented (Legal/ToS completato, Technical pending)
+**Priority**: HIGH (implementazione tecnica obbligatoria)
 **Created**: 2026-02-24
+**Updated**: 2026-02-23
 **Component**: Compliance DSA (Reg. UE 2022/2065)
+
+#### Parte Legale/ToS — COMPLETATA (2026-02-23)
+
+Le clausole DSA sono state inserite in tutti i 6 ToS v3.0.0:
+- **creator.php** Art. 12.8 — Segnalazione Contenuti e Reclami (DSA)
+- **collector.php** Art. 10.8 — Segnalazione Contenuti e Reclami (DSA)
+- **patron.php** Art. 7.6 — Segnalazione Contenuti e Reclami (DSA)
+- **trader_pro.php** Art. 7.6 — Segnalazione Contenuti e Reclami (DSA)
+- **epp.php** Art. 9.4 — Controversie (include mediazione D.Lgs. 28/2010)
+- **company.php** — Non applicabile direttamente (B2B con clausole bilaterali)
+
+Canale di segnalazione provvisorio: `legal@florenceegi.com` + funzionalità sulla Piattaforma (da implementare).
+
+#### Parte Tecnica — DA IMPLEMENTARE
 
 #### Contesto Normativo
 
@@ -330,30 +345,77 @@ Senza questo sistema, FlorenceEGI non è conforme al DSA. Il rischio include:
 
 ---
 
-## 6. Allegato A e Allegato B dei ToS — Non Ancora Creati
+## 6. ~~Allegato A e Allegato B dei ToS — Non Ancora Creati~~ COMPLETATO
 
-### 🔴 Allegati ToS Mancanti
+### ✅ Allegati ToS — COMPLETATO
 
-**Status**: Not Implemented
-**Priority**: HIGH (ToS incompleti senza allegati)
+**Status**: COMPLETATO
+**Priority**: ~~HIGH~~ Risolto
 **Created**: 2026-02-24
+**Completed**: 2026-02-23
 
 #### Descrizione
 
-I ToS Creator v3.0.0 fanno riferimento a due allegati che non sono ancora stati creati:
+I due allegati mancanti sono stati creati:
 
-- **Allegato A — Tabella delle Fee Dinamiche**: Dettaglio delle percentuali di ripartizione per Creator, EPP e Piattaforma in base ai volumi cumulativi. Referenziato in Art. 5.1, 5.2, 5.5, 11.
-- **Allegato B — Guida agli Egili**: Descrizione dei pacchetti AI acquistabili, dei criteri di premiazione, dei costi di consumo per ciascun servizio AI, e delle modalità di utilizzo per sconti e riduzioni commissioni. Referenziato in Art. 6.2, 11.
+- **Allegato A — Tabella delle Fee Dinamiche** (`resources/legal/terms/versions/current/it/allegato_a_fee.php`)
+  - 7 sezioni: Profili Collection, Fee Mint (Contributor/Normal), Fee Rebind (Contributor/Normal), Eccezione Commodity, Fee Dinamiche e Sconti Volume, Riepilogo Comparativo, Note Importanti
+  - Dati verificati con: `FeeStructureEnum.php`, `04_Gestione_Pagamenti.md`, `10_Rebind_Logic_Reference.md`
 
-#### Impatto
+- **Allegato B — Guida al Sistema Egili** (`resources/legal/terms/versions/current/it/allegato_b_egili.php`)
+  - 7 sezioni: Definizione e Natura Giuridica, Come Ottenere Egili, Come Utilizzare gli Egili, Condizioni per Tipo di Utente, Regole e Limitazioni, Modifiche al Sistema, Assistenza e Saldo
+  - Dati verificati con: `config/ai-credits.php`, `config/egili.php`, ToS Art. 6
 
-Senza gli allegati, le clausole che vi fanno riferimento sono potenzialmente inapplicabili. L'Allegato A è particolarmente critico perché definisce le percentuali economiche del contratto.
+Referenziati correttamente in: creator.php Art. 11, collector.php Art. 6, patron.php Art. 3.3, trader_pro.php Art. 3.4.
 
-#### Azione Richiesta
+---
 
-1. Creare `resources/legal/terms/versions/current/it/allegato_a_fee.php` con la tabella delle fee dinamiche
-2. Creare `resources/legal/terms/versions/current/it/allegato_b_egili.php` con la guida Egili
-3. Verificare che il sistema di rendering legale supporti il caricamento degli allegati
+## 7. Compliance ToS v3.0.0 — Gap P0/P1 (COMPLETATO)
+
+### ✅ Correzione 22 Gap di Compliance — COMPLETATO
+
+**Status**: COMPLETATO
+**Priority**: ~~P0/P1~~ Risolto
+**Created**: 2026-02-24
+**Completed**: 2026-02-23
+**Commit**: pushato su `develop`, deployato su `art.florenceegi.com`
+
+#### Lavoro Svolto
+
+Analisi incrociata di 12 documenti in `docs/FlorenceEGI/` con i 6 ToS ha identificato 22 gap critici di compliance, tutti risolti:
+
+##### NATAN/AI (P0)
+- Acronimo unificato: "Neural Adaptive Technology for Art Navigation" (prima inconsistente tra creator e collector)
+- Descrizione corretta: analizza **opere** (titoli, descrizioni, traits) per posizionamento mercato, **NON profila utenti**, **NON prende decisioni autonome**
+- EU AI Act disclosure (Reg. 2024/1689): creator.php Art. 9.4, collector.php Art. 7.4
+
+##### Clausole Universali (P0/P1)
+Aggiunte a tutti i 6 ToS:
+- **Separabilità**: creator 12.5, collector 10.5, patron 7.4, trader_pro 7.4, epp 9.5, company 10.5
+- **Forza Maggiore** (Art. 1218 CC): creator 12.6, collector 10.6, patron 7.5, trader_pro 7.5, epp 9.6, company 10.6
+- **DSA Segnalazioni**: creator 12.8, collector 10.8, patron 7.6, trader_pro 7.6
+- **ODR/ADR**: creator 12.9, collector 10.4, patron 7.7, trader_pro 7.7
+- **Limitazione Responsabilita**: creator 12.10, collector 10.9, patron 7.8
+- **Cessione Contratto**: creator 12.7, collector 10.7
+- **Comunicazioni**: creator 12.11, collector 10.10, patron 7.9, trader_pro 7.8, epp 9.7, company 10.7
+
+##### Altre Correzioni (P1)
+- **creator.php** Art. 4.3: Restrizioni IP acquirente (no merchandise, no derivati, no uso commerciale)
+- **creator.php** Art. 7.6: Note fiscali (non sostituto d'imposta, soglia P.IVA, SIAE, DAC7)
+- **collector.php** Art. 4.4: Restrizioni d'uso dettagliate (cosa puoi/non puoi fare con l'EGI)
+- **collector.php** Art. 4.3: Diritti morali aggiornati (L. 633/1941 Art. 20)
+
+##### Allegati
+- Allegato A (Fee Dinamiche) e Allegato B (Guida Egili) — vedi item #6
+
+##### Metadata
+- `metadata.php` aggiornato: `eu_ai_act => true`, `files_updated`, `review_notes`, `ai_act_review => Completato`
+
+#### Verifica Eseguita
+
+- PHP syntax validation: tutti i 9 file OK (`php -l`)
+- Coerenza acronimo NATAN: nessun vecchio acronimo residuo
+- Numerazione articoli: nessun salto o duplicazione
 
 ---
 

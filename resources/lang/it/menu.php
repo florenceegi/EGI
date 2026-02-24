@@ -33,6 +33,7 @@ return [
     'cookie_policy' => 'Politica sui Cookie',
     'contact_dpo' => 'Contatta DPO',
     'breach_report' => 'Segnalazione Violazioni',
+    'dsa_complaints' => 'Segnalazioni e Reclami',
     'activity_log' => 'Registro Attività',
     'limit_processing' => 'Limita il Trattamento',
     'export_data' => 'Esporta Dati',

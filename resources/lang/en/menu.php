@@ -26,6 +26,7 @@ return [
     // Navigation
     'dashboard' => 'Dashboard',
     'manage_account' => 'Manage Account',
+    'dsa_complaints' => 'Reports & Complaints',
     'psp_section_title' => 'PSP Account',
     'psp_section_hint' => 'Manage your payment methods and transactions.',
     'psp_open_setup' => 'Open digital account',
