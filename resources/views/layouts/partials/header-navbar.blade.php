@@ -35,6 +35,9 @@
                     @endif
                 </div>
 
+                {{-- Back to Ecosystem button (visibile solo con ?ref= nell'URL) --}}
+                <x-ecosystem-back-button />
+
                 @php
                     $authType = App\Helpers\FegiAuth::getAuthType(); // 'strong', 'weak', 'guest'
                     $canCreateEgi = $user && $user->can('create_EGI');
