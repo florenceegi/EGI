@@ -206,8 +206,8 @@ if ($hasCollections) {
             --}}
 
             <!-- Titolo e creator info -->
-            <div class="max-w-xl pointer-events-none md:pointer-events-auto"> {{-- Trasparente ai touch su mobile --}}
-                <h1 class="text-sm font-bold font-display sm:text-3xl md:text-4xl lg:text-5xl"
+            <div class="max-w-xs sm:max-w-xl md:max-w-none pointer-events-none md:pointer-events-auto"> {{-- Trasparente ai touch su mobile --}}
+                <h1 class="text-sm font-bold font-display sm:text-3xl md:text-4xl lg:text-5xl md:whitespace-nowrap"
                     id="collectionName_{{ $instanceId }}"> {{-- Ridotta molto dimensione font mobile per banner 30vh
                     --}}
                     {{ __('guest_home.hero_banner_title') }}
