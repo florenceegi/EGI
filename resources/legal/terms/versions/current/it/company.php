@@ -354,6 +354,21 @@ Tali limitazioni non si applicano in caso di dolo o colpa grave.'
                     'number' => '10.4',
                     'title' => 'Modifiche',
                     'content' => 'Modifiche valide solo se in forma scritta e sottoscritte da entrambe le parti.'
+                ],
+                [
+                    'number' => '10.5',
+                    'title' => 'Separabilità',
+                    'content' => 'Qualora una o più disposizioni del presente Contratto siano dichiarate nulle, invalide o inapplicabili da un tribunale competente, le restanti disposizioni rimarranno pienamente valide ed efficaci. Le parti si impegnano a sostituire la clausola invalida con una disposizione valida che si avvicini il più possibile all\'intento economico e giuridico originario.'
+                ],
+                [
+                    'number' => '10.6',
+                    'title' => 'Forza Maggiore',
+                    'content' => 'Nessuna delle parti sarà responsabile per inadempimenti o ritardi nell\'esecuzione delle proprie obbligazioni causati da eventi di forza maggiore ai sensi dell\'art. 1218 del Codice Civile, inclusi a titolo esemplificativo: interruzioni della rete blockchain Algorand, indisponibilità dei servizi di pagamento, guasti dell\'infrastruttura cloud (AWS), attacchi informatici, calamità naturali, provvedimenti delle autorità, pandemie o altri eventi al di fuori del ragionevole controllo della parte inadempiente. In caso di forza maggiore, gli obblighi saranno sospesi per la durata dell\'evento. La parte coinvolta informerà tempestivamente l\'altra parte tramite i canali disponibili.'
+                ],
+                [
+                    'number' => '10.7',
+                    'title' => 'Comunicazioni',
+                    'content' => 'Le comunicazioni relative al presente Contratto (incluse modifiche dei termini, fatture, sospensioni e notifiche legali) saranno inviate tramite email agli indirizzi comunicati in fase di registrazione o successivamente aggiornati. Le comunicazioni si considerano ricevute dopo 48 ore dall\'invio dell\'email, salvo prova contraria. Per comunicazioni urgenti relative alla sicurezza o all\'operatività, FlorenceEGI potrà utilizzare anche la Piattaforma e i contatti telefonici forniti.'
                 ]
             ]
         ]

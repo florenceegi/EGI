@@ -429,13 +429,15 @@
                         </div>
                         <div>
                             <dt id="glossary-equilibrium" class="text-xl font-bold text-emerald-700">Equilibrium</dt>
-                            <dd class="mt-1 text-gray-700">Token che alimenta il sistema di premi, ranking e
-                                interazioni etiche.</dd>
+                            <dd class="mt-1 text-gray-700">Sistema interno di crediti e premiazione che alimenta
+                                i servizi AI, la riduzione delle fee e le interazioni sulla piattaforma.</dd>
                         </div>
                         <div>
                             <dt id="glossary-egili" class="text-xl font-bold text-emerald-700">Egili</dt>
-                            <dd class="mt-1 text-gray-700">Micro-unità del token <a href="#glossary-equilibrium"
-                                    class="glossary-link">Equilibrium</a>.</dd>
+                            <dd class="mt-1 text-gray-700">Crediti di servizio interni di FlorenceEGI. Si
+                                ottengono acquistando pacchetti AI in FIAT o tramite premiazione per merito. Utilizzabili
+                                per servizi AI, riduzione fee e sconti. Non trasferibili, non rimborsabili, privi di valore
+                                monetario autonomo. Non sono token.</dd>
                         </div>
                         <div>
                             <dt id="glossary-royalty-piattaforma" class="text-xl font-bold text-emerald-700">Royalty
@@ -1365,8 +1367,8 @@
                 <div class="p-6 mt-6 rounded-lg bg-blue-50">
                     <h3 class="mb-3 text-xl font-bold text-blue-700">Token Ecosystem</h3>
                     <ul class="space-y-2 text-gray-700 list-disc list-inside">
-                        <li><a href="#glossary-equilibrium" class="glossary-link">Equilibrium</a>: token per premi e ranking</li>
-                        <li><a href="#glossary-egili" class="glossary-link">Egili</a>: micro-unità per interazioni</li>
+                        <li><a href="#glossary-equilibrium" class="glossary-link">Equilibrium</a>: sistema di crediti e premiazione interna</li>
+                        <li><a href="#glossary-egili" class="glossary-link">Egili</a>: crediti di servizio per AI, fee e sconti</li>
                         <li>Economia meritocratica, non speculativa</li>
                     </ul>
                 </div>`

@@ -5,8 +5,8 @@
  * 🎯 Purpose: Terms for Patron user type - supporters of artists and projects
  * 🛡️ Security: Patronage agreements, contribution transparency, GDPR compliance
  *
- * @version 2.0.0 (Aggiornamento AI/Blockchain/Patronage)
- * @effective_date 2025-02-15
+ * @version 3.0.0 (Riforma Egili: da utility token a crediti servizio AI + reward interni)
+ * @effective_date 2026-02-24
  * @user_type patron
  * @locale it
  *
@@ -17,11 +17,11 @@
 return [
     'metadata' => [
         'title' => 'Termini e Condizioni per Patron',
-        'version' => '2.0.0',
-        'effective_date' => '2025-02-15',
+        'version' => '3.0.0',
+        'effective_date' => '2026-02-24',
         'document_type' => 'Contratto per Utenti Patron',
         'target_audience' => 'Utenti qualificati come "Patron" della Piattaforma FlorenceEGI - Sostenitori di artisti e progetti',
-        'summary_of_changes' => 'Prima versione completa per tipologia Patron - Patronage, supporto artisti, contributi EPP',
+        'summary_of_changes' => 'v3.0.0: Riforma sistema Egili — da utility token a crediti servizio AI prepagati e sistema di premiazione interna.',
         'jurisdiction_specifics_available' => true,
     ],
 
@@ -134,11 +134,14 @@ Tutti i contributi EPP sono tracciati su blockchain per trasparenza.'
                 [
                     'number' => '3.3',
                     'title' => 'Programma Egili Potenziato',
-                    'content' => 'I Patron guadagnano Egili con moltiplicatore:
-- Bonus Egili sui contributi di patronage
-- Moltiplicatore su acquisti regolari
+                    'content' => 'I Patron beneficiano di condizioni privilegiate nel sistema Egili:
+- Bonus Egili aggiuntivi sui contributi di patronage
+- Moltiplicatore sulla premiazione per acquisti regolari
 - Egili speciali per milestone di sostegno
-- Vantaggi esclusivi riscattabili'
+- Vantaggi esclusivi riscattabili tramite Egili
+- Accesso a pacchetti AI con condizioni dedicate
+
+Gli Egili sono crediti di servizio interni, non trasferibili, non rimborsabili e privi di valore monetario autonomo. Si applicano integralmente le disposizioni sugli Egili contenute nei Termini per Collezionisti.'
                 ],
                 [
                     'number' => '3.4',
@@ -277,7 +280,37 @@ Consulti il Suo commercialista per la corretta gestione fiscale.'
                 [
                     'number' => '7.3',
                     'title' => 'Legge Applicabile',
-                    'content' => 'Questo Contratto è regolato dalla legge italiana. Foro competente: Firenze, Italia.'
+                    'content' => 'Questo Contratto è regolato dalla legge italiana. Foro competente: Firenze, Italia. Resta salvo il foro del consumatore ove applicabile.'
+                ],
+                [
+                    'number' => '7.4',
+                    'title' => 'Separabilità',
+                    'content' => 'Qualora una o più disposizioni del presente Contratto siano dichiarate nulle, invalide o inapplicabili da un tribunale competente, le restanti disposizioni rimarranno pienamente valide ed efficaci. Le parti si impegnano a sostituire la clausola invalida con una disposizione valida che si avvicini il più possibile all\'intento economico e giuridico originario.'
+                ],
+                [
+                    'number' => '7.5',
+                    'title' => 'Forza Maggiore',
+                    'content' => 'FlorenceEGI non sarà responsabile per inadempimenti o ritardi nell\'esecuzione delle proprie obbligazioni causati da eventi di forza maggiore ai sensi dell\'art. 1218 del Codice Civile, inclusi a titolo esemplificativo: interruzioni della rete blockchain Algorand, indisponibilità dei servizi dei PSP (Stripe, PayPal), guasti dell\'infrastruttura cloud (AWS), attacchi informatici, calamità naturali, provvedimenti delle autorità, pandemie o altri eventi al di fuori del ragionevole controllo di FlorenceEGI. In caso di forza maggiore, gli obblighi saranno sospesi per la durata dell\'evento. FlorenceEGI informerà tempestivamente gli utenti tramite i canali disponibili.'
+                ],
+                [
+                    'number' => '7.6',
+                    'title' => 'Segnalazione Contenuti e Reclami (DSA)',
+                    'content' => 'In conformità con il Regolamento (UE) 2022/2065 (Digital Services Act), FlorenceEGI mette a disposizione un meccanismo per la segnalazione di contenuti ritenuti illeciti e per la presentazione di reclami contro decisioni di moderazione. Le segnalazioni possono essere inviate tramite l\'apposita funzionalità sulla Piattaforma o all\'indirizzo legal@florenceegi.com. Ogni segnalazione sarà esaminata tempestivamente e la decisione motivata sarà comunicata al segnalante e, ove applicabile, al titolare del contenuto segnalato.'
+                ],
+                [
+                    'number' => '7.7',
+                    'title' => 'Risoluzione Alternativa Controversie',
+                    'content' => 'Per controversie relative a contratti online, Lei può utilizzare la piattaforma ODR (Online Dispute Resolution) dell\'Unione Europea: https://ec.europa.eu/consumers/odr. FlorenceEGI si impegna a partecipare in buona fede a procedure di risoluzione alternativa delle controversie (ADR) presso organismi certificati ai sensi del D.Lgs. 130/2015.'
+                ],
+                [
+                    'number' => '7.8',
+                    'title' => 'Limitazione di Responsabilità',
+                    'content' => 'Nei limiti consentiti dalla legge applicabile, la responsabilità complessiva di FlorenceEGI nei confronti dell\'utente per qualsiasi danno derivante dall\'utilizzo della Piattaforma non potrà eccedere l\'importo complessivo delle somme effettivamente pagate dall\'utente a FlorenceEGI nei 12 mesi precedenti l\'evento che ha dato origine alla responsabilità. FlorenceEGI non sarà in alcun caso responsabile per danni indiretti, incidentali, consequenziali o punitivi, inclusi perdita di profitti, perdita di dati o interruzione dell\'attività. Questa limitazione non si applica in caso di dolo o colpa grave di FlorenceEGI, né pregiudica i diritti irrinunciabili del consumatore ai sensi del Codice del Consumo.'
+                ],
+                [
+                    'number' => '7.9',
+                    'title' => 'Comunicazioni',
+                    'content' => 'Le comunicazioni relative al presente Contratto (incluse modifiche dei termini, sospensioni e notifiche legali) saranno inviate tramite email all\'indirizzo associato all\'account dell\'utente e/o tramite notifica sulla Piattaforma. Le comunicazioni si considerano ricevute al momento della visualizzazione sulla Piattaforma o dopo 48 ore dall\'invio dell\'email, in base a quale evento si verifichi per primo.'
                 ]
             ]
         ]

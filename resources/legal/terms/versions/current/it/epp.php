@@ -385,7 +385,22 @@ I fondi accumulati non distribuiti seguiranno le disposizioni di terminazione.'
                 [
                     'number' => '9.4',
                     'title' => 'Controversie',
-                    'content' => 'Prima di adire le vie legali, le parti si impegnano a tentare una risoluzione amichevole entro 30 giorni dalla contestazione.'
+                    'content' => 'Prima di adire le vie legali, le parti si impegnano a tentare una risoluzione amichevole entro 30 giorni dalla contestazione. In alternativa, le parti possono ricorrere a procedure di mediazione presso organismi iscritti negli elenchi previsti dal D.Lgs. 28/2010.'
+                ],
+                [
+                    'number' => '9.5',
+                    'title' => 'Separabilità',
+                    'content' => 'Qualora una o più disposizioni del presente Contratto siano dichiarate nulle, invalide o inapplicabili da un tribunale competente, le restanti disposizioni rimarranno pienamente valide ed efficaci. Le parti si impegnano a sostituire la clausola invalida con una disposizione valida che si avvicini il più possibile all\'intento economico e giuridico originario.'
+                ],
+                [
+                    'number' => '9.6',
+                    'title' => 'Forza Maggiore',
+                    'content' => 'Nessuna delle parti sarà responsabile per inadempimenti o ritardi nell\'esecuzione delle proprie obbligazioni causati da eventi di forza maggiore ai sensi dell\'art. 1218 del Codice Civile, inclusi a titolo esemplificativo: interruzioni della rete blockchain Algorand, indisponibilità dei servizi di pagamento, guasti dell\'infrastruttura cloud (AWS), attacchi informatici, calamità naturali, provvedimenti delle autorità, pandemie o altri eventi al di fuori del ragionevole controllo della parte inadempiente. In caso di forza maggiore, gli obblighi saranno sospesi per la durata dell\'evento. La parte coinvolta informerà tempestivamente l\'altra parte tramite i canali disponibili.'
+                ],
+                [
+                    'number' => '9.7',
+                    'title' => 'Comunicazioni',
+                    'content' => 'Le comunicazioni relative al presente Contratto (incluse modifiche dei termini, sospensioni, richieste di documentazione e notifiche legali) saranno inviate tramite email agli indirizzi comunicati in fase di registrazione. Le comunicazioni si considerano ricevute dopo 48 ore dall\'invio dell\'email, salvo prova contraria.'
                 ]
             ]
         ]

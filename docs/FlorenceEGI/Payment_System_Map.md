@@ -9,7 +9,7 @@
 - **Livello 1 (FIAT, no wallet)**: PSP (Stripe/Adyen/PayPal), split off‑chain, EGI in profilo utente.
 - **Livello 2 (FIAT, wallet utente)**: PSP FIAT, mint + transfer su wallet esterno.
 - **Livello 3 (Crypto via PSP CASP)**: pagamento crypto su partner (es. Coinbase). FlorenceEGI riceve notifica, non custodisce fondi.
-- **Livello 4 (Egili)**: pagamento interno non‑crypto, burn Egili, mint asincrono standard.
+- ~~**Livello 4 (Egili)**~~: ❌ **RIMOSSO in ToS v3.0.0** — Egili non più utilizzabili per acquisto EGI. Ora sono crediti di servizio AI + reward interni.
 
 ## 2) Architettura Reale in Codebase
 
@@ -68,26 +68,30 @@
 
 - `PaymentDistribution` con percentuali da wallet collection (campo `royalty_rebind`)
 
-### 2.3 Egili (Token interno)
+### 2.3 Egili (Crediti di Servizio Interni) — ⚠️ DA AGGIORNARE
 
 **Service**
 
 - [app/Services/EgiliService.php](app/Services/EgiliService.php)
     - `getBalance()`, `fromEur()`, `spend()`
 
-**Mint/Rebind**
+**Stato attuale vs ToS v3.0.0**
 
-- Pagamento Egili gestito in `MintController` e `RebindController`
+- ⚠️ `fromEur()` e `spend()` ancora usati in `MintController` e `RebindController` per pagamento EGI in Egili → **DA RIMUOVERE** (ToS v3.0.0 Art. 5.2 creator / Art. 6.1 collector vietano l'uso di Egili per acquisto EGI)
+- ✅ `getBalance()` — OK, serve per dashboard e consumo servizi AI
+- Da implementare: consumo Egili per servizi AI (nuovo use case v3.0.0)
 
-### 2.4 Acquisto Egili (FIAT / Crypto)
+### 2.4 Acquisto Egili (FIAT / Crypto) — ⚠️ DA DISABILITARE
 
 **Controller**
 
 - [app/Http/Controllers/EgiliPurchaseController.php](app/Http/Controllers/EgiliPurchaseController.php)
 
-**Nota normativa**
+**Stato attuale vs ToS v3.0.0**
 
-- Egili **non devono essere acquistabili** (da rimuovere o disabilitare).
+- ⚠️ Controller ancora presente e attivo → **DA DISABILITARE/RIMUOVERE**
+- ToS v3.0.0: Egili non acquistabili come asset autonomo
+- Nuovo modello: Egili accreditati solo tramite (a) acquisto pacchetti AI in FIAT, (b) premiazione per merito
 
 ### 2.5 Crypto PSP (EGI) — Stato Attuale
 
@@ -150,10 +154,12 @@
 
 ## 6) Gap Principali (da pianificare)
 
-1. **Rimozione acquisto Egili** (normativa).
-2. **Integrazione Crypto PSP (CASP)** per mint/rebind EGI (es. Coinbase Commerce).
-3. **Rifattorizzazione fee piattaforma** secondo nuova logica (incasso su conto generale, split e trattenute interne).
-4. ~~**Collector abilitati ai pagamenti**~~ — ✅ **IMPLEMENTATO 2026-02-06**: Collector ora può accedere a payment settings e vendere sul secondario.
+1. **Rimozione acquisto Egili** (normativa) — ⚠️ ToS v3.0.0 vieta acquisto Egili come asset, ma `EgiliPurchaseController` ancora presente nel codice. Da disabilitare/rimuovere.
+2. **Rimozione pagamento EGI in Egili** — ⚠️ ToS v3.0.0 vieta uso Egili per acquisto EGI, ma `EgiliService.fromEur()/spend()` ancora usati in `MintController` e `RebindController`. Da rimuovere i riferimenti nei controller.
+3. **Integrazione Crypto PSP (CASP)** per mint/rebind EGI (es. Coinbase Commerce) — ToS v3.0.0 già predisposti (Art. 5.2 creator, Art. 3.5 collector).
+4. **Integrazione pagamento diretto in ALGO** — Creator può abilitare pagamento in ALGO per singolo EGI. Trasferimento wallet-to-wallet on-chain con transazioni atomiche per split. ToS v3.0.0 già predisposti.
+5. **Rifattorizzazione fee piattaforma** secondo nuova logica (incasso su conto generale, split e trattenute interne).
+6. ~~**Collector abilitati ai pagamenti**~~ — ✅ **IMPLEMENTATO 2026-02-06**: Collector ora può accedere a payment settings e vendere sul secondario.
 
 ---
 

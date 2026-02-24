@@ -5,8 +5,8 @@
  * 🎯 Purpose: Terms for Trader Pro user type - Professional NFT traders
  * 🛡️ Security: Enhanced KYC, trading limits, professional obligations
  *
- * @version 2.0.0 (Prima versione completa Trader Pro)
- * @effective_date 2025-02-15
+ * @version 3.0.0 (Riforma Egili: da utility token a crediti servizio AI + reward interni)
+ * @effective_date 2026-02-24
  * @user_type trader_pro
  * @locale it
  *
@@ -17,11 +17,11 @@
 return [
     'metadata' => [
         'title' => 'Termini e Condizioni per Trader Professionisti',
-        'version' => '2.0.0',
-        'effective_date' => '2025-02-15',
+        'version' => '3.0.0',
+        'effective_date' => '2026-02-24',
         'document_type' => 'Contratto per Operatori Professionali',
         'target_audience' => 'Trader professionisti e operatori di mercato NFT',
-        'summary_of_changes' => 'Prima versione completa Trader Pro - Requisiti KYC avanzati, limiti operativi, obblighi professionali',
+        'summary_of_changes' => 'v3.0.0: Riforma sistema Egili — da utility token a crediti servizio AI prepagati e sistema di premiazione interna.',
         'jurisdiction_specifics_available' => true,
     ],
 
@@ -140,11 +140,14 @@ I limiti sono soggetti a revisione in base al profilo di rischio.'
                 [
                     'number' => '3.4',
                     'title' => 'Programma Egili Pro',
-                    'content' => 'Bonus Egili per Trader Pro:
-- Moltiplicatore 1.5x su tutti i guadagni Egili
+                    'content' => 'I Trader Pro beneficiano di condizioni privilegiate nel sistema Egili:
+- Moltiplicatore 1.5x sulla premiazione Egili per merito
 - Bonus volume trimestrale
 - Egili esclusivi per milestone trading
-- Vantaggi riscattabili dedicati'
+- Vantaggi riscattabili dedicati
+- Accesso a pacchetti AI con condizioni Pro
+
+Gli Egili sono crediti di servizio interni, non trasferibili, non rimborsabili e privi di valore monetario autonomo. Si applicano integralmente le disposizioni sugli Egili contenute nei Termini per Collezionisti.'
                 ]
             ]
         ],
@@ -285,6 +288,31 @@ FlorenceEGI non fornisce consulenza finanziaria.'
                     'number' => '7.3',
                     'title' => 'Legge Applicabile e Foro',
                     'content' => 'Contratto regolato dalla legge italiana. Foro competente esclusivo: Firenze, Italia.'
+                ],
+                [
+                    'number' => '7.4',
+                    'title' => 'Separabilità',
+                    'content' => 'Qualora una o più disposizioni del presente Contratto siano dichiarate nulle, invalide o inapplicabili da un tribunale competente, le restanti disposizioni rimarranno pienamente valide ed efficaci. Le parti si impegnano a sostituire la clausola invalida con una disposizione valida che si avvicini il più possibile all\'intento economico e giuridico originario.'
+                ],
+                [
+                    'number' => '7.5',
+                    'title' => 'Forza Maggiore',
+                    'content' => 'FlorenceEGI non sarà responsabile per inadempimenti o ritardi nell\'esecuzione delle proprie obbligazioni causati da eventi di forza maggiore ai sensi dell\'art. 1218 del Codice Civile, inclusi a titolo esemplificativo: interruzioni della rete blockchain Algorand, indisponibilità dei servizi dei PSP (Stripe, PayPal), guasti dell\'infrastruttura cloud (AWS), attacchi informatici, calamità naturali, provvedimenti delle autorità, pandemie o altri eventi al di fuori del ragionevole controllo di FlorenceEGI. In caso di forza maggiore, gli obblighi saranno sospesi per la durata dell\'evento. FlorenceEGI informerà tempestivamente gli utenti tramite i canali disponibili.'
+                ],
+                [
+                    'number' => '7.6',
+                    'title' => 'Segnalazione Contenuti e Reclami (DSA)',
+                    'content' => 'In conformità con il Regolamento (UE) 2022/2065 (Digital Services Act), FlorenceEGI mette a disposizione un meccanismo per la segnalazione di contenuti ritenuti illeciti e per la presentazione di reclami contro decisioni di moderazione. Le segnalazioni possono essere inviate tramite l\'apposita funzionalità sulla Piattaforma o all\'indirizzo legal@florenceegi.com. Ogni segnalazione sarà esaminata tempestivamente e la decisione motivata sarà comunicata al segnalante e, ove applicabile, al titolare del contenuto segnalato.'
+                ],
+                [
+                    'number' => '7.7',
+                    'title' => 'Risoluzione Alternativa Controversie',
+                    'content' => 'In alternativa al ricorso giudiziario, FlorenceEGI si impegna a partecipare in buona fede a procedure di mediazione o conciliazione presso organismi di risoluzione alternativa delle controversie (ADR) iscritti negli elenchi previsti dal D.Lgs. 28/2010 e dal D.Lgs. 130/2015. Trattandosi di rapporto professionale, la piattaforma ODR per consumatori non è applicabile.'
+                ],
+                [
+                    'number' => '7.8',
+                    'title' => 'Comunicazioni',
+                    'content' => 'Le comunicazioni relative al presente Contratto (incluse modifiche dei termini, sospensioni e notifiche legali) saranno inviate tramite email all\'indirizzo associato all\'account dell\'utente e/o tramite notifica sulla Piattaforma. Le comunicazioni si considerano ricevute al momento della visualizzazione sulla Piattaforma o dopo 48 ore dall\'invio dell\'email, in base a quale evento si verifichi per primo.'
                 ]
             ]
         ]
