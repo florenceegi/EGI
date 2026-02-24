@@ -20,8 +20,7 @@
                 <div class="flex flex-shrink-0 items-center">
                     <a href="{{ url('/home') }}" class="group flex items-center gap-2"
                         aria-label="{{ __('collection.logo_home_link_aria_label') }}">
-                        <img src="{{ asset(config('app.logo')) }}" alt="Florence EGI Logo"
-                            class="h-7 w-auto sm:h-8 md:h-9" loading="lazy" decoding="async">
+                        <x-florence-egi-logo class="h-7 w-7 text-emerald-400 sm:h-8 sm:w-8 md:h-9 md:w-9" />
                         <span
                             class="hidden text-base font-semibold text-gray-400 transition group-hover:text-emerald-400 sm:inline md:text-lg">{{ __('Florence EGI') }}</span>
                     </a>
