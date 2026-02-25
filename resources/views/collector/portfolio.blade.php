@@ -229,10 +229,15 @@
         ])
     </x-slot>
 
-    {{-- AI Sidebar - Onboarding Assistant (Owner Only) --}}
-    @if (!empty($onboardingChecklist))
-        <x-ai-sidebar :user="$collector" :userType="'collector'" :checklist="$onboardingChecklist" />
-    @endif
+    {{-- AI Sidebar - Role-aware (Owner: stats + checklist | Visitor/Guest: context only) --}}
+    @php $isOwner = auth()->check() && auth()->id() === $collector->id; @endphp
+    <x-ai-sidebar
+        :user="$collector"
+        :userType="'collector'"
+        :checklist="$isOwner ? $onboardingChecklist : []"
+        :contextMessage="$sidebarContextMessage"
+        :showChecklist="$isOwner"
+    />
 
     {{-- Payment Settings Modal --}}
     <x-payment-settings-modal />

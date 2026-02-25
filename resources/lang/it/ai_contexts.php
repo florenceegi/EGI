@@ -688,6 +688,51 @@ return [
                 'route_pattern' => '/collector/{id}',
                 'archetype_required' => 'collector',
             ],
+
+            'sidebar_contexts' => [
+                'owner' => [
+                    'greeting'           => 'Ciao <strong>:name</strong>! 👋',
+                    'intro'              => 'Questo è il tuo <strong>Portfolio Collector</strong>. Gestisci la tua collezione di opere certificate su blockchain.',
+                    'status_title'       => '📊 La Tua Collezione',
+                    'status_owned'       => '<strong>:owned_count EGI</strong> nella tua collezione',
+                    'status_spent'       => '<strong>:total_spent €</strong> investiti in arte',
+                    'status_collections' => '<strong>:collections_count</strong> collections rappresentate',
+                    'actions_title'      => '🎯 Cosa Puoi Fare',
+                    'actions'            => [
+                        'resell'  => 'Rivendi opere sul mercato secondario',
+                        'payment' => 'Configura metodi pagamento per ricevere rivendite',
+                        'explore' => 'Esplora nuovi artisti e opere da acquistare',
+                        'filter'  => 'Filtra per creator o collection specifica',
+                    ],
+                    'help_offer' => '🤝 <strong>Posso aiutarti con:</strong> gestione collezione, rivendite, scoperta nuovi artisti.',
+                    'cta'        => 'Vuoi che ti consigli come valorizzare la tua collezione?',
+                ],
+                'visitor' => [
+                    'greeting'    => 'Ciao <strong>:name</strong>! 👋',
+                    'intro'       => 'Stai esplorando la collezione di <strong>:collector_name</strong>, un collezionista certificato su FlorenceEGI.',
+                    'value_title' => '💎 Scopri Arte Certificata',
+                    'value_props' => [
+                        'authenticity' => '✅ Ogni opera è certificata su blockchain Algorand',
+                        'diversity'    => '🎨 Opere da diversi creator e collections',
+                        'transparency' => '🔍 Provenienza e storia acquisti verificabili',
+                    ],
+                    'help_offer' => '🤝 <strong>Posso aiutarti</strong> a trovare opere simili o scoprire questi artisti.',
+                    'cta'        => 'Chiedimi di un\'opera specifica o di un creator!',
+                ],
+                'guest' => [
+                    'greeting'         => 'Benvenuto! 👋',
+                    'intro'            => 'Stai esplorando la collezione di <strong>:collector_name</strong>.',
+                    'why_join_title'   => '🚀 Perché Registrarti?',
+                    'why_join_reasons' => [
+                        '🎨 Acquista opere d\'arte certificate su blockchain',
+                        '💎 Costruisci la tua collezione personale',
+                        '📈 Rivendi sul mercato secondario',
+                        '🌍 Scopri artisti emergenti da tutto il mondo',
+                    ],
+                    'cta_register' => '<a href="/register" class="inline-block mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition-colors">Registrati Gratis →</a>',
+                    'help_offer'   => '🤝 Hai domande sulla piattaforma o sulle opere?',
+                ],
+            ],
         ],
     ],
 
