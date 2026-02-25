@@ -61,4 +61,13 @@
 
     @vite(['resources/js/home-nft.js'])
 
+    {{-- AI Sidebar - Role-aware (Guest: platform intro + CTA | Creator/Company: stats + actions | Collector: portfolio + discovery) --}}
+    <x-ai-sidebar
+        :user="auth()->user()"
+        :userType="auth()->check() ? (auth()->user()->usertype ?? 'guest') : 'guest'"
+        :checklist="[]"
+        :contextMessage="$sidebarContextMessage"
+        :showChecklist="false"
+    />
+
 </x-guest-layout>

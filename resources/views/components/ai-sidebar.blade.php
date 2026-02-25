@@ -141,7 +141,7 @@
     {{-- Sidebar Panel --}}
     <aside id="ai-sidebar"
         class="ai-sidebar collapsed via-gray-850 fixed bottom-0 right-4 top-20 z-30 flex w-80 flex-col overflow-hidden rounded-2xl border border-gray-700/50 bg-gradient-to-b from-gray-900 to-gray-900 shadow-2xl md:w-96"
-        data-user-id="{{ $user->id }}" data-user-type="{{ $userType }}"
+        data-user-id="{{ $user?->id ?? 0 }}" data-user-type="{{ $userType }}"
         data-checklist="{{ json_encode($checklist) }}" aria-hidden="true">
         {{-- Header --}}
         <div

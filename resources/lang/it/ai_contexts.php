@@ -1095,4 +1095,99 @@ return [
     // Altri archetipi (da aggiungere in futuro)
     // 'epp' => [...],
     // 'pa' => [...],
+
+    'home' => [
+        'index' => [
+            'sidebar_contexts' => [
+
+                'guest' => [
+                    'greeting'         => 'Benvenuto su FlorenceEGI! 👋',
+                    'intro'            => 'La piattaforma dove l\'arte genera <strong>valore condiviso</strong> e contribuisce alla protezione ambientale.',
+                    'value_title'      => '✨ Cosa puoi fare qui',
+                    'value_props'      => [
+                        '🎨 Scoprire opere d\'arte digitali certificate su blockchain Algorand',
+                        '🌿 Ogni acquisto supporta un progetto ambientale reale (EPP)',
+                        '💎 Costruire la tua collezione personale di EGI',
+                        '🚀 Creare e vendere le tue opere come Creator',
+                        '🏢 Valorizzare la tua azienda come Company',
+                    ],
+                    'why_join_title'   => '🚀 Perché Registrarti?',
+                    'why_join_reasons' => [
+                        'Acquista opere certificate su blockchain (provenance garantita)',
+                        'Rivendi sul mercato secondario con royalty automatiche al creator',
+                        'Partecipa all\'ecosistema del Rinascimento Digitale',
+                        'Ogni transazione genera impatto ambientale positivo',
+                    ],
+                    'cta_register' => '<a href="/join" class="inline-block mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition-colors">Registrati Gratis →</a>',
+                    'help_offer'   => '🤝 Hai domande sulla piattaforma, sulle opere o su come funziona?',
+                    'cta'          => 'Chiedimi qualsiasi cosa su FlorenceEGI!',
+                ],
+
+                'creator' => [
+                    'greeting'           => 'Ciao <strong>:name</strong>! 👋',
+                    'intro'              => 'Sei nella homepage di FlorenceEGI. Da qui puoi esplorare l\'ecosistema e tornare al tuo profilo.',
+                    'status_title'       => '📊 Il Tuo Portfolio',
+                    'status_egis'        => '<strong>:egis_count EGI</strong> pubblicati',
+                    'status_collections' => '<strong>:collections_count</strong> collections pubblicate',
+                    'actions_title'      => '🎯 Azioni Rapide',
+                    'actions'            => [
+                        '✨ Crea un nuovo EGI (pulsante "Crea EGI" in navbar)',
+                        '📁 Crea una nuova Collection (pulsante dedicato)',
+                        '👤 Vai al tuo profilo Creator (menu utente in alto)',
+                        '💳 Configura i pagamenti (dal tuo profilo → Payment Settings)',
+                    ],
+                    'help_offer' => '🤝 <strong>Posso aiutarti</strong> con la creazione di opere, la gestione delle collections o i pagamenti.',
+                    'cta'        => 'Cosa vorresti fare oggi?',
+                ],
+
+                'company' => [
+                    'greeting'           => 'Ciao <strong>:name</strong>! 👋',
+                    'intro'              => 'Sei nella homepage di FlorenceEGI. Benvenuto nell\'ecosistema del Rinascimento Digitale.',
+                    'status_title'       => '📊 Il Tuo Portfolio Aziendale',
+                    'status_egis'        => '<strong>:egis_count EGI</strong> pubblicati',
+                    'status_collections' => '<strong>:collections_count</strong> collections pubblicate',
+                    'actions_title'      => '🎯 Azioni Rapide',
+                    'actions'            => [
+                        '✨ Crea un nuovo EGI aziendale (pulsante "Crea EGI")',
+                        '📁 Crea una nuova Collection (pulsante dedicato)',
+                        '🏢 Vai al tuo profilo Company (menu utente in alto)',
+                        '💳 Configura i pagamenti (dal tuo profilo → Payment Settings)',
+                    ],
+                    'help_offer' => '🤝 <strong>Posso aiutarti</strong> con la gestione del portfolio aziendale, collections e configurazione pagamenti.',
+                    'cta'        => 'Come posso supportare la tua azienda oggi?',
+                ],
+
+                'collector' => [
+                    'greeting'      => 'Ciao <strong>:name</strong>! 👋',
+                    'intro'         => 'Sei nella homepage di FlorenceEGI. Esplora le nuove opere e collections!',
+                    'status_title'  => '💎 La Tua Collezione',
+                    'status_owned'  => '<strong>:owned_count EGI</strong> nel tuo portfolio',
+                    'actions_title' => '🎯 Cosa Fare Oggi',
+                    'actions'       => [
+                        '🔍 Esplora le collections in evidenza nel carosello',
+                        '🎨 Scopri i nuovi creator (sezione "Creator in Evidenza")',
+                        '💰 Cerca nuove opere da acquistare nel carosello EGI',
+                        '👤 Vai al tuo profilo per vedere le tue opere (menu utente)',
+                    ],
+                    'help_offer' => '🤝 <strong>Posso aiutarti</strong> a scoprire nuove opere, capire come acquistare o rivendere un EGI.',
+                    'cta'        => 'Stai cercando un tipo specifico di opera?',
+                ],
+
+                'logged_in' => [
+                    'greeting'      => 'Ciao <strong>:name</strong>! 👋',
+                    'intro'         => 'Benvenuto nella homepage di FlorenceEGI. Esplora l\'ecosistema del Rinascimento Digitale.',
+                    'actions_title' => '🗺️ Cosa Puoi Esplorare',
+                    'actions'       => [
+                        '🎨 Collections e opere d\'arte dei Creator',
+                        '👥 I Creator attivi sulla piattaforma',
+                        '💎 I top Collectors per volume di acquisti',
+                        '🌿 I progetti EPP supportati dalla piattaforma',
+                    ],
+                    'help_offer' => '🤝 Hai domande su FlorenceEGI, sulle opere o su come funziona la piattaforma?',
+                    'cta'        => 'Chiedimi qualsiasi cosa!',
+                ],
+
+            ],
+        ],
+    ],
 ];

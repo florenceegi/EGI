@@ -154,7 +154,10 @@ class HomeController extends Controller {
                 'log_category' => 'HOMEPAGE_SUCCESS'
             ]);
 
-            // 5. Return homepage view
+            // 5. Generate context-aware AI sidebar message based on user role/type
+            $sidebarContextMessage = $this->generateHomeSidebarContext();
+
+            // 6. Return homepage view
             return view('home', [
                 'randomEgis' => $randomEgis,
                 'featuredCollections' => $featuredCollections,
@@ -166,6 +169,7 @@ class HomeController extends Controller {
                 'featuredEgis' => $featuredEgis,
                 'allEgis' => null, // Performance: Disabled for now
                 'hyperEgis' => $hyperEgis,
+                'sidebarContextMessage' => $sidebarContextMessage,
             ]);
         } catch (\Exception $e) {
             // 6. ULM: Log error details
@@ -444,5 +448,141 @@ class HomeController extends Controller {
             ])
             ->inRandomOrder() // Random ad ogni reload
             ->get();
+    }
+
+    /**
+     * Generate context-aware AI sidebar message for the homepage.
+     * Branches by authentication status and user type.
+     *
+     * @return string HTML message for sidebar context
+     */
+    protected function generateHomeSidebarContext(): string
+    {
+        if (!auth()->check()) {
+            return $this->renderSidebarMessage('home.index.sidebar_contexts.guest', []);
+        }
+
+        $user     = auth()->user();
+        $data     = ['name' => $user->name];
+        $usertype = strtolower($user->usertype ?? 'collector');
+
+        if (in_array($usertype, ['creator', 'company'])) {
+            $egis_count        = $user->createdEgis()->where('is_published', true)->count();
+            $collections_count = $user->collections()->where('creator_id', $user->id)->where('is_published', true)->count();
+            $contextKey        = $usertype === 'company' ? 'company' : 'creator';
+
+            return $this->renderSidebarMessage("home.index.sidebar_contexts.{$contextKey}", array_merge($data, [
+                'egis_count'        => $egis_count,
+                'collections_count' => $collections_count,
+            ]));
+        }
+
+        if ($usertype === 'collector') {
+            $owned_count = Egi::where('owner_id', $user->id)->count();
+
+            return $this->renderSidebarMessage('home.index.sidebar_contexts.collector', array_merge($data, [
+                'owned_count' => $owned_count,
+            ]));
+        }
+
+        // Generic for patron, pa_entity, trader_pro, natan, etc.
+        return $this->renderSidebarMessage('home.index.sidebar_contexts.logged_in', $data);
+    }
+
+    /**
+     * Render sidebar message from translation keys with variable interpolation.
+     *
+     * @param string $contextPath Translation path (e.g., 'home.index.sidebar_contexts.guest')
+     * @param array  $data        Variables to interpolate
+     * @return string HTML message
+     */
+    protected function renderSidebarMessage(string $contextPath, array $data): string
+    {
+        $context = __("ai_contexts.{$contextPath}");
+
+        if (!is_array($context)) {
+            return '<p>' . __('ai_sidebar.default_message') . '</p>';
+        }
+
+        $html = [];
+
+        if (isset($context['greeting'])) {
+            $html[] = '<p>' . $this->interpolate($context['greeting'], $data) . '</p>';
+        }
+
+        if (isset($context['intro'])) {
+            $html[] = '<p>' . $this->interpolate($context['intro'], $data) . '</p>';
+        }
+
+        // Status section — loops over any status_* keys present
+        if (isset($context['status_title'])) {
+            $html[] = '<p class="mt-3"><strong>' . $context['status_title'] . '</strong></p>';
+            $html[] = '<ul class="ml-4 list-disc space-y-1 text-gray-300">';
+            foreach ($context as $key => $value) {
+                if (str_starts_with($key, 'status_') && $key !== 'status_title' && is_string($value)) {
+                    $html[] = '<li>' . $this->interpolate($value, $data) . '</li>';
+                }
+            }
+            $html[] = '</ul>';
+        }
+
+        // Actions section
+        if (isset($context['actions_title']) && isset($context['actions'])) {
+            $html[] = '<p class="mt-3"><strong>' . $context['actions_title'] . '</strong></p>';
+            $html[] = '<ul class="ml-4 list-disc space-y-1 text-sm text-gray-300">';
+            foreach ($context['actions'] as $action) {
+                $html[] = '<li>' . $action . '</li>';
+            }
+            $html[] = '</ul>';
+        }
+
+        // Value Props (for guest/visitor sections)
+        if (isset($context['value_title']) && isset($context['value_props'])) {
+            $html[] = '<p class="mt-3"><strong>' . $context['value_title'] . '</strong></p>';
+            $html[] = '<ul class="ml-4 list-disc space-y-1 text-sm text-gray-300">';
+            foreach ($context['value_props'] as $prop) {
+                $html[] = '<li>' . $prop . '</li>';
+            }
+            $html[] = '</ul>';
+        }
+
+        // Why Join section (guest only)
+        if (isset($context['why_join_title']) && isset($context['why_join_reasons'])) {
+            $html[] = '<p class="mt-3"><strong>' . $context['why_join_title'] . '</strong></p>';
+            $html[] = '<ul class="ml-4 list-disc space-y-1 text-sm text-gray-300">';
+            foreach ($context['why_join_reasons'] as $reason) {
+                $html[] = '<li>' . $reason . '</li>';
+            }
+            $html[] = '</ul>';
+        }
+
+        if (isset($context['help_offer'])) {
+            $html[] = '<p class="mt-3">' . $this->interpolate($context['help_offer'], $data) . '</p>';
+        }
+
+        if (isset($context['cta'])) {
+            $html[] = '<p class="mt-2 text-sm text-indigo-300">' . $this->interpolate($context['cta'], $data) . '</p>';
+        }
+
+        if (isset($context['cta_register'])) {
+            $html[] = '<div class="mt-4">' . $context['cta_register'] . '</div>';
+        }
+
+        return implode("\n", $html);
+    }
+
+    /**
+     * Interpolate :placeholder variables in a translation string.
+     *
+     * @param string $string String with :var placeholders
+     * @param array  $data   Associative array of variables
+     * @return string Interpolated string
+     */
+    protected function interpolate(string $string, array $data): string
+    {
+        foreach ($data as $key => $value) {
+            $string = str_replace(":{$key}", $value ?? '', $string);
+        }
+        return $string;
     }
 }
