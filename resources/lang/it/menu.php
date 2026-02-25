@@ -133,6 +133,7 @@ return [
     'superadmin_platform_management' => 'Gestione Piattaforma',
     'superadmin_roles' => 'Ruoli & Permessi',
     'superadmin_feature_pricing' => 'Pricing Features',
+    'superadmin_platform_settings' => 'Impostazioni Piattaforma',
     'superadmin_migration_orchestrator' => 'Migration Orchestrator',
     'admin_promotions' => 'Gestione Promozioni',
     'admin_featured' => 'Calendario Featured EGI',

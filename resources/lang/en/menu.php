@@ -114,6 +114,7 @@ return [
     'superadmin_platform_management' => 'Platform Management',
     'superadmin_roles' => 'Roles & Permissions',
     'superadmin_feature_pricing' => 'Feature Pricing',
+    'superadmin_platform_settings' => 'Platform Settings',
     'admin_promotions' => 'Promotions Management',
     'admin_featured' => 'Featured EGI Calendar',
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\Superadmin\SuperadminEquilibriumController;
 use App\Http\Controllers\Superadmin\SuperadminNatanConfigController;
 use App\Http\Controllers\Superadmin\PadminController;
 use App\Http\Controllers\Superadmin\SuperadminFeaturePricingController;
+use App\Http\Controllers\Superadmin\SuperadminPlatformSettingsController;
 use App\Http\Controllers\Superadmin\SuperadminRolesController;
 use App\Http\Controllers\Superadmin\MigrationOrchestratorController;
 use Illuminate\Support\Facades\Route;
@@ -127,6 +128,12 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
 
     // Feature Pricing Management (CRUD completo)
     Route::resource('pricing', SuperadminFeaturePricingController::class)->except(['show']);
+
+    // Platform Settings Management (impostazioni tecniche di piattaforma nel DB)
+    Route::prefix('platform-settings')->name('platform-settings.')->group(function () {
+        Route::get('/', [SuperadminPlatformSettingsController::class, 'index'])->name('index');
+        Route::put('/group/{group}', [SuperadminPlatformSettingsController::class, 'updateGroup'])->name('update-group');
+    });
 
     // Migration Orchestrator - Gestione centralizzata migration database condiviso
     Route::prefix('migration-orchestrator')->name('migration-orchestrator.')->group(function () {

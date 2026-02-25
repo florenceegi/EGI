@@ -1,0 +1,8 @@
+EGI-HUB-HOME-REACT
+sudo -u forge bash -c 'cd /home/forge/florenceegi.com && git pull origin main && npm run build'
+
+EGI (art.florenceegi.com) — solo Blade, no build npm necessario:
+sudo -u forge bash -c 'cd /home/forge/art.florenceegi.com && git pull origin develop && php artisan config:cache && php artisan view:clear'
+
+NATAN_LOC (natan-loc.florenceegi.com):
+sudo -u forge bash -c 'cd /home/forge/natan-loc.florenceegi.com && git pull origin perfect-with-timeout && php artisan config:cache && php artisan view:clear'

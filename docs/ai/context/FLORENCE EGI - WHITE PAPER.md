@@ -41,7 +41,7 @@ Il mercato NFT è paralizzato da un trilemma che nessuna piattaforma è riuscita
 ### **La Soluzione FlorenceEGI: Architettura Anti-Trilemma**
 
 **✅ EGI Fisici**: Arte autentica + Utility reale + 20% automatico EPP  
-**✅ EGI pt**: Trading velocity + Fee competitive (1.5%) + Impact garantito  
+**✅ EGI pt**: Trading velocity + **Zero fee** + Veicolo marketing per l'ecosistema  
 **✅ Algorand Infrastructure**: Carbon negative + Costi €0.0001 + 6000 TPS
 
 **Risultato**: Primo marketplace che offre TUTTE E TRE le caratteristiche simultaneamente, creando una categoria completamente nuova invece di competere in mercati esistenti.
@@ -61,7 +61,7 @@ Mentre ogni competitor usa fee fisse estrattive (OpenSea 2.5% per sempre, Blur 0
 
 ```
 Più l'ecosistema cresce → Meno costi per tutti
-Meno costi per tutti → Più attrazione utenti  
+Meno costi per tutti → Più attrazione utenti
 Più utenti → Più volume → Più impact EPP
 Più impact EPP → Più credibilità corporate
 Più credibilità → Più volume → Fee ancora minori
@@ -87,7 +87,7 @@ Più credibilità → Più volume → Fee ancora minori
 
 **⚡ TRADER PRO (€500M target)**: Gladiatori della liquidità virtuosa
 
-- **Super-potere**: EGI pt ultra-ottimizzati + fee 1.5% + sempre EPP component
+- **Super-potere**: EGI pt ultra-ottimizzati + **zero fee** + veicolo di visibilità per l'ecosistema
 - **Volume**: High-frequency trading che alimenta il beneficio collettivo
 
 **🏛️ MECENATI**: Acceleratori del sogno condiviso  

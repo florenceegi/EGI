@@ -242,8 +242,7 @@ class EgiliTosV3ComplianceTest extends TestCase {
      *
      * @test
      */
-    public function test_mint_payment_form_never_passes_show_egili_option_true(): void
-    {
+    public function test_mint_payment_form_never_passes_show_egili_option_true(): void {
         // Prerequisito: la colonna è stata rimossa (A1)
         $this->assertFalse(
             Schema::hasColumn('egis', 'payment_by_egili'),

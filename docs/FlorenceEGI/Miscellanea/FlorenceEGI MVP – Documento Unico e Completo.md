@@ -11,8 +11,8 @@ FlorenceEGI è il marketplace digitale che integra **arte, innovazione, impatto 
 ## **1. Onboarding & Accesso**
 
 - **Registrazione debole/forte**
-  - **Debole**: accesso rapido tramite wallet temporaneo o social login, nessun dato personale. Permette di prenotare EGI ma con priorità minore.
-  - **Forte**: accesso completo con nome, cognome, email e (eventualmente) documento. Garantisce priorità assoluta su tutte le prenotazioni.
+    - **Debole**: accesso rapido tramite wallet temporaneo o social login, nessun dato personale. Permette di prenotare EGI ma con priorità minore.
+    - **Forte**: accesso completo con nome, cognome, email e (eventualmente) documento. Garantisce priorità assoluta su tutte le prenotazioni.
 - **Login/Connessione**: ingresso via social, email/password, wallet custodial o Algorand.
 
 ---
@@ -20,12 +20,12 @@ FlorenceEGI è il marketplace digitale che integra **arte, innovazione, impatto 
 ## **2. Interazione Utente**
 
 - **Like e prenotazioni**
-  - L’utente può mettere like e **prenotare** sia una collezione sia singoli EGI.
-  - **Sistema di prenotazione Debole/Forte**:
-    - **Debole**: chiunque può prenotare con wallet “fake”/accesso rapido, priorità solo su chi non prenota nulla, nessuna scadenza.
-    - **Forte**: solo utenti registrati, priorità assoluta, precedenza anche a offerte inferiori, diritto all’acquisto alla partenza del mint.
-    - Entrambe le prenotazioni richiedono una proposta economica in euro (convertita poi in ALGO).
-    - Sistema equo e trasparente: _inclusivo per i neofiti, premiante per chi si impegna davvero_.
+    - L’utente può mettere like e **prenotare** sia una collezione sia singoli EGI.
+    - **Sistema di prenotazione Debole/Forte**:
+        - **Debole**: chiunque può prenotare con wallet “fake”/accesso rapido, priorità solo su chi non prenota nulla, nessuna scadenza.
+        - **Forte**: solo utenti registrati, priorità assoluta, precedenza anche a offerte inferiori, diritto all’acquisto alla partenza del mint.
+        - Entrambe le prenotazioni richiedono una proposta economica in euro (convertita poi in ALGO).
+        - Sistema equo e trasparente: _inclusivo per i neofiti, premiante per chi si impegna davvero_.
 
 ---
 
@@ -57,12 +57,12 @@ FlorenceEGI è il marketplace digitale che integra **arte, innovazione, impatto 
 **La rivoluzione di FlorenceEGI:**
 
 - **EGI Commodity (Gold Bars)**: Asset con valore intrinseco oggettivo.
-  - **Minting**: Fee piattaforma calcolata solo sul **Margine**.
-  - **Trading**: Fee fissa (50 Egili) sul mercato secondario, zero royalties artistiche.
+    - **Minting**: Fee piattaforma calcolata solo sul **Margine**.
+    - **Trading**: Fee fissa (50 Egili) sul mercato secondario, zero royalties artistiche.
 - **EGI fisici**: NFT collegati a beni reali (opere, azioni ambientali, prodotti). Narrazione, autenticità, tracciabilità e impatto EPP garantiti.
 - **EGI pt (pure trading)**: asset digitali collegati agli EGI fisici, pensati per trading, viralità, reward.
-  - Fee bassissime (1,5% totali), trasparenza: 1% sempre destinato a EPP, 0,5% alla piattaforma.
-  - I creator possono creare serie di EGI pt a supporto degli EGI fisici per generare engagement, reward e popolarità.
+    - **Zero fee** (0% totali): né la piattaforma né i creator guadagnano. Guadagna solo chi trada. Serve da veicolo marketing per l'intero ecosistema.
+    - I creator possono creare serie di EGI pt a supporto degli EGI fisici per generare engagement, reward e popolarità.
 - **Obiettivo**: unire collezionismo fisico e trading digitale, coinvolgendo sia artisti/collezionisti sia trader pro, con etica e trasparenza.
 
 ---

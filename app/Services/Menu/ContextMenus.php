@@ -52,6 +52,7 @@ use App\Services\Menu\Items\SuperadminAiStatisticsMenu;
 use App\Services\Menu\Items\SuperadminEgiliManagementMenu;
 use App\Services\Menu\Items\SuperadminEquilibriumManagementMenu;
 use App\Services\Menu\Items\SuperadminFeaturePricingMenu;
+use App\Services\Menu\Items\SuperadminPlatformSettingsMenu;
 use App\Services\Menu\Items\SuperadminRolesMenu;
 use App\Services\Menu\Items\SuperadminPadminDashboardMenu;
 use App\Services\Menu\Items\SuperadminPadminViolationsMenu;
@@ -337,6 +338,7 @@ class ContextMenus {
                 $platformMenu = new MenuGroup(__('menu.superadmin_platform_management'), 'superadmin-dashboard', [
                     new SuperadminRolesMenu(),
                     new SuperadminFeaturePricingMenu(),
+                    new SuperadminPlatformSettingsMenu(),
                     new AdminPromotionsMenu(),
                     new AdminFeaturedCalendarMenu(),
                     new AdminConsumptionLedgerMenu(),
