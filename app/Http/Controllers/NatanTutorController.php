@@ -252,7 +252,7 @@ class NatanTutorController extends Controller {
         $amount = $request->input('amount');
         $mode = $request->input('mode', 'tutoring');
 
-        $result = $this->tutorService->assistEgiliPurchase($user, $amount, $mode);
+        $result = $this->tutorService->assistAiPackagePurchase($user, $amount, $mode);
 
         return response()->json($result);
     }

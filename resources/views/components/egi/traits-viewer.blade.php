@@ -598,9 +598,9 @@ $canEdit =
                                     <p class="text-sm"><strong>Disponibili:</strong> ${pricing.user_balance} Egili</p>
                                     <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${pricing.cost_egili - pricing.user_balance} Egili</p>
                                 </div>
-                                <p class="mt-3 text-xs text-gray-600">Acquista Egili per continuare.</p>
+                                <p class="mt-3 text-xs text-gray-600">Acquista un Pacchetto AI per ricaricare i tuoi Egili.</p>
                             `,
-                            confirmButtonText: 'Acquista Egili',
+                            confirmButtonText: 'Acquista Pacchetto AI',
                             showCancelButton: true,
                             cancelButtonText: 'Chiudi',
                             confirmButtonColor: '#f97316',

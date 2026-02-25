@@ -300,7 +300,7 @@ class ContextMenus {
             case 'superadmin.egili':
             case 'superadmin.equilibrium':
             case 'superadmin.padmin':
-            // Admin contexts (all admin.* routes use superadmin sidebar)
+                // Admin contexts (all admin.* routes use superadmin sidebar)
             case 'admin.pricing':
             case 'admin.promotions':
             case 'admin.egili':
@@ -327,7 +327,7 @@ class ContextMenus {
                 $menus[] = $aiManagementMenu;
 
                 // Tokenomics Management Group
-                $tokenomicsMenu = new MenuGroup(__('menu.superadmin_tokenomics'), 'superadmin-egili-token', [
+                $tokenomicsMenu = new MenuGroup(__('menu.superadmin_tokenomics'), 'superadmin-egili-credits', [
                     new SuperadminEgiliManagementMenu(),
                     new SuperadminEquilibriumManagementMenu(),
                 ]);

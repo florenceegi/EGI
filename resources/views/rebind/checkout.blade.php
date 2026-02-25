@@ -128,7 +128,10 @@
                     @csrf
 
                     @php
-                        $showEgiliOption = $showEgiliOption ?? false;
+                        // ToS v3.0.0 — VIETATO: Gli Egili NON possono essere usati come mezzo di pagamento
+                        // per il rebind di EGI. $showEgiliOption è forzato a false.
+                        // Ref: docs/FlorenceEGI/debiti_tecnici.md — Sezione 8, item F11 + A1/A2
+                        $showEgiliOption = false; // WAS: $showEgiliOption ?? false
                         $canPayWithEgili = $canPayWithEgili ?? false;
                         $egiliBalance = $egiliBalance ?? 0;
                         $requiredEgili = $requiredEgili ?? 0;

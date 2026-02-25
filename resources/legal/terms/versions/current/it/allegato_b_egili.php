@@ -1,13 +1,16 @@
 <?php
 
 /**
- * @Oracode Legal Content: Allegato B — Guida al Sistema Egili
- * 🎯 Purpose: Complete guide to Egili credits system
- * 🛡️ Security: MiCA compliance, non-token classification, consumer transparency
+ * @Oracode Legal Content: Allegato B — Sistema Egili e Pacchetti Servizi AI
+ * 🎯 Purpose: Definizione del sistema Egili come contatore interno di consumo
+ *             dei Pacchetti Servizi AI acquistati in valuta FIAT
+ * 🛡️ Security: MiCA compliance — Egili NON sono acquistabili, NON sono token,
+ *              NON sono asset. Il prodotto venduto sono i Pacchetti Servizi AI.
  *
- * @version 3.0.0
- * @effective_date 2026-02-24
+ * @version 3.1.0
+ * @effective_date 2026-02-25
  * @locale it
+ * @supersedes 3.0.0 (eliminato modello "acquisto Egili" — illegale)
  *
  * Referenziato da:
  * - creator.php Art. 6.2, 11
@@ -15,190 +18,163 @@
  * - patron.php Art. 3.3
  * - trader_pro.php Art. 3.4
  *
- * Fonte dati verificata:
- * - config/ai-credits.php
- * - config/egili.php
- * - creator.php Art. 6, collector.php Art. 6
- *
  * @package FlorenceEGI\Legal
- * @author Padmin D. Curtis (AI Partner OS3.0-Compliant) for Fabio Cherici
+ * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
  */
 
 return [
     'metadata' => [
-        'title' => 'Allegato B — Guida al Sistema Egili',
-        'version' => '3.0.0',
+        'title' => 'Allegato B — Sistema Egili e Pacchetti Servizi AI',
+        'version' => '3.1.0',
         'effective_date' => '2026-02-24',
         'document_type' => 'Allegato ai Termini e Condizioni',
         'referenced_by' => ['creator.php', 'collector.php', 'patron.php', 'trader_pro.php'],
+        'supersedes' => '3.0.0 — eliminato modello "acquisto Egili" (incompatibile con MiCA)',
     ],
 
     'introduzione' => [
         'title' => 'Introduzione',
-        'content' => 'Il presente Allegato descrive il funzionamento del sistema Egili, le modalità di ottenimento, di utilizzo e le regole applicabili. Gli Egili sono parte integrante dell\'ecosistema FlorenceEGI e sono disciplinati dai Termini e Condizioni di ciascun tipo di utente.',
+        'content' => 'Il presente Allegato descrive il funzionamento del sistema Egili, la natura dei Pacchetti Servizi AI acquistabili, le modalità di accredito e utilizzo degli Egili e le regole applicabili. Gli Egili sono un contatore interno di consumo servizi AI, disciplinato dai Termini e Condizioni di ciascun tipo di utente.',
     ],
 
     'sections' => [
         [
             'number' => 1,
-            'title' => 'Definizione e Natura Giuridica',
-            'content' => 'Gli **Egili** sono unità di credito interne alla Piattaforma FlorenceEGI, concepiti come:
+            'title' => 'Natura degli Egili — Definizione Giuridica',
+            'content' => 'Gli **Egili** sono esclusivamente un **contatore interno di consumo** dei servizi AI della Piattaforma FlorenceEGI.
+
+**🚫 Gli Egili NON sono un prodotto acquistabile direttamente.**
+Il prodotto venduto dalla Piattaforma sono i **Pacchetti Servizi AI** in valuta FIAT.
+Gli Egili vengono accreditati automaticamente come conseguenza dell\'acquisto di un Pacchetto Servizi AI.
 
 **Cosa sono**:
-- Crediti di servizio prepagati per l\'utilizzo dei servizi AI della Piattaforma
-- Unità di premiazione per azioni meritevoli all\'interno dell\'ecosistema
-- Strumento per ottenere sconti e riduzioni sulle commissioni di piattaforma
+- Un contatore di consumo per i servizi AI (N.A.T.A.N.) della Piattaforma
+- Uno strumento di premiazione per azioni meritevoli nell\'ecosistema
+- Uno strumento per ottenere sconti e riduzioni sulle commissioni di piattaforma
 
 **Cosa NON sono**:
 - **Non sono valuta** (legale o virtuale)
 - **Non sono token finanziari** né crypto-asset ai sensi del Reg. (UE) 2023/1114 (MiCA)
 - **Non sono titoli negoziabili** né strumenti finanziari
 - **Non hanno valore monetario autonomo**
+- **Non sono un prodotto in vendita** — non si "comprano Egili"
 - **Non sono trasferibili** tra utenti
-- **Non sono scambiabili** su mercati esterni
-- **Non sono rimborsabili** né convertibili in denaro
+- **Non sono convertibili** in denaro né rimborsabili
 - **Non sono utilizzabili** come mezzo di pagamento per l\'acquisto o la vendita di EGI
 
-**Classificazione normativa**: Gli Egili sono assimilabili a crediti di servizio prepagati (analoghi a crediti SaaS come AWS Credits, crediti OpenAI, punti fedeltà non monetizzabili), fuori dall\'ambito di applicazione del Regolamento MiCA e della normativa sui servizi di pagamento (PSD2).',
+**Classificazione normativa**: Gli Egili sono assimilabili a unità di misura interne del consumo di un servizio prepagato (analoghi a "crediti API" come AWS Credits, crediti OpenAI), fuori dall\'ambito di applicazione del Regolamento MiCA e della normativa PSD2.',
         ],
         [
             'number' => 2,
-            'title' => 'Come Ottenere Egili',
+            'title' => 'Pacchetti Servizi AI — Il Prodotto Acquistabile',
             'subsections' => [
                 [
                     'number' => '2.1',
-                    'title' => 'Acquisto di Pacchetti Servizi AI (FIAT)',
-                    'content' => 'L\'utente può acquistare pacchetti di servizi AI pagando in valuta FIAT (EUR) tramite i PSP integrati (Stripe, PayPal). L\'acquisto accredita Egili sul saldo dell\'utente.
+                    'title' => 'Cosa si Acquista',
+                    'content' => 'L\'utente acquista **Pacchetti Servizi AI**: diritti di accesso prepagato ai servizi AI della Piattaforma (N.A.T.A.N. e relativi moduli).
 
-**Pacchetti disponibili**:
+A fronte dell\'acquisto di un Pacchetto Servizi AI, la Piattaforma accredita automaticamente un numero di **Egili** sul saldo dell\'utente. Il rapporto tra l\'importo pagato e gli Egili accreditati è **pubblicato nella sezione dedicata della Piattaforma** ed è soggetto ad aggiornamento con preavviso di 30 giorni.
 
-| Pacchetto | Egili | Prezzo (EUR) | Sconto |
-|---|---|---|---|
-| **Starter** | 1.000 | €10,00 | — |
-| **Professional** | 5.000 | €45,00 | 10% |
-| **Business** | 10.000 | €85,00 | 15% |
-| **Enterprise** | 50.000 | €400,00 | 20% |
-
-Il tasso di conversione base è: **1 EUR = 100 Egili** (€0,01 per Egili).
-
-I pacchetti e i prezzi possono essere aggiornati periodicamente. I prezzi vigenti al momento dell\'acquisto sono sempre visibili nella sezione dedicata della dashboard.',
+I pacchetti disponibili, le denominazioni e i prezzi vigenti sono consultabili nella dashboard dell\'utente. I prezzi sono espressi in EUR (IVA inclusa ove applicabile).',
                 ],
                 [
                     'number' => '2.2',
-                    'title' => 'Premiazione per Merito (Reward)',
-                    'content' => 'Gli utenti possono guadagnare Egili attraverso azioni meritevoli all\'interno dell\'ecosistema, tra cui:
+                    'title' => 'Modalità di Pagamento',
+                    'content' => 'I Pacchetti Servizi AI sono acquistabili esclusivamente tramite:
+- **Stripe** (carte di credito/debito: Visa, Mastercard, American Express)
+- **PayPal**
 
-- **Acquisti sulla Piattaforma**: Bonus Egili per ogni acquisto di EGI
-- **Referral**: Egili per ogni nuovo utente invitato che completa la registrazione
-- **Partecipazione alla community**: Contributi significativi, feedback, segnalazioni
-- **Eventi e promozioni**: Campagne periodiche con premiazione Egili
-- **Milestone**: Raggiungimento di traguardi (es. primo acquisto, 10° acquisto, primo anno di attività)
-
-I criteri e gli importi di premiazione sono definiti da FlorenceEGI e possono variare. Le condizioni vigenti sono consultabili nella dashboard dell\'utente.',
+**Non sono accettati** pagamenti in criptovalute, token digitali o asset blockchain di nessun tipo.',
                 ],
                 [
                     'number' => '2.3',
-                    'title' => 'Egili Iniziali (Free Tier)',
-                    'content' => 'Alla registrazione, ogni utente riceve un accredito iniziale di **1.000 Egili** (equivalente a €10 di servizi AI) per provare le funzionalità della Piattaforma. Inoltre, ogni mese viene accreditato un bonus di **500 Egili** per gli utenti con piano gratuito.
+                    'title' => 'Egili di Benvenuto (Free Tier)',
+                    'content' => 'Alla registrazione, ogni nuovo utente riceve un accredito iniziale di Egili per provare i servizi AI della Piattaforma senza necessità di acquisto. L\'importo del credito iniziale è indicato nella sezione dedicata della dashboard.
 
-Questi Egili hanno le stesse condizioni di utilizzo degli Egili acquistati.',
+Questi Egili sono soggetti alle stesse regole di utilizzo degli Egili accreditati tramite pacchetti.',
+                ],
+                [
+                    'number' => '2.4',
+                    'title' => 'Egili Reward (Premio)',
+                    'content' => 'Gli utenti possono ricevere Egili aggiuntivi come riconoscimento per azioni meritevoli nell\'ecosistema, tra cui:
+- Acquisti di EGI sulla Piattaforma
+- Referral di nuovi utenti
+- Milestone e traguardi di partecipazione
+- Campagne e promozioni periodiche
+
+I criteri e gli importi di premiazione sono definiti da FlorenceEGI, sono consultabili nella dashboard e possono variare. Gli Egili Reward possono avere scadenza (comunicata al momento dell\'accredito).',
                 ],
             ],
         ],
         [
             'number' => 3,
-            'title' => 'Come Utilizzare gli Egili',
+            'title' => 'Utilizzo degli Egili',
             'subsections' => [
                 [
                     'number' => '3.1',
                     'title' => 'Servizi AI (N.A.T.A.N.)',
-                    'content' => 'L\'utilizzo principale degli Egili è il consumo dei servizi AI della Piattaforma:
+                    'content' => 'L\'utilizzo primario degli Egili è il consumo dei servizi AI della Piattaforma:
+- **Assistente N.A.T.A.N.**: ogni interazione consuma Egili in base al tipo e complessità della richiesta
+- **Analisi opere**: analisi approfondita di caratteristiche e posizionamento di mercato
+- **Suggerimenti personalizzati**: raccomandazioni basate su collezione e preferenze
 
-- **Assistenza N.A.T.A.N.**: Ogni interazione con l\'assistente AI consuma Egili in base alla complessità della richiesta
-- **Analisi opere**: Analisi approfondita delle caratteristiche e del posizionamento di mercato delle opere
-- **Suggerimenti personalizzati**: Raccomandazioni basate sulle preferenze e sulla collezione
-
-Il costo in Egili per ogni servizio è visibile prima dell\'utilizzo. L\'utilizzo è definitivo e comporta la rimozione irrevocabile degli Egili dal saldo.',
+Il costo in Egili di ogni servizio è visibile prima dell\'utilizzo. Il consumo è **definitivo e irrevocabile**: gli Egili consumati non sono recuperabili salvo malfunzionamento tecnico certificato.',
                 ],
                 [
                     'number' => '3.2',
-                    'title' => 'Riduzione e Azzeramento Commissioni',
-                    'content' => 'Gli Egili possono essere utilizzati per ridurre o azzerare le commissioni di piattaforma sulle transazioni:
+                    'title' => 'Riduzione Commissioni di Piattaforma',
+                    'content' => 'Gli Egili possono essere utilizzati per ridurre le commissioni di piattaforma sulle transazioni (Mint, Rebind). Le modalità e i rapporti di conversione sono definiti nella sezione Impostazioni della dashboard.
 
-- Riduzione parziale delle fee di servizio sul Mint
-- Riduzione parziale delle fee di servizio sul Rebind
-- Le modalità e i tassi di conversione sono definiti nella sezione Impostazioni della dashboard
-
-**Nota**: La riduzione si applica esclusivamente alla quota di commissione della Piattaforma (Natan), non alle royalties del Creator, ai contributi EPP o a Frangette.',
+**Nota**: La riduzione si applica esclusivamente alla quota di commissione della Piattaforma (componente Natan), non alle royalties del Creator, ai contributi EPP né a Frangette.',
                 ],
                 [
                     'number' => '3.3',
                     'title' => 'Sconti e Vantaggi',
-                    'content' => 'Gli Egili possono essere riscattati per vantaggi sulla Piattaforma:
-
-- Accesso anticipato a drop esclusivi
-- Sconti sulle commissioni di acquisto
-- Vantaggi dedicati in base al tipo di utente (vedi condizioni specifiche per Patron, Trader Pro)
-- Ulteriori benefici periodicamente annunciati
-
-I vantaggi disponibili e i costi in Egili sono consultabili nella sezione dedicata della dashboard.',
+                    'content' => 'Gli Egili possono essere riscattati per ulteriori vantaggi sulla Piattaforma (accesso anticipato a drop esclusivi, sconti, benefici riservati per tipo di utente). I vantaggi disponibili e i relativi costi in Egili sono indicati nella sezione dedicata della dashboard.',
                 ],
             ],
         ],
         [
             'number' => 4,
             'title' => 'Condizioni per Tipo di Utente',
-            'content' => '| Tipo Utente | Egili Iniziali | Bonus Mensile | Moltiplicatore Reward | Condizioni Speciali |
-|---|---|---|---|---|
-| **Creator** | 1.000 | 500 | 1x | Egili per servizi AI di analisi opere |
-| **Collector** | 1.000 | 500 | 1x | — |
-| **Patron** | 1.000 | 500 | Bonus maggiorato | Bonus su patronage, milestone, pacchetti dedicati |
-| **Trader Pro** | 1.000 | 500 | 1,5x | Bonus volume trimestrale, pacchetti Pro |
-| **Company** | Variabile | Variabile | Variabile | Condizioni Enterprise negoziabili |
-
-Le condizioni specifiche per ciascun tipo di utente sono dettagliate nei rispettivi Termini e Condizioni.',
+            'content' => 'Le condizioni di accredito iniziale, i bonus mensili e i moltiplicatori reward variano per tipo di utente e sono pubblicati nella sezione dedicata della dashboard. Le condizioni specifiche sono dettagliate nei rispettivi Termini e Condizioni di ciascun tipo di utente (Creator, Collector, Patron, Trader Pro, Company).',
         ],
         [
             'number' => 5,
             'title' => 'Regole e Limitazioni',
-            'content' => '**Utilizzo**:
-• L\'utilizzo degli Egili è **definitivo e irrevocabile**: una volta consumati, non possono essere recuperati
-• Al termine degli Egili disponibili, i servizi che ne richiedono il consumo non saranno accessibili fino all\'ottenimento di nuovi Egili
+            'content' => '**Consumo**:
+• Il consumo degli Egili è **definitivo e irrevocabile**
+• Quando il saldo è zero, i servizi AI non sono accessibili fino all\'acquisto di un nuovo Pacchetto Servizi AI
 
-**Trasferibilità**:
-• Gli Egili sono **strettamente personali** e associati all\'account dell\'utente
-• **Non possono** essere trasferiti, ceduti, venduti o scambiati con altri utenti
-• **Non possono** essere utilizzati su piattaforme terze
+**Personalità e non-trasferibilità**:
+• Gli Egili sono **strettamente personali** e legati all\'account dell\'utente
+• Non possono essere trasferiti, ceduti, venduti o scambiati con altri utenti
+• Non sono utilizzabili su piattaforme terze
 
 **Scadenza**:
-• Gli Egili acquistati tramite pacchetti AI non hanno scadenza
-• Gli Egili ottenuti tramite premiazione possono avere scadenza (comunicata al momento dell\'accredito)
-• In caso di cancellazione dell\'account, gli Egili residui vanno persi
+• Gli Egili accreditati tramite Pacchetti Servizi AI **non hanno scadenza**
+• Gli Egili Reward possono avere scadenza, comunicata al momento dell\'accredito
+• In caso di cancellazione dell\'account, il saldo Egili residuo è azzerato senza rimborso
 
-**Rimborso**:
-• Gli Egili **non sono rimborsabili** in nessun caso
-• In caso di malfunzionamento tecnico di un servizio AI, gli Egili consumati possono essere riaccreditati automaticamente sul saldo dell\'utente',
+**Non rimborsabilità**:
+• Gli Egili non sono rimborsabili in alcun caso
+• In caso di malfunzionamento tecnico certificato di un servizio AI, gli Egili consumati possono essere riaccreditati automaticamente',
         ],
         [
             'number' => 6,
             'title' => 'Modifiche al Sistema',
-            'content' => 'FlorenceEGI si riserva il diritto di modificare:
-- I criteri di attribuzione degli Egili
-- I costi di consumo dei servizi
-- I pacchetti disponibili e i relativi prezzi
-- Le modalità di utilizzo per sconti e riduzioni
-
-Tali modifiche saranno comunicate con un preavviso di **30 giorni** tramite email e notifica sulla Piattaforma. Le modifiche **non avranno effetto retroattivo** sugli Egili già accumulati: gli Egili già nel saldo dell\'utente al momento della modifica manterranno il proprio valore di utilizzo.',
+            'content' => 'FlorenceEGI può modificare i rapporti di accredito, i costi dei servizi, i pacchetti disponibili e le modalità di utilizzo per sconti e commissioni. Tali modifiche saranno comunicate con preavviso di **30 giorni** via email e notifica sulla Piattaforma. Le modifiche non hanno effetto retroattivo: gli Egili già nel saldo al momento della modifica mantengono il proprio potere di utilizzo.',
         ],
         [
             'number' => 7,
-            'title' => 'Assistenza e Saldo',
-            'content' => 'L\'utente può verificare in qualsiasi momento:
-- Il **saldo Egili** corrente nella propria dashboard
-- Lo **storico** di acquisti, premiazioni e utilizzi
-- I **costi** dei servizi prima di utilizzarli
+            'title' => 'Trasparenza e Assistenza',
+            'content' => 'L\'utente può verificare in qualsiasi momento nella propria dashboard:
+- Il saldo Egili corrente
+- Lo storico degli accrediti (pacchetti, reward, benvenuto) e dei consumi
+- Il costo in Egili dei servizi prima dell\'utilizzo
+- I rapporti di accredito vigenti (Egili per Pacchetto AI)
 
-Per problemi relativi al saldo Egili o ai servizi AI: support@florenceegi.com',
+Per assistenza: support@florenceegi.com',
         ],
     ],
 ];

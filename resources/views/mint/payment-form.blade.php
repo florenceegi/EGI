@@ -199,14 +199,17 @@
                     @csrf
 
                     @php
-                        $showEgiliOption = $showEgiliOption ?? false;
-                        $canPayWithEgili = $canPayWithEgili ?? false;
-                        $egiliBalance = $egiliBalance ?? 0;
-                        $requiredEgili = $requiredEgili ?? 0;
-                        $paymentAmountEur = $paymentAmountEur ?? ($reservation?->amount_eur ?? ($egi->price ?? 0));
-                        $selectedPaymentMethod = old(
-                            'payment_method',
-                            $showEgiliOption && $canPayWithEgili ? 'egili' : 'stripe',
+                        // ToS v3.0.0 — VIETATO: Gli Egili NON possono essere usati come mezzo di pagamento
+                        // per l'acquisto di EGI. $showEgiliOption è forzato a false.
+// Ref: docs/FlorenceEGI/debiti_tecnici.md — Sezione 8, item F10 + A1/A2
+$showEgiliOption = false; // WAS: $showEgiliOption ?? false
+$canPayWithEgili = $canPayWithEgili ?? false;
+$egiliBalance = $egiliBalance ?? 0;
+$requiredEgili = $requiredEgili ?? 0;
+$paymentAmountEur = $paymentAmountEur ?? ($reservation?->amount_eur ?? ($egi->price ?? 0));
+$selectedPaymentMethod = old(
+    'payment_method',
+    $showEgiliOption && $canPayWithEgili ? 'egili' : 'stripe',
                         );
                     @endphp
 

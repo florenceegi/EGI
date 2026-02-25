@@ -9,19 +9,19 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * @Oracode Notification: Egili Purchase Confirmation Email
- * 🎯 Purpose: Send purchase confirmation email to buyer after successful Egili purchase
+ * @Oracode Notification: AI Package Purchase Confirmation Email
+ * 🎯 Purpose: Send purchase confirmation email to buyer after successful AI Package purchase
+ *            (Egili credited automatically upon package purchase — ToS v3.0.0)
  * 🧱 Core Logic: Beautiful HTML email with order details and receipt
  * 🛡️ GDPR Compliance: Contains order reference and purchase details
  * 
  * @package App\Notifications
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Egili Purchase System)
- * @date 2025-11-02
- * @purpose Purchase confirmation email notification
+ * @version 1.1.0 (FlorenceEGI - AI Package Purchase System)
+ * @date 2026-02-25
+ * @purpose AI Package purchase confirmation email notification
  */
-class EgiliPurchaseConfirmation extends Notification implements ShouldQueue
-{
+class EgiliPurchaseConfirmation extends Notification implements ShouldQueue {
     use Queueable;
 
     /**
@@ -36,8 +36,7 @@ class EgiliPurchaseConfirmation extends Notification implements ShouldQueue
      *
      * @param EgiliMerchantPurchase $purchase
      */
-    public function __construct(EgiliMerchantPurchase $purchase)
-    {
+    public function __construct(EgiliMerchantPurchase $purchase) {
         $this->purchase = $purchase;
     }
 
@@ -47,8 +46,7 @@ class EgiliPurchaseConfirmation extends Notification implements ShouldQueue
      * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable): array
-    {
+    public function via($notifiable): array {
         return ['mail'];
     }
 
@@ -58,8 +56,7 @@ class EgiliPurchaseConfirmation extends Notification implements ShouldQueue
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable): MailMessage
-    {
+    public function toMail($notifiable): MailMessage {
         $confirmationUrl = route('egili.purchase.confirmation', [
             'orderReference' => $this->purchase->order_reference
         ]);
@@ -74,13 +71,13 @@ class EgiliPurchaseConfirmation extends Notification implements ShouldQueue
                 'reference' => $this->purchase->order_reference
             ]))
             ->line(__('egili.email.purchase_details'))
-            ->line('💎 **' . __('egili.confirmation.egili_purchased') . '**: ' . 
+            ->line('💎 **' . __('egili.confirmation.egili_purchased') . '**: ' .
                 number_format($this->purchase->egili_amount) . ' Egili')
-            ->line('💰 **' . __('egili.confirmation.total_paid') . '**: ' . 
+            ->line('💰 **' . __('egili.confirmation.total_paid') . '**: ' .
                 $this->purchase->formatted_total)
-            ->line('💳 **' . __('egili.confirmation.payment_method') . '**: ' . 
+            ->line('💳 **' . __('egili.confirmation.payment_method') . '**: ' .
                 ($this->purchase->isFiatPayment() ? 'FIAT (EUR)' : 'Crypto'))
-            ->line('🕒 **' . __('egili.confirmation.purchased_at') . '**: ' . 
+            ->line('🕒 **' . __('egili.confirmation.purchased_at') . '**: ' .
                 $this->purchase->purchased_at->format('d/m/Y H:i'))
             ->action(__('egili.email.view_order'), $confirmationUrl)
             ->line(__('egili.email.invoice_info'))
@@ -94,8 +91,7 @@ class EgiliPurchaseConfirmation extends Notification implements ShouldQueue
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable): array
-    {
+    public function toArray($notifiable): array {
         return [
             'purchase_id' => $this->purchase->id,
             'order_reference' => $this->purchase->order_reference,
@@ -104,8 +100,3 @@ class EgiliPurchaseConfirmation extends Notification implements ShouldQueue
         ];
     }
 }
-
-
-
-
-

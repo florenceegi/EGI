@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @Oracode Model: Egili Merchant Purchase
- * 🎯 Purpose: Represent a single Egili purchase transaction for merchant reporting
+ * @Oracode Model: Egili Merchant Purchase (AI Package Purchase Record)
+ * 🎯 Purpose: Represent a single AI Package purchase transaction for merchant reporting
+ *            (ToS v3.0.0: Egili are credited automatically upon AI Package purchase — NOT sold directly)
  * 🛡️ Privacy: Contains payment and user data - GDPR compliant
  * 🧱 Core Logic: Track complete purchase lifecycle from initiation to completion
  * 
@@ -16,16 +17,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * - belongsTo User (buyer)
  * 
  * Key Features:
- * - Supports FIAT and Crypto payments
+ * - Supports FIAT payments only (ToS v3.0.0 — crypto providers disabled)
  * - Complete audit trail for merchant reconciliation
  * - Invoice generation support (FASE 2)
  * - Payment status tracking
  * 
  * @package App\Models
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Egili Purchase System)
- * @date 2025-11-02
- * @purpose Merchant purchase tracking for Egili sales
+ * @version 1.1.0 (FlorenceEGI - AI Package Purchase System)
+ * @date 2026-02-25
+ * @purpose Merchant purchase tracking for AI Package sales (Egili credited on completion)
  * 
  * @property int $id
  * @property int $user_id
@@ -52,8 +53,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Carbon\Carbon $updated_at
  * @property-read User $user
  */
-class EgiliMerchantPurchase extends Model
-{
+class EgiliMerchantPurchase extends Model {
     use HasFactory;
 
     /**
@@ -112,8 +112,7 @@ class EgiliMerchantPurchase extends Model
      *
      * @return BelongsTo
      */
-    public function user(): BelongsTo
-    {
+    public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
 
@@ -122,8 +121,7 @@ class EgiliMerchantPurchase extends Model
      *
      * @return bool
      */
-    public function isCompleted(): bool
-    {
+    public function isCompleted(): bool {
         return $this->payment_status === 'completed';
     }
 
@@ -132,8 +130,7 @@ class EgiliMerchantPurchase extends Model
      *
      * @return bool
      */
-    public function isPending(): bool
-    {
+    public function isPending(): bool {
         return $this->payment_status === 'pending';
     }
 
@@ -142,8 +139,7 @@ class EgiliMerchantPurchase extends Model
      *
      * @return bool
      */
-    public function isFailed(): bool
-    {
+    public function isFailed(): bool {
         return $this->payment_status === 'failed';
     }
 
@@ -152,8 +148,7 @@ class EgiliMerchantPurchase extends Model
      *
      * @return bool
      */
-    public function isRefunded(): bool
-    {
+    public function isRefunded(): bool {
         return $this->payment_status === 'refunded';
     }
 
@@ -162,8 +157,7 @@ class EgiliMerchantPurchase extends Model
      *
      * @return bool
      */
-    public function isFiatPayment(): bool
-    {
+    public function isFiatPayment(): bool {
         return $this->payment_method === 'fiat';
     }
 
@@ -172,8 +166,7 @@ class EgiliMerchantPurchase extends Model
      *
      * @return bool
      */
-    public function isCryptoPayment(): bool
-    {
+    public function isCryptoPayment(): bool {
         return $this->payment_method === 'crypto';
     }
 
@@ -182,8 +175,7 @@ class EgiliMerchantPurchase extends Model
      *
      * @return bool
      */
-    public function hasInvoice(): bool
-    {
+    public function hasInvoice(): bool {
         return !is_null($this->invoice_number);
     }
 
@@ -192,8 +184,7 @@ class EgiliMerchantPurchase extends Model
      *
      * @return string
      */
-    public function getFormattedTotalAttribute(): string
-    {
+    public function getFormattedTotalAttribute(): string {
         return '€' . number_format($this->total_price_eur, 2, ',', '.');
     }
 
@@ -202,8 +193,7 @@ class EgiliMerchantPurchase extends Model
      *
      * @return string
      */
-    public function getFormattedUnitPriceAttribute(): string
-    {
+    public function getFormattedUnitPriceAttribute(): string {
         return '€' . number_format($this->egili_unit_price_eur, 4, ',', '.');
     }
 
@@ -212,16 +202,15 @@ class EgiliMerchantPurchase extends Model
      *
      * @return string Format: EGIL-YYYY-NNNNNN
      */
-    public static function generateOrderReference(): string
-    {
+    public static function generateOrderReference(): string {
         $year = now()->year;
         $prefix = "EGIL-{$year}-";
-        
+
         // Get last order number for this year
         $lastOrder = self::where('order_reference', 'like', $prefix . '%')
             ->orderBy('order_reference', 'desc')
             ->first();
-        
+
         if ($lastOrder) {
             // Extract number and increment
             $lastNumber = (int) substr($lastOrder->order_reference, -6);
@@ -230,7 +219,7 @@ class EgiliMerchantPurchase extends Model
             // First order of the year
             $nextNumber = 1;
         }
-        
+
         return $prefix . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
     }
 
@@ -240,8 +229,7 @@ class EgiliMerchantPurchase extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeCompleted($query)
-    {
+    public function scopeCompleted($query) {
         return $query->where('payment_status', 'completed');
     }
 
@@ -251,8 +239,7 @@ class EgiliMerchantPurchase extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopePending($query)
-    {
+    public function scopePending($query) {
         return $query->where('payment_status', 'pending');
     }
 
@@ -264,8 +251,7 @@ class EgiliMerchantPurchase extends Model
      * @param \Carbon\Carbon $endDate
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeBetweenDates($query, $startDate, $endDate)
-    {
+    public function scopeBetweenDates($query, $startDate, $endDate) {
         return $query->whereBetween('purchased_at', [$startDate, $endDate]);
     }
 
@@ -276,9 +262,7 @@ class EgiliMerchantPurchase extends Model
      * @param int $userId
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeForUser($query, $userId)
-    {
+    public function scopeForUser($query, $userId) {
         return $query->where('user_id', $userId);
     }
 }
-

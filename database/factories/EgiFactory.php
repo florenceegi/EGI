@@ -25,7 +25,7 @@ class EgiFactory extends Factory {
             'title' => $this->faker->words(3, true),
             'description' => $this->faker->sentence(),
             'price' => $this->faker->randomFloat(2, 10, 1000),
-            'payment_by_egili' => false,
+            // 'payment_by_egili' rimosso — ToS v3.0.0: colonna droppa con migration A1 (2026-02-25)
             'is_published' => false,
             'mint' => false,
             'extension' => 'jpg',

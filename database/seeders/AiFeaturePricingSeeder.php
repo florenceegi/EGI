@@ -16,13 +16,11 @@ use Illuminate\Database\Seeder;
  * @date 2025-10-22
  * @source docs/ai/TOKENOMICS_EGILI_EQUILIBRIUM.md lines 454-570
  */
-class AiFeaturePricingSeeder extends Seeder
-{
+class AiFeaturePricingSeeder extends Seeder {
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
+    public function run(): void {
         $features = [
             // === AI SERVICES ===
             [
@@ -115,7 +113,7 @@ class AiFeaturePricingSeeder extends Seeder
                 'expires' => true,
                 'min_tier_required' => 'free',
                 'display_order' => 100,
-                'icon_name' => 'superadmin-egili-token',
+                'icon_name' => 'superadmin-egili-credits',
                 'expected_roi_multiplier' => 3.00,
                 'benefits' => ['Homepage spotlight', '+300% views avg', '24h duration'],
             ],

@@ -67,7 +67,7 @@ class AiFeaturePricingSeederV2Real extends Seeder {
                 'is_active' => true,
                 'display_order' => 10,
                 'is_featured' => true,
-                'icon_name' => 'superadmin-egili-token',
+                'icon_name' => 'superadmin-egili-credits',
                 'badge_color' => '#D4A574', // Oro Fiorentino
                 'benefits' => [
                     'Aggiornamenti automatici CoA',
@@ -268,7 +268,7 @@ class AiFeaturePricingSeederV2Real extends Seeder {
                 'is_active' => true,
                 'display_order' => 50,
                 'is_featured' => false,
-                'icon_name' => 'superadmin-egili-token',
+                'icon_name' => 'superadmin-egili-credits',
                 'badge_color' => '#C13120', // Rosso Urgenza
                 'benefits' => [
                     'Badge Hyper Mode',

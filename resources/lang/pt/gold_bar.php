@@ -68,4 +68,6 @@ return [
         'current_value' => 'Valor indicativo atual',
         'value_note' => 'Calculado a partir do preço spot do ouro mais margens',
     ],
+    'buy_egili_hint'   => 'Compre um Pacote IA para recarregar seus Egili.',
+    'buy_egili_button' => 'Comprar Pacote IA',
 ];

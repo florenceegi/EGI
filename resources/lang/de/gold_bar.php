@@ -68,4 +68,6 @@ return [
         'current_value' => 'Aktueller Richtwert',
         'value_note' => 'Berechnet aus Gold-Spotpreis plus Margen',
     ],
+    'buy_egili_hint'   => 'KI-Paket kaufen, um Egili aufzuladen.',
+    'buy_egili_button' => 'KI-Paket kaufen',
 ];

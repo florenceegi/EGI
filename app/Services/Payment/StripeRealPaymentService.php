@@ -248,7 +248,7 @@ class StripeRealPaymentService implements PaymentServiceInterface {
                     $stripeFee = ($bt->fee ?? 0) / 100;
                 } catch (\Exception $e) {
                     $this->logger->warning('Failed to fetch balance transaction for fees', [
-                        'payment_id' => $paymentId, 
+                        'payment_id' => $paymentId,
                         'bt_id' => $balanceTransactionId
                     ]);
                     // Fallback estimate: 2.9% + 0.25 (approximate if API fails)
@@ -258,7 +258,7 @@ class StripeRealPaymentService implements PaymentServiceInterface {
             }
 
             // 2. Calculate Platform Fee (0.5% of GROSS)
-            $platformFeeConfig = config('egi.fees.platform_fee_percentage', 0.5); 
+            $platformFeeConfig = config('egi.fees.platform_fee_percentage', 0.5);
             $platformFee = $amount * ($platformFeeConfig / 100);
 
             // 3. Calculate Distributable Amount
@@ -272,12 +272,12 @@ class StripeRealPaymentService implements PaymentServiceInterface {
                 if ($collectionId) {
                     try {
                         $collection = Collection::findOrFail($collectionId);
-                        
+
                         // Pass NET details to metadata for split service
                         $metadata['stripe_fee'] = $stripeFee;
                         $metadata['platform_fee'] = $platformFee;
                         $metadata['net_available_stripe'] = $netAmount;
-                        
+
                         // Execute split payment logic with DISTRIBUTABLE AMOUNT
                         $this->splitService->splitPaymentToWallets(
                             $paymentId,
@@ -294,9 +294,9 @@ class StripeRealPaymentService implements PaymentServiceInterface {
                             'distributable' => $distributableAmount
                         ]);
                     } catch (\Exception $e) {
-                         // UEM: Critical error but non-blocking for the webhook response
-                         // This notifies devs/slack according to configuration
-                         $this->errorManager->handle('STRIPE_WEBHOOK_SPLIT_FAILED', [
+                        // UEM: Critical error but non-blocking for the webhook response
+                        // This notifies devs/slack according to configuration
+                        $this->errorManager->handle('STRIPE_WEBHOOK_SPLIT_FAILED', [
                             'payment_id' => $paymentId,
                             'collection_id' => $collectionId,
                             'amount' => $amount,
@@ -493,9 +493,9 @@ class StripeRealPaymentService implements PaymentServiceInterface {
 
 
         // Build line item description
-        $description = $metadata['description'] ?? 'Egili Purchase';
+        $description = $metadata['description'] ?? 'Acquisto Pacchetto AI';
         if (isset($metadata['egili_amount'])) {
-            $description = sprintf('Acquisto %s Egili', number_format($metadata['egili_amount']));
+            $description = sprintf('Acquisto Pacchetto AI (%s Egili accreditati)', number_format($metadata['egili_amount']));
         }
 
         $sessionParams = [
@@ -575,10 +575,10 @@ class StripeRealPaymentService implements PaymentServiceInterface {
 
         // ULM DEBUG: Log Single Payment Intent Creation
         $this->logger->info('ULM DEBUG: Creating Single Payment Intent', [
-           'egi_id' => $request->egiId,
-           'amount_cents' => $amountCents,
-           'metadata_requires_split' => $metadata['requires_split'] ?? 'N/A',
-           'metadata_collection_id' => $metadata['collection_id'] ?? 'N/A'
+            'egi_id' => $request->egiId,
+            'amount_cents' => $amountCents,
+            'metadata_requires_split' => $metadata['requires_split'] ?? 'N/A',
+            'metadata_collection_id' => $metadata['collection_id'] ?? 'N/A'
         ]);
 
         if ($this->isSandbox() && $this->sandboxPaymentMethod) {

@@ -35,6 +35,10 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *    7. Deliver mnemonic to user
  *    8. Delete mnemonic from database (irreversible)
  *
+ * 📌 ToS v3.0.0 — NOTA: WalletRedemptionService (ALGO→Egili) non è elencato nelle fonti
+ *    standard di ottenimento Egili (AI Package + merit reward). **DECISIONE FABIO 2026-02-25:
+ *    MANTENERE** — funzionalità presente e attiva. Ref: debiti_tecnici.md §8 — A3
+ *
  * 💰 Cost Formula:
  *    Base Cost: 0.1 ALGO (minimum account balance)
  *    Per-EGI: 0.1 ALGO (each ASA opt-in requires 0.1 ALGO)
@@ -54,8 +58,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @purpose Enable custodial-to-noncustodial wallet transfer with ASA migration
  * @source docs/ai/blockchain/nuova_logica_wallet.md
  */
-class WalletRedemptionService
-{
+class WalletRedemptionService {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditService;
@@ -115,8 +118,7 @@ class WalletRedemptionService
      * @param User $user The user requesting redemption
      * @return array ['micro_algos' => int, 'algo' => float, 'egili' => int, 'breakdown' => array]
      */
-    public function calculateRedemptionCost(User $user): array
-    {
+    public function calculateRedemptionCost(User $user): array {
         // 1. Get user's ASA count
         $asaCount = $this->getUserAsaCount($user);
 
@@ -163,8 +165,7 @@ class WalletRedemptionService
      * @param User $user
      * @return int
      */
-    public function getUserAsaCount(User $user): int
-    {
+    public function getUserAsaCount(User $user): int {
         return EgiBlockchain::where('buyer_user_id', $user->id)
             ->whereNotNull('asa_id')
             ->where('mint_status', 'minted')
@@ -177,8 +178,7 @@ class WalletRedemptionService
      * @param User $user
      * @return array Array of ASA IDs (integers)
      */
-    public function getUserAsaIds(User $user): array
-    {
+    public function getUserAsaIds(User $user): array {
         return EgiBlockchain::where('buyer_user_id', $user->id)
             ->whereNotNull('asa_id')
             ->where('mint_status', 'minted')
@@ -193,15 +193,14 @@ class WalletRedemptionService
      * @param User $user
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getUserEgis(User $user)
-    {
+    public function getUserEgis(User $user) {
         return Egi::whereHas('blockchain', function ($query) use ($user) {
             $query->where('buyer_user_id', $user->id)
-                  ->whereNotNull('asa_id')
-                  ->where('mint_status', 'minted');
+                ->whereNotNull('asa_id')
+                ->where('mint_status', 'minted');
         })
-        ->with(['blockchain:id,egi_id,asa_id,buyer_wallet,minted_at', 'collection:id,name'])
-        ->get(['id', 'title', 'collection_id', 'token_EGI', 'created_at']);
+            ->with(['blockchain:id,egi_id,asa_id,buyer_wallet,minted_at', 'collection:id,name'])
+            ->get(['id', 'title', 'collection_id', 'token_EGI', 'created_at']);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -219,8 +218,7 @@ class WalletRedemptionService
      * @param User $user
      * @return array ['valid' => bool, 'errors' => array, 'cost' => array|null]
      */
-    public function validateRedemption(User $user): array
-    {
+    public function validateRedemption(User $user): array {
         $errors = [];
 
         // 1. Check wallet exists
@@ -287,8 +285,7 @@ class WalletRedemptionService
      * @return array ['success' => bool, 'mnemonic' => string|null, 'error' => string|null, 'details' => array]
      * @throws \Exception if redemption fails at any critical step
      */
-    public function executeRedemption(User $user): array
-    {
+    public function executeRedemption(User $user): array {
         // 1. Pre-flight validation
         $validation = $this->validateRedemption($user);
         if (!$validation['valid']) {
@@ -493,8 +490,7 @@ class WalletRedemptionService
      * @param User $user For audit logging
      * @throws \Exception if deletion fails
      */
-    protected function deleteMnemonicFromWallet(Wallet $wallet, User $user): void
-    {
+    protected function deleteMnemonicFromWallet(Wallet $wallet, User $user): void {
         try {
             // 1. Clear encryption fields
             $wallet->update([
@@ -550,8 +546,7 @@ class WalletRedemptionService
      * @param Wallet $wallet
      * @return bool
      */
-    public function isWalletRedeemed(Wallet $wallet): bool
-    {
+    public function isWalletRedeemed(Wallet $wallet): bool {
         return !$wallet->hasMnemonic();
     }
 
@@ -561,8 +556,7 @@ class WalletRedemptionService
      * @param User $user
      * @return array ['redeemed' => bool, 'redeemed_at' => string|null, 'wallet_address' => string|null]
      */
-    public function getRedemptionStatus(User $user): array
-    {
+    public function getRedemptionStatus(User $user): array {
         $wallet = $user->wallet()->first();
 
         if (!$wallet) {

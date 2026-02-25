@@ -616,19 +616,17 @@ $isEppCollection = $collection->creator && in_array($collection->creator->userty
     {{-- 🤖 AI Sidebar - Context-Aware Assistant (Owner/Visitor/Guest) --}}
     @php
         $isOwner = auth()->check() && $collection->creator && auth()->id() === $collection->creator->id;
-        $sidebarUser = $isOwner ? $collection->creator : (auth()->user() ?? $collection->creator);
+        $sidebarUser = $isOwner ? $collection->creator : auth()->user() ?? $collection->creator;
         $sidebarUserType = $isOwner
-            ? (in_array($collection->creator->usertype, ['company', 'Company']) ? 'company' : 'creator')
-            : (auth()->check() ? (auth()->user()->usertype ?? 'creator') : 'creator');
+            ? (in_array($collection->creator->usertype, ['company', 'Company'])
+                ? 'company'
+                : 'creator')
+            : (auth()->check()
+                ? auth()->user()->usertype ?? 'creator'
+                : 'creator');
     @endphp
 
-    <x-ai-sidebar
-        :user="$sidebarUser"
-        :userType="$sidebarUserType"
-        :checklist="$isOwner ? $onboardingChecklist : []"
-        :contextMessage="$sidebarContextMessage"
-        :showChecklist="$isOwner"
-    />
+    <x-ai-sidebar :user="$sidebarUser" :userType="$sidebarUserType" :checklist="$isOwner ? $onboardingChecklist : []" :contextMessage="$sidebarContextMessage" :showChecklist="$isOwner" />
 
     {{-- JavaScript Enhancements --}}
     @push('scripts')
@@ -957,9 +955,9 @@ $isEppCollection = $collection->creator && in_array($collection->creator->userty
                                                 <p class="text-sm"><strong>Disponibili:</strong> ${data.current_balance || 0} Egili</p>
                                                 <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${data.missing_egili || 0} Egili</p>
                                             </div>
-                                            <p class="mt-3 text-xs text-gray-600">Acquista Egili per continuare.</p>
+                                            <p class="mt-3 text-xs text-gray-600">Acquista un Pacchetto AI per ricaricare i tuoi Egili.</p>
                                         `,
-                                        confirmButtonText: 'Acquista Egili',
+                                        confirmButtonText: 'Acquista Pacchetto AI',
                                         showCancelButton: true,
                                         cancelButtonText: 'Chiudi',
                                         confirmButtonColor: '#f97316'
@@ -973,30 +971,30 @@ $isEppCollection = $collection->creator && in_array($collection->creator->userty
                                                     'function') {
                                                     console.log(
                                                         '✅ openEgiliPurchaseModal found, calling...'
-                                                        );
+                                                    );
                                                     window.openEgiliPurchaseModal();
                                                 } else if (attempts < 10) {
                                                     console.log(
                                                         `⏳ Waiting for openEgiliPurchaseModal... attempt ${attempts + 1}/10`
-                                                        );
+                                                    );
                                                     setTimeout(() => tryOpenModal(attempts + 1), 100);
                                                 } else {
                                                     console.error(
                                                         '❌ openEgiliPurchaseModal() not found after 10 attempts!'
-                                                        );
+                                                    );
                                                     // Fallback: try to show the modal directly
                                                     const modal = document.getElementById(
                                                         'egili-purchase-modal');
                                                     if (modal) {
                                                         console.log(
                                                             '🔧 Fallback: directly showing modal element'
-                                                            );
+                                                        );
                                                         modal.classList.remove('hidden');
                                                         modal.style.display = '';
                                                     } else {
                                                         console.error(
                                                             '❌ Modal element #egili-purchase-modal not found in DOM'
-                                                            );
+                                                        );
                                                         Swal.fire({
                                                             icon: 'error',
                                                             title: 'Errore',

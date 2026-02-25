@@ -660,19 +660,17 @@ if (auth()->check()) {
     {{-- 🤖 AI Sidebar - Context-Aware Assistant (Owner/Visitor/Guest) --}}
     @php
         $isOwner = auth()->check() && $collection->creator && auth()->id() === $collection->creator->id;
-        $sidebarUser = $isOwner ? $collection->creator : (auth()->user() ?? $collection->creator);
+        $sidebarUser = $isOwner ? $collection->creator : auth()->user() ?? $collection->creator;
         $sidebarUserType = $isOwner
-            ? (in_array($collection->creator->usertype, ['company', 'Company']) ? 'company' : 'creator')
-            : (auth()->check() ? (auth()->user()->usertype ?? 'creator') : 'creator');
+            ? (in_array($collection->creator->usertype, ['company', 'Company'])
+                ? 'company'
+                : 'creator')
+            : (auth()->check()
+                ? auth()->user()->usertype ?? 'creator'
+                : 'creator');
     @endphp
 
-    <x-ai-sidebar
-        :user="$sidebarUser"
-        :userType="$sidebarUserType"
-        :checklist="$isOwner ? $onboardingChecklist : []"
-        :contextMessage="$sidebarContextMessage"
-        :showChecklist="$isOwner"
-    />
+    <x-ai-sidebar :user="$sidebarUser" :userType="$sidebarUserType" :checklist="$isOwner ? $onboardingChecklist : []" :contextMessage="$sidebarContextMessage" :showChecklist="$isOwner" />
 
     {{-- JavaScript Enhancements --}}
     @push('scripts')
@@ -1030,9 +1028,9 @@ if (auth()->check()) {
                                                 <p class="text-sm"><strong>Disponibili:</strong> ${data.current_balance || 0} Egili</p>
                                                 <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${data.missing_egili || 0} Egili</p>
                                             </div>
-                                            <p class="mt-3 text-xs text-gray-600">Acquista Egili per continuare.</p>
+                                            <p class="mt-3 text-xs text-gray-600">Acquista un Pacchetto AI per ricaricare i tuoi Egili.</p>
                                         `,
-                                        confirmButtonText: 'Acquista Egili',
+                                        confirmButtonText: 'Acquista Pacchetto AI',
                                         showCancelButton: true,
                                         cancelButtonText: 'Chiudi',
                                         confirmButtonColor: '#f97316'

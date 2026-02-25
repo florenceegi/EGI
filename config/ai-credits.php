@@ -111,13 +111,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Purchase Options
+    | AI Service Packages
     |--------------------------------------------------------------------------
     |
-    | Available credit packages for purchase.
+    | Available AI service packages for purchase in FIAT (EUR).
+    | Purchasing a package automatically credits Egili to the buyer's balance
+    | at the egili_credit_ratio rate (default: 0.80 = 80% of token AI purchased).
+    |
+    | ToS v3.0.0: il prodotto acquistato è il Pacchetto Servizi AI, non gli Egili.
     |
     */
-    'purchase_packages' => [
+    'ai_service_packages' => [
         'starter' => [
             'credits' => 1000,
             'price_eur' => 10.00,
@@ -142,10 +146,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Egili Credit Ratio
+    |--------------------------------------------------------------------------
+    |
+    | Ratio of Egili credited per Token AI purchased.
+    | Default: 0.80 = 80% (FlorenceEGI margin: 20%).
+    | Formula: Egili_accreditati = Token_AI_acquistati × egili_credit_ratio
+    |
+    */
+    'egili_credit_ratio' => 0.80,
+
+    /*
+    |--------------------------------------------------------------------------
     | Refund Policy
     |--------------------------------------------------------------------------
     |
     | Automatic refund settings for failed jobs.
+    | Note (ToS v3.0.0): gli Egili NON sono rimborsabili salvo malfunzionamento
+    | tecnico certificato della Piattaforma.
     |
     */
     'auto_refund_on_job_failure' => true,

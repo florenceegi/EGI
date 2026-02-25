@@ -15,30 +15,28 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  * 
  * @package Database\Factories
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Egili Token System)
+ * @version 1.1.0 (FlorenceEGI - Egili Credit System)
  * @date 2025-11-01
  * @extends Factory<EgiliTransaction>
  */
-class EgiliTransactionFactory extends Factory
-{
+class EgiliTransactionFactory extends Factory {
     protected $model = EgiliTransaction::class;
-    
+
     /**
      * Define the model's default state.
      */
-    public function definition(): array
-    {
+    public function definition(): array {
         $operation = $this->faker->randomElement(['add', 'subtract']);
-        $transactionType = $operation === 'add' 
+        $transactionType = $operation === 'add'
             ? $this->faker->randomElement(['earned', 'admin_grant', 'purchase', 'initial_bonus'])
             : $this->faker->randomElement(['spent', 'admin_deduct']);
-        
+
         $balanceBefore = $this->faker->numberBetween(0, 10000);
         $amount = $this->faker->numberBetween(10, 500);
-        $balanceAfter = $operation === 'add' 
-            ? $balanceBefore + $amount 
+        $balanceAfter = $operation === 'add'
+            ? $balanceBefore + $amount
             : max(0, $balanceBefore - $amount);
-        
+
         return [
             'wallet_id' => Wallet::factory(),
             'user_id' => User::factory(),
@@ -72,46 +70,42 @@ class EgiliTransactionFactory extends Factory
             'user_agent' => $this->faker->userAgent(),
         ];
     }
-    
+
     /**
      * State: Earned transaction
      */
-    public function earned(): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function earned(): static {
+        return $this->state(fn(array $attributes) => [
             'transaction_type' => 'earned',
             'operation' => 'add',
         ]);
     }
-    
+
     /**
      * State: Spent transaction
      */
-    public function spent(): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function spent(): static {
+        return $this->state(fn(array $attributes) => [
             'transaction_type' => 'spent',
             'operation' => 'subtract',
         ]);
     }
-    
+
     /**
      * State: Failed transaction
      */
-    public function failed(): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function failed(): static {
+        return $this->state(fn(array $attributes) => [
             'status' => 'failed',
             'error_message' => $this->faker->sentence(),
         ]);
     }
-    
+
     /**
      * State: Admin granted bonus
      */
-    public function adminGrant(): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function adminGrant(): static {
+        return $this->state(fn(array $attributes) => [
             'transaction_type' => 'admin_grant',
             'operation' => 'add',
             'category' => 'admin',
@@ -120,8 +114,3 @@ class EgiliTransactionFactory extends Factory
         ]);
     }
 }
-
-
-
-
-

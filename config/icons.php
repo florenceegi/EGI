@@ -928,7 +928,7 @@ return [
                     </svg>',
             ],
             [
-                'name' => 'superadmin-egili-token',
+                'name' => 'superadmin-egili-credits',
                 'type' => 'heroicon',
                 'class' => 'w-5 h-5',
                 'host' => '',

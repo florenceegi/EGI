@@ -343,14 +343,16 @@ class NatanTutorService {
     // ====================================
 
     /**
-     * Guide user through Egili purchase
+     * Guide user through AI Package purchase (which credits Egili)
+     *
+     * ToS v3.0.0: il prodotto acquistato è il Pacchetto Servizi AI, non gli Egili.
      *
      * @param User $user
-     * @param int $amount Desired Egili amount
+     * @param int $amount Egili quantity guidance (derived from package selection)
      * @param string $mode
      * @return array Response with guidance
      */
-    public function assistEgiliPurchase(User $user, int $amount, string $mode = 'tutoring'): array {
+    public function assistAiPackagePurchase(User $user, int $amount, string $mode = 'tutoring'): array {
         if (!$this->consumeEgiliForAction($user, 'purchase', $mode, ['amount' => $amount])) {
             return [
                 'success' => false,
@@ -377,7 +379,8 @@ class NatanTutorService {
         }
 
         if ($mode === 'expert') {
-            $response['purchase_url'] = route('egili.purchase', ['package' => $recommendedPackage['id'] ?? null]);
+            // B6: route 'egili.purchase.pricing' — pagina selezione pacchetto AI
+            $response['purchase_url'] = route('egili.purchase.pricing');
         }
 
         return $response;

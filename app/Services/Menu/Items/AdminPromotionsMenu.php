@@ -12,14 +12,12 @@ use App\Services\Menu\MenuItem;
  * @version 1.0.0 (FlorenceEGI - Admin Panel)
  * @date 2025-11-02
  */
-class AdminPromotionsMenu extends MenuItem
-{
-    public function __construct()
-    {
+class AdminPromotionsMenu extends MenuItem {
+    public function __construct() {
         parent::__construct(
             translationKey: 'menu.admin_promotions',
             route: 'admin.promotions.index',
-            icon: 'superadmin-egili-token',
+            icon: 'superadmin-egili-credits',
             permission: null
         );
     }

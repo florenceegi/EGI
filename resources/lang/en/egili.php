@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'buy_more' => 'Buy Egili',
+    'buy_more' => 'AI Service Packages',
     'purchase_modal' => [
         'title' => 'Buy Egili',
         'subtitle' => 'Coming Soon',
@@ -28,26 +28,26 @@ return [
         'spent' => 'Spent',
         'admin_grant' => 'Admin Bonus',
         'admin_deduct' => 'Admin Deduction',
-        'purchase' => 'Purchased',
+        'purchase' => 'Credited (AI Package)',
         'refund' => 'Refunded',
         'expiration' => 'Expired',
         'initial_bonus' => 'Initial Bonus',
     ],
-    
+
     // Wallet Card (Navigation Menu)
     'wallet' => [
         'title' => 'Egili Wallet',
         'current_balance' => 'Current Balance',
-        'buy_more' => 'Buy Egili',
+        'buy_more' => 'AI Packages',
         'recent_transactions' => 'Recent Transactions',
         'view_all' => 'View All',
         'no_transactions' => 'No transactions',
     ],
-    
-    // Purchase System
+
+    // Purchase System (ToS v3.1.0 — product = AI Service Packages in FIAT)
     'purchase' => [
-        'title' => 'Buy Egili',
-        'subtitle' => 'Top up your balance with EUR or Cryptocurrencies',
+        'title' => 'Buy AI Service Package',
+        'subtitle' => 'Select your package — payment in EUR only',
         'how_many_label' => 'How many Egili do you want to buy?',
         'amount_placeholder' => 'e.g: 10000',
         'min_purchase' => 'Minimum: :min Egili (:eur)',
@@ -63,7 +63,7 @@ return [
         'crypto_provider_coinbase' => 'Coinbase Commerce',
         'crypto_provider_bitpay' => 'BitPay',
         'crypto_provider_nowpayments' => 'NOWPayments',
-        'purchase_now' => 'Buy Now',
+        'purchase_now' => 'Confirm Purchase',
         'processing' => 'Processing...',
         'payment_success' => 'Payment completed successfully!',
         'crypto_redirect' => 'Redirecting to payment gateway...',
@@ -75,13 +75,19 @@ return [
         'amount_below_min' => 'Amount must be at least :min Egili.',
         'amount_above_max' => 'Amount cannot exceed :max Egili.',
         'calculating' => 'Calculating...',
+        // New keys for ToS v3.1.0 — AI Service Packages
+        'legal_note'       => 'Egili are automatically credited upon purchase of an AI Service Package in EUR.',
+        'select_package'   => 'Select your package',
+        'egili_credited'   => 'Egili credited',
+        'you_get'          => 'You get',
+        'egili_model_note' => 'You pay in EUR — Egili are automatically credited',
     ],
-    
+
     // Email
     'email' => [
-        'purchase_confirmation_subject' => 'Egili Purchase Confirmation - Order :order_ref',
+        'purchase_confirmation_subject' => 'AI Package Purchase Confirmation — Order :order_ref',
         'greeting' => 'Hello :name,',
-        'purchase_success' => 'Your Egili purchase has been completed successfully! 🎉',
+        'purchase_success' => 'Your AI Package has been purchased successfully! Egili have been credited to your balance. 🎉',
         'order_reference' => '**Order Number**: :reference',
         'purchase_details' => '**Purchase Details:**',
         'view_order' => 'View Order',
@@ -89,14 +95,14 @@ return [
         'thank_you' => 'Thank you for your purchase!',
         'signature' => 'The FlorenceEGI Team',
     ],
-    
+
     // Confirmation Page
     'confirmation' => [
-        'title' => 'Purchase Completed!',
+        'title' => 'AI Package Purchased!',
         'thank_you' => 'Thank you for your purchase',
         'order_reference' => 'Order Number',
         'order_summary' => 'Order Summary',
-        'egili_purchased' => 'Egili Purchased',
+        'egili_purchased' => 'Egili Credited',
         'unit_price' => 'Unit Price',
         'total_paid' => 'Total Paid',
         'payment_method' => 'Payment Method',
@@ -121,4 +127,3 @@ return [
         'email_sent' => 'We\'ve sent you a confirmation email to :email',
     ],
 ];
-

@@ -94,7 +94,8 @@ return [
         'one_time' => [
             'name' => 'Attivazione Singola',
             'price_eur' => 49.99,
-            'price_egili' => 500,  // Equivalent in Egili (1 Egilo = €0.10)
+            'price_egili' => 500,  // Costo in Egili per attivazione singola (valore di pricing deliberato, non derivato dal tasso €0.01/Egili)
+            // TODO: verificare allineamento con ToS v3.0.0 Art. 6 — ref: debiti_tecnici.md B3
             'duration_days' => null, // lifetime
             'features' => ['curator', 'promoter', 'provenance', 'passport', 'anchoring'],
             'trigger_interval' => 'standard',
@@ -249,4 +250,3 @@ return [
     ],
 
 ];
-

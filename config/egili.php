@@ -4,14 +4,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Egili Purchase Configuration
+    | AI Service Packages — Egili credit system
     |--------------------------------------------------------------------------
     |
-    | Configuration for Egili utility token purchasing system.
+    | Configuration for AI Service Packages sold in FIAT (EUR) that
+    | automatically credit Egili to the buyer's balance.
+    |
+    | ToS v3.0.0: gli Egili NON sono un asset acquistabile autonomamente.
+    | Il prodotto acquistato è il Pacchetto Servizi AI; gli Egili sono
+    | il contatore interno accreditato automaticamente (ratio 0.80).
     |
     */
 
-    'purchase' => [
+    'ai_packages' => [
 
         /**
          * Unit price per Egili in EUR
@@ -47,9 +52,10 @@ return [
     ],
 
     /**
-     * Payment providers configuration
+     * AI Package payment providers configuration
+     * (ToS v3.0.0: solo FIAT — Stripe/PayPal. Crypto rimosso.)
      */
-    'payment_providers' => [
+    'ai_package_payment_providers' => [
 
         /**
          * FIAT providers
@@ -66,20 +72,22 @@ return [
         ],
 
         /**
-         * Crypto providers
+         * Crypto providers — DISABILITATI (ToS v3.0.0: solo FIAT)
+         * Gli Egili si ottengono SOLO tramite acquisto Pacchetti AI in EUR.
+         * Pagamento crypto non supportato per l'acquisto di pacchetti AI.
          */
         'crypto' => [
             'coinbase_commerce' => [
-                'enabled' => env('EGILI_CRYPTO_COINBASE_ENABLED', true),
-                'display_name' => 'Coinbase Commerce',
+                'enabled' => false, // ToS v3.0.0 — FIAT only
+                'display_name' => 'Coinbase Commerce (disabilitato)',
             ],
             'bitpay' => [
-                'enabled' => env('EGILI_CRYPTO_BITPAY_ENABLED', false),
-                'display_name' => 'BitPay',
+                'enabled' => false,
+                'display_name' => 'BitPay (disabilitato)',
             ],
             'nowpayments' => [
-                'enabled' => env('EGILI_CRYPTO_NOWPAYMENTS_ENABLED', false),
-                'display_name' => 'NOWPayments',
+                'enabled' => false,
+                'display_name' => 'NOWPayments (disabilitato)',
             ],
         ],
     ],

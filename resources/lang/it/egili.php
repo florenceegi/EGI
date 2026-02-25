@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'buy_more' => 'Acquista Egili',
+    'buy_more' => 'Pacchetti Servizi AI',
     'purchase_modal' => [
         'title' => 'Acquista Egili',
         'subtitle' => 'Sistema in arrivo presto',
@@ -28,26 +28,26 @@ return [
         'spent' => 'Speso',
         'admin_grant' => 'Bonus Admin',
         'admin_deduct' => 'Detrazione Admin',
-        'purchase' => 'Acquistato',
+        'purchase' => 'Accreditati (Pacchetto AI)',
         'refund' => 'Rimborsato',
         'expiration' => 'Scaduto',
         'initial_bonus' => 'Bonus Iniziale',
     ],
-    
+
     // Wallet Card (Navigation Menu)
     'wallet' => [
         'title' => 'Portafoglio Egili',
         'current_balance' => 'Saldo Attuale',
-        'buy_more' => 'Acquista Egili',
+        'buy_more' => 'Pacchetti AI',
         'recent_transactions' => 'Ultimi Movimenti',
         'view_all' => 'Vedi Tutti',
         'no_transactions' => 'Nessuna transazione',
     ],
-    
-    // Purchase System
+
+    // Purchase System (ToS v3.1.0 — prodotto = Pacchetti Servizi AI in FIAT)
     'purchase' => [
-        'title' => 'Acquista Egili',
-        'subtitle' => 'Ricarica il tuo saldo con EUR o Criptovalute',
+        'title' => 'Acquista Pacchetto Servizi AI',
+        'subtitle' => 'Seleziona il tuo pacchetto — pagamento solo in EUR',
         'how_many_label' => 'Quanti Egili vuoi acquistare?',
         'amount_placeholder' => 'es: 10000',
         'min_purchase' => 'Minimo: :min Egili (:eur)',
@@ -63,7 +63,7 @@ return [
         'crypto_provider_coinbase' => 'Coinbase Commerce',
         'crypto_provider_bitpay' => 'BitPay',
         'crypto_provider_nowpayments' => 'NOWPayments',
-        'purchase_now' => 'Acquista Ora',
+        'purchase_now' => 'Conferma Acquisto',
         'processing' => 'Elaborazione in corso...',
         'payment_success' => 'Pagamento completato con successo!',
         'crypto_redirect' => 'Reindirizzamento al gateway di pagamento...',
@@ -74,14 +74,19 @@ return [
         'pricing_error' => 'Errore nel calcolo del prezzo.',
         'amount_below_min' => 'L\'importo deve essere almeno :min Egili.',
         'amount_above_max' => 'L\'importo non può superare :max Egili.',
-        'calculating' => 'Calcolo in corso...',
+        'calculating' => 'Calcolo in corso...',        // Nuove chiavi ToS v3.1.0 — Pacchetti Servizi AI
+        'legal_note'       => "Gli Egili sono accreditati automaticamente all'acquisto di un Pacchetto Servizi AI in EUR.",
+        'select_package'   => 'Seleziona il tuo pacchetto',
+        'egili_credited'   => 'Egili accreditati',
+        'you_get'          => 'Ricevi',
+        'egili_model_note' => 'Paghi in EUR — gli Egili vengono accreditati automaticamente',
     ],
-    
+
     // Email
     'email' => [
-        'purchase_confirmation_subject' => 'Conferma Acquisto Egili - Ordine :order_ref',
+        'purchase_confirmation_subject' => 'Conferma Acquisto Pacchetto AI — Ordine :order_ref',
         'greeting' => 'Ciao :name,',
-        'purchase_success' => 'Il tuo acquisto di Egili è stato completato con successo! 🎉',
+        'purchase_success' => 'Il tuo Pacchetto AI è stato acquistato con successo! Gli Egili sono stati accreditati al tuo saldo. 🎉',
         'order_reference' => '**Numero Ordine**: :reference',
         'purchase_details' => '**Dettagli Acquisto:**',
         'view_order' => 'Visualizza Ordine',
@@ -89,14 +94,14 @@ return [
         'thank_you' => 'Grazie per il tuo acquisto!',
         'signature' => 'Il Team di FlorenceEGI',
     ],
-    
+
     // Confirmation Page
     'confirmation' => [
-        'title' => 'Acquisto Completato!',
+        'title' => 'Pacchetto AI Acquistato!',
         'thank_you' => 'Grazie per il tuo acquisto',
         'order_reference' => 'Numero Ordine',
         'order_summary' => 'Riepilogo Ordine',
-        'egili_purchased' => 'Egili Acquistati',
+        'egili_purchased' => 'Egili Accreditati',
         'unit_price' => 'Prezzo Unitario',
         'total_paid' => 'Totale Pagato',
         'payment_method' => 'Metodo di Pagamento',
@@ -121,4 +126,3 @@ return [
         'email_sent' => 'Ti abbiamo inviato una email di conferma a :email',
     ],
 ];
-

@@ -179,7 +179,7 @@ Route::middleware('auth')->group(function () {
             ->name('traits.generate');
     });
 
-    // Egili Purchase System (EUR/Crypto → Egili)
+    // Egili AI Package Purchase System (FIAT → AI Packages → Egili accreditati)
     Route::prefix('egili')->name('egili.')->group(function () {
         Route::post('/purchase/process', [App\Http\Controllers\EgiliPurchaseController::class, 'processPurchase'])
             ->name('purchase.process');

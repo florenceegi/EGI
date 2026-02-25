@@ -426,28 +426,13 @@ $isSmartContract = $egi->egi_type === 'SmartContract';
                                 @endif
                             </div>
 
-                            {{-- Egili Payment Toggle --}}
-                            <div>
-                                <label class="mb-2 block text-sm font-medium text-emerald-300" for="payment_by_egili">
-                                    {{ __('egi.crud.payment_by_egili') }}
-                                </label>
-                                <div
-                                    class="flex items-start gap-3 rounded-lg border border-emerald-700/30 bg-black/15 p-3">
-                                    <input type="hidden" name="payment_by_egili" value="0">
-                                    <input type="checkbox" id="payment_by_egili" name="payment_by_egili"
-                                        value="1"
-                                        {{ old('payment_by_egili', $egi->payment_by_egili) ? 'checked' : '' }}
-                                        class="mt-1 h-4 w-4 rounded border-emerald-700/50 bg-black/30 text-emerald-500 focus:ring-2 focus:ring-emerald-500">
-                                    <div class="text-xs text-emerald-100/80">
-                                        <p class="font-semibold text-emerald-200">
-                                            {{ __('egi.crud.payment_by_egili') }}
-                                        </p>
-                                        <p class="mt-1 leading-relaxed text-emerald-100/70">
-                                            {{ __('egi.crud.payment_by_egili_hint') }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                            {{-- ToS v3.0.0 — payment_by_egili DISABILITATA (F12)
+                                 Gli Egili NON possono essere usati come mezzo di pagamento
+                                 per acquisto/vendita di EGI. La funzionalità è vietata dai ToS v3.0.0.
+                                 Il toggle UI è rimosso. Il campo viene sempre inviato a 0 (false).
+                                 Ref: docs/FlorenceEGI/debiti_tecnici.md — Sezione 8, F12 + A1/A2
+                                 La colonna DB verrà rimossa definitivamente in Block A (A1/A2). --}}
+                            <input type="hidden" name="payment_by_egili" value="0">
 
                             {{-- Auction Configuration (visible only if sale_mode = auction) --}}
                             <div id="auction-config" class="mt-2 hidden">
@@ -693,17 +678,7 @@ $isSmartContract = $egi->egi_type === 'SmartContract';
                             </div>
                         </div>
 
-                        <div class="rounded-lg bg-black/20 p-4">
-                            <div class="mb-1 text-sm text-emerald-300">{{ __('egi.crud.payment_by_egili_status') }}
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span
-                                    class="{{ $egi->payment_by_egili ? 'bg-emerald-400' : 'bg-gray-500' }} h-2 w-2 rounded-full"></span>
-                                <span class="font-medium text-white">
-                                    {{ $egi->payment_by_egili ? __('egi.crud.payment_by_egili_enabled') : __('egi.crud.payment_by_egili_disabled') }}
-                                </span>
-                            </div>
-                        </div>
+                        {{-- ToS v3.0.0 — indicatore payment_by_egili rimosso (sempre disabilitato) --}}
 
                         <button id="egi-edit-start"
                             class="inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-emerald-600/80 to-emerald-700/80 px-4 py-3 font-medium text-white transition-all duration-200 hover:from-emerald-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
