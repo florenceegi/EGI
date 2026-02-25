@@ -1,17 +1,39 @@
 {{-- AI Package Purchase Modal --}}
 {{-- [REFACTOR] ToS v3.1.0: prodotto = Pacchetti Servizi AI in FIAT. Egili = contatore interno accreditato automaticamente. --}}
 @php
-    $packages = config('ai-credits.ai_service_packages', []);
-    $egiliRatio = config('ai-credits.egili_credit_ratio', 0.8);
+    use App\Models\AiFeaturePricing;
+    use App\Models\PlatformSetting;
+
+    $egiliRatio = PlatformSetting::get('ai_credits', 'egili_credit_ratio', 0.8);
     $stripeEnabled = config('egili.ai_package_payment_providers.fiat.stripe.enabled', true);
     $paypalEnabled = config('egili.ai_package_payment_providers.fiat.paypal.enabled', true);
+
+    // Legge i pacchetti dal DB (ai_feature_pricing, bundle_type = 'credit_package', is_active = true)
+    $dbPackages = AiFeaturePricing::where('bundle_type', 'credit_package')
+        ->where('is_active', true)
+        ->orderBy('display_order')
+        ->get();
+
+    // Normalizza in formato compatibile con il template
+    $packages = [];
+    foreach ($dbPackages as $p) {
+        $params = is_array($p->feature_parameters)
+            ? $p->feature_parameters
+            : json_decode($p->feature_parameters ?? '{}', true);
+        $packages[$p->feature_code] = [
+            'label'     => $p->feature_name,
+            'price_eur' => (float) $p->cost_fiat_eur,
+            'credits'   => (int) ($params['egili_amount'] ?? 0),
+        ];
+    }
+
     // Pre-build JS-ready array (avoids inline PHP loops in JS)
     $packagesForJs = [];
     foreach ($packages as $key => $pkg) {
         $packagesForJs[] = [
-            'key' => $key,
-            'label' => $pkg['label'],
-            'price_eur' => $pkg['price_eur'],
+            'key'            => $key,
+            'label'          => $pkg['label'],
+            'price_eur'      => $pkg['price_eur'],
             'egili_credited' => (int) round(($pkg['credits'] ?? 0) * $egiliRatio),
         ];
     }

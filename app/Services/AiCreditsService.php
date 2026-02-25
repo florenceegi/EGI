@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\AiCreditsTransaction;
+use App\Models\PlatformSetting;
 use App\Services\Gdpr\AuditLogService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use Ultra\UltraLogManager\UltraLogManager;
@@ -74,8 +75,8 @@ class AiCreditsService {
             return (float) $cachedRate;
         }
 
-        // Fallback to config
-        $configRate = config('ai-credits.usd_to_eur_rate');
+        // Fallback to DB setting (platform_settings)
+        $configRate = PlatformSetting::get('ai_credits', 'usd_to_eur_rate', 0.92);
 
         if ($configRate && is_numeric($configRate) && $configRate > 0) {
             return (float) $configRate;
@@ -537,11 +538,11 @@ class AiCreditsService {
                 ]);
             }
 
-            // Fallback: Use config rate if API fails
-            $configRate = config('ai-credits.usd_to_eur_rate', 0.92);
+            // Fallback: Use DB setting if API fails
+            $configRate = PlatformSetting::get('ai_credits', 'usd_to_eur_rate', 0.92);
             \Cache::put('exchange_rate_usd_to_eur', $configRate, now()->addDays(1));
 
-            $this->logger->warning('Exchange rate updated from config fallback', [
+            $this->logger->warning('Exchange rate updated from DB setting fallback', [
                 'rate' => $configRate,
                 'reason' => 'API unavailable',
                 'log_category' => 'AI_CREDITS_EXCHANGE_RATE_FALLBACK'
@@ -572,8 +573,8 @@ class AiCreditsService {
             $source = 'cache';
             // Cache doesn't expose TTL easily, but we know it's updated daily
             $lastUpdated = now()->startOfDay()->toIso8601String();
-        } elseif (config('ai-credits.usd_to_eur_rate')) {
-            $source = 'config';
+        } elseif (PlatformSetting::get('ai_credits', 'usd_to_eur_rate')) {
+            $source = 'db_setting';
         }
 
         return [
