@@ -24,6 +24,7 @@
         userType: null,
         checklist: [],
         isLoading: false,
+        storageKey: "ai-sidebar-open:" + window.location.pathname, // per-path state
     };
 
     /**
@@ -59,8 +60,8 @@
         // Bind events
         bindEvents();
 
-        // Check localStorage for previous state
-        const savedState = localStorage.getItem("ai-sidebar-open");
+        // Restore state only for this exact page path
+        const savedState = localStorage.getItem(state.storageKey);
         if (savedState === "true") {
             openSidebar();
         }
@@ -127,7 +128,7 @@
         state.sidebar.classList.remove("collapsed");
         state.sidebar.setAttribute("aria-hidden", "false");
         state.toggleBtn.dataset.sidebarOpen = "true";
-        localStorage.setItem("ai-sidebar-open", "true");
+        localStorage.setItem(state.storageKey, "true");
 
         // Focus input
         setTimeout(() => {
@@ -145,7 +146,7 @@
         state.sidebar.classList.add("collapsed");
         state.sidebar.setAttribute("aria-hidden", "true");
         state.toggleBtn.dataset.sidebarOpen = "false";
-        localStorage.setItem("ai-sidebar-open", "false");
+        localStorage.setItem(state.storageKey, "false");
     }
 
     /**
