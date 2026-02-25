@@ -347,6 +347,53 @@ return [
                 'view_modes' => ['grid', 'list'],
                 'portfolio_modes' => ['created', 'owned'],
             ],
+
+            'sidebar_contexts' => [
+                'owner' => [
+                    'greeting'           => 'Ciao <strong>:name</strong>! 👋',
+                    'intro'              => 'Gestisci il profilo di <strong>:company_name</strong> su FlorenceEGI. Certifica le tue opere d\'arte su blockchain Algorand.',
+                    'status_title'       => '📊 Il Tuo Portfolio',
+                    'status_created'     => '<strong>:created_count EGI</strong> pubblicati',
+                    'status_collections' => '<strong>:collections_count</strong> collections attive',
+                    'status_value'       => '<strong>:total_value €</strong> valore totale portfolio',
+                    'actions_title'      => '🎯 Cosa Puoi Fare',
+                    'actions'            => [
+                        'create'   => 'Crea nuovi EGI e certificali su blockchain',
+                        'organize' => 'Organizza le opere in collections tematiche',
+                        'epp'      => 'Configura EPP per ogni collection (20% ambientale)',
+                        'promote'  => 'Promuovi il tuo brand e le tue opere',
+                        'payment'  => 'Configura metodi di pagamento per ricevere vendite',
+                    ],
+                    'help_offer' => '🤝 <strong>Posso aiutarti con:</strong> gestione portfolio, configurazione EPP, strategie di vendita.',
+                    'cta'        => 'Vuoi che ti guidi nella gestione del tuo brand su FlorenceEGI?',
+                ],
+                'visitor' => [
+                    'greeting'    => 'Ciao <strong>:name</strong>! 👋',
+                    'intro'       => 'Stai esplorando il portfolio di <strong>:company_name</strong>, un brand certificato su FlorenceEGI.',
+                    'value_title' => '💎 Perché Acquistare da Questo Brand',
+                    'value_props' => [
+                        'blockchain'     => '✅ Ogni opera è certificata su blockchain Algorand',
+                        'sustainability' => '🌿 Il 20% va a progetti ambientali (EPP)',
+                        'authenticity'   => '🎨 Arte originale con provenienza verificabile',
+                        'investment'     => '📈 Valore tracciabile sul mercato secondario',
+                    ],
+                    'help_offer' => '🤝 <strong>Posso aiutarti</strong> a scoprire le opere di questo brand o trovare artisti simili.',
+                    'cta'        => 'Chiedimi di un\'opera specifica o di come funziona l\'acquisto!',
+                ],
+                'guest' => [
+                    'greeting'         => 'Benvenuto! 👋',
+                    'intro'            => 'Stai esplorando il portfolio di <strong>:company_name</strong> su FlorenceEGI.',
+                    'why_join_title'   => '🚀 Perché Registrarti?',
+                    'why_join_reasons' => [
+                        '🎨 Acquista opere d\'arte certificate su blockchain',
+                        '🌿 Supporta l\'ambiente con ogni acquisto (EPP)',
+                        '💎 Costruisci la tua collezione personale',
+                        '🌍 Scopri brand e artisti emergenti da tutto il mondo',
+                    ],
+                    'cta_register' => '<a href="/join" class="inline-block mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition-colors">Registrati Gratis →</a>',
+                    'help_offer'   => '🤝 Hai domande sulla piattaforma o sulle opere di questo brand?',
+                ],
+            ],
         ],
 
         'collections' => [

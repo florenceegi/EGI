@@ -595,10 +595,15 @@
     {{-- Payment Settings Modal --}}
     <x-payment-settings-modal />
 
-    {{-- AI Sidebar - Onboarding Assistant (Owner Only) --}}
-    @if (!empty($onboardingChecklist))
-        <x-ai-sidebar :user="$company" :userType="'company'" :checklist="$onboardingChecklist" />
-    @endif
+    {{-- AI Sidebar - Role-aware (Owner: stats + checklist | Visitor/Guest: context only) --}}
+    @php $isOwner = auth()->check() && auth()->id() === $company->id; @endphp
+    <x-ai-sidebar
+        :user="$company"
+        :userType="'company'"
+        :checklist="$isOwner ? $onboardingChecklist : []"
+        :contextMessage="$sidebarContextMessage"
+        :showChecklist="$isOwner"
+    />
 
     {{-- Image Upload Modals (only for owner) --}}
     @if (\App\Helpers\FegiAuth::check() && \App\Helpers\FegiAuth::id() === $company->id)
