@@ -218,10 +218,7 @@
     console.log('✅ HEIC Detection function loaded and available globally');
 </script>
 
-{{-- Egili Purchase Modal (global - accessible from menu) --}}
-@auth
-    <x-egili-purchase-modal />
-@endauth
+{{-- ToS v3.0.0: egili-purchase-modal RIMOSSA — gli Egili non sono acquistabili --}}
 
 {{-- 🎩 Natan Assistant - Sempre Visibile --}}
 <div id="natan-global-assistant" class="fixed bottom-6 right-6 z-[9999]" role="region" aria-label="Natan Assistant">

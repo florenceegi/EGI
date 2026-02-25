@@ -272,29 +272,21 @@
 
                             // Step 1: Check balance
                             if (userBalance < refreshCost) {
-                                // Insufficient balance - show error and offer to buy
+                                // Insufficient balance - ToS v3.0.0: solo messaggio informativo
                                 Swal.fire({
                                     icon: 'error',
                                     title: LANG.insufficient_egili_title,
                                     html: '<p class="mb-3">' + LANG.insufficient_egili_message + '</p>' +
                                         '<div class="p-3 text-left border border-red-200 rounded bg-red-50">' +
                                         '<p class="text-sm"><strong>' + LANG.required + ':</strong> ' + refreshCost +
-                                        ' Egili</p>' +
+                                        ' crediti</p>' +
                                         '<p class="text-sm"><strong>' + LANG.available + ':</strong> ' + userBalance +
-                                        ' Egili</p>' +
+                                        ' crediti</p>' +
                                         '<p class="text-sm text-red-600"><strong>' + LANG.missing + ':</strong> ' + (
-                                            refreshCost - userBalance) + ' Egili</p>' +
-                                        '</div>' +
-                                        '<p class="mt-3 text-xs text-gray-600">' + LANG.buy_egili_hint + '</p>',
-                                    confirmButtonText: LANG.buy_egili_button,
-                                    showCancelButton: true,
-                                    cancelButtonText: LANG.refresh_cancel,
-                                    confirmButtonColor: '#f97316'
-                                }).then(function(result) {
-                                    if (result.isConfirmed) {
-                                        // ToS v3.0.0: redirect a pricing page, NON modal acquisto diretto
-                                        window.location.href = '{{ route("egili.purchase.pricing") }}';
-                                    }
+                                            refreshCost - userBalance) + ' crediti</p>' +
+                                        '</div>',
+                                    confirmButtonText: LANG.refresh_cancel,
+                                    confirmButtonColor: '#6B7280'
                                 });
                                 return;
                             }

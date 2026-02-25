@@ -213,10 +213,7 @@
     console.log('✅ HEIC Detection function loaded and available globally');
 </script>
 
-{{-- Egili Purchase Modal (global - accessible from menu) --}}
-@auth
-    <x-egili-purchase-modal />
-@endauth
+{{-- ToS v3.0.0: egili-purchase-modal RIMOSSA — gli Egili non sono acquistabili --}}
 
 {{-- Wallet welcome modal for PSP onboarding --}}
 {{-- Exclude from onboarding-summary page to avoid double modal --}}

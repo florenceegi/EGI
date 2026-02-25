@@ -1017,28 +1017,21 @@ if (auth()->check()) {
                                         location.reload();
                                     });
                                 } else if (data.message === 'Insufficient Egili balance') {
-                                    // Insufficient balance - Open Egili purchase modal (same style as AI features)
+                                    // ToS v3.0.0: solo messaggio informativo, nessun link acquisto Egili
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Crediti Insufficienti',
                                         html: `
-                                            <p class="mb-3">Non hai abbastanza Egili per questa operazione.</p>
+                                            <p class="mb-3">Non hai abbastanza crediti AI per questa operazione.</p>
                                             <div class="p-3 text-left border border-red-200 rounded bg-red-50">
-                                                <p class="text-sm"><strong>Richiesti:</strong> ${data.required_egili || 5000} Egili</p>
-                                                <p class="text-sm"><strong>Disponibili:</strong> ${data.current_balance || 0} Egili</p>
-                                                <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${data.missing_egili || 0} Egili</p>
+                                                <p class="text-sm"><strong>Richiesti:</strong> ${data.required_egili || 5000} crediti</p>
+                                                <p class="text-sm"><strong>Disponibili:</strong> ${data.current_balance || 0} crediti</p>
+                                                <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${data.missing_egili || 0} crediti</p>
                                             </div>
-                                            <p class="mt-3 text-xs text-gray-600">Acquista un Pacchetto AI per ricaricare i tuoi Egili.</p>
+                                            <p class="mt-3 text-xs text-gray-600">I crediti AI vengono erogati automaticamente con l'acquisto di un Pacchetto Servizi AI.</p>
                                         `,
-                                        confirmButtonText: 'Acquista Pacchetto AI',
-                                        showCancelButton: true,
-                                        cancelButtonText: 'Chiudi',
-                                        confirmButtonColor: '#f97316'
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            // ToS v3.0.0: redirect a pricing page, NON modal acquisto diretto
-                                            window.location.href = '{{ route("egili.purchase.pricing") }}';
-                                        }
+                                        confirmButtonText: 'Chiudi',
+                                        confirmButtonColor: '#6B7280'
                                     });
                                 } else {
                                     // Other error

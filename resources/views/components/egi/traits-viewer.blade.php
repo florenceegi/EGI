@@ -586,29 +586,22 @@ $canEdit =
 
                     const pricing = pricingData.data;
 
-                    // Check crediti PRIMA di tutto
+                    // ToS v3.0.0: crediti insufficienti — solo messaggio informativo, nessun link acquisto
                     if (!pricing.is_free && !pricing.has_sufficient_credits) {
                         await Swal.fire({
                             icon: 'error',
                             title: 'Crediti Insufficienti',
                             html: `
-                                <p class="mb-3">Non hai abbastanza Egili per questa operazione.</p>
+                                <p class="mb-3">Non hai abbastanza crediti AI per questa operazione.</p>
                                 <div class="bg-red-50 border border-red-200 rounded p-3 text-left">
-                                    <p class="text-sm"><strong>Richiesti:</strong> ${pricing.cost_egili} Egili</p>
-                                    <p class="text-sm"><strong>Disponibili:</strong> ${pricing.user_balance} Egili</p>
-                                    <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${pricing.cost_egili - pricing.user_balance} Egili</p>
+                                    <p class="text-sm"><strong>Richiesti:</strong> ${pricing.cost_egili} crediti</p>
+                                    <p class="text-sm"><strong>Disponibili:</strong> ${pricing.user_balance} crediti</p>
+                                    <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${pricing.cost_egili - pricing.user_balance} crediti</p>
                                 </div>
-                                <p class="mt-3 text-xs text-gray-600">Acquista un Pacchetto AI per ricaricare i tuoi Egili.</p>
+                                <p class="mt-3 text-xs text-gray-600">I crediti AI vengono erogati automaticamente con l'acquisto di un Pacchetto Servizi AI.</p>
                             `,
-                            confirmButtonText: 'Acquista Pacchetto AI',
-                            showCancelButton: true,
-                            cancelButtonText: 'Chiudi',
-                            confirmButtonColor: '#f97316',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // ToS v3.0.0: redirect a pricing page, NON modal acquisto diretto
-                                window.location.href = '{{ route("egili.purchase.pricing") }}';
-                            }
+                            confirmButtonText: 'Chiudi',
+                            confirmButtonColor: '#6B7280',
                         });
                         return false;
                     }

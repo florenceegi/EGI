@@ -203,10 +203,7 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
     {{-- Universal Search Modal (global singleton) --}}
     <x-universal-search-modal />
 
-    {{-- Egili Purchase Modal (global - accessible from menu) --}}
-    @auth
-        <x-egili-purchase-modal />
-    @endauth
+    {{-- ToS v3.0.0: egili-purchase-modal RIMOSSA — gli Egili non sono acquistabili --}}
 
     <!-- OS1 User Collection Data for Dashboard Context -->
     @auth
