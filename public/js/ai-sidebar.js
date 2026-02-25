@@ -44,6 +44,11 @@
             return; // Component not on this page
         }
 
+        // Move elements to <body> to escape any stacking context created by ancestors
+        // (transform, will-change, filter on ancestors break position:fixed z-index)
+        document.body.appendChild(state.toggleBtn);
+        document.body.appendChild(state.sidebar);
+
         // Get data attributes
         state.userId = state.sidebar.dataset.userId;
         state.userType = state.sidebar.dataset.userType;
