@@ -482,10 +482,10 @@ class CollectionsController extends Controller {
         $usertype = strtolower($creator->usertype ?? 'creator');
 
         return match ($usertype) {
-            'company' => route('company.portfolio', ['nick_name' => $creator->nick_name]),
-            'creator' => route('creator.portfolio', ['nick_name' => $creator->nick_name]),
-            'collector' => route('collector.home', ['nick_name' => $creator->nick_name]),
-            default => '#',
+            'company'   => route('company.portfolio', ['id' => $creator->id]),
+            'creator'   => route('creator.portfolio', ['id' => $creator->id]),
+            'collector' => route('collector.home',    ['id' => $creator->id]),
+            default     => '#',
         };
     }
 
