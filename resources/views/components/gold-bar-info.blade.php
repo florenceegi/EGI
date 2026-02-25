@@ -292,11 +292,8 @@
                                     confirmButtonColor: '#f97316'
                                 }).then(function(result) {
                                     if (result.isConfirmed) {
-                                        if (typeof window.openEgiliPurchaseModal === 'function') {
-                                            window.openEgiliPurchaseModal();
-                                        } else {
-                                            window.location.href = '/egili/purchase/pricing';
-                                        }
+                                        // ToS v3.0.0: redirect a pricing page, NON modal acquisto diretto
+                                        window.location.href = '{{ route("egili.purchase.pricing") }}';
                                     }
                                 });
                                 return;

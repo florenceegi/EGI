@@ -170,11 +170,11 @@
                                 </div>
                             </div>
 
-                            {{-- Button per aprire modale Egili (non redirect!) --}}
-                            <button onclick="openEgiliPurchaseModal()" type="button"
+                            {{-- ToS v3.0.0: redirect a pricing page, NON modal acquisto diretto --}}
+                            <a href="{{ route('egili.purchase.pricing') }}"
                                 class="mt-3 block w-full rounded-lg bg-red-600 px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-red-700">
                                 {{ __('egili.buy_more') }}
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>

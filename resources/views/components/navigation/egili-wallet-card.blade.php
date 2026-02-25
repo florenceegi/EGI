@@ -26,11 +26,11 @@
         </div>
     </div>
     
-    {{-- Buy Button --}}
-    <button onclick="openEgiliPurchaseModal()" 
-            class="mb-4 w-full rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-lg">
+    {{-- Buy Button — ToS v3.0.0: redirect a pricing page, NON modal acquisto diretto --}}
+    <a href="{{ route('egili.purchase.pricing') }}"
+            class="mb-4 w-full rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-lg block text-center">
         💎 {{ __('egili.wallet.buy_more') }}
-    </button>
+    </a>
     
     {{-- Recent Transactions (Collapsible) --}}
     @if($recentTransactions->count() > 0)

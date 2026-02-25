@@ -606,13 +606,8 @@ $canEdit =
                             confirmButtonColor: '#f97316',
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // Apri modale acquisto Egili
-                                if (typeof openEgiliPurchaseModal === 'function') {
-                                    openEgiliPurchaseModal();
-                                } else {
-                                    console.error('openEgiliPurchaseModal() not found');
-                                    window.location.href = '/egili/purchase/pricing';
-                                }
+                                // ToS v3.0.0: redirect a pricing page, NON modal acquisto diretto
+                                window.location.href = '{{ route("egili.purchase.pricing") }}';
                             }
                         });
                         return false;

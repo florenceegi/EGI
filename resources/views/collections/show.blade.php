@@ -1036,49 +1036,8 @@ if (auth()->check()) {
                                         confirmButtonColor: '#f97316'
                                     }).then((result) => {
                                         if (result.isConfirmed) {
-                                            // Apri modale acquisto Egili con retry logic
-                                            console.log('Trying to open Egili modal...');
-
-                                            const tryOpenModal = (attempts = 0) => {
-                                                if (typeof window.openEgiliPurchaseModal ===
-                                                    'function') {
-                                                    console.log(
-                                                        '✅ openEgiliPurchaseModal found, calling...'
-                                                    );
-                                                    window.openEgiliPurchaseModal();
-                                                } else if (attempts < 10) {
-                                                    console.log(
-                                                        `⏳ Waiting for openEgiliPurchaseModal... attempt ${attempts + 1}/10`
-                                                    );
-                                                    setTimeout(() => tryOpenModal(attempts + 1), 100);
-                                                } else {
-                                                    console.error(
-                                                        '❌ openEgiliPurchaseModal() not found after 10 attempts!'
-                                                    );
-                                                    // Fallback: try to show the modal directly
-                                                    const modal = document.getElementById(
-                                                        'egili-purchase-modal');
-                                                    if (modal) {
-                                                        console.log(
-                                                            '🔧 Fallback: directly showing modal element'
-                                                        );
-                                                        modal.classList.remove('hidden');
-                                                        modal.style.display = '';
-                                                    } else {
-                                                        console.error(
-                                                            '❌ Modal element #egili-purchase-modal not found in DOM'
-                                                        );
-                                                        Swal.fire({
-                                                            icon: 'error',
-                                                            title: 'Errore',
-                                                            text: 'Impossibile aprire la modale acquisto Egili. Ricarica la pagina e riprova.',
-                                                            confirmButtonColor: '#4F46E5'
-                                                        });
-                                                    }
-                                                }
-                                            };
-
-                                            tryOpenModal();
+                                            // ToS v3.0.0: redirect a pricing page, NON modal acquisto diretto
+                                            window.location.href = '{{ route("egili.purchase.pricing") }}';
                                         }
                                     });
                                 } else {
