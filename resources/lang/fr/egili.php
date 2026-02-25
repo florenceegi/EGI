@@ -10,25 +10,6 @@
 
 return [
     'buy_more' => 'Paquets de Services IA',
-
-    'purchase_modal' => [
-        'title'              => 'Acheter un Paquet de Services IA',
-        'subtitle'           => 'Bientôt disponible',
-        'coming_soon_badge'  => 'Système en Développement',
-        'coming_soon_text'   => 'Le système d\'achat sera bientôt disponible. Nous vous notifierons par email !',
-        'features_title'     => 'Ce que vous pourrez faire :',
-        'payment_fiat'       => 'Paiement FIAT',
-        'payment_fiat_desc'  => 'Carte de crédit, PayPal',
-        'bulk_discounts'     => 'Paquets Remisés',
-        'bulk_discounts_desc' => 'Économisez avec des paquets plus importants',
-        'history'            => 'Historique Complet',
-        'history_desc'       => 'Transactions toujours traçables',
-        'what_is_egili_title' => 'Que sont les Egili ?',
-        'what_is_egili_text' => '<strong>Egili</strong> sont le compteur interne de consommation des services IA de FlorenceEGI.',
-        'value'              => 'Valeur',
-        'footer_note'        => 'Système en développement • Notification par email au lancement',
-    ],
-
     'transaction_types' => [
         'earned'        => 'Gagné',
         'spent'         => 'Dépensé',

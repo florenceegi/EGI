@@ -10,25 +10,6 @@
 
 return [
     'buy_more' => 'KI-Servicepakete',
-
-    'purchase_modal' => [
-        'title' => 'KI-Servicepaket kaufen',
-        'subtitle' => 'Demnächst verfügbar',
-        'coming_soon_badge' => 'System in Entwicklung',
-        'coming_soon_text' => 'Das Egili-Kaufsystem wird bald verfügbar sein. Wir benachrichtigen dich per E-Mail!',
-        'features_title' => 'Was du tun kannst:',
-        'payment_fiat' => 'FIAT-Zahlung',
-        'payment_fiat_desc' => 'Kreditkarte, PayPal',
-        'bulk_discounts' => 'Paketrabatte',
-        'bulk_discounts_desc' => 'Spare mit größeren Paketen',
-        'history' => 'Vollständige Historie',
-        'history_desc' => 'Transaktionen stets nachvollziehbar',
-        'what_is_egili_title' => 'Was sind Egili?',
-        'what_is_egili_text' => '<strong>Egili</strong> sind der interne Konsum-Zähler für KI-Dienste von FlorenceEGI.',
-        'value' => 'Wert',
-        'footer_note' => 'System in Entwicklung • E-Mail-Benachrichtigung beim Start',
-    ],
-
     'transaction_types' => [
         'earned'        => 'Verdient',
         'spent'         => 'Ausgegeben',
