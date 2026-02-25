@@ -656,3 +656,98 @@ Il nuovo nome della modale deve essere: **"Acquista Pacchetto AI"** → accredit
 ---
 
 _Aggiungere qui ulteriori voci man mano che vengono individuate._
+
+---
+
+## 9. Platform Settings & AI Feature Pricing — DB-Driven Configuration
+
+### 🟢 Platform Settings CRUD (Completato)
+
+**Status**: ✅ COMPLETATO — commit `cbbc894d` su `develop`
+**Priority**: P1 (prerequisito per gestione pricing via admin)
+**Created**: 2026-03-xx
+**Component**: `platform_settings` table + Superadmin CRUD
+
+#### Cosa è stato fatto
+
+- **Tabella `platform_settings`** creata via migration (key/value store tipizzato per settings di piattaforma)
+- **`PlatformSetting` Model** creato con helper `PlatformSetting::get($key, $default)`
+- **`SuperadminPlatformSettingsController`** CRUD completo con ULM+UEM+Audit
+- **Views** superadmin: `index.blade.php` + `edit.blade.php`
+- **Menu** superadmin aggiornato con voce "Platform Settings"
+- **Lang files** creati/aggiornati in tutte e 6 le lingue (P0-9): `it`, `en`, `de`, `es`, `fr`, `pt`
+- **Route** aggiunta in `routes/superadmin.php`
+- **`AiCreditsService`** aggiornato: legge da `PlatformSetting::get()` invece di `config('ai-credits.*')` — i prezzi sono ora nel DB
+
+#### File impattati
+
+| File | Stato |
+|------|-------|
+| `database/migrations/*_create_platform_settings_table.php` | ✅ Creato + migrato |
+| `app/Models/PlatformSetting.php` | ✅ Creato |
+| `app/Http/Controllers/Superadmin/SuperadminPlatformSettingsController.php` | ✅ Creato |
+| `resources/views/superadmin/platform-settings/` | ✅ Creato (index + edit) |
+| `app/Services/AiCreditsService.php` | ✅ Aggiornato (legge da DB) |
+| `resources/lang/{it,en,de,es,fr,pt}/platform_settings.php` | ✅ Creati (P0-9) |
+
+---
+
+### 🟠 AI Feature Pricing — Pacchetti da Attivare (Pending)
+
+**Status**: 🟠 PENDING — 4 pacchetti in DB con `is_active=false` e `cost_fiat_eur=NULL`
+**Priority**: P1 (il business non può vendere pacchetti AI finché non sono attivi)
+**Component**: `ai_feature_pricing` table + `/superadmin/pricing`
+
+#### Cosa manca
+
+I 4 pacchetti AI inseriti da `AiServicePackagesSeeder` sono tutti con:
+- `is_active = false`
+- `cost_fiat_eur = NULL`
+
+La modal `egili-purchase-modal.blade.php` filtra `is_active=true` → mostra **"— Egili / €—"** (lista vuota).
+
+#### Azione richiesta (manuale — non richiede codice)
+
+Andare su `/superadmin/pricing` e per ciascuno dei 4 pacchetti:
+
+| Slug | Nome | Egili | Prezzo suggerito |
+|------|------|-------|-----------------|
+| `ai_package_starter` | Starter AI | 100 | €9,99 |
+| `ai_package_professional` | Professional AI | 500 | €39,99 |
+| `ai_package_business` | Business AI | 1.200 | €79,99 |
+| `ai_package_enterprise` | Enterprise AI | 3.000 | €179,99 |
+
+1. Impostare `cost_fiat_eur` con il prezzo concordato
+2. Attivare `is_active = true`
+
+> ⚠️ I prezzi sopra sono indicativi — Fabio deve confermare prima di attivare.
+
+---
+
+### 🟢 Deploy Command Aggiornato
+
+**Status**: ✅ APPRESO in sessione — da usare SEMPRE
+
+Il deploy mancava di `cache:clear` causando la visualizzazione di traduzioni stale (`'Acquista Egili'` invece di `'Pacchetti AI'`).
+
+**Comando corretto (server Forge)**:
+```bash
+sudo -u forge bash -c 'cd /home/forge/art.florenceegi.com && git pull origin develop && php artisan cache:clear && php artisan config:cache && php artisan view:clear'
+```
+
+> ⚠️ Branch server: SEMPRE `origin/develop`, mai `origin/main`.
+
+---
+
+### 🟢 BILLING_MANAGEMENT_PLAN.md — EGI-HUB (Completato)
+
+**Status**: ✅ Piano creato — commit `da2df91` su `main` EGI-HUB
+**Component**: `/home/fabio/EGI-HUB/docs/BILLING_MANAGEMENT_PLAN.md`
+
+Piano 5 fasi per spostare la gestione billing/pricing in EGI-HUB come unico punto di controllo dell'ecosistema ("AWS Console"). Vedere il file per dettagli.
+
+**Fase 1 (prossima sessione)**:
+- Model `AiFeaturePricing` in EGI-HUB backend (punta a tabella esistente, zero migration)
+- Refactor `FeaturePricingController` da stub a reale con dati da DB
+- Route `store` e `destroy` mancanti in `backend/routes/api.php`
+- UI React per Feature Pricing con toggle attivazione inline
