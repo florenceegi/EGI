@@ -25,18 +25,16 @@ class PaymentSettingsController extends Controller {
     /**
      * @var array Available payment methods on the platform
      */
+    /**
+     * ToS v3.0.0: 'egili' RIMOSSO — gli Egili NON sono un metodo di pagamento
+     * per l'acquisto di EGI. Sono crediti AI ottenibili solo via Pacchetti AI o merit reward.
+     */
     public const AVAILABLE_METHODS = [
         'stripe' => [
             'name' => 'Stripe',
             'description' => 'Accept card payments via Stripe Connect',
             'icon' => 'credit-card',
             'requires_connect' => true,
-        ],
-        'egili' => [
-            'name' => 'Egili',
-            'description' => 'Platform internal credits',
-            'icon' => 'coins',
-            'requires_connect' => false,
         ],
         'bank_transfer' => [
             'name' => 'Bank Transfer',
