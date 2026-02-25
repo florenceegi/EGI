@@ -40,12 +40,12 @@
 @if ($shouldShowSidebar)
     {{-- Inline style: rendered at component position, not via @push (guest layout renders header before slot) --}}
     <style>
-        /* AI Sidebar z-index — above all page content, carousels, hero sections */
+        /* AI Sidebar z-index — above ALL page content, carousels, hero banners, navbar (z-50), stacking contexts (z-20) */
         #ai-sidebar {
-            z-index: 100 !important;
+            z-index: 1000 !important;
         }
         #ai-sidebar-toggle {
-            z-index: 110 !important;
+            z-index: 1010 !important;
         }
 
         /* AI Sidebar Animations */
@@ -118,7 +118,7 @@
 
     {{-- Toggle Button (FAB) --}}
     <button id="ai-sidebar-toggle"
-        class="ai-sidebar-toggle fixed bottom-6 right-6 z-[110] flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-2xl hover:shadow-indigo-500/50"
+        class="ai-sidebar-toggle fixed bottom-6 right-6 z-[1010] flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-2xl hover:shadow-indigo-500/50"
         title="{{ __('ai_sidebar.toggle_title') }}" aria-label="{{ __('ai_sidebar.toggle_title') }}"
         data-sidebar-open="false">
         {{-- Sparkle icon --}}
@@ -147,7 +147,7 @@
 
     {{-- Sidebar Panel --}}
     <aside id="ai-sidebar"
-        class="ai-sidebar collapsed via-gray-850 fixed bottom-0 right-4 top-20 z-[100] flex w-80 flex-col overflow-hidden rounded-2xl border border-gray-700/50 bg-gradient-to-b from-gray-900 to-gray-900 shadow-2xl md:w-96"
+        class="ai-sidebar collapsed via-gray-850 fixed bottom-0 right-4 top-20 z-[1000] flex w-80 flex-col overflow-hidden rounded-2xl border border-gray-700/50 bg-gradient-to-b from-gray-900 to-gray-900 shadow-2xl md:w-96"
         data-user-id="{{ $user?->id ?? 0 }}" data-user-type="{{ $userType }}"
         data-checklist="{{ json_encode($checklist) }}" aria-hidden="true">
         {{-- Header --}}
