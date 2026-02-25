@@ -87,29 +87,17 @@ async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {},
                 icon: 'error',
                 title: 'Crediti Insufficienti',
                 html: `
-                    <p class="mb-3">Non hai abbastanza Egili per questa operazione.</p>
+                    <p class="mb-3">Non hai abbastanza crediti AI per questa operazione.</p>
                     <div class="bg-red-50 border border-red-200 rounded p-3 text-left">
-                        <p class="text-sm"><strong>Richiesti:</strong> ${pricing.cost_egili} Egili</p>
-                        <p class="text-sm"><strong>Disponibili:</strong> ${pricing.user_balance} Egili</p>
-                        <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${pricing.cost_egili - pricing.user_balance} Egili</p>
+                        <p class="text-sm"><strong>Richiesti:</strong> ${pricing.cost_egili} crediti</p>
+                        <p class="text-sm"><strong>Disponibili:</strong> ${pricing.user_balance} crediti</p>
+                        <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${pricing.cost_egili - pricing.user_balance} crediti</p>
                     </div>
-                    <p class="mt-3 text-xs text-gray-600">Acquista Egili per continuare.</p>
+                    <p class="mt-3 text-xs text-gray-600">I crediti AI vengono erogati automaticamente con l'acquisto di un Pacchetto Servizi AI.</p>
                 `,
-                confirmButtonText: 'Acquista Egili',
-                showCancelButton: true,
-                cancelButtonText: 'Chiudi',
-                confirmButtonColor: '#f97316',
-                }).then((result) => {
-                if (result.isConfirmed) {
-                    // Apri modale acquisto Egili
-                    if (typeof openEgiliPurchaseModal === 'function') {
-                        openEgiliPurchaseModal();
-                    } else {
-                        console.error('openEgiliPurchaseModal() not found, fallback to page');
-                        window.location.href = '/egili/purchase/pricing';
-                    }
-                }
-            });
+                confirmButtonText: 'Chiudi',
+                confirmButtonColor: '#6B7280',
+                });
 
             if (callbacks.onCancel) callbacks.onCancel();
             return { success: false, reason: 'insufficient_credits' };
