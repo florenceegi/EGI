@@ -93,11 +93,19 @@ async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {},
                         <p class="text-sm"><strong>Disponibili:</strong> ${pricing.user_balance} crediti</p>
                         <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${pricing.cost_egili - pricing.user_balance} crediti</p>
                     </div>
-                    <p class="mt-3 text-xs text-gray-600">I crediti AI vengono erogati automaticamente con l'acquisto di un Pacchetto Servizi AI.</p>
+                    <p class="mt-3 text-xs text-gray-600">Acquista un Pacchetto Servizi AI per ricaricare i tuoi crediti.</p>
                 `,
-                confirmButtonText: 'Chiudi',
-                confirmButtonColor: '#6B7280',
-                });
+                confirmButtonText: 'Acquista Pacchetto AI',
+                showCancelButton: true,
+                cancelButtonText: 'Chiudi',
+                confirmButtonColor: '#f97316',
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    if (typeof openEgiliPurchaseModal === 'function') {
+                        openEgiliPurchaseModal();
+                    }
+                }
+            });
 
             if (callbacks.onCancel) callbacks.onCancel();
             return { success: false, reason: 'insufficient_credits' };

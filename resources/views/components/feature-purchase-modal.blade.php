@@ -170,7 +170,11 @@
                                 </div>
                             </div>
 
-                            {{-- ToS v3.0.0: bottone acquisto Egili RIMOSSO --}}
+                            {{-- Apre modal Pacchetti AI (FIAT: Stripe/PayPal) — ToS v3.0.0 --}}
+                            <button onclick="openEgiliPurchaseModal()" type="button"
+                                class="mt-3 block w-full rounded-lg bg-red-600 px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-red-700">
+                                {{ __('egili.buy_more') }}
+                            </button>
                         </div>
                     </div>
                 </div>

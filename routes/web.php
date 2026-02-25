@@ -179,11 +179,16 @@ Route::middleware('auth')->group(function () {
             ->name('traits.generate');
     });
 
-    // ToS v3.0.0: acquisto diretto Egili DISABILITATO — route bloccate con 404
+    // Egili AI Package Purchase System (FIAT: Stripe/PayPal → Pacchetti AI → Egili accreditati) — ToS v3.0.0
     Route::prefix('egili')->name('egili.')->group(function () {
-        Route::post('/purchase/process', fn() => abort(404))->name('purchase.process');
-        Route::get('/purchase/{orderReference}/confirmation', fn() => abort(404))->name('purchase.confirmation');
-        Route::get('/purchase/pricing', fn() => abort(404))->name('purchase.pricing');
+        Route::post('/purchase/process', [App\Http\Controllers\EgiliPurchaseController::class, 'processPurchase'])
+            ->name('purchase.process');
+
+        Route::get('/purchase/{orderReference}/confirmation', [App\Http\Controllers\EgiliPurchaseController::class, 'showConfirmation'])
+            ->name('purchase.confirmation');
+
+        Route::get('/purchase/pricing', [App\Http\Controllers\EgiliPurchaseController::class, 'getPricing'])
+            ->name('purchase.pricing');
     });
 
     // Feature Purchase System (Hybrid Approach - Generic for ALL features)

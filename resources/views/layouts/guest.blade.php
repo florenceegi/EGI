@@ -218,7 +218,10 @@
     console.log('✅ HEIC Detection function loaded and available globally');
 </script>
 
-{{-- ToS v3.0.0: egili-purchase-modal RIMOSSA — gli Egili non sono acquistabili --}}
+{{-- Egili AI Package Purchase Modal (FIAT: Stripe/PayPal) — ToS v3.0.0 compliant --}}
+@auth
+    <x-egili-purchase-modal />
+@endauth
 
 {{-- 🎩 Natan Assistant - Sempre Visibile --}}
 <div id="natan-global-assistant" class="fixed bottom-6 right-6 z-[9999]" role="region" aria-label="Natan Assistant">

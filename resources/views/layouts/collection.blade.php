@@ -48,7 +48,8 @@
 <x-wallet-connect-modal />
 <x-real-wallet-connect-modal />
 
-{{-- ToS v3.0.0: egili-purchase-modal RIMOSSA --}}
+{{-- Egili AI Package Purchase Modal (FIAT: Stripe/PayPal) — ToS v3.0.0 compliant --}}
+<x-egili-purchase-modal />
 
 <!-- Create Collection Modal (OS1 Integration) -->
 @include('components.create-collection-modal')
