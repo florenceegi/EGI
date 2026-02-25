@@ -567,6 +567,51 @@ return [
                 'route_pattern' => '/creator/{id}/portfolio',
                 'archetype_required' => 'creator',
             ],
+
+            'sidebar_contexts' => [
+                'owner' => [
+                    'greeting'           => 'Ciao <strong>:name</strong>! 👋',
+                    'intro'              => 'Questo è il tuo <strong>Portfolio Creator</strong>. Gestisci le tue opere e collections certificate su blockchain Algorand.',
+                    'status_title'       => '📊 Il Tuo Portfolio',
+                    'status_created'     => '<strong>:created_count EGI</strong> opere pubblicate',
+                    'status_collections' => '<strong>:collections_count</strong> collections pubblicate',
+                    'actions_title'      => '🎯 Cosa Puoi Fare',
+                    'actions'            => [
+                        'create'    => 'Crea una nuova collection o opera EGI',
+                        'payment'   => 'Configura metodi pagamento per ricevere vendite',
+                        'biography' => 'Aggiorna la tua biography artistica',
+                        'impact'    => 'Gestisci il tuo impatto ambientale (EPP obbligatorio 20%)',
+                        'community' => 'Coinvolgi la tua community di supporters',
+                    ],
+                    'help_offer' => '🤝 <strong>Posso aiutarti con:</strong> creazione opere, gestione collections, configurazione pagamenti.',
+                    'cta'        => 'Vuoi che ti guidi nella creazione della tua prossima opera?',
+                ],
+                'visitor' => [
+                    'greeting'    => 'Ciao <strong>:name</strong>! 👋',
+                    'intro'       => 'Stai esplorando il portfolio di <strong>:creator_name</strong>, un artista certificato su FlorenceEGI.',
+                    'value_title' => '🎨 Scopri Arte Certificata',
+                    'value_props' => [
+                        'authenticity' => '✅ Ogni opera è certificata su blockchain Algorand',
+                        'diversity'    => '🌿 EPP obbligatori: ogni vendita supporta un progetto ambientale',
+                        'secondary'    => '💎 Acquista e rivendi sul mercato secondario',
+                    ],
+                    'help_offer' => '🤝 <strong>Posso aiutarti</strong> a trovare opere simili o scoprire altre collections di questo artista.',
+                    'cta'        => 'Chiedimi di un\'opera specifica o di una collection!',
+                ],
+                'guest' => [
+                    'greeting'         => 'Benvenuto! 👋',
+                    'intro'            => 'Stai esplorando il portfolio di <strong>:creator_name</strong>.',
+                    'why_join_title'   => '🚀 Perché Registrarti?',
+                    'why_join_reasons' => [
+                        '🎨 Acquista opere d\'arte certificate su blockchain',
+                        '🌿 Ogni acquisto supporta un progetto ambientale reale (EPP)',
+                        '💎 Costruisci la tua collezione personale',
+                        '📈 Rivendi sul mercato secondario',
+                    ],
+                    'cta_register' => '<a href="/join" class="inline-block mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition-colors">Registrati Gratis →</a>',
+                    'help_offer'   => '🤝 Hai domande sulla piattaforma o sulle opere di questo artista?',
+                ],
+            ],
         ],
 
         'collections' => [
