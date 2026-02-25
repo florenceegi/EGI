@@ -21,9 +21,9 @@
             ? $p->feature_parameters
             : json_decode($p->feature_parameters ?? '{}', true);
         $packages[$p->feature_code] = [
-            'label'     => $p->feature_name,
+            'label' => $p->feature_name,
             'price_eur' => (float) $p->cost_fiat_eur,
-            'credits'   => (int) ($params['egili_amount'] ?? 0),
+            'credits' => (int) ($params['egili_amount'] ?? 0),
         ];
     }
 
@@ -31,9 +31,9 @@
     $packagesForJs = [];
     foreach ($packages as $key => $pkg) {
         $packagesForJs[] = [
-            'key'            => $key,
-            'label'          => $pkg['label'],
-            'price_eur'      => $pkg['price_eur'],
+            'key' => $key,
+            'label' => $pkg['label'],
+            'price_eur' => $pkg['price_eur'],
             'egili_credited' => (int) round(($pkg['credits'] ?? 0) * $egiliRatio),
         ];
     }

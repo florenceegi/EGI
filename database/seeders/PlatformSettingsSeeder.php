@@ -14,10 +14,8 @@ use Illuminate\Database\Seeder;
  *          ATTENZIONE: i valori qui sono defaults tecnici, NON prezzi commerciali.
  *          I prezzi dei pacchetti sono nel seeder AiServicePackagesSeeder.
  */
-class PlatformSettingsSeeder extends Seeder
-{
-    public function run(): void
-    {
+class PlatformSettingsSeeder extends Seeder {
+    public function run(): void {
         $settings = [
             // ── Exchange Rate ─────────────────────────────────────────────────
             [

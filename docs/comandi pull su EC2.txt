@@ -3,6 +3,27 @@ sudo -u forge bash -c 'cd /home/forge/florenceegi.com && git pull origin main &&
 
 EGI (art.florenceegi.com) — solo Blade, no build npm necessario:
 sudo -u forge bash -c 'cd /home/forge/art.florenceegi.com && git pull origin develop && php artisan config:cache && php artisan view:clear'
+sudo -u forge bash -c '
+cd /home/forge/art.florenceegi.com &&
+git pull origin develop &&
+composer install --no-dev --optimize-autoloader &&
+php artisan down &&
+php artisan cache:clear &&
+php artisan config:clear &&
+php artisan config:cache &&
+php artisan view:clear &&
+php artisan route:clear &&
+php artisan route:cache &&
+php artisan event:clear &&
+php artisan up
+'
+
+
 
 NATAN_LOC (natan-loc.florenceegi.com):
 sudo -u forge bash -c 'cd /home/forge/natan-loc.florenceegi.com && git pull origin perfect-with-timeout && php artisan config:cache && php artisan view:clear'
+
+EGI-HUB
+sudo -u forge bash -c 'cd /home/forge/hub.florenceegi.com/frontend && git -C .. pull origin main && npm run build'
+
+3387459999 Andrea Borbotti

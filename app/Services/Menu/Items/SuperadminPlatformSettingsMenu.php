@@ -11,10 +11,8 @@ use App\Services\Menu\MenuItem;
  * @date 2026-02-25
  * @purpose Menu item superadmin per la gestione impostazioni di piattaforma.
  */
-class SuperadminPlatformSettingsMenu extends MenuItem
-{
-    public function __construct()
-    {
+class SuperadminPlatformSettingsMenu extends MenuItem {
+    public function __construct() {
         parent::__construct(
             translationKey: 'menu.superadmin_platform_settings',
             route: 'superadmin.platform-settings.index',

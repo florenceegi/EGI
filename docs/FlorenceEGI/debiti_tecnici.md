@@ -681,14 +681,14 @@ _Aggiungere qui ulteriori voci man mano che vengono individuate._
 
 #### File impattati
 
-| File | Stato |
-|------|-------|
-| `database/migrations/*_create_platform_settings_table.php` | ✅ Creato + migrato |
-| `app/Models/PlatformSetting.php` | ✅ Creato |
-| `app/Http/Controllers/Superadmin/SuperadminPlatformSettingsController.php` | ✅ Creato |
-| `resources/views/superadmin/platform-settings/` | ✅ Creato (index + edit) |
-| `app/Services/AiCreditsService.php` | ✅ Aggiornato (legge da DB) |
-| `resources/lang/{it,en,de,es,fr,pt}/platform_settings.php` | ✅ Creati (P0-9) |
+| File                                                                       | Stato                       |
+| -------------------------------------------------------------------------- | --------------------------- |
+| `database/migrations/*_create_platform_settings_table.php`                 | ✅ Creato + migrato         |
+| `app/Models/PlatformSetting.php`                                           | ✅ Creato                   |
+| `app/Http/Controllers/Superadmin/SuperadminPlatformSettingsController.php` | ✅ Creato                   |
+| `resources/views/superadmin/platform-settings/`                            | ✅ Creato (index + edit)    |
+| `app/Services/AiCreditsService.php`                                        | ✅ Aggiornato (legge da DB) |
+| `resources/lang/{it,en,de,es,fr,pt}/platform_settings.php`                 | ✅ Creati (P0-9)            |
 
 ---
 
@@ -701,6 +701,7 @@ _Aggiungere qui ulteriori voci man mano che vengono individuate._
 #### Cosa manca
 
 I 4 pacchetti AI inseriti da `AiServicePackagesSeeder` sono tutti con:
+
 - `is_active = false`
 - `cost_fiat_eur = NULL`
 
@@ -710,12 +711,12 @@ La modal `egili-purchase-modal.blade.php` filtra `is_active=true` → mostra **"
 
 Andare su `/superadmin/pricing` e per ciascuno dei 4 pacchetti:
 
-| Slug | Nome | Egili | Prezzo suggerito |
-|------|------|-------|-----------------|
-| `ai_package_starter` | Starter AI | 100 | €9,99 |
-| `ai_package_professional` | Professional AI | 500 | €39,99 |
-| `ai_package_business` | Business AI | 1.200 | €79,99 |
-| `ai_package_enterprise` | Enterprise AI | 3.000 | €179,99 |
+| Slug                      | Nome            | Egili | Prezzo suggerito |
+| ------------------------- | --------------- | ----- | ---------------- |
+| `ai_package_starter`      | Starter AI      | 100   | €9,99            |
+| `ai_package_professional` | Professional AI | 500   | €39,99           |
+| `ai_package_business`     | Business AI     | 1.200 | €79,99           |
+| `ai_package_enterprise`   | Enterprise AI   | 3.000 | €179,99          |
 
 1. Impostare `cost_fiat_eur` con il prezzo concordato
 2. Attivare `is_active = true`
@@ -731,6 +732,7 @@ Andare su `/superadmin/pricing` e per ciascuno dei 4 pacchetti:
 Il deploy mancava di `cache:clear` causando la visualizzazione di traduzioni stale (`'Acquista Egili'` invece di `'Pacchetti AI'`).
 
 **Comando corretto (server Forge)**:
+
 ```bash
 sudo -u forge bash -c 'cd /home/forge/art.florenceegi.com && git pull origin develop && php artisan cache:clear && php artisan config:cache && php artisan view:clear'
 ```
@@ -747,6 +749,7 @@ sudo -u forge bash -c 'cd /home/forge/art.florenceegi.com && git pull origin dev
 Piano 5 fasi per spostare la gestione billing/pricing in EGI-HUB come unico punto di controllo dell'ecosistema ("AWS Console"). Vedere il file per dettagli.
 
 **Fase 1 (prossima sessione)**:
+
 - Model `AiFeaturePricing` in EGI-HUB backend (punta a tabella esistente, zero migration)
 - Refactor `FeaturePricingController` da stub a reale con dati da DB
 - Route `store` e `destroy` mancanti in `backend/routes/api.php`

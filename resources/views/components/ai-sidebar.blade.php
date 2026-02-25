@@ -38,80 +38,87 @@
 
 {{-- Show to profile owner with checklist OR when custom context message is provided --}}
 @if ($shouldShowSidebar)
-    @push('styles')
-        <style>
-            /* AI Sidebar Animations */
-            .ai-sidebar {
-                transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    {{-- Inline style: rendered at component position, not via @push (guest layout renders header before slot) --}}
+    <style>
+        /* AI Sidebar z-index — above all page content, carousels, hero sections */
+        #ai-sidebar {
+            z-index: 100 !important;
+        }
+        #ai-sidebar-toggle {
+            z-index: 110 !important;
+        }
+
+        /* AI Sidebar Animations */
+        .ai-sidebar {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+
+        .ai-sidebar.collapsed {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .ai-sidebar-toggle {
+            transition: all 0.3s ease;
+        }
+
+        .ai-sidebar-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        /* Checklist item hover */
+        .checklist-item {
+            transition: all 0.2s ease;
+        }
+
+        .checklist-item:not(.completed):hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .checklist-item.completed {
+            opacity: 0.7;
+        }
+
+        /* Progress bar animation */
+        .progress-fill {
+            transition: width 0.5s ease-out;
+        }
+
+        /* AI message typing animation */
+        .ai-typing::after {
+            content: '▋';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            50% {
+                opacity: 1;
             }
 
-            .ai-sidebar.collapsed {
-                transform: translateX(100%);
+            51%,
+            100% {
                 opacity: 0;
-                pointer-events: none;
             }
+        }
 
-            .ai-sidebar-toggle {
-                transition: all 0.3s ease;
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .ai-sidebar {
+                width: 100% !important;
+                max-width: 100% !important;
+                right: 0 !important;
+                border-radius: 0 !important;
             }
-
-            .ai-sidebar-toggle:hover {
-                transform: scale(1.05);
-            }
-
-            /* Checklist item hover */
-            .checklist-item {
-                transition: all 0.2s ease;
-            }
-
-            .checklist-item:not(.completed):hover {
-                background-color: rgba(59, 130, 246, 0.1);
-                border-color: rgba(59, 130, 246, 0.5);
-            }
-
-            .checklist-item.completed {
-                opacity: 0.7;
-            }
-
-            /* Progress bar animation */
-            .progress-fill {
-                transition: width 0.5s ease-out;
-            }
-
-            /* AI message typing animation */
-            .ai-typing::after {
-                content: '▋';
-                animation: blink 1s infinite;
-            }
-
-            @keyframes blink {
-
-                0%,
-                50% {
-                    opacity: 1;
-                }
-
-                51%,
-                100% {
-                    opacity: 0;
-                }
-            }
-
-            /* Mobile responsiveness */
-            @media (max-width: 768px) {
-                .ai-sidebar {
-                    width: 100% !important;
-                    max-width: 100% !important;
-                    right: 0 !important;
-                    border-radius: 0 !important;
-                }
-            }
-        </style>
-    @endpush
+        }
+    </style>
 
     {{-- Toggle Button (FAB) --}}
     <button id="ai-sidebar-toggle"
-        class="ai-sidebar-toggle fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-2xl hover:shadow-indigo-500/50"
+        class="ai-sidebar-toggle fixed bottom-6 right-6 z-[110] flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-2xl hover:shadow-indigo-500/50"
         title="{{ __('ai_sidebar.toggle_title') }}" aria-label="{{ __('ai_sidebar.toggle_title') }}"
         data-sidebar-open="false">
         {{-- Sparkle icon --}}
@@ -140,7 +147,7 @@
 
     {{-- Sidebar Panel --}}
     <aside id="ai-sidebar"
-        class="ai-sidebar collapsed via-gray-850 fixed bottom-0 right-4 top-20 z-30 flex w-80 flex-col overflow-hidden rounded-2xl border border-gray-700/50 bg-gradient-to-b from-gray-900 to-gray-900 shadow-2xl md:w-96"
+        class="ai-sidebar collapsed via-gray-850 fixed bottom-0 right-4 top-20 z-[100] flex w-80 flex-col overflow-hidden rounded-2xl border border-gray-700/50 bg-gradient-to-b from-gray-900 to-gray-900 shadow-2xl md:w-96"
         data-user-id="{{ $user?->id ?? 0 }}" data-user-type="{{ $userType }}"
         data-checklist="{{ json_encode($checklist) }}" aria-hidden="true">
         {{-- Header --}}

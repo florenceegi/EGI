@@ -1,12 +1,12 @@
 /**
  * AI Features Helper - Unified Flow for AI Feature Execution
- * 
+ *
  * @package FlorenceEGI
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0
  * @date 2025-11-06
  * @purpose Unified flow with cost confirmation for AI features
- * 
+ *
  * WORKFLOW:
  * 1. Get pricing from API
  * 2. Show confirmation dialog with cost
@@ -16,52 +16,62 @@
 
 /**
  * Execute AI Feature with cost confirmation
- * 
+ *
  * @param {string} featureCode Feature code (e.g. 'ai_trait_generation')
  * @param {number} egiId EGI ID
  * @param {object} params Feature-specific parameters
  * @param {object} callbacks Optional callbacks {onSuccess, onError, onCancel}
  * @returns {Promise<object>} Result object
  */
-async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {}, callbacks = {}) {
+async function executeAiFeatureWithConfirmation(
+    featureCode,
+    egiId,
+    params = {},
+    callbacks = {},
+) {
     try {
-        console.log('[AI Features] Requesting pricing', { featureCode, egiId });
+        console.log("[AI Features] Requesting pricing", { featureCode, egiId });
 
         // STEP 1: Get pricing info
         const pricingUrl = `/api/ai/features/pricing?feature_code=${encodeURIComponent(featureCode)}`;
         const pricingResponse = await fetch(pricingUrl, {
-            method: 'GET',
-            credentials: 'same-origin',
+            method: "GET",
+            credentials: "same-origin",
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-            }
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]',
+                ).content,
+                Accept: "application/json",
+            },
         });
 
         if (!pricingResponse.ok) {
-            let errorMessage = 'Failed to fetch pricing';
+            let errorMessage = "Failed to fetch pricing";
             try {
                 const errorPayload = await pricingResponse.json();
                 if (errorPayload && errorPayload.message) {
                     errorMessage = errorPayload.message;
                 }
             } catch (parseError) {
-                console.warn('[AI Features] Unable to parse pricing error payload', parseError);
+                console.warn(
+                    "[AI Features] Unable to parse pricing error payload",
+                    parseError,
+                );
             }
             throw new Error(errorMessage);
         }
 
         const pricingData = await pricingResponse.json();
-        console.log('[AI Features] Pricing received', pricingData);
+        console.log("[AI Features] Pricing received", pricingData);
 
         if (!pricingData.success) {
-            throw new Error(pricingData.message || 'Pricing not available');
+            throw new Error(pricingData.message || "Pricing not available");
         }
 
         const pricing = pricingData.data;
 
         // STEP 2: Show confirmation dialog
-        const confirmationMessage = pricing.is_free 
+        const confirmationMessage = pricing.is_free
             ? `<p class="text-sm text-gray-600 mb-3">Questa operazione è <strong class="text-green-600">gratuita</strong>.</p>`
             : `
                 <div class="bg-gradient-to-r from-orange-50 to-amber-50 border-l-4 border-orange-400 p-4 mb-4">
@@ -84,8 +94,8 @@ async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {},
         // Check if user has sufficient credits
         if (!pricing.is_free && !pricing.has_sufficient_credits) {
             await Swal.fire({
-                icon: 'error',
-                title: 'Crediti Insufficienti',
+                icon: "error",
+                title: "Crediti Insufficienti",
                 html: `
                     <p class="mb-3">Non hai abbastanza crediti AI per questa operazione.</p>
                     <div class="bg-red-50 border border-red-200 rounded p-3 text-left">
@@ -95,87 +105,94 @@ async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {},
                     </div>
                     <p class="mt-3 text-xs text-gray-600">Acquista un Pacchetto Servizi AI per ricaricare i tuoi crediti.</p>
                 `,
-                confirmButtonText: 'Acquista Pacchetto AI',
+                confirmButtonText: "Acquista Pacchetto AI",
                 showCancelButton: true,
-                cancelButtonText: 'Chiudi',
-                confirmButtonColor: '#f97316',
-                }).then((result) => {
+                cancelButtonText: "Chiudi",
+                confirmButtonColor: "#f97316",
+            }).then((result) => {
                 if (result.isConfirmed) {
-                    if (typeof openEgiliPurchaseModal === 'function') {
+                    if (typeof openEgiliPurchaseModal === "function") {
                         openEgiliPurchaseModal();
                     }
                 }
             });
 
             if (callbacks.onCancel) callbacks.onCancel();
-            return { success: false, reason: 'insufficient_credits' };
+            return { success: false, reason: "insufficient_credits" };
         }
 
         const confirmResult = await Swal.fire({
             title: pricing.feature_name,
             html: confirmationMessage,
-            icon: 'question',
+            icon: "question",
             showCancelButton: true,
-            confirmButtonColor: pricing.is_free ? '#10b981' : '#f97316',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: pricing.is_free ? 'Procedi' : `Conferma e Scala ${pricing.cost_egili} Egili`,
-            cancelButtonText: 'Annulla'
+            confirmButtonColor: pricing.is_free ? "#10b981" : "#f97316",
+            cancelButtonColor: "#6b7280",
+            confirmButtonText: pricing.is_free
+                ? "Procedi"
+                : `Conferma e Scala ${pricing.cost_egili} Egili`,
+            cancelButtonText: "Annulla",
         });
 
         if (!confirmResult.isConfirmed) {
-            console.log('[AI Features] User cancelled');
+            console.log("[AI Features] User cancelled");
             if (callbacks.onCancel) callbacks.onCancel();
-            return { success: false, reason: 'cancelled' };
+            return { success: false, reason: "cancelled" };
         }
 
         // STEP 3: Show loading
         Swal.fire({
-            title: 'Elaborazione in corso...',
+            title: "Elaborazione in corso...",
             html: '<p class="text-sm text-gray-600">N.A.T.A.N sta lavorando alla tua richiesta...</p>',
             allowOutsideClick: false,
             showConfirmButton: false,
             didOpen: () => {
                 Swal.showLoading();
-            }
+            },
         });
 
         // STEP 4: Execute feature
-        const executeUrl = '/api/ai/features/execute';
+        const executeUrl = "/api/ai/features/execute";
         const executeResponse = await fetch(executeUrl, {
-            method: 'POST',
-            credentials: 'same-origin',
+            method: "POST",
+            credentials: "same-origin",
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]',
+                ).content,
+                Accept: "application/json",
             },
             body: JSON.stringify({
                 feature_code: featureCode,
                 egi_id: egiId,
-                params: params
-            })
+                params: params,
+            }),
         });
 
         let executeData;
         try {
             executeData = await executeResponse.json();
         } catch (parseError) {
-            console.warn('[AI Features] Unable to parse execute response', parseError);
-            throw new Error('Execution failed');
+            console.warn(
+                "[AI Features] Unable to parse execute response",
+                parseError,
+            );
+            throw new Error("Execution failed");
         }
 
         if (!executeResponse.ok) {
-            throw new Error(executeData?.message || 'Execution failed');
+            throw new Error(executeData?.message || "Execution failed");
         }
-        console.log('[AI Features] Execution result', executeData);
+        console.log("[AI Features] Execution result", executeData);
 
         if (executeData.success) {
             // Success!
             await Swal.fire({
-                icon: 'success',
-                title: 'Operazione Completata!',
+                icon: "success",
+                title: "Operazione Completata!",
                 text: executeData.message,
-                confirmButtonColor: '#10b981'
+                confirmButtonColor: "#10b981",
             });
 
             if (callbacks.onSuccess) {
@@ -188,25 +205,23 @@ async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {},
             return executeData;
         } else {
             // Execution failed
-            throw new Error(executeData.message || 'Execution failed');
+            throw new Error(executeData.message || "Execution failed");
         }
-
     } catch (error) {
-        console.error('[AI Features] Error:', error);
-        
+        console.error("[AI Features] Error:", error);
+
         await Swal.fire({
-            icon: 'error',
-            title: 'Errore',
-            text: error.message || 'Si è verificato un errore. Riprova.',
-            confirmButtonColor: '#ef4444'
+            icon: "error",
+            title: "Errore",
+            text: error.message || "Si è verificato un errore. Riprova.",
+            confirmButtonColor: "#ef4444",
         });
 
         if (callbacks.onError) callbacks.onError(error);
-        
+
         return { success: false, error: error.message };
     }
 }
 
 // Export for global use
 window.executeAiFeatureWithConfirmation = executeAiFeatureWithConfirmation;
-

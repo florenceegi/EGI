@@ -17,10 +17,8 @@ use Illuminate\Database\Seeder;
  *     devono essere impostati dal superadmin da Superadmin → Prezzi Features.
  *     I pacchetti NON sono visibili agli utenti fino a quando is_active = true.
  */
-class AiServicePackagesSeeder extends Seeder
-{
-    public function run(): void
-    {
+class AiServicePackagesSeeder extends Seeder {
+    public function run(): void {
         $packages = [
             [
                 'feature_code'        => 'ai_package_starter',

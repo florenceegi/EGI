@@ -10,8 +10,10 @@
 
     @if (session('success'))
         <div class="alert alert-success mb-6 shadow-lg" role="alert">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>{{ session('success') }}</span>
         </div>
@@ -26,15 +28,13 @@
                         🔧 {{ str_replace('_', ' ', $group) }}
                         <span class="badge badge-ghost badge-sm">{{ $groupSettings->count() }} setting</span>
                     </h2>
-                    <button type="submit" form="form-{{ $group }}"
-                        class="btn btn-primary btn-sm">
+                    <button type="submit" form="form-{{ $group }}" class="btn btn-primary btn-sm">
                         💾 {{ __('platform_settings.save_group') }}
                     </button>
                 </div>
 
                 <form id="form-{{ $group }}"
-                    action="{{ route('superadmin.platform-settings.update-group', $group) }}"
-                    method="POST">
+                    action="{{ route('superadmin.platform-settings.update-group', $group) }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -53,17 +53,17 @@
                                 @foreach ($groupSettings as $setting)
                                     <tr>
                                         <td>
-                                            <code class="rounded bg-base-200 px-2 py-1 text-xs">{{ $setting->key }}</code>
+                                            <code
+                                                class="rounded bg-base-200 px-2 py-1 text-xs">{{ $setting->key }}</code>
                                         </td>
                                         <td class="font-semibold">
                                             {{ $setting->label ?? $setting->key }}
                                         </td>
                                         <td class="min-w-[200px]">
                                             @if ($setting->is_editable)
-                                                <input type="text"
-                                                    name="settings[{{ $setting->id }}]"
+                                                <input type="text" name="settings[{{ $setting->id }}]"
                                                     value="{{ $setting->value }}"
-                                                    class="input input-bordered input-sm w-full font-mono"
+                                                    class="input input-sm input-bordered w-full font-mono"
                                                     aria-label="{{ $setting->label ?? $setting->key }}">
                                             @else
                                                 <span class="font-mono text-sm text-base-content/60">
@@ -73,7 +73,8 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge badge-outline badge-xs">{{ $setting->value_type }}</span>
+                                            <span
+                                                class="badge badge-outline badge-xs">{{ $setting->value_type }}</span>
                                         </td>
                                         <td class="max-w-xs text-sm text-base-content/60">
                                             {{ $setting->description }}

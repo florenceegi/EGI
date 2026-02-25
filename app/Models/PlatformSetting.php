@@ -22,8 +22,7 @@ use Illuminate\Support\Facades\Cache;
  * @property string $description
  * @property bool   $is_editable
  */
-class PlatformSetting extends Model
-{
+class PlatformSetting extends Model {
     protected $table = 'platform_settings';
 
     protected $fillable = [
@@ -55,8 +54,7 @@ class PlatformSetting extends Model
      * @param mixed  $default
      * @return mixed
      */
-    public static function get(string $group, string $key, mixed $default = null): mixed
-    {
+    public static function get(string $group, string $key, mixed $default = null): mixed {
         $all = self::allCached();
 
         $setting = $all->first(fn($s) => $s->group === $group && $s->key === $key);
@@ -71,8 +69,7 @@ class PlatformSetting extends Model
     /**
      * Scrive un setting nel DB e invalida la cache.
      */
-    public static function set(string $group, string $key, mixed $value): void
-    {
+    public static function set(string $group, string $key, mixed $value): void {
         self::updateOrCreate(
             ['group' => $group, 'key' => $key],
             ['value' => is_array($value) || is_object($value) ? json_encode($value) : (string) $value]
@@ -84,20 +81,17 @@ class PlatformSetting extends Model
     /**
      * Invalida la cache (da usare dopo bulk-update in seeder o admin panel).
      */
-    public static function invalidateCache(): void
-    {
+    public static function invalidateCache(): void {
         Cache::forget(self::CACHE_KEY);
     }
 
     // ─── INTERNALS ────────────────────────────────────────────────────────────
 
-    private static function allCached(): \Illuminate\Support\Collection
-    {
+    private static function allCached(): \Illuminate\Support\Collection {
         return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, fn() => self::all());
     }
 
-    private static function castValue(mixed $value, string $type): mixed
-    {
+    private static function castValue(mixed $value, string $type): mixed {
         return match ($type) {
             'integer' => (int)   $value,
             'decimal' => (float) $value,
