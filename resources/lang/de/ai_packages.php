@@ -3,7 +3,7 @@
 return [
     'section_title' => 'Feature Pricing',
     'section_description' => 'KI-Service-Zugriffspakete für die FlorenceEGI-Plattform',
-    
+
     'packages' => [
         'starter' => [
             'name' => 'Starter Pack',
@@ -53,7 +53,7 @@ return [
             ],
         ],
     ],
-    
+
     'columns' => [
         'feature' => 'Funktion',
         'category' => 'Kategorie',
@@ -63,7 +63,7 @@ return [
         'acquisiti' => 'Erworben',
         'azioni' => 'Aktionen',
     ],
-    
+
     'categories' => [
         'ai_services' => 'KI-Services',
         'platform_services' => 'Plattform-Services',

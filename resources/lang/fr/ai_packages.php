@@ -3,7 +3,7 @@
 return [
     'section_title' => 'Tarification des Fonctionnalités',
     'section_description' => 'Forfaits d\'accès aux services IA pour la plateforme FlorenceEGI',
-    
+
     'packages' => [
         'starter' => [
             'name' => 'Forfait Démarrage',
@@ -53,7 +53,7 @@ return [
             ],
         ],
     ],
-    
+
     'columns' => [
         'feature' => 'Fonctionnalité',
         'category' => 'Catégorie',
@@ -63,7 +63,7 @@ return [
         'acquisiti' => 'Acquis',
         'azioni' => 'Actions',
     ],
-    
+
     'categories' => [
         'ai_services' => 'Services IA',
         'platform_services' => 'Services Plateforme',

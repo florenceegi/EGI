@@ -1,8 +1,12 @@
+EGI-INFO
+sudo -u forge bash -c 'cd /home/forge/info.florenceegi.com && git pull origin main && npm run build'
+
 EGI-HUB-HOME-REACT
 sudo -u forge bash -c 'cd /home/forge/florenceegi.com && git pull origin main && npm run build'
 
 EGI (art.florenceegi.com) — solo Blade, no build npm necessario:
 sudo -u forge bash -c 'cd /home/forge/art.florenceegi.com && git pull origin develop && php artisan config:cache && php artisan view:clear'
+
 sudo -u forge bash -c '
 cd /home/forge/art.florenceegi.com &&
 git pull origin develop &&
@@ -25,5 +29,8 @@ sudo -u forge bash -c 'cd /home/forge/natan-loc.florenceegi.com && git pull orig
 
 EGI-HUB
 sudo -u forge bash -c 'cd /home/forge/hub.florenceegi.com/frontend && git -C .. pull origin main && npm run build'
+
+EGI-HUB con npm install
+sudo -u forge bash -c 'cd /home/forge/hub.florenceegi.com/frontend && git -C .. pull origin main && npm install --no-audit && npm run build'
 
 3387459999 Andrea Borbotti

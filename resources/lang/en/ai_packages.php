@@ -3,7 +3,7 @@
 return [
     'section_title' => 'Feature Pricing',
     'section_description' => 'AI service access packages for the FlorenceEGI platform',
-    
+
     'packages' => [
         'starter' => [
             'name' => 'Starter Pack',
@@ -53,7 +53,7 @@ return [
             ],
         ],
     ],
-    
+
     'columns' => [
         'feature' => 'Feature',
         'category' => 'Category',
@@ -63,7 +63,7 @@ return [
         'acquisiti' => 'Acquired',
         'azioni' => 'Actions',
     ],
-    
+
     'categories' => [
         'ai_services' => 'AI Services',
         'platform_services' => 'Platform Services',
