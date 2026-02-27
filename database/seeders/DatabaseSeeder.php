@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder {
 
         // === AI FEATURES ===
         PlatformKnowledgeSectionSeeder::class,       // 8. knowledge base AI Art Advisor (15 sezioni)
-        AiFeaturePricingSeederV2Real::class,         // 9. pricing feature AI (REAL features only - 5 total)
+        // AiFeaturePricingSeeder: rimosso - da ridefinire secondo ToS
 
         // === PA/ENTERPRISE FEATURES ===
         PaWebScraperSeeder::class,              // 10. web scrapers PA (demo Firenze)
