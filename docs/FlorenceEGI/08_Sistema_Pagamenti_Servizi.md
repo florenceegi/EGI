@@ -76,7 +76,58 @@ La piattaforma supporta modelli ibridi determinati dinamicamente (Accessors):
 
 ---
 
-## 5. Vantaggi di questa architettura
+## 5. Modello di Consumo Egili per Servizi AI
+
+### 5.1 Acquisto Pacchetto AI (FIAT → Egili)
+
+Il cliente acquista in FIAT un pacchetto di **AI Token**. Al momento dell'accredito, i token acquistati vengono convertiti in Egili con un tasso di conversione dell'**80%**:
+
+```
+AI Token acquistati (FIAT) × 80% = Egili accreditati al wallet
+```
+
+**Esempio**: Acquisto di 1.000.000 AI Token → 800.000 Egili accreditati
+
+> **MiCA-safe**: L'utente acquista un **servizio** (AI Token), non una criptovaluta.
+> Gli Egili sono l'unità di misura interna del consumo, non un asset finanziario.
+
+### 5.2 Consumo Egili per Query AI
+
+Ad ogni interrogazione AI, il sistema scala dal saldo Egili dell'utente un importo pari ai **token AI consumati + 20% di margine piattaforma**:
+
+```
+Egili scalati = token_consumati × 1.20
+```
+
+**Breakdown del consumo**:
+- **80%** → copertura costo reale token AI
+- **20%** → margine operativo piattaforma
+
+**Esempio**:
+```
+Query che consuma 60.000 token AI:
+  Egili scalati = 60.000 × 1.20 = 72.000 Egili
+  ├─ 60.000 Egili → costo token AI
+  └─ 12.000 Egili → margine piattaforma (20%)
+
+Saldo prima:  1.000.000 Egili
+Saldo dopo:     928.000 Egili
+```
+
+### 5.3 Ricarica Egili (Solo Merit-Based)
+
+Gli Egili possono essere **solo guadagnati** attraverso azioni meritevoli (Art. 6.2 ToS Creator), **mai acquistati direttamente con FIAT**. Questo garantisce la conformità MiCA.
+
+Canali di ricarica consentiti:
+- Volume vendite generate sulla piattaforma
+- Referral verificati
+- Donazioni EPP volontarie oltre la soglia standard
+- Partecipazione a eventi e iniziative community
+- Fondo distribuzione (1% delle fee piattaforma)
+
+---
+
+## 6. Vantaggi di questa architettura
 
 *   **Audit Trail**: Sappiamo esattamente chi ha pagato cosa e quando.
 *   **Flessibilità**: Possiamo cambiare le regole (es. durata abbonamento, costi) senza migrare dati nel database, ma solo agendo sulla logica dei Service.
