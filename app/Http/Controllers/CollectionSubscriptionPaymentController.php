@@ -51,17 +51,26 @@ class CollectionSubscriptionPaymentController extends Controller {
 
             return response()->json([
                 'success' => true,
-                'plans'   => $plans->map(fn($plan) => [
-                    'feature_code'       => $plan->feature_code,
-                    'name'               => $plan->feature_name,
-                    'description'        => $plan->feature_description ?? '',
-                    'cost_fiat_eur'      => (float) $plan->cost_fiat_eur,
-                    'is_recurring'       => (bool) $plan->is_recurring,
-                    'recurrence_period'  => $plan->recurrence_period,
-                    'max_egis'           => $plan->feature_parameters['max_egis'] ?? null,
-                    'egili_discount_pct' => $plan->feature_parameters['egili_discount_percent'] ?? 0,
-                    'benefits'           => $plan->benefits ?? [],
-                ]),
+                'plans'   => $plans->map(function ($plan) {
+                    $params   = is_array($plan->feature_parameters)
+                                ? $plan->feature_parameters
+                                : (json_decode($plan->feature_parameters, true) ?? []);
+                    $benefits = is_array($plan->benefits)
+                                ? $plan->benefits
+                                : (json_decode($plan->benefits, true) ?? []);
+
+                    return [
+                        'feature_code'       => $plan->feature_code,
+                        'name'               => $plan->feature_name,
+                        'description'        => $plan->feature_description ?? '',
+                        'cost_fiat_eur'      => (float) $plan->cost_fiat_eur,
+                        'is_recurring'       => (bool) $plan->is_recurring,
+                        'recurrence_period'  => $plan->recurrence_period,
+                        'max_egis'           => $params['max_egis'] ?? null,
+                        'egili_discount_pct' => $params['egili_discount_percent'] ?? 0,
+                        'benefits'           => $benefits,
+                    ];
+                }),
             ]);
         } catch (\Throwable $e) {
             return $this->errorManager->handle(
