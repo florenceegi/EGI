@@ -13,19 +13,23 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Collection Subscription Service
+ * Collection Subscription Service (LEGACY)
  *
- * Gestisce abbonamenti collection pagati in Egili:
- * - Check active subscription
- * - Process subscription payment
+ * ⚠️  DEPRECATO — mantiene retrocompatibilità con abbonamenti antecedenti 2026-03-03.
+ * Il nuovo sistema usa CollectionSubscriptionFiatService (pagamento FIAT + Stripe).
+ *
+ * Gestisce abbonamenti collection pagati in Egili (vecchio sistema ERRATO):
+ * - Check active subscription (usa ai_credits_transactions)
+ * - Process subscription payment con Egili (viola MiCA — NON usare per nuovi abbonamenti)
  * - Validate collection rights
- * - Integration con sistema Egili esistente
+ *
+ * @deprecated Usare CollectionSubscriptionFiatService per nuovi abbonamenti.
  *
  * @package App\Services
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Collection Subscription)
- * @date 2025-11-21
- * @purpose Implement collection subscription system with Egili payment
+ * @version 1.0.1 (FlorenceEGI - Collection Subscription LEGACY)
+ * @date 2025-11-21 (deprecato 2026-03-03)
+ * @purpose LEGACY — retrocompatibilità vecchi abbonamenti Egili
  */
 class CollectionSubscriptionService {
     protected UltraLogManager $logger;
@@ -54,6 +58,10 @@ class CollectionSubscriptionService {
      *
      * @param Collection $collection Collection to check
      * @return bool True if has active subscription
+     *
+     * @deprecated Controlla solo le vecchie transazioni Egili in ai_credits_transactions.
+     *             Usare CollectionSubscriptionFiatService::hasActiveSubscription() per
+     *             il nuovo sistema FIAT (collection_subscriptions table).
      */
     public function hasActiveSubscription(Collection $collection): bool {
         try {
@@ -214,6 +222,10 @@ class CollectionSubscriptionService {
      * @param User $user User purchasing subscription
      * @param Collection $collection Collection to subscribe
      * @return array Result with success status and data
+     *
+     * @deprecated Implementazione ERRATA — usa Egili come mezzo di pagamento (viola MiCA).
+     *             Sostituito da CollectionSubscriptionFiatService::initiatePayment().
+     *             NON rimuovere: mantiene retrocompatibilità per vecchi abbonamenti.
      */
     public function processSubscription(User $user, Collection $collection, bool $autoRenew = true): array {
         DB::beginTransaction();
@@ -355,6 +367,9 @@ class CollectionSubscriptionService {
      * Get subscription pricing configuration
      *
      * @return array Pricing data
+     *
+     * @deprecated Prezzi hardcoded non aggiornati.
+     *             Usare CollectionSubscriptionFiatService::getActivePlans() per dati live da ai_feature_pricing.
      */
     public function getSubscriptionPricing(): array {
         return [
@@ -441,6 +456,9 @@ class CollectionSubscriptionService {
      * @param User $user User requesting cancellation
      * @param Collection $collection Collection to cancel subscription for
      * @return array Result data
+     *
+     * @deprecated Cancellazione basata sulle vecchie transazioni Egili.
+     *             Per i nuovi abbonamenti FIAT gestire cancellazione tramite Stripe/PayPal.
      */
     public function cancelSubscription(User $user, Collection $collection): array
     {
