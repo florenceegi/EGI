@@ -26,13 +26,13 @@ use Ultra\UltraLogManager\UltraLogManager;
  *   GET  /collections/{id}/fiat-subscription/cancel     → paymentCancel()
  *   POST /api/webhooks/collection-subscription/{provider} → handleWebhook()
  */
-class CollectionSubscriptionPaymentController extends Controller
-{
+class CollectionSubscriptionPaymentController extends Controller {
     public function __construct(
         private CollectionSubscriptionFiatService $subscriptionService,
         private UltraLogManager                   $logger,
         private ErrorManagerInterface             $errorManager,
-    ) {}
+    ) {
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -45,17 +45,16 @@ class CollectionSubscriptionPaymentController extends Controller
      *
      * GET /api/collection-subscription-plans
      */
-    public function getActivePlans(): JsonResponse
-    {
+    public function getActivePlans(): JsonResponse {
         try {
             $plans = $this->subscriptionService->getActivePlans();
 
             return response()->json([
                 'success' => true,
-                'plans'   => $plans->map(fn ($plan) => [
+                'plans'   => $plans->map(fn($plan) => [
                     'feature_code'       => $plan->feature_code,
                     'name'               => $plan->feature_name,
-                    'description'        => $plan->description ?? '',
+                    'description'        => $plan->feature_description ?? '',
                     'cost_fiat_eur'      => (float) $plan->cost_fiat_eur,
                     'is_recurring'       => (bool) $plan->is_recurring,
                     'recurrence_period'  => $plan->recurrence_period,
@@ -85,8 +84,7 @@ class CollectionSubscriptionPaymentController extends Controller
      * POST /collections/{id}/fiat-subscription/initiate
      * Body: feature_code, provider (optional, default 'stripe'), apply_egili_discount (bool)
      */
-    public function initiatePayment(Request $request, int $id): JsonResponse
-    {
+    public function initiatePayment(Request $request, int $id): JsonResponse {
         $validated = $request->validate([
             'feature_code'          => ['required', 'string', 'max:100'],
             'provider'              => ['sometimes', 'string', 'in:stripe,paypal'],
@@ -121,13 +119,13 @@ class CollectionSubscriptionPaymentController extends Controller
 
         try {
             $result = $this->subscriptionService->initiatePayment(
-                user:                $user,
-                collection:          $collection,
-                featureCode:         $validated['feature_code'],
-                provider:            $provider,
-                applyEgiliDiscount:  $applyEgiliDiscount,
-                successUrl:          $successUrl,
-                cancelUrl:           $cancelUrl,
+                user: $user,
+                collection: $collection,
+                featureCode: $validated['feature_code'],
+                provider: $provider,
+                applyEgiliDiscount: $applyEgiliDiscount,
+                successUrl: $successUrl,
+                cancelUrl: $cancelUrl,
             );
 
             return response()->json([
@@ -161,8 +159,7 @@ class CollectionSubscriptionPaymentController extends Controller
      *
      * GET /collections/{id}/fiat-subscription/success?session_id=xxx
      */
-    public function paymentSuccess(Request $request, int $id): RedirectResponse
-    {
+    public function paymentSuccess(Request $request, int $id): RedirectResponse {
         $sessionId = $request->query('session_id', '');
 
         $this->logger->info('CollectionSubscriptionPayment: success redirect', [
@@ -192,8 +189,7 @@ class CollectionSubscriptionPaymentController extends Controller
      *
      * GET /collections/{id}/fiat-subscription/cancel
      */
-    public function paymentCancel(Request $request, int $id): RedirectResponse
-    {
+    public function paymentCancel(Request $request, int $id): RedirectResponse {
         $this->logger->info('CollectionSubscriptionPayment: payment cancelled', [
             'collection_id' => $id,
             'user_id'       => $request->user()?->id,
@@ -217,8 +213,7 @@ class CollectionSubscriptionPaymentController extends Controller
      * POST /api/webhooks/collection-subscription/{provider}
      * Header: Stripe-Signature
      */
-    public function handleWebhook(Request $request, string $provider): JsonResponse
-    {
+    public function handleWebhook(Request $request, string $provider): JsonResponse {
         $this->logger->info("CollectionSubscriptionPayment: webhook received [{$provider}]");
 
         try {
