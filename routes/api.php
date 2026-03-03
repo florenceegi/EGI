@@ -586,3 +586,18 @@ Route::middleware(['web'])->prefix('egi')->name('api.egi.')->group(function () {
         return response()->json(['success' => true, 'count' => \App\Models\Egi::where('collection_id', $collectionId)->count()]);
     })->name('prism-config.collection');
 });
+
+// =============================================================================
+// Collection Subscription FIAT (Stripe/PayPal, MiCA-safe)
+// =============================================================================
+
+// Piani abbonamento — richiede auth (web middleware = Sanctum / session)
+Route::middleware(['web'])->group(function () {
+    Route::get('/collection-subscription-plans', [\App\Http\Controllers\CollectionSubscriptionPaymentController::class, 'getActivePlans'])
+        ->name('api.collection-subscription.plans');
+});
+
+// Webhook Stripe/PayPal — NESSUN auth, CSRF escluso (chiamato dal provider)
+Route::post('/webhooks/collection-subscription/{provider}', [\App\Http\Controllers\CollectionSubscriptionPaymentController::class, 'handleWebhook'])
+    ->name('api.collection-subscription.webhook')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);

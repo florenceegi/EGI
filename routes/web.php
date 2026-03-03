@@ -522,6 +522,19 @@ Route::prefix('home')->name('home.')->group(function () {
         ->name('collections.subscription.cancel')
         ->middleware('auth');
 
+    // -------------------------------------------------------------------------
+    // Collection subscription FIAT (Stripe/PayPal — MiCA-safe)
+    // -------------------------------------------------------------------------
+    Route::post('/collections/{id}/fiat-subscription/initiate', [\App\Http\Controllers\CollectionSubscriptionPaymentController::class, 'initiatePayment'])
+        ->name('collections.fiat-subscription.initiate')
+        ->middleware('auth');
+
+    Route::get('/collections/{id}/fiat-subscription/success', [\App\Http\Controllers\CollectionSubscriptionPaymentController::class, 'paymentSuccess'])
+        ->name('collections.fiat-subscription.success');
+
+    Route::get('/collections/{id}/fiat-subscription/cancel', [\App\Http\Controllers\CollectionSubscriptionPaymentController::class, 'paymentCancel'])
+        ->name('collections.fiat-subscription.cancel');
+
     // Collection management (restricted to creators)
     // Route::middleware(['can:manage-collections'])->group(function () {
     //     Route::get('/collections/create', [CollectionsController::class, 'create'])->name('collections.create');
