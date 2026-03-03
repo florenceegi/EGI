@@ -15,6 +15,7 @@ return [
     'unauthorized'           => 'Sie sind nicht berechtigt, diesen Vorgang durchzuführen.',
     'plans_not_available'    => 'Abonnementpläne sind derzeit nicht verfügbar.',
     'insufficient_egili'     => 'Unzureichendes Egili-Guthaben für den Rabatt.',
+    'select_plan'            => 'Plan auswählen',
     'already_active'         => 'Die Collection hat bereits ein aktives Abonnement.',
 
 ];

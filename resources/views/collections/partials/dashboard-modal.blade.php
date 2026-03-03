@@ -703,44 +703,23 @@
                                         {{ __('collection.show.dashboard.choose_plan_desc') }}</p>
                                 </div>
 
-                                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                                    @foreach ([
-        'tier_1_19' => ['name' => __('collection.show.dashboard.tier_starter'), 'price' => '€4.90', 'egis' => '1-19', 'color' => 'gray'],
-        'tier_20_49' => ['name' => __('collection.show.dashboard.tier_basic'), 'price' => '€7.90', 'egis' => '20-49', 'color' => 'blue'],
-        'tier_50_99' => ['name' => __('collection.show.dashboard.tier_professional'), 'price' => '€9.90', 'egis' => '50-99', 'color' => 'indigo'],
-        'tier_100_plus' => ['name' => __('collection.show.dashboard.tier_unlimited'), 'price' => '€19.90', 'egis' => '100+', 'color' => 'purple'],
-    ] as $tierCode => $tierData)
-                                        <div
-                                            class="relative flex flex-col rounded-xl border border-gray-700 bg-gray-800 p-6 transition-all hover:-translate-y-1 hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10">
+                                {{-- [FIAT] Piano caricato dinamicamente da /api/collection-subscription-plans --}}
+                                <div id="subscription-plans-grid-{{ $collection->id }}"
+                                    data-collection-id="{{ $collection->id }}"
+                                    class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                                    {{-- Skeleton loader — sostituito dal JS dopo la fetch --}}
+                                    @foreach (range(1, 4) as $i)
+                                        <div class="relative flex flex-col rounded-xl border border-gray-700 bg-gray-800 p-6 animate-pulse">
                                             <div class="mb-4">
-                                                <h3 class="text-lg font-bold text-white">{{ $tierData['name'] }}</h3>
-                                                <div class="mt-2 text-3xl font-bold text-white">
-                                                    {{ $tierData['price'] }}<span
-                                                        class="text-sm font-normal text-gray-400">/mo</span></div>
+                                                <div class="h-5 w-24 rounded bg-gray-700"></div>
+                                                <div class="mt-2 h-9 w-20 rounded bg-gray-700"></div>
                                             </div>
-
-                                            <ul class="mb-6 flex-1 space-y-3 text-sm text-gray-300">
-                                                <li class="flex items-center gap-2">
-                                                    <span class="material-symbols-outlined text-green-400"
-                                                        style="font-size: 18px">check</span>
-                                                    {{ $tierData['egis'] }} EGIs
-                                                </li>
-                                                <li class="flex items-center gap-2">
-                                                    <span class="material-symbols-outlined text-green-400"
-                                                        style="font-size: 18px">check</span>
-                                                    Full Analytics
-                                                </li>
-                                                <li class="flex items-center gap-2">
-                                                    <span class="material-symbols-outlined text-green-400"
-                                                        style="font-size: 18px">check</span>
-                                                    Priority Support
-                                                </li>
-                                            </ul>
-
-                                            <button onclick="selectSubscriptionTier('{{ $tierCode }}')"
-                                                class="mt-auto w-full rounded-lg bg-indigo-600 py-2.5 font-semibold text-white transition-colors hover:bg-indigo-700">
-                                                Select Plan
-                                            </button>
+                                            <div class="mb-6 space-y-3">
+                                                <div class="h-4 w-full rounded bg-gray-700"></div>
+                                                <div class="h-4 w-3/4 rounded bg-gray-700"></div>
+                                                <div class="h-4 w-2/3 rounded bg-gray-700"></div>
+                                            </div>
+                                            <div class="mt-auto h-10 w-full rounded-lg bg-gray-700"></div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -896,6 +875,68 @@
 </div>
 
 <script>
+    /**
+     * [FIAT] Carica i piani abbonamento da /api/collection-subscription-plans
+     * e sostituisce lo skeleton loader con le card reali.
+     * Usa feature_code direttamente → compatibile con selectSubscriptionTier().
+     */
+    function loadSubscriptionPlans(collectionId) {
+        const container = document.getElementById('subscription-plans-grid-' + collectionId);
+        if (!container) return;
+
+        fetch('/api/collection-subscription-plans', {
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success || !data.plans.length) {
+                container.innerHTML = '<div class="col-span-4 text-center text-gray-400 py-8">Nessun piano disponibile al momento.</div>';
+                return;
+            }
+            container.innerHTML = data.plans.map(plan => {
+                const price  = '€' + parseFloat(plan.cost_fiat_eur).toFixed(2).replace('.', ',');
+                const maxEgi = plan.max_egis ? (plan.max_egis < 9999 ? '1–' + plan.max_egis : '100+') : '∞';
+                const benefitsList = (plan.benefits || ['Full Analytics', 'Priority Support'])
+                    .map(b => `<li class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-green-400" style="font-size:18px">check</span>
+                                    ${b}
+                               </li>`).join('');
+                return `<div class="relative flex flex-col rounded-xl border border-gray-700 bg-gray-800 p-6 transition-all hover:-translate-y-1 hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10">
+                            <div class="mb-4">
+                                <h3 class="text-lg font-bold text-white">${plan.name}</h3>
+                                <div class="mt-2 text-3xl font-bold text-white">
+                                    ${price}<span class="text-sm font-normal text-gray-400">/mo</span></div>
+                            </div>
+                            <ul class="mb-6 flex-1 space-y-3 text-sm text-gray-300">
+                                <li class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-green-400" style="font-size:18px">check</span>
+                                    ${maxEgi} EGIs
+                                </li>
+                                ${benefitsList}
+                            </ul>
+                            <button onclick="selectSubscriptionTier('${plan.feature_code}')"
+                                class="mt-auto w-full rounded-lg bg-indigo-600 py-2.5 font-semibold text-white transition-colors hover:bg-indigo-700">
+                                {{ __('subscription.select_plan') }}
+                            </button>
+                        </div>`;
+            }).join('');
+        })
+        .catch(() => {
+            container.innerHTML = '<div class="col-span-4 text-center text-red-400 py-8">Errore nel caricamento dei piani.</div>';
+        });
+    }
+
+    // Auto-init: se questo modal contiene il piano-grid loader (subscription non attiva), carica i piani
+    document.addEventListener('DOMContentLoaded', function () {
+        const grid = document.querySelector('[id^="subscription-plans-grid-"]');
+        if (grid) {
+            loadSubscriptionPlans(grid.dataset.collectionId);
+        }
+    });
+
     function toggleAutoRenew(isActive) {
         const label = document.getElementById('auto-renew-label');
         const url = "{{ route('home.collections.subscription.toggle-auto-renew', $collection->id) }}";

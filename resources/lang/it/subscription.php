@@ -16,5 +16,6 @@ return [
     'plans_not_available'    => 'I piani abbonamento non sono al momento disponibili.',
     'insufficient_egili'     => 'Saldo Egili insufficiente per applicare lo sconto.',
     'already_active'         => 'La collection ha già un abbonamento attivo.',
+    'select_plan'            => 'Seleziona Piano',
 
 ];

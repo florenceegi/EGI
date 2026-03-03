@@ -15,6 +15,7 @@ return [
     'unauthorized'           => 'You are not authorised to perform this operation.',
     'plans_not_available'    => 'Subscription plans are not currently available.',
     'insufficient_egili'     => 'Insufficient Egili balance to apply the discount.',
+    'select_plan'            => 'Select Plan',
     'already_active'         => 'The collection already has an active subscription.',
 
 ];
