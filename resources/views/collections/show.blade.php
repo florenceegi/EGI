@@ -909,18 +909,32 @@ if (auth()->check()) {
             });
 
             // Switch to Subscription
+            // [FIAT] Avvia pagamento abbonamento — Stripe Checkout (MiCA-safe)
             function selectSubscriptionTier(tierCode) {
-                const tierNames = {
-                    'tier_1_19': 'Starter (€4.90/month)',
-                    'tier_20_49': 'Basic (€7.90/month)',
-                    'tier_50_99': 'Professional (€9.90/month)',
-                    'tier_100_plus': 'Unlimited (€19.90/month)'
+                // Mapping tier codes HTML → feature_codes di ai_feature_pricing
+                const tierMapping = {
+                    'tier_1_19':    'collection_subscription_starter',
+                    'tier_20_49':   'collection_subscription_basic',
+                    'tier_50_99':   'collection_subscription_professional',
+                    'tier_100_plus':'collection_subscription_unlimited',
                 };
+                const tierNames = {
+                    'tier_1_19':    'Starter (€4.90/month)',
+                    'tier_20_49':   'Basic (€7.90/month)',
+                    'tier_50_99':   'Professional (€9.90/month)',
+                    'tier_100_plus':'Unlimited (€19.90/month)',
+                };
+
+                const featureCode = tierMapping[tierCode];
+                if (!featureCode) {
+                    console.error('[Subscription] Unknown tier code:', tierCode);
+                    return;
+                }
 
                 Swal.fire({
                     title: 'Switch to Subscription?',
                     html: `You are about to switch to <strong>${tierNames[tierCode]}</strong>.<br><br>
-                       <span class="text-yellow-400">⚠️ Collection will be non-publishable until payment is completed.</span>`,
+                       <span class="text-yellow-400">⚠️ You will be redirected to Stripe to complete payment.</span>`,
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonText: 'Continue to Payment',
@@ -935,142 +949,55 @@ if (auth()->check()) {
                         cancelButton: 'px-4 py-2 rounded-lg'
                     }
                 }).then((result) => {
-                    if (result.isConfirmed) {
-                        const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    if (!result.isConfirmed) return;
 
+                    const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Preparing checkout…',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading(),
+                        background: '#1F2937',
+                        color: '#F3F4F6'
+                    });
+
+                    fetch(`/home/collections/{{ $collection->id }}/fiat-subscription/initiate`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrf,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ feature_code: featureCode, provider: 'stripe' })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        Swal.close();
+                        if (data.success && data.checkout_url) {
+                            window.location.href = data.checkout_url;
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: data.message || 'Could not initiate payment',
+                                icon: 'error',
+                                confirmButtonColor: '#4F46E5',
+                                background: '#1F2937',
+                                color: '#F3F4F6'
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.error('[Subscription] initiate error:', err);
+                        Swal.close();
                         Swal.fire({
-                            title: 'Processing...',
-                            text: 'Redirecting to payment',
-                            allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            },
+                            title: 'Error',
+                            text: 'Failed to initiate subscription payment',
+                            icon: 'error',
+                            confirmButtonColor: '#4F46E5',
                             background: '#1F2937',
                             color: '#F3F4F6'
                         });
-
-                        fetch(`/home/collections/{{ $collection->id }}/monetization/switch-to-subscription`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': csrf,
-                                    'Accept': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    tier_code: tierCode
-                                })
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                console.log('Subscription response:', data);
-                                Swal.close();
-
-                                if (data.success) {
-                                    // Subscription activated successfully
-                                    Swal.fire({
-                                        title: 'Success!',
-                                        html: `
-                                            <p class="mb-2">Subscription activated successfully!</p>
-                                            <p class="text-sm text-gray-400">Expires: ${data.data.expires_at}</p>
-                                            <p class="text-sm text-gray-400">Days remaining: ${data.data.days_remaining}</p>
-                                        `,
-                                        icon: 'success',
-                                        confirmButtonColor: '#10B981',
-                                        background: '#1F2937',
-                                        color: '#F3F4F6'
-                                    }).then(() => {
-                                        location.reload();
-                                    });
-                                } else if (data.message === 'Insufficient Egili balance') {
-                                    // Insufficient balance - Open Egili purchase modal (same style as AI features)
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Crediti Insufficienti',
-                                        html: `
-                                            <p class="mb-3">Non hai abbastanza Egili per questa operazione.</p>
-                                            <div class="p-3 text-left border border-red-200 rounded bg-red-50">
-                                                <p class="text-sm"><strong>Richiesti:</strong> ${data.required_egili || 5000} Egili</p>
-                                                <p class="text-sm"><strong>Disponibili:</strong> ${data.current_balance || 0} Egili</p>
-                                                <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${data.missing_egili || 0} Egili</p>
-                                            </div>
-                                            <p class="mt-3 text-xs text-gray-600">Acquista Egili per continuare.</p>
-                                        `,
-                                        confirmButtonText: 'Acquista Egili',
-                                        showCancelButton: true,
-                                        cancelButtonText: 'Chiudi',
-                                        confirmButtonColor: '#f97316'
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            // Apri modale acquisto Egili con retry logic
-                                            console.log('Trying to open Egili modal...');
-
-                                            const tryOpenModal = (attempts = 0) => {
-                                                if (typeof window.openEgiliPurchaseModal ===
-                                                    'function') {
-                                                    console.log(
-                                                        '✅ openEgiliPurchaseModal found, calling...'
-                                                        );
-                                                    window.openEgiliPurchaseModal();
-                                                } else if (attempts < 10) {
-                                                    console.log(
-                                                        `⏳ Waiting for openEgiliPurchaseModal... attempt ${attempts + 1}/10`
-                                                        );
-                                                    setTimeout(() => tryOpenModal(attempts + 1), 100);
-                                                } else {
-                                                    console.error(
-                                                        '❌ openEgiliPurchaseModal() not found after 10 attempts!'
-                                                        );
-                                                    // Fallback: try to show the modal directly
-                                                    const modal = document.getElementById(
-                                                        'egili-purchase-modal');
-                                                    if (modal) {
-                                                        console.log(
-                                                            '🔧 Fallback: directly showing modal element'
-                                                            );
-                                                        modal.classList.remove('hidden');
-                                                        modal.style.display = '';
-                                                    } else {
-                                                        console.error(
-                                                            '❌ Modal element #egili-purchase-modal not found in DOM'
-                                                            );
-                                                        Swal.fire({
-                                                            icon: 'error',
-                                                            title: 'Errore',
-                                                            text: 'Impossibile aprire la modale acquisto Egili. Ricarica la pagina e riprova.',
-                                                            confirmButtonColor: '#4F46E5'
-                                                        });
-                                                    }
-                                                }
-                                            };
-
-                                            tryOpenModal();
-                                        }
-                                    });
-                                } else {
-                                    // Other error
-                                    Swal.fire({
-                                        title: 'Error',
-                                        text: data.message || 'Error activating subscription',
-                                        icon: 'error',
-                                        confirmButtonColor: '#4F46E5',
-                                        background: '#1F2937',
-                                        color: '#F3F4F6'
-                                    });
-                                }
-                            })
-                            .catch(err => {
-                                console.error('Subscription error:', err);
-                                Swal.close();
-                                Swal.fire({
-                                    title: 'Error',
-                                    text: 'Failed to activate subscription',
-                                    icon: 'error',
-                                    confirmButtonColor: '#4F46E5',
-                                    background: '#1F2937',
-                                    color: '#F3F4F6'
-                                });
-                            });
-                    }
+                    });
                 });
             }
 
