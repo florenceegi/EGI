@@ -19,8 +19,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
 
-    public function up(): void
-    {
+    public function up(): void {
         Schema::table('ai_feature_pricing', function (Blueprint $table) {
             $table->unsignedBigInteger('ai_tokens_included')->nullable()->after('cost_egili')
                 ->comment('AI Token inclusi nel pacchetto (accreditati 1:1 come Egili). NULL = non è un pacchetto ricarica.');
@@ -30,8 +29,7 @@ return new class extends Migration {
         });
     }
 
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('ai_feature_pricing', function (Blueprint $table) {
             $table->dropColumn(['ai_tokens_included', 'ai_tokens_bonus_percentage']);
         });

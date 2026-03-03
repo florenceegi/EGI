@@ -17,8 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @date 2025-10-22
  * @source docs/ai/TOKENOMICS_EGILI_EQUILIBRIUM.md lines 454-531
  */
-class AiFeaturePricing extends Model
-{
+class AiFeaturePricing extends Model {
     use SoftDeletes;
 
     protected $table = 'ai_feature_pricing';
@@ -106,24 +105,21 @@ class AiFeaturePricing extends Model
     /**
      * Scope: solo features attive
      */
-    public function scopeActive($query)
-    {
+    public function scopeActive($query) {
         return $query->where('is_active', true);
     }
 
     /**
      * Scope: features per categoria
      */
-    public function scopeCategory($query, string $category)
-    {
+    public function scopeCategory($query, string $category) {
         return $query->where('feature_category', $category);
     }
 
     /**
      * Scope: features accessibili per tier
      */
-    public function scopeForTier($query, string $tier)
-    {
+    public function scopeForTier($query, string $tier) {
         $tierOrder = ['free' => 0, 'starter' => 1, 'pro' => 2, 'business' => 3, 'enterprise' => 4];
         $userTierLevel = $tierOrder[$tier] ?? 0;
 
@@ -139,16 +135,14 @@ class AiFeaturePricing extends Model
     /**
      * Scope: solo bundles
      */
-    public function scopeBundles($query)
-    {
+    public function scopeBundles($query) {
         return $query->where('is_bundle', true);
     }
 
     /**
      * Scope: features in evidenza
      */
-    public function scopeFeatured($query)
-    {
+    public function scopeFeatured($query) {
         return $query->where('is_featured', true);
     }
 
@@ -157,8 +151,7 @@ class AiFeaturePricing extends Model
     /**
      * Get prezzo per tier specifico
      */
-    public function getPriceForTier(string $tier): ?int
-    {
+    public function getPriceForTier(string $tier): ?int {
         if ($this->is_free) {
             return 0;
         }
@@ -173,8 +166,7 @@ class AiFeaturePricing extends Model
     /**
      * Check se feature è disponibile ora
      */
-    public function isAvailable(): bool
-    {
+    public function isAvailable(): bool {
         if (!$this->is_active) {
             return false;
         }
@@ -195,8 +187,7 @@ class AiFeaturePricing extends Model
     /**
      * Incrementa contatori dopo acquisto
      */
-    public function recordPurchase(int $egiliSpent = 0, float $fiatSpent = 0): void
-    {
+    public function recordPurchase(int $egiliSpent = 0, float $fiatSpent = 0): void {
         $this->increment('total_purchases');
 
         if ($egiliSpent > 0) {
@@ -213,8 +204,7 @@ class AiFeaturePricing extends Model
     /**
      * Get descrizione completa con benefici
      */
-    public function getFullDescription(): string
-    {
+    public function getFullDescription(): string {
         $description = $this->feature_description ?? '';
 
         if ($this->benefits && count($this->benefits) > 0) {

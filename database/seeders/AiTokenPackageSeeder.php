@@ -21,10 +21,8 @@ namespace Database\Seeders;
 use App\Models\AiFeaturePricing;
 use Illuminate\Database\Seeder;
 
-class AiTokenPackageSeeder extends Seeder
-{
-    public function run(): void
-    {
+class AiTokenPackageSeeder extends Seeder {
+    public function run(): void {
         $packages = [
             [
                 'feature_code'              => 'ai_token_pack_starter',
@@ -34,7 +32,7 @@ class AiTokenPackageSeeder extends Seeder
                 'cost_fiat_eur'             => null,      // Da impostare via admin EGI-HUB
                 'cost_egili'                => null,
                 'ai_tokens_included'        => null,      // Da impostare via admin EGI-HUB
-                'ai_tokens_bonus_percentage'=> 0,
+                'ai_tokens_bonus_percentage' => 0,
                 'is_bundle'                 => true,
                 'bundle_type'               => 'credit_package',
                 'is_recurring'              => false,
@@ -58,7 +56,7 @@ class AiTokenPackageSeeder extends Seeder
                 'cost_fiat_eur'             => null,
                 'cost_egili'                => null,
                 'ai_tokens_included'        => null,
-                'ai_tokens_bonus_percentage'=> 0,         // Es. 10 = +10% token bonus
+                'ai_tokens_bonus_percentage' => 0,         // Es. 10 = +10% token bonus
                 'is_bundle'                 => true,
                 'bundle_type'               => 'credit_package',
                 'is_recurring'              => false,
@@ -83,7 +81,7 @@ class AiTokenPackageSeeder extends Seeder
                 'cost_fiat_eur'             => null,
                 'cost_egili'                => null,
                 'ai_tokens_included'        => null,
-                'ai_tokens_bonus_percentage'=> 0,
+                'ai_tokens_bonus_percentage' => 0,
                 'is_bundle'                 => true,
                 'bundle_type'               => 'credit_package',
                 'is_recurring'              => false,
@@ -109,7 +107,7 @@ class AiTokenPackageSeeder extends Seeder
                 'cost_fiat_eur'             => null,
                 'cost_egili'                => null,
                 'ai_tokens_included'        => null,
-                'ai_tokens_bonus_percentage'=> 0,
+                'ai_tokens_bonus_percentage' => 0,
                 'is_bundle'                 => true,
                 'bundle_type'               => 'credit_package',
                 'is_recurring'              => false,
