@@ -78,6 +78,7 @@ export default defineConfig(({ mode }) => {
                     "public/js/collection-edit-modal.js",
                     "resources/js/modules/notifications/responses/notification.js",
                     "resources/js/florence-shader.js",
+                    "resources/ts/components/natan-batch-mint/NatanBatchMint.ts",
                 ],
                 refresh: [
                     "resources/views/**",
