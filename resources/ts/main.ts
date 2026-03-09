@@ -47,7 +47,7 @@ import reservationFeature from './features/reservations/reservationFeature';
 import reservationButtons from './features/reservations/reservationButtons';
 import { initPortfolioManager } from './features/portfolio/portfolioManager'; // 🚀 NEW
 // import { NatanAssistant } from './components/natan-assistant'; // DISABLED TEMPORARILY
-// import { initNatanTutor } from './components/natan-tutor'; // 🎓 Natan Tutor - DISABLED TEMPORARILY
+import { initNatanTutor } from './components/natan-tutor'; // 🎓 Natan Tutor
 import { mountAllCurrentPrices } from './current-price'; // 🔴 Real-time price updates
 import { initializeStatsRealTime } from './stats-realtime'; // 📊 Real-time statistics updates
 import { autoInitUniversalSearch } from './features/search/universalSearch';
@@ -442,14 +442,14 @@ async function initializeFEGISystemOrchestrated(): Promise<void> {
         //     UEM.handleClientError('CLIENT_INIT_FAIL_NATAN_TS', { originalError: error instanceof Error ? error.message : String(error) });
         // }
 
-        // 🎓 13. Inizializza Natan Tutor (NEW - Backend-driven assistant) - DISABLED TEMPORARILY
-        // try {
-        //     const natanTutor = initNatanTutor({ debug: true });
-        //     (window as any).natanTutor = natanTutor;
-        //     console.log('🎓 Natan Tutor initialized successfully');
-        // } catch (error) {
-        //     console.error('Padmin Main: Error initializing Natan Tutor:', error);
-        // }
+        // 🎓 13. Inizializza Natan Tutor (Backend-driven assistant)
+        try {
+            const natanTutor = initNatanTutor({ debug: true });
+            (window as any).natanTutor = natanTutor;
+            console.log('🎓 Natan Tutor initialized successfully');
+        } catch (error) {
+            console.error('Padmin Main: Error initializing Natan Tutor:', error);
+        }
 
         // 14. Setup FEGI-specific custom event listeners
         setupFegiCustomEvents();
