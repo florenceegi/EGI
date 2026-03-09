@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    {{-- Bottone Pacchetti AI — apre modal acquisto FIAT (Stripe/PayPal) \u2014 ToS v3.0.0 --}}
+    {{-- ToS v3.0.0: apre modal Pacchetti AI (FIAT Stripe/PayPal) — NON vende Egili come asset --}}
     <button onclick="openEgiliPurchaseModal()"
         class="mb-4 block w-full rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-lg">
         💎 {{ __('egili.wallet.buy_more') }}
