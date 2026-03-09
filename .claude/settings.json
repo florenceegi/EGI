@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(.venv/bin/pip show voyageai cohere)",
+      "Bash(.venv/bin/pip list)",
+      "Bash(.venv/bin/pip install voyageai cohere -q)",
+      "Bash(venv/bin/pip install voyageai cohere -q)",
+      "Bash(venv/bin/python3 -:*)",
+      "Bash(venv/bin/python3 -c \"from app.services.reranker_service import reranker_service; print\\(''RerankerService OK''\\)\")",
+      "Bash(venv/bin/python3 -c \"from app.services.rag_fortress.retriever import HybridRetriever; print\\(''HybridRetriever OK''\\)\")",
+      "Bash(aws ssm send-command --instance-ids \"i-0940cdb7b955d1632\" --document-name \"AWS-RunShellScript\" --parameters 'commands=[:*)",
+      "Bash(aws ssm get-command-invocation --command-id \"ce6ea7bd-a039-477e-8244-0a5919a71532\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"e8ca7344-4104-4669-bd05-064bd9070e79\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query 'StandardOutputContent' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"ccce669e-9344-4b6b-9b93-7ae1045e4f0f\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"402cb9f3-dc69-4bf1-9981-59b36230603e\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query 'StandardOutputContent' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"589051d7-bb6d-4725-974c-a91ee879949b\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"0e723da3-358a-4642-8a92-09fc0002597d\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"0c49844f-a191-445d-b3ab-37435f048540\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"3ee63b39-62b3-4c3e-b86b-f5cc23daaf69\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"0f5ad40a-a6ae-43db-9e32-fb90a7a94dfe\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"63ea8315-bca4-4403-9a01-28ed4253288c\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"e203c84e-a083-44b3-aa1a-bd27827b1b86\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"d0efd5ea-5d33-4817-a65b-1bce7f558090\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"b78aeff0-69ba-49cf-86bb-1d2d92fa708c\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"27859d0b-d764-448b-ab9e-d7cfa1c03b33\" --instance-id \"i-0940cdb7b855d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"27859d0b-d764-448b-ab9e-d7cfa1c03b33\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"3ecd25df-6d52-4a12-9d1a-39845bf69a22\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"3c1f2214-d1c2-4139-8492-4c097d766827\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"9dfcb33c-5ec2-43a3-94aa-32eabd66dbf1\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"bd58a04d-efee-4658-99e1-dd739bed4a9b\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"c5c6a42a-ae18-4f60-a745-5c464acfa7a2\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"e1745067-fd11-43a8-8b83-21d38f8eb3df\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent,StandardErrorContent]' --output text)",
+      "Bash(aws ssm get-command-invocation --command-id \"c5055149-5e7f-4514-9852-46943296bfd4\" --instance-id \"i-0940cdb7b955d1632\" --region eu-north-1 --query '[Status,StandardOutputContent]' --output text)"
+    ]
+  }
+}

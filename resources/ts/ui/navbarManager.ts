@@ -154,9 +154,6 @@ export function initButlerMenuButton() {
         butlerBtn.addEventListener('click', () => {
             if (window.natanAssistant && typeof window.natanAssistant.showButlerManually === 'function') {
                 window.natanAssistant.showButlerManually();
-            } else if (typeof NatanAssistant !== 'undefined') {
-                window.natanAssistant = new NatanAssistant();
-                window.natanAssistant.showButlerManually();
             }
         });
     }

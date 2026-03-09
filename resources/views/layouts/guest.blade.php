@@ -39,13 +39,6 @@
             </div>
         @endisset
 
-        {{-- Natan Assistant (se presente) --}}
-        @isset($heroNatanAssistant)
-            <div class="natan-assistant fixed bottom-6 right-6 z-[40] flex flex-col items-end" role="region"
-                aria-label="{{ __('guest_layout.hero_right_content_aria_label') }}">
-                {{ $heroNatanAssistant ?? '' }}
-            </div>
-        @endisset
 
         {{-- Contenuto sotto l'hero --}}
         <div class="below-hero-content relative z-10 w-full" role="region"
@@ -223,10 +216,6 @@
     <x-egili-purchase-modal />
 @endauth
 
-{{-- 🎩 Natan Assistant - Sempre Visibile --}}
-<div id="natan-global-assistant" class="fixed bottom-6 right-6 z-[9999]" role="region" aria-label="Natan Assistant">
-    @include('components.natan-assistant', ['suffix' => '-global'])
-</div>
 @vite(['resources/ts/components/natan-batch-mint/NatanBatchMint.ts'])
 
 {{-- EGI Channel: Cross-tab refresh for EGI creation (OS3 Vanilla JS) --}}

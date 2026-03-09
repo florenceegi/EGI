@@ -1,0 +1,40 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../EGI-HUB"
+		}
+	],
+	"settings": {
+		"intelephense.files.maxSize": 5000000,
+		"intelephense.completion.triggerParameterHints": true,
+		"intelephense.completion.insertUseDeclaration": true,
+		"intelephense.format.braces": "k&r",
+		"intelephense.environment.phpVersion": "8.2.0",
+		"intelephense.diagnostics.undefinedMethods": false,
+		"intelephense.diagnostics.undefinedProperties": false,
+		"intelephense.diagnostics.undefinedConstants": false,
+		"intelephense.diagnostics.undefinedClassConstants": false,
+		"intelephense.diagnostics.unusedSymbols": false,
+		"intelephense.completion.maxItems": 100,
+		"intelephense.format.enable": true,
+		"intelephense.stubs": [
+			"Core",
+			"date",
+			"hash",
+			"json",
+			"mbstring",
+			"standard",
+			"curl",
+			"openssl",
+			"pdo",
+			"session",
+			"tokenizer",
+			"xml"
+		],
+		"intelephense.trace.server": "off",
+		"intelephense.telemetry.enabled": false
+	}
+}
