@@ -225,8 +225,9 @@
 
 {{-- 🎩 Natan Assistant - Sempre Visibile --}}
 <div id="natan-global-assistant" class="fixed bottom-6 right-6 z-[9999]" role="region" aria-label="Natan Assistant">
-    {{-- @include('components.natan-assistant', ['suffix' => '-global']) --}} {{-- DISABLED TEMPORARILY --}}
+    @include('components.natan-assistant', ['suffix' => '-global'])
 </div>
+@vite(['resources/ts/components/natan-batch-mint/NatanBatchMint.ts'])
 
 {{-- EGI Channel: Cross-tab refresh for EGI creation (OS3 Vanilla JS) --}}
 @auth

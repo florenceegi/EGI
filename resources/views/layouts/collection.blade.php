@@ -57,6 +57,12 @@
 {{-- Asset JS (Vite) --}}
 @vite(['resources/js/guest.js', 'resources/js/polyfills.js', 'resources/ts/main.ts', 'resources/js/app.js', 'resources/css/reservation-history.css', 'resources/js/reservation-history.js'])
 
+{{-- 🎩 Natan Assistant - Sempre Visibile --}}
+<div id="natan-global-assistant" class="fixed bottom-6 right-6 z-[9999]" role="region" aria-label="Natan Assistant">
+    @include('components.natan-assistant', ['suffix' => '-global'])
+</div>
+@vite(['resources/ts/components/natan-batch-mint/NatanBatchMint.ts'])
+
 {{-- Stack per script specifici della pagina --}}
 @stack('scripts')
 

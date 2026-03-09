@@ -44,14 +44,8 @@ export class NatanBatchMint {
     private state: BatchMintState = { price: null, titleBase: '', files: [] };
 
     constructor() {
-        this.bindTrigger();
-    }
-
-    // ── Init ─────────────────────────────────────────────────────────────────
-
-    private bindTrigger(): void {
-        const btn = document.getElementById('natan-batch-mint-trigger');
-        btn?.addEventListener('click', () => this.open());
+        // Auto-fill form if sessionStorage has preload data (from sidebar redirect flow)
+        this.checkSessionPreload();
     }
 
     // ── Public API ───────────────────────────────────────────────────────────
@@ -64,6 +58,37 @@ export class NatanBatchMint {
 
     public close(): void {
         document.getElementById(this.MODAL_ID)?.remove();
+    }
+
+    /**
+     * If sessionStorage has preload data (set by sidebar redirect flow),
+     * auto-fill form fields and show a toast. Called on every page init.
+     */
+    public checkSessionPreload(): void {
+        const raw = sessionStorage.getItem('__natanMintPreload');
+        if (!raw) return;
+
+        const titleInput = document.querySelector<HTMLInputElement>('#egi-title');
+        const priceInput = document.querySelector<HTMLInputElement>('#egi-floor-price');
+        if (!titleInput || !priceInput) return;
+
+        try {
+            const preload = JSON.parse(raw) as { price: number; titleBase: string; fileCount: number; fileNames: string[] };
+            sessionStorage.removeItem('__natanMintPreload');
+
+            if (preload.titleBase) {
+                titleInput.value = preload.titleBase;
+                titleInput.dispatchEvent(new Event('input', { bubbles: true }));
+                titleInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            if (preload.price !== null && preload.price !== undefined) {
+                priceInput.value = Number(preload.price).toFixed(2);
+                priceInput.dispatchEvent(new Event('input', { bubbles: true }));
+                priceInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            this.showPreloadToast(preload);
+        } catch { /* malformed preload — ignore */ }
     }
 
     // ── Modal Shell ──────────────────────────────────────────────────────────
@@ -431,8 +456,14 @@ export class NatanBatchMint {
 
         document.getElementById('natan-step4-confirm')
             ?.addEventListener('click', () => {
-                this.injectIntoForm();
-                this.renderStep(5);
+                // If the upload form is on the current page → inject directly
+                if (document.querySelector('#egi-title')) {
+                    this.injectIntoForm();
+                    this.renderStep(5);
+                } else {
+                    // Sidebar flow: store state and redirect to upload page
+                    this.handleRedirectFlow();
+                }
             });
     }
 
@@ -466,6 +497,81 @@ export class NatanBatchMint {
 
         // Auto-close after 5s so user can see the form
         setTimeout(() => this.close(), 5000);
+    }
+
+    // ── Sidebar → Redirect flow ─────────────────────────────────────────────
+
+    /**
+     * Called when the user is NOT on the upload form page.
+     * Stores price+title in sessionStorage, shows a redirect step.
+     */
+    private handleRedirectFlow(): void {
+        sessionStorage.setItem('__natanMintPreload', JSON.stringify({
+            price: this.state.price,
+            titleBase: this.state.titleBase,
+            fileCount: this.state.files.length,
+            fileNames: this.state.files.map(f => f.name),
+        }));
+
+        const content = document.getElementById('natan-batch-content');
+        if (!content) return;
+
+        const n = this.state.files.length;
+        const uploadUrl = (window as any).__natanUploadUrl || '/egi/upload';
+
+        content.innerHTML = `
+            <div class="text-center py-2">
+                <div class="text-4xl mb-3" role="img" aria-label="pronto">🚀</div>
+                <p class="text-white font-semibold text-base mb-2">Quasi pronto!</p>
+                <p class="text-gray-300 text-sm mb-1">Titolo e prezzo sono stati salvati.</p>
+                <p class="text-gray-400 text-xs mb-4">
+                    Vai alla pagina di upload: verranno pre-compilati automaticamente.<br>
+                    Ri-seleziona i <strong class="text-white">${n}</strong> file già scelti.
+                </p>
+                ${n > 0 ? `
+                <div class="mb-4 text-left bg-gray-800/60 rounded-lg px-3 py-2 border border-gray-700">
+                    <p class="text-xs text-gray-500 mb-1">File da ri-selezionare:</p>
+                    <ul class="text-xs text-gray-300 space-y-0.5">
+                        ${this.state.files.slice(0, 4).map(f => `<li class="truncate">• ${this.escapeHtml(f.name)}</li>`).join('')}
+                        ${n > 4 ? `<li class="text-gray-500">... e altri ${n - 4} file</li>` : ''}
+                    </ul>
+                </div>` : ''}
+                <a href="${uploadUrl}"
+                   class="block w-full text-center py-2.5 rounded-full bg-purple-600 hover:bg-purple-500
+                          font-semibold text-sm transition-colors
+                          focus:outline-none focus:ring-2 focus:ring-purple-400">
+                    Vai al form di upload →
+                </a>
+                <button id="natan-redirect-cancel"
+                        class="mt-2 w-full py-2 text-gray-400 hover:text-white text-sm transition-colors">
+                    Annulla
+                </button>
+            </div>`;
+
+        document.getElementById('natan-redirect-cancel')
+            ?.addEventListener('click', () => this.close());
+    }
+
+    /**
+     * Shows a non-blocking toast when form fields are auto-filled from sessionStorage.
+     */
+    private showPreloadToast(preload: { price: number; titleBase: string; fileCount: number }): void {
+        const toast = document.createElement('div');
+        toast.id = 'natan-preload-toast';
+        toast.className = 'fixed bottom-20 right-6 z-[9998] bg-purple-900 border border-purple-500/40 rounded-xl px-4 py-3 text-white shadow-xl max-w-xs animate-fade-in';
+        toast.innerHTML = `
+            <div class="flex items-start gap-2">
+                <span class="text-purple-300 text-xl">🤖</span>
+                <div>
+                    <p class="font-semibold text-purple-200 text-xs uppercase tracking-wide mb-1">NATAN ha precompilato</p>
+                    <p class="text-gray-200 text-xs">Titolo e prezzo già inseriti.</p>
+                    <p class="text-gray-400 text-xs mt-0.5">Ri-seleziona i ${preload.fileCount} file.</p>
+                </div>
+                <button onclick="this.closest('#natan-preload-toast')?.remove()"
+                        class="ml-2 text-gray-400 hover:text-white text-lg font-bold leading-none">×</button>
+            </div>`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast?.remove(), 6000);
     }
 
     // ── Core: inject into existing upload form ───────────────────────────────
@@ -546,12 +652,13 @@ window.addEventListener('collection-created', (e: Event) => {
 });
 
 /**
- * Auto-init when the upload container is in the DOM.
- * Safe to load on any page — does nothing if #upload-container is absent.
+ * Auto-init on every page where this script is loaded.
+ * Exposes instance globally as window.natanBatchMint for sidebar integration.
+ * Safe to load on any page — checkSessionPreload() is a no-op if form is absent.
  */
 function initNatanBatchMint(): void {
-    if (!document.getElementById('natan-batch-mint-trigger')) return;
-    new NatanBatchMint();
+    const instance = new NatanBatchMint();
+    (window as any).natanBatchMint = instance;
 }
 
 if (document.readyState === 'loading') {

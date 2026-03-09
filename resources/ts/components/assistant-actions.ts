@@ -12,7 +12,12 @@ export class AssistantActions {
 
     // === AZIONI LEGACY (mantenute per compatibilità) ===
     static handleCreateEgiContextual() {
-        // Simula il click sul pulsante navbar per riutilizzare la logica centralizzata
+        // Usa NatanBatchMint se disponibile (sidebar-first flow)
+        if ((window as any).natanBatchMint) {
+            (window as any).natanBatchMint.open();
+            return;
+        }
+        // Fallback: click sul pulsante contestuale se presente nel DOM
         const btn = document.querySelector('.js-create-egi-contextual-button') as HTMLButtonElement | null;
         if (btn) {
             btn.click();
