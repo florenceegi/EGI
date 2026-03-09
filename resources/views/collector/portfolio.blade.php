@@ -1,7 +1,6 @@
 @vite(['resources/css/creator-home.css'])
 
-<x-guest-layout :title="$collector->name . ' - ' . __('collector.portfolio.title')"
-    :metaDescription="__('collector.portfolio.meta_description', ['name' => $collector->name])">
+<x-guest-layout :title="$collector->name . ' - ' . __('collector.portfolio.title')" :metaDescription="__('collector.portfolio.meta_description', ['name' => $collector->name])">
 
     @push('head')
         <script type="application/ld+json">
@@ -23,6 +22,74 @@
     @endpush
 
     <x-slot name="platformInfoButtons">
+        {{-- Payment Settings (Owner Only) --}}
+        @if (auth()->check() && auth()->id() === $collector->id)
+            {{-- DESKTOP: Bottone completo con carta di credito --}}
+            <div class="absolute bottom-4 right-4 z-30 hidden md:block">
+                <button onclick="window.paymentModal.open()"
+                    aria-label="{{ __('payment.settings_title') }}"
+                    class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-600 via-yellow-500 to-orange-600 p-[2px] shadow-xl shadow-amber-500/40 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(251,191,36,0.6)]">
+                    <div
+                        class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transition-transform duration-700 group-hover:translate-x-full">
+                    </div>
+                    <div class="relative rounded-xl bg-gradient-to-br from-gray-900 to-black px-4 py-2.5">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="relative h-8 w-12 overflow-hidden rounded-md bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 shadow-lg shadow-amber-500/40 transition-all duration-500 group-hover:rotate-6 group-hover:scale-110">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-black/20">
+                                </div>
+                                <div
+                                    class="absolute left-1 top-1 h-2.5 w-3 rounded-sm bg-gradient-to-br from-yellow-200 via-amber-300 to-yellow-600 shadow-inner">
+                                    <div class="grid h-full w-full grid-cols-3 gap-[0.5px] p-[1px]">
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                        <div class="rounded-[0.5px] bg-amber-600/40"></div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="absolute bottom-1 left-1 text-[6px] font-bold tracking-wide text-white/90 drop-shadow">
+                                    •••• 4242</div>
+                                <div class="absolute bottom-1 right-1 flex gap-[1px]">
+                                    <div class="h-1 w-1 rounded-full bg-red-500/80"></div>
+                                    <div class="h-1 w-1 rounded-full bg-yellow-500/80"></div>
+                                </div>
+                                <div
+                                    class="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800">
+                                </div>
+                            </div>
+                            <span
+                                class="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 bg-clip-text text-sm font-bold text-transparent">{{ __('payment.settings_title') }}</span>
+                            <div
+                                class="ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400 shadow-lg shadow-amber-400/80">
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+
+            {{-- MOBILE: FAB compatto --}}
+            <div id="payment-fab-mobile-collector" class="fixed bottom-20 right-4 z-50 md:hidden">
+                <button onclick="window.paymentModal.open()"
+                    aria-label="{{ __('payment.settings_title') }}"
+                    class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 via-yellow-500 to-orange-500 shadow-lg shadow-amber-500/50 transition-all duration-300 active:scale-95">
+                    <div
+                        class="relative h-7 w-10 rounded bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 shadow-inner">
+                        <div
+                            class="absolute left-1 top-1 h-2 w-2.5 rounded-sm bg-gradient-to-br from-yellow-200 to-amber-400">
+                        </div>
+                        <div class="absolute bottom-1 left-1 text-[5px] font-bold text-white/80">••••</div>
+                    </div>
+                    <div
+                        class="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full bg-green-400 shadow-lg shadow-green-400/80">
+                    </div>
+                </button>
+            </div>
+        @endif
+
         <div class="absolute inset-0 opacity-60" aria-hidden="true">
             <div class="absolute inset-0">
                 @php
@@ -35,11 +102,25 @@
                         class="h-full w-full object-cover">
                 @else
                     <div class="absolute inset-0"
-                        style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+                        style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+                    </div>
                 @endif
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
                 <div class="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
             </div>
+
+            {{-- Edit Banner Button - Owner Only --}}
+            @if (auth()->check() && auth()->id() === $collector->id)
+                <button type="button" onclick="openImageModal('collector-banner-modal')" id="edit-banner-btn"
+                    class="absolute left-4 top-4 z-20 flex touch-manipulation items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-black/80"
+                    title="{{ __('collector.profile.edit_banner') }}">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="hidden sm:inline">{{ __('collector.profile.edit_banner') }}</span>
+                </button>
+            @endif
         </div>
 
         <div class="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
@@ -47,12 +128,27 @@
                 <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:gap-8 md:col-span-8">
                     <div class="group relative flex-shrink-0">
                         <div
-                            class="h-32 w-32 overflow-hidden rounded-full shadow-2xl ring-4 ring-oro-fiorentino/40 md:h-40 md:w-40">
+                            class="ring-oro-fiorentino/40 h-32 w-32 overflow-hidden rounded-full shadow-2xl ring-4 md:h-40 md:w-40">
                             <img src="{{ $collector->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($collector->name) . '&size=160&background=D4A574&color=2D5016' }}"
                                 alt="{{ __('collector.home.avatar_alt', ['name' => $collector->name]) }}"
                                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                                 loading="lazy">
                         </div>
+                        {{-- Edit Avatar Button - Owner Only --}}
+                        @if (auth()->check() && auth()->id() === $collector->id)
+                            <button type="button" onclick="openImageModal('collector-avatar-modal')"
+                                id="edit-avatar-btn"
+                                class="bg-oro-fiorentino absolute -bottom-2 -left-2 touch-manipulation rounded-full p-2 shadow-lg ring-2 ring-gray-900 transition-all hover:bg-opacity-90"
+                                title="{{ __('collector.profile.edit_avatar') }}">
+                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </button>
+                        @endif
                         <div class="absolute -bottom-2 -right-2 rounded-full bg-blu-algoritmo p-2 shadow-lg"
                             title="{{ __('collector.home.collector_badge_title') }}">
                             <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
@@ -67,7 +163,7 @@
                             {{ $collector->name }}
                         </h1>
                         @if ($collector->tagline)
-                            <p class="font-source-sans text-lg italic text-oro-fiorentino md:text-xl">
+                            <p class="font-source-sans text-oro-fiorentino text-lg italic md:text-xl">
                                 "{{ $collector->tagline }}"
                             </p>
                         @endif
@@ -81,22 +177,24 @@
                 <div class="flex flex-col items-center gap-6 md:col-span-4 md:items-end">
                     <div class="grid grid-cols-3 gap-6 text-center">
                         <div class="flex flex-col">
-                            <span class="text-2xl font-bold text-oro-fiorentino md:text-3xl">
+                            <span class="text-oro-fiorentino text-2xl font-bold md:text-3xl">
                                 {{ $stats['total_owned_egis'] ?? 0 }}
                             </span>
                             <span class="text-xs text-gray-300 md:text-sm">{{ __('collector.home.owned_egis') }}</span>
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-2xl font-bold text-oro-fiorentino md:text-3xl">
+                            <span class="text-oro-fiorentino text-2xl font-bold md:text-3xl">
                                 {{ $stats['collections_represented'] ?? 0 }}
                             </span>
-                            <span class="text-xs text-gray-300 md:text-sm">{{ __('collector.collections_represented') }}</span>
+                            <span
+                                class="text-xs text-gray-300 md:text-sm">{{ __('collector.collections_represented') }}</span>
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-2xl font-bold text-oro-fiorentino md:text-3xl">
+                            <span class="text-oro-fiorentino text-2xl font-bold md:text-3xl">
                                 €{{ number_format($stats['total_spent_eur'] ?? 0, 2) }}
                             </span>
-                            <span class="text-xs text-gray-300 md:text-sm">{{ __('collector.home.total_spent') }}</span>
+                            <span
+                                class="text-xs text-gray-300 md:text-sm">{{ __('collector.home.total_spent') }}</span>
                         </div>
                     </div>
                 </div>
@@ -109,11 +207,11 @@
             aria-label="{{ __('collector.home.navigation_aria') }}">
             <div class="mx-auto flex w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="scrollbar-hide flex w-full space-x-6">
-                    <a href="{{ route('collector.portfolio', $collector->id) }}"
-                        class="border-b-2 border-oro-fiorentino px-6 py-4 text-sm font-medium text-oro-fiorentino">
+                    <a href="{{ route('collector.portfolio', $collector->nick_name ?? $collector->id) }}"
+                        class="border-oro-fiorentino text-oro-fiorentino border-b-2 px-6 py-4 text-sm font-medium">
                         {{ __('collector.home.portfolio_tab') }}
                     </a>
-                    <a href="{{ route('collector.collections', $collector->id) }}"
+                    <a href="{{ route('collector.collections', $collector->nick_name ?? $collector->id) }}"
                         class="border-b-2 border-transparent px-6 py-4 text-sm font-medium text-gray-300 hover:text-white">
                         {{ __('collector.home.collections_tab') }}
                     </a>
@@ -130,4 +228,34 @@
             'view' => $view,
         ])
     </x-slot>
+
+    {{-- AI Sidebar - Onboarding Assistant (Owner Only) --}}
+    @if (!empty($onboardingChecklist))
+        <x-ai-sidebar :user="$collector" :userType="'collector'" :checklist="$onboardingChecklist" />
+    @endif
+
+    {{-- Payment Settings Modal --}}
+    <x-payment-settings-modal />
+
+    {{-- Image Upload Modals (only for owner) --}}
+    @if (auth()->check() && auth()->id() === $collector->id)
+        {{-- Banner Upload Modal --}}
+        <x-modals.image-upload-modal modalId="collector-banner-modal" type="banner" collection="creator_banners"
+            uploadRoute="{{ route('creator.upload-banner') }}"
+            setCurrentRoute="{{ route('creator.set-current-banner') }}"
+            deleteRoute="{{ route('creator.delete-banner') }}" :currentImage="auth()->user()->getCurrentCreatorBanner()" :allImages="auth()->user()->getAllCreatorBanners()"
+            title="{{ __('profile.upload_new_banner') }}"
+            helpText="{{ __('profile.supported_formats_with_size') }}" />
+
+        {{-- Avatar Upload Modal --}}
+        <x-modals.image-upload-modal modalId="collector-avatar-modal" type="avatar" collection="profile_image"
+            uploadRoute="{{ route('profile.upload-image') }}"
+            setCurrentRoute="{{ route('profile.set-current-image') }}"
+            deleteRoute="{{ route('profile.delete-image') }}" :currentImage="auth()->user()->getCurrentProfileImage()" :allImages="auth()->user()->getAllProfileImages()"
+            title="{{ __('profile.upload_new_avatar') }}"
+            helpText="{{ __('profile.supported_formats_with_size') }}" />
+
+        {{-- Include JS Manager --}}
+        <script src="{{ asset('js/home-page-image-manager.js') }}" defer></script>
+    @endif
 </x-guest-layout>

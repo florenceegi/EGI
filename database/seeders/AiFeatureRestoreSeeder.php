@@ -15,10 +15,8 @@ use Illuminate\Database\Seeder;
  *          Idempotente: usa firstOrCreate — sicuro da eseguire più volte.
  *          Corregge anche collection_subscription_starter (is_active=false → true).
  */
-class AiFeatureRestoreSeeder extends Seeder
-{
-    public function run(): void
-    {
+class AiFeatureRestoreSeeder extends Seeder {
+    public function run(): void {
         // ── Fix: collection_subscription_starter era is_active=false ──────────
         AiFeaturePricing::where('feature_code', 'collection_subscription_starter')
             ->update(['is_active' => true]);

@@ -2,6 +2,18 @@
 
 @php
     $user = App\Helpers\FegiAuth::user();
+
+    // Routing dinamico basato su usertype
+    // P0-8: Use nick_name to avoid middleware redirect (same as creator tabs fix)
+    $userHomeRoute =
+        $user && $user->id
+            ? match ($user->usertype ?? 'creator') {
+                'creator' => route('creator.home', $user->nick_name ?? $user->id),
+                'collector' => route('collector.home', $user->nick_name ?? $user->id),
+                'company' => route('company.home', $user->nick_name ?? $user->id),
+                default => route('creator.home', $user->nick_name ?? $user->id),
+            }
+            : '#';
 @endphp
 
 {{-- Component-specific styles --}}
@@ -58,7 +70,7 @@
                 <div class="flex items-center space-x-3">
                     @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                         @if ($user && $user->id)
-                            <a href="{{ route('creator.home', $user->id) }}"
+                            <a href="{{ $userHomeRoute }}"
                                 class="block transition-transform duration-300 hover:scale-105">
                                 <img class="size-12 rounded-full object-cover ring-2 ring-white/30 transition-all duration-300 hover:ring-white/60"
                                     src="{{ $user?->profile_photo_url ?? null }}" alt="{{ $user?->name ?? '' }}" />
@@ -69,7 +81,7 @@
                         @endif
                     @else
                         @if ($user && $user->id)
-                            <a href="{{ route('creator.home', $user->id) }}"
+                            <a href="{{ $userHomeRoute }}"
                                 class="block transition-transform duration-300 hover:scale-105">
                                 <div
                                     class="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-lg font-bold text-white transition-all duration-300 hover:bg-white/30">

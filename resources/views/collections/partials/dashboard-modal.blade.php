@@ -709,7 +709,8 @@
                                     class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                                     {{-- Skeleton loader — sostituito dal JS dopo la fetch --}}
                                     @foreach (range(1, 4) as $i)
-                                        <div class="relative flex flex-col rounded-xl border border-gray-700 bg-gray-800 p-6 animate-pulse">
+                                        <div
+                                            class="relative flex animate-pulse flex-col rounded-xl border border-gray-700 bg-gray-800 p-6">
                                             <div class="mb-4">
                                                 <div class="h-5 w-24 rounded bg-gray-700"></div>
                                                 <div class="mt-2 h-9 w-20 rounded bg-gray-700"></div>
@@ -885,26 +886,28 @@
         if (!container) return;
 
         fetch('/api/collection-subscription-plans', {
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (!data.success || !data.plans.length) {
-                container.innerHTML = '<div class="col-span-4 text-center text-gray-400 py-8">Nessun piano disponibile al momento.</div>';
-                return;
-            }
-            container.innerHTML = data.plans.map(plan => {
-                const price  = '€' + parseFloat(plan.cost_fiat_eur).toFixed(2).replace('.', ',');
-                const maxEgi = plan.max_egis ? (plan.max_egis < 9999 ? '1–' + plan.max_egis : '100+') : '∞';
-                const benefitsList = (plan.benefits || ['Full Analytics', 'Priority Support'])
-                    .map(b => `<li class="flex items-center gap-2">
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success || !data.plans.length) {
+                    container.innerHTML =
+                        '<div class="col-span-4 text-center text-gray-400 py-8">Nessun piano disponibile al momento.</div>';
+                    return;
+                }
+                container.innerHTML = data.plans.map(plan => {
+                    const price = '€' + parseFloat(plan.cost_fiat_eur).toFixed(2).replace('.', ',');
+                    const maxEgi = plan.max_egis ? (plan.max_egis < 9999 ? '1–' + plan.max_egis : '100+') :
+                        '∞';
+                    const benefitsList = (plan.benefits || ['Full Analytics', 'Priority Support'])
+                        .map(b => `<li class="flex items-center gap-2">
                                     <span class="material-symbols-outlined text-green-400" style="font-size:18px">check</span>
                                     ${b}
                                </li>`).join('');
-                return `<div class="relative flex flex-col rounded-xl border border-gray-700 bg-gray-800 p-6 transition-all hover:-translate-y-1 hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10">
+                    return `<div class="relative flex flex-col rounded-xl border border-gray-700 bg-gray-800 p-6 transition-all hover:-translate-y-1 hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10">
                             <div class="mb-4">
                                 <h3 class="text-lg font-bold text-white">${plan.name}</h3>
                                 <div class="mt-2 text-3xl font-bold text-white">
@@ -922,15 +925,16 @@
                                 {{ __('subscription.select_plan') }}
                             </button>
                         </div>`;
-            }).join('');
-        })
-        .catch(() => {
-            container.innerHTML = '<div class="col-span-4 text-center text-red-400 py-8">Errore nel caricamento dei piani.</div>';
-        });
+                }).join('');
+            })
+            .catch(() => {
+                container.innerHTML =
+                    '<div class="col-span-4 text-center text-red-400 py-8">Errore nel caricamento dei piani.</div>';
+            });
     }
 
     // Auto-init: se questo modal contiene il piano-grid loader (subscription non attiva), carica i piani
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const grid = document.querySelector('[id^="subscription-plans-grid-"]');
         if (grid) {
             loadSubscriptionPlans(grid.dataset.collectionId);

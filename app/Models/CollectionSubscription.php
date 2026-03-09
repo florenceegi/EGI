@@ -40,8 +40,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon|null $deleted_at
  */
-class CollectionSubscription extends Model
-{
+class CollectionSubscription extends Model {
     use HasFactory, SoftDeletes;
 
     protected $table = 'collection_subscriptions';
@@ -85,13 +84,11 @@ class CollectionSubscription extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function collection(): BelongsTo
-    {
+    public function collection(): BelongsTo {
         return $this->belongsTo(Collection::class, 'collection_id');
     }
 
-    public function user(): BelongsTo
-    {
+    public function user(): BelongsTo {
         return $this->belongsTo(User::class, 'user_id');
     }
 
@@ -104,29 +101,26 @@ class CollectionSubscription extends Model
     /**
      * Scope: abbonamenti attivi (status=active e non ancora scaduti).
      */
-    public function scopeActive(Builder $query): Builder
-    {
+    public function scopeActive(Builder $query): Builder {
         return $query
             ->where('status', 'active')
             ->where(function (Builder $q) {
                 $q->whereNull('expires_at')
-                  ->orWhere('expires_at', '>', now());
+                    ->orWhere('expires_at', '>', now());
             });
     }
 
     /**
      * Scope: abbonamenti per una specifica collection.
      */
-    public function scopeForCollection(Builder $query, int $collectionId): Builder
-    {
+    public function scopeForCollection(Builder $query, int $collectionId): Builder {
         return $query->where('collection_id', $collectionId);
     }
 
     /**
      * Scope: abbonamenti completati (pagamento confermato).
      */
-    public function scopeConfirmed(Builder $query): Builder
-    {
+    public function scopeConfirmed(Builder $query): Builder {
         return $query->whereIn('status', ['active', 'expired', 'cancelled']);
     }
 
@@ -139,8 +133,7 @@ class CollectionSubscription extends Model
     /**
      * Indica se questo abbonamento è correntemente attivo.
      */
-    public function isActive(): bool
-    {
+    public function isActive(): bool {
         if ($this->status !== 'active') {
             return false;
         }
@@ -155,8 +148,7 @@ class CollectionSubscription extends Model
     /**
      * Indica se questo abbonamento è scaduto.
      */
-    public function isExpired(): bool
-    {
+    public function isExpired(): bool {
         if ($this->expires_at === null) {
             return false;
         }
@@ -168,8 +160,7 @@ class CollectionSubscription extends Model
      * Restituisce i giorni rimanenti alla scadenza.
      * Null se non ha scadenza, 0 se già scaduto.
      */
-    public function daysRemaining(): ?int
-    {
+    public function daysRemaining(): ?int {
         if ($this->expires_at === null) {
             return null;
         }
@@ -184,16 +175,14 @@ class CollectionSubscription extends Model
     /**
      * Indica se c'è stato un sconto Egili applicato.
      */
-    public function hasEgiliDiscount(): bool
-    {
+    public function hasEgiliDiscount(): bool {
         return $this->egili_discount_applied > 0;
     }
 
     /**
      * Importo totale netto effettivamente pagato.
      */
-    public function netAmountEur(): float
-    {
+    public function netAmountEur(): float {
         return max(0.0, (float) $this->amount_eur - (float) $this->discount_amount_eur);
     }
 }

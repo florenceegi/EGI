@@ -40,6 +40,38 @@
         💎 {{ __('uploadmanager::uploadmanager.mint_your_masterpiece') }}
     </h2>
 
+    <!-- ╔════════════════════════════════════════════════════════════╗
+         ║  NATAN Batch Mint — Trigger Button                         ║
+         ║  Puramente additivo: tocca solo questo blocco.             ║
+         ║  Non modifica nulla del form o dell'upload manager.        ║
+         ╚════════════════════════════════════════════════════════════╝ -->
+    <div class="mb-4 rounded-xl border border-purple-500/30 bg-purple-950/20 p-3
+                flex flex-col sm:flex-row items-center gap-3">
+
+        <div class="flex items-center gap-2 flex-1 min-w-0">
+            <span class="text-2xl shrink-0" role="img" aria-hidden="true">🤖</span>
+            <div class="min-w-0">
+                <p class="text-sm font-semibold text-white leading-tight">
+                    Lascia fare a NATAN
+                </p>
+                <p class="text-xs text-gray-400 truncate">
+                    Ti guido io: prezzo, titolo e file in 4 passi.
+                </p>
+            </div>
+        </div>
+
+        <button type="button"
+                id="natan-batch-mint-trigger"
+                class="shrink-0 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700
+                       px-4 py-1.5 text-xs font-semibold text-white transition-colors
+                       focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2
+                       focus:ring-offset-gray-900"
+                aria-label="Avvia NATAN Assistente Batch Mint">
+            Inizia
+        </button>
+    </div>
+    <!-- END NATAN Batch Mint Trigger -->
+
     <!-- Enhanced drag & drop upload area con bordo tratteggiato tradizionale -->
     <div class="flex flex-col items-center justify-center w-full p-6 mb-4 transition-all duration-300 border-2 border-gray-400 border-dashed rounded-lg group h-36 bg-gray-50/5 hover:border-blue-400 hover:bg-gray-50/10 md:h-44"
         id="upload-drop-zone" role="group" aria-label="{{ trans('uploadmanager::uploadmanager.drag_files_here') }}">
@@ -183,3 +215,4 @@
 <x-feature-purchase-modal featureCode="egi_living_subscription" />
 
 @vite(['resources/js/components/create-collection-modal.js'])
+@vite(['resources/ts/components/natan-batch-mint/NatanBatchMint.ts'])

@@ -33,8 +33,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  *   4. confirmPayment()       → attiva la subscription dopo webhook OK
  *   5. hasActiveSubscription()→ verifica abbonamento attivo
  */
-class CollectionSubscriptionFiatService
-{
+class CollectionSubscriptionFiatService {
     /**
      * Categoria filata da ai_feature_pricing per i piani abbonamento.
      */
@@ -56,7 +55,8 @@ class CollectionSubscriptionFiatService
         private AuditLogService        $auditService,
         private EgiliService           $egiliService,
         private PaymentServiceFactory  $paymentFactory,
-    ) {}
+    ) {
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -69,8 +69,7 @@ class CollectionSubscriptionFiatService
      *
      * @return \Illuminate\Database\Eloquent\Collection<AiFeaturePricing>
      */
-    public function getActivePlans(): \Illuminate\Database\Eloquent\Collection
-    {
+    public function getActivePlans(): \Illuminate\Database\Eloquent\Collection {
         return AiFeaturePricing::query()
             ->where('is_active', true)
             ->where('feature_category', self::FEATURE_CATEGORY)
@@ -82,8 +81,7 @@ class CollectionSubscriptionFiatService
     /**
      * Restituisce un piano specifico dato il feature_code.
      */
-    public function getPlanByCode(string $featureCode): ?AiFeaturePricing
-    {
+    public function getPlanByCode(string $featureCode): ?AiFeaturePricing {
         return AiFeaturePricing::query()
             ->where('feature_code', $featureCode)
             ->where('is_active', true)
@@ -108,8 +106,7 @@ class CollectionSubscriptionFiatService
      *   final_price_eur: float
      * }
      */
-    public function calculateDiscount(User $user, string $featureCode): array
-    {
+    public function calculateDiscount(User $user, string $featureCode): array {
         $plan = $this->getPlanByCode($featureCode);
 
         if (! $plan) {
@@ -228,19 +225,19 @@ class CollectionSubscriptionFiatService
 
         // 5. Crea PaymentRequest per Stripe/PayPal
         $paymentRequest = new PaymentRequest(
-            amount:        $finalPrice,
-            currency:      'EUR',
+            amount: $finalPrice,
+            currency: 'EUR',
             customerEmail: $user->email,
-            userId:        $user->id,
-            metadata:      [
+            userId: $user->id,
+            metadata: [
                 'feature_code'  => $featureCode,
                 'collection_id' => $collection->id,
                 'plan_tier'     => $plan->feature_parameters['tier'] ?? $featureCode,
                 'discount_eur'  => $discountEur,
                 'egili_spent'   => $egiliToSpend,
             ],
-            successUrl:    $successUrl,
-            cancelUrl:     $cancelUrl,
+            successUrl: $successUrl,
+            cancelUrl: $cancelUrl,
         );
 
         // 6. Transazione DB + chiamata provider
@@ -249,9 +246,17 @@ class CollectionSubscriptionFiatService
 
         try {
             DB::transaction(function () use (
-                $user, $collection, $plan, $featureCode,
-                $paymentRequest, $provider, $finalPrice, $discountEur,
-                $egiliToSpend, &$subscription, &$result
+                $user,
+                $collection,
+                $plan,
+                $featureCode,
+                $paymentRequest,
+                $provider,
+                $finalPrice,
+                $discountEur,
+                $egiliToSpend,
+                &$subscription,
+                &$result
             ) {
                 // 6a. Crea record pending
                 $tier = $plan->feature_parameters['tier'] ?? $featureCode;
@@ -275,12 +280,12 @@ class CollectionSubscriptionFiatService
                 // 6b. Scala Egili (se sconto applicato) — effetto immediato, reversibile su refund
                 if ($egiliToSpend > 0) {
                     $this->egiliService->spend(
-                        user:     $user,
-                        amount:   $egiliToSpend,
-                        reason:   'collection_subscription_discount',
+                        user: $user,
+                        amount: $egiliToSpend,
+                        reason: 'collection_subscription_discount',
                         category: 'subscription',
                         metadata: ['subscription_id' => $subscription->id],
-                        source:   $subscription,
+                        source: $subscription,
                     );
                 }
 
@@ -355,8 +360,7 @@ class CollectionSubscriptionFiatService
      *
      * @throws \Exception Se la subscription non esiste o è già attiva
      */
-    public function confirmPayment(string $providerSessionId): CollectionSubscription
-    {
+    public function confirmPayment(string $providerSessionId): CollectionSubscription {
         $this->logger->info('CollectionSubscriptionFiat: confirmPayment', [
             'provider_session_id' => $providerSessionId,
         ]);
@@ -424,8 +428,7 @@ class CollectionSubscriptionFiatService
      * Questo metodo sostituisce la logica (errata) di hasActiveSubscription
      * presente in CollectionSubscriptionService.
      */
-    public function hasActiveSubscription(Collection $collection): bool
-    {
+    public function hasActiveSubscription(Collection $collection): bool {
         return CollectionSubscription::query()
             ->forCollection($collection->id)
             ->active()
@@ -435,8 +438,7 @@ class CollectionSubscriptionFiatService
     /**
      * Restituisce l'abbonamento attivo corrente di una Collection, o null.
      */
-    public function getActiveSubscription(Collection $collection): ?CollectionSubscription
-    {
+    public function getActiveSubscription(Collection $collection): ?CollectionSubscription {
         return CollectionSubscription::query()
             ->forCollection($collection->id)
             ->active()
@@ -471,8 +473,7 @@ class CollectionSubscriptionFiatService
     |--------------------------------------------------------------------------
     */
 
-    private function noDiscount(float $priceEur): array
-    {
+    private function noDiscount(float $priceEur): array {
         return [
             'eligible'         => false,
             'egili_available'  => 0,

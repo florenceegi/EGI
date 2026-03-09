@@ -913,16 +913,16 @@ if (auth()->check()) {
             function selectSubscriptionTier(tierCode) {
                 // Mapping tier codes HTML → feature_codes di ai_feature_pricing
                 const tierMapping = {
-                    'tier_1_19':    'collection_subscription_starter',
-                    'tier_20_49':   'collection_subscription_basic',
-                    'tier_50_99':   'collection_subscription_professional',
-                    'tier_100_plus':'collection_subscription_unlimited',
+                    'tier_1_19': 'collection_subscription_starter',
+                    'tier_20_49': 'collection_subscription_basic',
+                    'tier_50_99': 'collection_subscription_professional',
+                    'tier_100_plus': 'collection_subscription_unlimited',
                 };
                 const tierNames = {
-                    'tier_1_19':    'Starter (€4.90/month)',
-                    'tier_20_49':   'Basic (€7.90/month)',
-                    'tier_50_99':   'Professional (€9.90/month)',
-                    'tier_100_plus':'Unlimited (€19.90/month)',
+                    'tier_1_19': 'Starter (€4.90/month)',
+                    'tier_20_49': 'Basic (€7.90/month)',
+                    'tier_50_99': 'Professional (€9.90/month)',
+                    'tier_100_plus': 'Unlimited (€19.90/month)',
                 };
 
                 const featureCode = tierMapping[tierCode];
@@ -962,42 +962,45 @@ if (auth()->check()) {
                     });
 
                     fetch(`/home/collections/{{ $collection->id }}/fiat-subscription/initiate`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrf,
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({ feature_code: featureCode, provider: 'stripe' })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        Swal.close();
-                        if (data.success && data.checkout_url) {
-                            window.location.href = data.checkout_url;
-                        } else {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrf,
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                feature_code: featureCode,
+                                provider: 'stripe'
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            Swal.close();
+                            if (data.success && data.checkout_url) {
+                                window.location.href = data.checkout_url;
+                            } else {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: data.message || 'Could not initiate payment',
+                                    icon: 'error',
+                                    confirmButtonColor: '#4F46E5',
+                                    background: '#1F2937',
+                                    color: '#F3F4F6'
+                                });
+                            }
+                        })
+                        .catch(err => {
+                            console.error('[Subscription] initiate error:', err);
+                            Swal.close();
                             Swal.fire({
                                 title: 'Error',
-                                text: data.message || 'Could not initiate payment',
+                                text: 'Failed to initiate subscription payment',
                                 icon: 'error',
                                 confirmButtonColor: '#4F46E5',
                                 background: '#1F2937',
                                 color: '#F3F4F6'
                             });
-                        }
-                    })
-                    .catch(err => {
-                        console.error('[Subscription] initiate error:', err);
-                        Swal.close();
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Failed to initiate subscription payment',
-                            icon: 'error',
-                            confirmButtonColor: '#4F46E5',
-                            background: '#1F2937',
-                            color: '#F3F4F6'
                         });
-                    });
                 });
             }
 

@@ -53,7 +53,14 @@ use App\Http\Controllers\Payment\PspWebhookController; // Import Controller
 // P0 FIX: Explicit Webhook Route in WEB to avoid Redirects/Middleware issues
 Route::post('/stripe/webhook', [PspWebhookController::class, 'handleStripeWebhook'])
     ->name('stripe.webhook.direct');
+
 use App\Http\Controllers\Web\BiographyWebController;
+
+// DEBUG: Live log viewer
+Route::get('/live-logs', [App\Http\Controllers\LiveLogController::class, 'show'])->middleware('auth');
+
+// SECURITY: Debug routes available only when APP_DEBUG is true
+// Route::get('/debug-logs', [App\Http\Controllers\DebugLogController::class, 'show'])->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
@@ -134,8 +141,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'showDirectMint'])
         ->name('egi.mint-direct');
 
-    Route::post('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'processDirectMint'])
-        ->name('egi.mint-direct.process');
+    Route::post('/egi/{id}/mint-direct', function ($id, \Illuminate\Http\Request $request) {
+        \Log::channel('stack')->emergency('🔴 ROUTE HIT: egi.mint-direct.process', [
+            'id' => $id,
+            'user_id' => Auth::id(),
+            'payment_method' => $request->input('payment_method'),
+            'all_input' => $request->all()
+        ]);
+        $controller = app(App\Http\Controllers\MintController::class);
+        return $controller->processDirectMint($id, app(App\Http\Requests\MintDirectRequest::class));
+    })->name('egi.mint-direct.process');
 
     // Phase 3: Rebind route (secondary market - purchase from owner)
     Route::get('/egi/{id}/rebind', [App\Http\Controllers\RebindController::class, 'show'])
@@ -357,7 +372,27 @@ Route::middleware(['auth'])
             Route::post('/bank-transfer/config', [App\Http\Controllers\PaymentSettingsController::class, 'updateBankConfigCollection'])
                 ->name('bank-config');
         });
+
+        // P0 Commerce: Collection Commercial Setup Wizard
+        Route::prefix('{collection}/commerce')->name('commerce.')->group(function () {
+            Route::get('/wizard', [\App\Http\Controllers\CollectionCommerceWizardController::class, 'show'])
+                ->name('wizard');
+            Route::post('/wizard/update', [\App\Http\Controllers\CollectionCommerceWizardController::class, 'update'])
+                ->name('wizard.update');
+            Route::post('/enable', [\App\Http\Controllers\CollectionCommerceWizardController::class, 'enable'])
+                ->name('enable');
+        });
     });
+
+// P0 Commerce: EGI Listing Wizard (separate prefix for clarity)
+Route::middleware(['auth'])->prefix('egis/{egi}/listing')->name('egi.listing.')->group(function () {
+    Route::get('/wizard', [\App\Http\Controllers\EgiListingWizardController::class, 'show'])
+        ->name('wizard');
+    Route::post('/wizard/update', [\App\Http\Controllers\EgiListingWizardController::class, 'update'])
+        ->name('wizard.update');
+    Route::post('/publish', [\App\Http\Controllers\EgiListingWizardController::class, 'publish'])
+        ->name('publish');
+});
 
 // Notification Center (ex-Dashboard)
 Route::get('/dashboard', function () {
@@ -474,13 +509,13 @@ Route::prefix('collector')->name('collector.')->group(function () {
     Route::get('/', [\App\Http\Controllers\CollectorHomeController::class, 'index'])->name('index');
 
     // Collector public profiles and portfolio
-    Route::get('/{id}', [\App\Http\Controllers\CollectorHomeController::class, 'home'])->name('home')->where('id', '[0-9]+');
-    Route::get('/{id}/portfolio', [\App\Http\Controllers\CollectorHomeController::class, 'portfolio'])->name('portfolio')->where('id', '[0-9]+');
-    Route::get('/{id}/collections', [\App\Http\Controllers\CollectorHomeController::class, 'collections'])->name('collections')->where('id', '[0-9]+');
-    Route::get('/{id}/collection/{collection}', [\App\Http\Controllers\CollectorHomeController::class, 'showCollection'])->name('collection.show')->where(['id' => '[0-9]+', 'collection' => '[0-9]+']);
+    Route::get('/{id}', [\App\Http\Controllers\CollectorHomeController::class, 'home'])->name('home')->where('id', '[A-Za-z0-9_-]+');
+    Route::get('/{id}/portfolio', [\App\Http\Controllers\CollectorHomeController::class, 'portfolio'])->name('portfolio')->where('id', '[A-Za-z0-9_-]+');
+    Route::get('/{id}/collections', [\App\Http\Controllers\CollectorHomeController::class, 'collections'])->name('collections')->where('id', '[A-Za-z0-9_-]+');
+    Route::get('/{id}/collection/{collection}', [\App\Http\Controllers\CollectorHomeController::class, 'showCollection'])->name('collection.show')->where(['id' => '[A-Za-z0-9_-]+', 'collection' => '[0-9]+']);
 
     // API endpoints for collector stats
-    Route::get('/{id}/stats', [\App\Http\Controllers\CollectorHomeController::class, 'getStats'])->name('stats')->where('id', '[0-9]+');
+    Route::get('/{id}/stats', [\App\Http\Controllers\CollectorHomeController::class, 'getStats'])->name('stats')->where('id', '[A-Za-z0-9_-]+');
 
     // Placeholder for future features
     Route::get('/under-construction', [\App\Http\Controllers\CollectorHomeController::class, 'underConstruction'])->name('under-construction');
@@ -521,19 +556,6 @@ Route::prefix('home')->name('home.')->group(function () {
     Route::post('/collections/{id}/monetization/cancel-subscription', [CollectionsController::class, 'cancelSubscription'])
         ->name('collections.subscription.cancel')
         ->middleware('auth');
-
-    // -------------------------------------------------------------------------
-    // Collection subscription FIAT (Stripe/PayPal — MiCA-safe)
-    // -------------------------------------------------------------------------
-    Route::post('/collections/{id}/fiat-subscription/initiate', [\App\Http\Controllers\CollectionSubscriptionPaymentController::class, 'initiatePayment'])
-        ->name('collections.fiat-subscription.initiate')
-        ->middleware('auth');
-
-    Route::get('/collections/{id}/fiat-subscription/success', [\App\Http\Controllers\CollectionSubscriptionPaymentController::class, 'paymentSuccess'])
-        ->name('collections.fiat-subscription.success');
-
-    Route::get('/collections/{id}/fiat-subscription/cancel', [\App\Http\Controllers\CollectionSubscriptionPaymentController::class, 'paymentCancel'])
-        ->name('collections.fiat-subscription.cancel');
 
     // Collection management (restricted to creators)
     // Route::middleware(['can:manage-collections'])->group(function () {
@@ -792,6 +814,14 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::delete('/profile/delete-banner', [App\Http\Controllers\ProfileImageController::class, 'deleteBanner'])
             ->name('profile.delete-banner');
 
+        // Creator Home Page Banner Management Routes
+        Route::post('/creator/upload-banner', [App\Http\Controllers\HomePageImageController::class, 'uploadCreatorBanner'])
+            ->name('creator.upload-banner');
+        Route::post('/creator/set-current-banner', [App\Http\Controllers\HomePageImageController::class, 'setCurrentCreatorBanner'])
+            ->name('creator.set-current-banner');
+        Route::delete('/creator/delete-banner', [App\Http\Controllers\HomePageImageController::class, 'deleteCreatorBanner'])
+            ->name('creator.delete-banner');
+
         // Account Statements Routes
         Route::get('/account/statements', [App\Http\Controllers\AccountStatementsController::class, 'index'])
             ->name('account.statements');
@@ -816,7 +846,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/account/invoices/{id}/pdf', [App\Http\Controllers\InvoiceController::class, 'downloadPdf'])
             ->name('account.invoices.download.pdf');
 
-        // Payment Settings Routes (Sellers only - Collectors excluded)
+        // Payment Settings Routes (Sellers + Collectors)
         Route::prefix('settings/payments')->name('settings.payments.')->group(function () {
             Route::get('/modal', [App\Http\Controllers\PaymentSettingsController::class, 'modal'])
                 ->name('modal');
@@ -1051,9 +1081,14 @@ Route::prefix('notifications')->group(function () {
     Route::prefix('wallet')->group(function () {
         Route::post('/response', [NotificationWalletResponseController::class, 'response'])
             ->name('notifications.wallets.response');
-
         Route::post('/archive', [NotificationWalletResponseController::class, 'notificationArchive'])
             ->name('notifications.wallets.notificationArchive');
+    });
+
+    // Commerce notifications
+    Route::prefix('commerce')->group(function () {
+        Route::post('/shipped', [\App\Http\Controllers\Notifications\Commerce\NotificationCommerceResponseController::class, 'handleShipped'])
+            ->name('notifications.commerce.shipped');
     });
 
     // Invitation notifications
@@ -1265,6 +1300,14 @@ Route::prefix('notifications/{notification}/gdpr')
             ->middleware('throttle:3,60');
     });
 
+Route::prefix('notifications/commerce')
+    ->name('notifications.commerce.')
+    ->middleware(['auth', 'verified'])
+    ->group(function () {
+        Route::post('/shipped', [App\Http\Controllers\Notifications\Commerce\NotificationCommerceResponseController::class, 'handleShipped'])->name('shipped');
+        Route::post('/archive', [App\Http\Controllers\Notifications\Commerce\NotificationCommerceResponseController::class, 'archive'])->name('archive');
+    });
+
 Route::prefix('api')->name('api.')->group(function () {
     // Reservation API endpoints
     Route::post('/egis/{egiId}/reserve', [ReservationController::class, 'apiReserve'])
@@ -1297,6 +1340,16 @@ Route::prefix('api')->name('api.')->group(function () {
     // API di configurazione
     Route::get('/app-config', [App\Http\Controllers\Api\AppConfigController::class, 'getAppConfig'])
         ->name('app.config');
+
+    // Onboarding Checklist API (AI Sidebar)
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/onboarding/checklist/{userType}/{userId}', [App\Http\Controllers\Api\OnboardingChecklistController::class, 'getChecklist'])
+            ->name('onboarding.checklist');
+        Route::post('/onboarding/checklist/{userType}/{userId}/refresh', [App\Http\Controllers\Api\OnboardingChecklistController::class, 'refreshChecklist'])
+            ->name('onboarding.checklist.refresh');
+        Route::get('/onboarding/progress/{userType}/{userId}', [App\Http\Controllers\Api\OnboardingChecklistController::class, 'getProgress'])
+            ->name('onboarding.progress');
+    });
 });
 
 /*

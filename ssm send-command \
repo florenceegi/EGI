@@ -1,0 +1,41 @@
+Success	
+  public.ai_feature_pricing ..................................................  
+  Columns ................................................................. 48  
+  Size .............................................................. 80.00 KB  
+
+  Column ................................................................ Type  
+  id int8, autoincrement  nextval('public.ai_feature_pricing_id_seq'::regclass) bigint  
+  feature_code varchar ................................ character varying(100)  
+  feature_name varchar ................................ character varying(255)  
+  feature_description text, nullable .................................... text  
+  feature_category varchar  'ai_services'::character varying character varying(255)  
+  cost_fiat_eur numeric, nullable .............................. numeric(10,2)  
+  cost_egili int4, nullable .......................................... integer  
+  is_free bool ................................................. false boolean  
+  free_monthly_limit int2, nullable ................................. smallint  
+  tier_pricing json, nullable ........................................... json  
+  min_tier_required varchar . 'free'::character varying character varying(255)  
+  is_bundle bool ............................................... false boolean  
+  bundle_features json, nullable ........................................ json  
+  discount_percentage int2 ............................ '0'::smallint smallint  
+  bundle_type varchar, nullable ........................ character varying(50)  
+  is_recurring bool ............................................ false boolean  
+  recurrence_period varchar  'one_time'::character varying character varying(255)  
+  duration_hours int4, nullable ...................................... integer  
+  expires bool ................................................. false boolean  
+  max_uses_per_purchase int4, nullable ............................... integer  
+  monthly_quota int4, nullable ....................................... integer  
+  stackable bool ................................................ true boolean  
+  feature_parameters json, nullable ..................................... json  
+  benefits json, nullable ............................................... json  
+  expected_roi_multiplier numeric, nullable ..................... numeric(5,2)  
+  is_active bool ................................................ true boolean  
+  available_from timestamp, nullable .......... timestamp(0) without time zone  
+  available_until timestamp, nullable ......... timestamp(0) without time zone  
+  is_beta bool ................................................. false boolean  
+  requires_approval bool ....................................... false boolean  
+  display_order int2 .................................. '0'::smallint smallint  
+  is_featured bool ............................................. false boolean  
+  icon_name varchar, nullable ......................... character varying(100)  
+  badge_color varchar, nullable ........................ character varying(50)  
+	

@@ -64,10 +64,35 @@ La rete concede visibilità effimera, ma non memoria. FlorenceEGI trasforma ques
    - Diritto di rivendita (con royalty Creator)
    - NON acquisisce il copyright o i diritti di riproduzione
 
-### Flusso di Co-Creazione
+### Il Flusso dell'Ecosistema EGI
+
+Il flusso si articola in tre atti distinti e sequenziali:
+
+**Atto 1 — Egizzare (Creator)**
+Il Creator carica l'asset nella piattaforma e lo trasforma in EGI:
+- Carica l'opera (fisica, digitale, intellettuale, contrattuale)
+- Aggiunge traits (caratteristiche, attributi, rarità) se desiderato
+- Aggiunge una utility all'opera
+- Abbina un CoA (Certificate of Authenticity) — generato su Algorand
+- Sceglie l'EPP (progetto ambientale) destinatario del 20%
+> Questo atto si chiama **Egizzare**. Non è ancora un mint.
+
+**Atto 2 — Attivazione (il Buyer diventa Co-Creatore)**
+Il primo acquisto dell'opera attiva il processo di Mint:
+- Il Buyer (che può essere un Collector, un Creator o una Company) acquista l'EGI
+- Questo primo acquisto si chiama **Attivazione dell'opera**
+- In questo momento il Buyer diventa il **Co-Creatore** — la sua firma è incisa per sempre nella blockchain
+- Durante il Mint viene automaticamente inviata la **fee del 20% all'EPP scelto dal Creator**
+> Il Co-Creatore non è una figura separata: è il Buyer del primo acquisto.
+
+**Atto 3 — EGI attivo nel mercato**
+- L'EGI esiste sulla blockchain Algorand
+- Il Creator riceve royalty del 4,5% su ogni rivendita successiva
+- Il Collector (chiunque compri dopo l'Attivazione) diventa custode dell'opera
+- Il valore dell'asset continua a generarsi nel tempo
 
 ```
-Creator → Co-Creatore (Minting) → Collector → Memoria Permanente Blockchain
+Creator Egizza → Buyer acquista (= Attivazione + diventa Co-Creatore) → 20% EPP automatico → EGI attivo → Royalty perpetue al Creator
 ```
 
 > _"Il Co-Creatore rimane per sempre legato all'opera. Anche se venduta, la sua firma resta visibile nella blockchain. La visibilità non è più sintomo di bisogno, ma conseguenza naturale della partecipazione autentica."_

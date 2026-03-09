@@ -318,9 +318,9 @@ class CollectionSubscriptionService {
                 try {
                     $recurringService = app(RecurringPaymentService::class);
                     $recurringService->registerSubscription(
-                        $user, 
-                        $collection, 
-                        'collection_subscription', 
+                        $user,
+                        $collection,
+                        'collection_subscription',
                         $expiresAt,
                         [
                             'cost_egili' => self::SUBSCRIPTION_COST_EGILI,
@@ -378,17 +378,16 @@ class CollectionSubscriptionService {
             'cost_eur_equivalent' => self::SUBSCRIPTION_COST_EGILI * 0.01, // 1 Egili = €0.01
         ];
     }
-        /**
+    /**
      * Record a renewal transaction (called by RecurringPaymentService)
      */
-    public function recordRenewalTransaction(User $user, Collection $collection, int $amount, int $durationDays)
-    {
+    public function recordRenewalTransaction(User $user, Collection $collection, int $amount, int $durationDays) {
         $expiresAt = now()->addDays($durationDays);
-        
+
         // Retrieve the EgiliTransaction that was just created (hacky but effective for MVP)
         // Or better: Pass the EgiliTransaction object if refactored.
         // For MVP, we'll just create the AiCredits record.
-        
+
         $egiliTransaction = \App\Models\EgiliTransaction::where('user_id', $user->id)
             ->where('amount', $amount)
             ->orderBy('created_at', 'desc')
@@ -423,10 +422,10 @@ class CollectionSubscriptionService {
                 'egili_transaction_id' => $egiliTransaction?->id,
             ]),
         ]);
-        
+
         // Clear cache
         Cache::forget("collection_has_rights_{$collection->id}");
-        
+
         $this->logger->info('[CollectionSubscription] Renewal recorded', [
             'collection_id' => $collection->id,
             'user_id' => $user->id,
@@ -437,8 +436,7 @@ class CollectionSubscriptionService {
      * Check if collection can sell EGIs (Policy Rule #1)
      * If subscription expired or invalid -> NO SALES
      */
-    public function canSellEgis(Collection $collection): bool
-    {
+    public function canSellEgis(Collection $collection): bool {
         return $this->collectionHasRights($collection);
     }
 
@@ -446,8 +444,7 @@ class CollectionSubscriptionService {
      * Check if a plan is eligible for the collection (Downgrade Protection Policy)
      * Cannot subscribe to plan < existing EGI count
      */
-    public function isPlanEligible(Collection $collection, int $planSize): bool
-    {
+    public function isPlanEligible(Collection $collection, int $planSize): bool {
         return $collection->egis()->count() <= $planSize;
     }
     /**
@@ -460,8 +457,7 @@ class CollectionSubscriptionService {
      * @deprecated Cancellazione basata sulle vecchie transazioni Egili.
      *             Per i nuovi abbonamenti FIAT gestire cancellazione tramite Stripe/PayPal.
      */
-    public function cancelSubscription(User $user, Collection $collection): array
-    {
+    public function cancelSubscription(User $user, Collection $collection): array {
         // 1. Get active subscription transaction
         $lastSubscription = AiCreditsTransaction::where('source_model', 'App\\Models\\Collection')
             ->where('source_id', $collection->id)
@@ -484,11 +480,11 @@ class CollectionSubscriptionService {
         // Rule A: Full Refund if < 24h OR No published EGIs ever
         $hoursSinceStart = $lastSubscription->created_at->diffInHours(now());
         $publishedEgisCount = $collection->egis()->where('status', 'published')->count();
-        
+
         $isFullRefund = ($hoursSinceStart < 24) || ($publishedEgisCount === 0);
-        
+
         $refundAmount = 0;
-        
+
         if ($isFullRefund) {
             $refundAmount = $lastSubscription->amount;
         } else {
@@ -497,7 +493,7 @@ class CollectionSubscriptionService {
             // Effective Days Used = TotalDays - DaysRemaining
             $totalDays = self::SUBSCRIPTION_DURATION_DAYS;
             $daysRemaining = now()->diffInDays($lastSubscription->expires_at, false);
-            
+
             if ($daysRemaining > 0) {
                 $dailyCost = $lastSubscription->amount / $totalDays;
                 $refundAmount = (int) round($daysRemaining * $dailyCost);
@@ -509,14 +505,14 @@ class CollectionSubscriptionService {
             // 3. Mark subscription as expired/cancelled
             $lastSubscription->is_expired = true;
             $lastSubscription->save(); // Or update status to 'cancelled' if field existed, but schema uses is_expired logic
-            
+
             // Also cancel Recurring Subscription if exists
             $recurringService = app(RecurringPaymentService::class);
             $recurringService->cancelSubscription($user, $collection, 'collection_subscription');
 
             // 4. Process Refund if applicable
             if ($refundAmount > 0) {
-                 $this->egiliService->earn(
+                $this->egiliService->earn(
                     $user,
                     $refundAmount,
                     'subscription_refund',
@@ -549,13 +545,12 @@ class CollectionSubscriptionService {
                 'refund_amount' => $refundAmount,
                 'refund_type' => $isFullRefund ? 'full' : 'prorated'
             ];
-
         } catch (\Exception $e) {
             DB::rollBack();
             $this->logger->error('[CollectionSubscription] Cancellation failed', [
                 'error' => $e->getMessage()
             ]);
-            
+
             return [
                 'success' => false,
                 'message' => 'Error processing cancellation: ' . $e->getMessage()

@@ -15,10 +15,8 @@ use Illuminate\Support\Facades\Schema;
  *
  * Relazione: Collection (1) → CollectionSubscription (N) — storico abbonamenti
  */
-return new class extends Migration
-{
-    public function up(): void
-    {
+return new class extends Migration {
+    public function up(): void {
         Schema::create('collection_subscriptions', function (Blueprint $table) {
             $table->id();
 
@@ -98,16 +96,19 @@ return new class extends Migration
             $table->softDeletes();
 
             // === INDICI ===
-            $table->index(['collection_id', 'status', 'expires_at'],
-                'col_subs_collection_status_expires');
-            $table->index(['user_id', 'status'],
-                'col_subs_user_status');
+            $table->index(
+                ['collection_id', 'status', 'expires_at'],
+                'col_subs_collection_status_expires'
+            );
+            $table->index(
+                ['user_id', 'status'],
+                'col_subs_user_status'
+            );
             $table->index('feature_code');
         });
     }
 
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('collection_subscriptions');
     }
 };

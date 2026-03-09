@@ -53,11 +53,11 @@ class CollectionSubscriptionPaymentController extends Controller {
                 'success' => true,
                 'plans'   => $plans->map(function ($plan) {
                     $params   = is_array($plan->feature_parameters)
-                                ? $plan->feature_parameters
-                                : (json_decode($plan->feature_parameters, true) ?? []);
+                        ? $plan->feature_parameters
+                        : (json_decode($plan->feature_parameters, true) ?? []);
                     $benefits = is_array($plan->benefits)
-                                ? $plan->benefits
-                                : (json_decode($plan->benefits, true) ?? []);
+                        ? $plan->benefits
+                        : (json_decode($plan->benefits, true) ?? []);
 
                     return [
                         'feature_code'       => $plan->feature_code,
