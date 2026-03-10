@@ -875,6 +875,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
                 ->name('stripe.return');
             Route::get('/stripe/refresh', [App\Http\Controllers\PaymentSettingsController::class, 'stripeRefresh'])
                 ->name('stripe.refresh');
+            Route::get('/stripe/status', [App\Http\Controllers\PaymentSettingsController::class, 'stripeStatus'])
+                ->name('stripe.status');
             Route::post('/bank-transfer/config', [App\Http\Controllers\PaymentSettingsController::class, 'updateBankConfig'])
                 ->name('bank-config');
             Route::get('/available', [App\Http\Controllers\PaymentSettingsController::class, 'getAvailable'])

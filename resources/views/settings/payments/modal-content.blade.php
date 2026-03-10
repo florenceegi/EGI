@@ -172,29 +172,122 @@
                                         {{-- Optional: Disconnect button could go here --}}
                                     </div>
                                 @else
-                                    <div class="space-y-4">
-                                        {{-- AI Wizard bubble --}}
-                                        <div class="flex items-start gap-3 rounded-xl border border-violet-500/20 bg-violet-900/20 p-4">
-                                            <span class="shrink-0 text-2xl">🤖</span>
-                                            <div>
-                                                <p class="mb-1 text-sm font-semibold text-violet-200">
-                                                    {{ __('payment.wizard.intro_title') }}
-                                                </p>
-                                                <p class="text-xs leading-relaxed text-gray-300">
-                                                    {{ __('payment.wizard.intro_text', ['psp_name' => $pspName]) }}
-                                                </p>
-                                                <p class="mt-2 text-[11px] text-amber-400/80">
-                                                    💡 {{ __('payment.wizard.intro_note') }}
-                                                </p>
+                                    {{-- 4-step Stripe Onboarding Wizard (popup approach — utente non lascia FlorenceEGI) --}}
+                                    <div id="stripe-wizard" class="space-y-3">
+
+                                        {{-- Step 1: Intro --}}
+                                        <div id="sw-step-1" class="sw-step">
+                                            <div class="flex items-start gap-3 rounded-xl border border-violet-500/20 bg-violet-900/20 p-4">
+                                                <span class="shrink-0 text-2xl">🤖</span>
+                                                <div>
+                                                    <p class="mb-1 text-sm font-semibold text-violet-200">
+                                                        {{ __('payment.wizard.intro_title') }}
+                                                    </p>
+                                                    <p class="text-xs leading-relaxed text-gray-300">
+                                                        {{ __('payment.wizard.intro_text', ['psp_name' => $pspName]) }}
+                                                    </p>
+                                                    <p class="mt-2 text-[11px] text-amber-400/80">
+                                                        💡 {{ __('payment.wizard.intro_note') }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <button type="button" onclick="window.stripeWizard.go(2)"
+                                                class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-violet-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition-all hover:scale-[1.02] hover:from-violet-500 hover:to-violet-400">
+                                                <span>{{ __('payment.wizard.step1_next') }}</span>
+                                                <span>→</span>
+                                            </button>
+                                        </div>
+
+                                        {{-- Step 2: Cosa ti serve --}}
+                                        <div id="sw-step-2" class="sw-step hidden">
+                                            <p class="mb-3 text-sm font-semibold text-gray-200">
+                                                {{ __('payment.wizard.step2_title') }}
+                                            </p>
+                                            <ul class="mb-4 space-y-2">
+                                                <li class="flex items-center gap-2 text-xs text-gray-300">
+                                                    <span class="text-green-400 font-bold">✓</span>
+                                                    {{ __('payment.wizard.step2_item1') }}
+                                                </li>
+                                                <li class="flex items-center gap-2 text-xs text-gray-300">
+                                                    <span class="text-green-400 font-bold">✓</span>
+                                                    {{ __('payment.wizard.step2_item2') }}
+                                                </li>
+                                                <li class="flex items-center gap-2 text-xs text-gray-300">
+                                                    <span class="text-green-400 font-bold">✓</span>
+                                                    {{ __('payment.wizard.step2_item3') }}
+                                                </li>
+                                            </ul>
+                                            <div class="flex gap-2">
+                                                <button type="button" onclick="window.stripeWizard.go(1)"
+                                                    class="flex-1 rounded-xl border border-white/10 px-3 py-2.5 text-xs text-gray-400 transition-colors hover:border-white/20 hover:text-gray-200">
+                                                    ← {{ __('payment.wizard.back') }}
+                                                </button>
+                                                <button type="button" onclick="window.stripeWizard.go(3)"
+                                                    class="flex-[2] rounded-xl bg-gradient-to-r from-violet-600 to-violet-500 px-4 py-2.5 text-sm font-bold text-white transition-all hover:scale-[1.02]">
+                                                    {{ __('payment.wizard.step2_next') }} →
+                                                </button>
                                             </div>
                                         </div>
-                                        {{-- CTA --}}
-                                        <button type="button" id="stripe-onboarding-btn"
-                                            onclick="window.paymentModal.startOnboarding()"
-                                            class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-green-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] hover:from-green-500 hover:to-green-400 disabled:cursor-not-allowed disabled:opacity-60">
-                                            <span>💳</span>
-                                            <span id="stripe-onboarding-btn-text">{{ __('payment.wizard.cta', ['psp_name' => $pspName]) }}</span>
-                                        </button>
+
+                                        {{-- Step 3: Apri finestra Stripe --}}
+                                        <div id="sw-step-3" class="sw-step hidden">
+                                            <div class="mb-3 rounded-xl border border-amber-500/20 bg-amber-900/10 p-3">
+                                                <p class="text-xs leading-relaxed text-amber-300/90">
+                                                    🪟 {{ __('payment.wizard.step3_note') }}
+                                                </p>
+                                            </div>
+                                            <button type="button" id="stripe-onboarding-btn"
+                                                onclick="window.stripeWizard.openPopup()"
+                                                class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-green-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] hover:from-green-500 hover:to-green-400 disabled:cursor-not-allowed disabled:opacity-60">
+                                                <span>💳</span>
+                                                <span id="stripe-onboarding-btn-text">{{ __('payment.wizard.step3_cta', ['psp_name' => $pspName]) }}</span>
+                                            </button>
+                                            <p id="sw-popup-blocked" class="mt-2 hidden text-center text-[11px] text-red-400">
+                                                ⚠️ {{ __('payment.wizard.popup_blocked') }}
+                                            </p>
+                                            <button type="button" onclick="window.stripeWizard.go(2)"
+                                                class="mt-2 w-full rounded-xl border border-white/10 px-4 py-2 text-xs text-gray-400 transition-colors hover:border-white/20 hover:text-gray-200">
+                                                ← {{ __('payment.wizard.back') }}
+                                            </button>
+                                        </div>
+
+                                        {{-- Step 4: Risultato --}}
+                                        <div id="sw-step-4" class="sw-step hidden">
+                                            {{-- Checking spinner --}}
+                                            <div id="sw-result-checking" class="rounded-xl border border-violet-500/20 bg-violet-900/10 p-5 text-center">
+                                                <p class="text-sm text-gray-400">{{ __('payment.wizard.step4_checking') }}</p>
+                                            </div>
+                                            {{-- Complete --}}
+                                            <div id="sw-result-complete" class="hidden rounded-xl border border-green-500/30 bg-green-900/20 p-5 text-center">
+                                                <div class="text-3xl">🎉</div>
+                                                <p class="mt-2 text-sm font-semibold text-green-400">{{ __('payment.wizard.step4_complete') }}</p>
+                                                <p class="mt-1 text-xs text-gray-400">{{ __('payment.wizard.step4_complete_hint') }}</p>
+                                            </div>
+                                            {{-- Pending / restricted --}}
+                                            <div id="sw-result-pending" class="hidden rounded-xl border border-amber-500/30 bg-amber-900/20 p-5 text-center">
+                                                <div class="text-3xl">⏳</div>
+                                                <p class="mt-2 text-sm font-semibold text-amber-400">{{ __('payment.wizard.step4_pending') }}</p>
+                                                <p class="mt-1 text-xs text-gray-400">{{ __('payment.wizard.step4_pending_hint') }}</p>
+                                            </div>
+                                            {{-- Error --}}
+                                            <div id="sw-result-error" class="hidden rounded-xl border border-red-500/30 bg-red-900/20 p-5 text-center">
+                                                <div class="text-3xl">❌</div>
+                                                <p class="mt-2 text-sm font-semibold text-red-400">{{ __('payment.wizard.step4_error') }}</p>
+                                                <button type="button" onclick="window.stripeWizard.go(3)"
+                                                    class="mt-3 rounded-xl border border-white/10 px-4 py-2 text-xs text-gray-400 hover:text-gray-200">
+                                                    {{ __('payment.wizard.step4_retry') }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Step indicator dots --}}
+                                    <div class="mt-3 flex items-center justify-center gap-1.5">
+                                        @foreach ([1, 2, 3, 4] as $s)
+                                            <span id="sw-dot-{{ $s }}"
+                                                class="h-1.5 rounded-full transition-all duration-300 {{ $s === 1 ? 'w-4 bg-violet-400' : 'w-1.5 bg-white/20' }}">
+                                            </span>
+                                        @endforeach
                                     </div>
                                 @endif
                             </div>

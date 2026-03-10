@@ -13,7 +13,6 @@ use Ultra\UltraLogManager\UltraLogManager;
 use App\Services\Gdpr\AuditLogService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use App\Services\Payment\StripeConnectService;
 use App\Services\OnboardingChecklistService;
 
@@ -432,23 +431,59 @@ class PaymentSettingsController extends Controller {
      * Handle Stripe return URL after successful onboarding.
      * Refreshes checklist cache and redirects with success flash.
      */
-    public function stripeReturn(Request $request): RedirectResponse
+    public function stripeReturn(Request $request): View
     {
         $user = Auth::user();
         $this->checklistService->refreshChecklist($user, 'creator');
 
-        $this->logger->info('[PaymentSettings] Stripe onboarding completed', ['user_id' => $user->id]);
+        $this->logger->info('[PaymentSettings] Stripe onboarding popup completed', ['user_id' => $user->id]);
 
-        return redirect(url('/'))->with('success', __('payment.wizard.success'));
+        // Returns a minimal HTML page that calls window.opener.stripeOnboardingComplete() + window.close()
+        return view('settings.payments.stripe-popup-return');
     }
 
     /**
      * Handle Stripe refresh URL (hosted onboarding link expired).
-     * Prompts user to restart the wizard.
+     * Returns close-popup page — same behavior.
      */
-    public function stripeRefresh(Request $request): RedirectResponse
+    public function stripeRefresh(Request $request): View
     {
-        return redirect(url('/'))->with('info', __('payment.wizard.refresh'));
+        return view('settings.payments.stripe-popup-return');
+    }
+
+    /**
+     * Return Stripe Connect account status as JSON.
+     * Called by the wizard JS after the popup closes.
+     */
+    public function stripeStatus(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+        $accountId = $user->stripe_account_id ?? null;
+
+        if (empty($accountId)) {
+            return response()->json(['connected' => false, 'status' => 'incomplete']);
+        }
+
+        $account = $this->stripeConnect->retrieveAccount($accountId);
+
+        if (!$account) {
+            return response()->json(['connected' => false, 'status' => 'error']);
+        }
+
+        $chargesEnabled  = $account['charges_enabled']  ?? false;
+        $detailsSubmitted = $account['details_submitted'] ?? false;
+
+        $status = match (true) {
+            $chargesEnabled                        => 'complete',
+            $detailsSubmitted && !$chargesEnabled  => 'restricted',
+            default                                => 'pending',
+        };
+
+        return response()->json([
+            'connected' => true,
+            'status'    => $status,
+            'account_id' => $accountId,
+        ]);
     }
 
     /**

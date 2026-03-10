@@ -230,32 +230,10 @@
                 }
             },
 
-            startOnboarding: async function() {
-                const btn = document.getElementById('stripe-onboarding-btn');
-                const btnText = document.getElementById('stripe-onboarding-btn-text');
-                const originalText = btnText ? btnText.textContent : '';
-                if (btn) btn.disabled = true;
-                if (btnText) btnText.textContent = '{{ __('payment.wizard.processing') }}';
-                try {
-                    const response = await fetch('{{ route('settings.payments.stripe.start-onboarding') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
-                    });
-                    const data = await response.json();
-                    if (data.success && data.url) {
-                        window.location.href = data.url;
-                    } else {
-                        if (btn) btn.disabled = false;
-                        if (btnText) btnText.textContent = originalText;
-                        this.showNotification(data.message || '{{ __('payment.wizard.link_failed') }}', 'error');
-                    }
-                } catch (e) {
-                    if (btn) btn.disabled = false;
-                    if (btnText) btnText.textContent = originalText;
-                    this.showNotification('{{ __('payment.wizard.link_failed') }}', 'error');
+            startOnboarding: function() {
+                // Delegato a stripeWizard.openPopup() — popup approach, utente non lascia FlorenceEGI
+                if (window.stripeWizard) {
+                    window.stripeWizard.openPopup();
                 }
             },
 
@@ -274,5 +252,150 @@
                 }
             }
         };
+
+    /**
+     * Stripe Onboarding Wizard — popup approach.
+     * Utente non lascia mai FlorenceEGI. La finestra Stripe si apre in popup.
+     * Quando chiude → check /stripe/status → mostra step 4 risultato.
+     *
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     */
+    window.stripeWizard = {
+        _pollTimer: null,
+        _popup: null,
+
+        go: function (step) {
+            [1, 2, 3, 4].forEach(function (s) {
+                var el  = document.getElementById('sw-step-' + s);
+                var dot = document.getElementById('sw-dot-' + s);
+                if (el)  { s === step ? el.classList.remove('hidden') : el.classList.add('hidden'); }
+                if (dot) {
+                    dot.className = s === step
+                        ? 'h-1.5 rounded-full transition-all duration-300 w-4 bg-violet-400'
+                        : 'h-1.5 rounded-full transition-all duration-300 w-1.5 bg-white/20';
+                }
+            });
+        },
+
+        openPopup: async function () {
+            var btn            = document.getElementById('stripe-onboarding-btn');
+            var btnText        = document.getElementById('stripe-onboarding-btn-text');
+            var popupBlockedEl = document.getElementById('sw-popup-blocked');
+            var processing     = '{{ __('payment.wizard.processing') }}';
+            var ctaLabel       = '{{ __('payment.wizard.step3_cta', ['psp_name' => $pspName]) }}';
+
+            if (btn)            btn.disabled = true;
+            if (btnText)        btnText.textContent = processing;
+            if (popupBlockedEl) popupBlockedEl.classList.add('hidden');
+
+            try {
+                var response = await fetch('{{ route('settings.payments.stripe.start-onboarding') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+                var data = await response.json();
+
+                if (!data.success || !data.url) {
+                    if (btn)     btn.disabled = false;
+                    if (btnText) btnText.textContent = ctaLabel;
+                    if (window.paymentModal) {
+                        window.paymentModal.showNotification(
+                            data.message || '{{ __('payment.wizard.link_failed') }}', 'error'
+                        );
+                    }
+                    return;
+                }
+
+                // Apri Stripe in popup — FlorenceEGI resta aperta
+                var left   = Math.round((screen.width  - 840) / 2);
+                var top    = Math.round((screen.height - 720) / 2);
+                var popup  = window.open(
+                    data.url,
+                    'stripe-onboarding',
+                    'width=840,height=720,scrollbars=yes,resizable=yes,left=' + left + ',top=' + top
+                );
+
+                if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+                    // Popup bloccato dal browser
+                    if (btn)            btn.disabled = false;
+                    if (btnText)        btnText.textContent = ctaLabel;
+                    if (popupBlockedEl) popupBlockedEl.classList.remove('hidden');
+                    return;
+                }
+
+                this._popup = popup;
+
+                // Callback da stripe-popup-return.blade.php
+                var self = this;
+                window.stripeOnboardingComplete = function () { self._onPopupClose(true); };
+
+                // Polling fallback: se l'utente chiude manualmente
+                this._pollTimer = setInterval(function () {
+                    if (popup.closed) {
+                        clearInterval(self._pollTimer);
+                        self._onPopupClose(false);
+                    }
+                }, 2000);
+
+                if (btn)     btn.disabled = false;
+                if (btnText) btnText.textContent = ctaLabel;
+
+            } catch (e) {
+                if (btn)     btn.disabled = false;
+                if (btnText) btnText.textContent = ctaLabel;
+                if (window.paymentModal) {
+                    window.paymentModal.showNotification('{{ __('payment.wizard.link_failed') }}', 'error');
+                }
+            }
+        },
+
+        _onPopupClose: function (completed) {
+            clearInterval(this._pollTimer);
+            this._pollTimer = null;
+            this.go(4);
+            this.checkStatus();
+        },
+
+        checkStatus: async function () {
+            var elChecking = document.getElementById('sw-result-checking');
+            var elComplete = document.getElementById('sw-result-complete');
+            var elPending  = document.getElementById('sw-result-pending');
+            var elError    = document.getElementById('sw-result-error');
+
+            [elChecking, elComplete, elPending, elError].forEach(function (el) {
+                if (el) el.classList.add('hidden');
+            });
+            if (elChecking) elChecking.classList.remove('hidden');
+
+            try {
+                var response = await fetch('{{ route('settings.payments.stripe.status') }}', {
+                    headers: { 'Accept': 'application/json' }
+                });
+                var data = await response.json();
+
+                if (elChecking) elChecking.classList.add('hidden');
+
+                if (data.connected && data.status === 'complete') {
+                    if (elComplete) elComplete.classList.remove('hidden');
+                    // Ricarica il modal dopo 2 secondi per mostrare stato "Connected"
+                    setTimeout(function () {
+                        if (window.paymentModal && typeof window.paymentModal.loadContent === 'function') {
+                            window.paymentModal.loadContent();
+                        }
+                    }, 2500);
+                } else if (data.connected && (data.status === 'pending' || data.status === 'restricted')) {
+                    if (elPending) elPending.classList.remove('hidden');
+                } else {
+                    if (elError) elError.classList.remove('hidden');
+                }
+            } catch (e) {
+                if (elChecking) elChecking.classList.add('hidden');
+                if (elError)    elError.classList.remove('hidden');
+            }
+        }
+    };
     </script>
 @endpush
