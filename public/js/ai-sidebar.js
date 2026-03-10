@@ -473,34 +473,128 @@
     /**
      * Handle Natan action event from SSE
      * Called when AI outputs [[NATAN_ACTION:create_egi:{...}]]
+     * Opens inline multi-file uploader directly in the chat — NO redirect.
      */
     function handleNatanAction(action, messageId) {
         if (action.type !== "create_egi" || !action.data) return;
 
         const data = action.data;
+        const uid = "natan-up-" + Date.now();
 
-        // Store preload data for the upload form (NatanBatchMint.checkSessionPreload() will read this)
-        sessionStorage.setItem("__natanMintPreload", JSON.stringify({
-            price: data.price_eur,
-            titleBase: data.title,
-        }));
+        const uploaderHtml =
+            '<div class="mt-3 rounded-lg border border-violet-500/40 bg-gray-800/60 p-3" id="' + uid + '-wrap">' +
+            '<p class="mb-2 text-xs text-violet-300">📁 Seleziona i tuoi file — li carico io:</p>' +
+            '<label class="block cursor-pointer rounded-lg border-2 border-dashed border-violet-500/40 p-4 text-center hover:border-violet-400 transition-colors">' +
+            '<span class="text-2xl">🖼️</span>' +
+            '<p class="text-xs text-gray-300 mt-1">Clicca o trascina i file qui</p>' +
+            '<p class="text-xs text-gray-500 mt-0.5">PNG, JPG, GIF, MP4, PDF, ecc.</p>' +
+            '<input type="file" multiple class="hidden" id="' + uid + '-input">' +
+            '</label>' +
+            '<div id="' + uid + '-list" class="mt-2 space-y-1"></div>' +
+            '<button id="' + uid + '-btn" class="hidden mt-2 w-full rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500 transition-colors">' +
+            '⬆️ Carica <span id="' + uid + '-count">0</span> file' +
+            '</button>' +
+            '</div>';
 
-        // Append redirect button after the AI message
-        const btnDiv = document.createElement("div");
-        btnDiv.className = "mt-3 rounded-lg border border-green-500/40 bg-green-900/30 p-3";
-        btnDiv.innerHTML =
-            '<p class="mb-2 text-xs text-green-300">\u2705 Ho tutto. Allegami solo i tuoi file:</p>' +
-            '<a href="/egi/upload" class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-500">' +
-            '\ud83d\udce4 Vai al form di upload \u2192' +
-            "</a>";
+        const uploaderEl = document.createElement("div");
+        uploaderEl.innerHTML = uploaderHtml;
 
-        // Append after the message element
         const msgEl = state.chatContainer.querySelector("#" + messageId);
-        if (msgEl) {
-            msgEl.appendChild(btnDiv);
-        } else {
-            state.chatContainer.appendChild(btnDiv);
+        if (msgEl) msgEl.appendChild(uploaderEl.firstElementChild);
+        else state.chatContainer.appendChild(uploaderEl.firstElementChild);
+        state.chatContainer.scrollTop = state.chatContainer.scrollHeight;
+
+        // Wire up file input
+        const fileInput = document.getElementById(uid + "-input");
+        const fileList  = document.getElementById(uid + "-list");
+        const uploadBtn = document.getElementById(uid + "-btn");
+        const countEl   = document.getElementById(uid + "-count");
+
+        fileInput.addEventListener("change", function () {
+            fileList.innerHTML = "";
+            const files = Array.from(fileInput.files);
+            files.forEach(function (f, i) {
+                const num = files.length > 1 ? " #" + (i + 1) : "";
+                const title = data.title + num;
+                const row = document.createElement("div");
+                row.id = uid + "-file-" + i;
+                row.className = "flex items-center gap-2 rounded bg-gray-700/60 px-2 py-1 text-xs text-gray-200";
+                row.innerHTML =
+                    '<span class="shrink-0 text-base">🖼️</span>' +
+                    '<span class="flex-1 truncate">' + f.name + '</span>' +
+                    '<span class="shrink-0 text-gray-400 italic">' + title + ' · €' + data.price_eur + '</span>' +
+                    '<span class="shrink-0 status-dot text-gray-500">⏳</span>';
+                fileList.appendChild(row);
+            });
+            countEl.textContent = files.length;
+            uploadBtn.classList.remove("hidden");
+            state.chatContainer.scrollTop = state.chatContainer.scrollHeight;
+        });
+
+        uploadBtn.addEventListener("click", function () {
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = "⏳ Caricamento in corso...";
+            const files = Array.from(fileInput.files);
+            uploadEgiFiles(files, data.title, data.price_eur, uid, msgEl || state.chatContainer);
+        });
+    }
+
+    /**
+     * Upload multiple files to POST /upload/egi one by one.
+     * Titles: "Cosmonauta" (1 file) or "Cosmonauta #1", "Cosmonauta #2" (many files).
+     */
+    async function uploadEgiFiles(files, titleBase, priceEur, uid, appendTarget) {
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content || "";
+        let successCount = 0;
+        let errorCount = 0;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const title = files.length > 1 ? titleBase + " #" + (i + 1) : titleBase;
+            const rowEl = document.getElementById(uid + "-file-" + i);
+            const dot = rowEl ? rowEl.querySelector(".status-dot") : null;
+            if (dot) dot.textContent = "⏫";
+
+            try {
+                const fd = new FormData();
+                fd.append("file", file);
+                fd.append("egi-title", title);
+                fd.append("egi-floor-price", priceEur);
+                fd.append("_token", csrf);
+
+                const res = await fetch("/upload/egi", {
+                    method: "POST",
+                    headers: { "X-CSRF-TOKEN": csrf },
+                    body: fd,
+                });
+
+                if (res.ok) {
+                    successCount++;
+                    if (dot) dot.textContent = "✅";
+                } else {
+                    errorCount++;
+                    if (dot) dot.textContent = "❌";
+                }
+            } catch (e) {
+                errorCount++;
+                if (dot) dot.textContent = "❌";
+            }
         }
+
+        // Final summary message in chat
+        const wrap = document.getElementById(uid + "-wrap");
+        const summaryEl = document.createElement("div");
+        summaryEl.className = "mt-2 rounded-lg p-2 text-xs font-medium " +
+            (errorCount === 0 ? "bg-green-900/40 text-green-300" : "bg-yellow-900/40 text-yellow-300");
+        summaryEl.textContent = errorCount === 0
+            ? "✅ " + successCount + " EGI " + (successCount === 1 ? "caricato" : "caricati") + " con successo!"
+            : "⚠️ " + successCount + " ok, " + errorCount + " errori. Riprova quelli con ❌.";
+        if (wrap) wrap.appendChild(summaryEl);
+
+        // Disable input so it can't be resubmitted
+        const inputEl = document.getElementById(uid + "-input");
+        if (inputEl) inputEl.disabled = true;
+
         state.chatContainer.scrollTop = state.chatContainer.scrollHeight;
     }
 
