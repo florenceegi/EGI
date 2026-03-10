@@ -278,11 +278,13 @@
             <div class="border-t border-gray-700/50 bg-gray-800/50 p-3">
                 {{-- Quick suggestion chips --}}
                 <div id="ai-sidebar-suggestions" class="mb-2 flex flex-wrap gap-1.5">
+                    @auth
                     <button type="button"
                         class="ai-suggestion-chip rounded-full border border-indigo-500/40 bg-indigo-900/30 px-3 py-1 text-xs text-indigo-200 transition-colors hover:bg-indigo-800/50 hover:text-white"
                         data-message="{{ __('ai_sidebar.suggestion_create_egi_msg') }}">
                         ✨ {{ __('ai_sidebar.suggestion_create_egi_label') }}
                     </button>
+                    @endauth
                     @if ($unpublishedCount > 0)
                     <button type="button" id="ai-publish-chip"
                         class="rounded-full border border-amber-500/50 bg-amber-900/30 px-3 py-1 text-xs text-amber-200 transition-colors hover:bg-amber-800/50 hover:text-white">

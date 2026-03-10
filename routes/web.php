@@ -217,11 +217,15 @@ Route::middleware('auth')->group(function () {
 // ====================================================
 // AI ART ADVISOR - Multi-Expert Chat Assistant
 // ====================================================
-Route::prefix('art-advisor')->name('art-advisor.')->middleware('auth')->group(function () {
+Route::prefix('art-advisor')->name('art-advisor.')->group(function () {
+    // Chat: accessible to guests + authenticated users (throttle 20 req/min per IP)
     Route::post('/chat', [App\Http\Controllers\ArtAdvisorController::class, 'chat'])
-        ->name('chat');
+        ->name('chat')
+        ->middleware('throttle:20,1');
+    // Test: auth-protected only
     Route::get('/test', [App\Http\Controllers\ArtAdvisorController::class, 'test'])
-        ->name('test');
+        ->name('test')
+        ->middleware('auth');
 });
 
 // SECURITY: Debug routes available only when APP_DEBUG is true

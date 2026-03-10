@@ -144,6 +144,9 @@
         state.sidebar.classList.remove("collapsed");
         state.sidebar.setAttribute("aria-hidden", "false");
         state.toggleBtn.dataset.sidebarOpen = "true";
+        // Hide FAB so it doesn't overlap the chat send button
+        state.toggleBtn.style.opacity = "0";
+        state.toggleBtn.style.pointerEvents = "none";
         localStorage.setItem(state.storageKey, "true");
 
         // Focus input
@@ -162,6 +165,9 @@
         state.sidebar.classList.add("collapsed");
         state.sidebar.setAttribute("aria-hidden", "true");
         state.toggleBtn.dataset.sidebarOpen = "false";
+        // Restore FAB visibility
+        state.toggleBtn.style.opacity = "";
+        state.toggleBtn.style.pointerEvents = "";
         localStorage.setItem(state.storageKey, "false");
     }
 
