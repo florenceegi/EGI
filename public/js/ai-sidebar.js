@@ -413,19 +413,29 @@
                     const chunk = decoder.decode(value);
                     const lines = chunk.split("\n");
 
+                    let currentEvent = "";
                     for (const line of lines) {
-                        if (line.startsWith("data: ")) {
-                            try {
-                                const data = JSON.parse(line.slice(6));
-                                if (data.content) {
-                                    fullMessage += data.content;
+                        if (line.startsWith("event: ")) {
+                            currentEvent = line.slice(7).trim();
+                        } else if (line.startsWith("data: ")) {
+                            if (currentEvent === "action") {
+                                try {
+                                    const action = JSON.parse(line.slice(6));
+                                    handleNatanAction(action, messageId);
+                                } catch (e) { /* ignore */ }
+                            } else {
+                                try {
+                                    const data = JSON.parse(line.slice(6));
+                                    if (data.content) {
+                                        fullMessage += data.content;
+                                        updateChatMessage(messageId, fullMessage);
+                                    }
+                                } catch (e) {
+                                    fullMessage += line.slice(6);
                                     updateChatMessage(messageId, fullMessage);
                                 }
-                            } catch (e) {
-                                // Not JSON, might be raw text
-                                fullMessage += line.slice(6);
-                                updateChatMessage(messageId, fullMessage);
                             }
+                            currentEvent = "";
                         }
                     }
                 }
@@ -447,6 +457,40 @@
             state.chatInput.disabled = false;
             state.chatInput.focus();
         }
+    }
+
+    /**
+     * Handle Natan action event from SSE
+     * Called when AI outputs [[NATAN_ACTION:create_egi:{...}]]
+     */
+    function handleNatanAction(action, messageId) {
+        if (action.type !== "create_egi" || !action.data) return;
+
+        const data = action.data;
+
+        // Store preload data for the upload form (NatanBatchMint.checkSessionPreload() will read this)
+        sessionStorage.setItem("__natanMintPreload", JSON.stringify({
+            price: data.price_eur,
+            titleBase: data.title,
+        }));
+
+        // Append redirect button after the AI message
+        const btnDiv = document.createElement("div");
+        btnDiv.className = "mt-3 rounded-lg border border-green-500/40 bg-green-900/30 p-3";
+        btnDiv.innerHTML =
+            '<p class="mb-2 text-xs text-green-300">\u2705 Ho tutto. Allegami solo i tuoi file:</p>' +
+            '<a href="/egi/upload" class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-500">' +
+            '\ud83d\udce4 Vai al form di upload \u2192' +
+            "</a>";
+
+        // Append after the message element
+        const msgEl = state.chatContainer.querySelector("#" + messageId);
+        if (msgEl) {
+            msgEl.appendChild(btnDiv);
+        } else {
+            state.chatContainer.appendChild(btnDiv);
+        }
+        state.chatContainer.scrollTop = state.chatContainer.scrollHeight;
     }
 
     /**

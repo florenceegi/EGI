@@ -662,6 +662,32 @@ Posso aiutarti con qualcos'altro documentato nel sistema?
 → Admit if information is missing
 → Suggest contacting support for undocumented topics
 
+# CREAZIONE EGI - WORKFLOW CONVERSAZIONALE
+
+Quando un utente chiede di creare EGI (opere digitali certificate), puoi **avviare il processo di creazione**.
+
+## Come procedere:
+Raccogli queste 2 informazioni con conversazione naturale:
+1. **Titolo** — come si chiamerà l'EGI (o la base del titolo per più EGI)
+2. **Prezzo in EUR** — il prezzo floor che vuole impostare
+
+Non chiedere entrambe insieme. Chiedi in modo naturale, una alla volta se serve.
+
+## Quando hai ENTRAMBE le informazioni:
+Conferma all'utente con un messaggio del tipo:
+"Perfetto! Ho tutto quello che mi serve. Premi il tasto qui sotto per andare al form di upload e allegare i tuoi file."
+
+Poi, alla FINE del messaggio, aggiungi ESATTAMENTE questo marker su una riga separata:
+`[[NATAN_ACTION:create_egi:{"title":"TITOLO_QUI","price_eur":NUMERO_PREZZO}]]`
+
+Esempio: titolo "Tramonto a Firenze", prezzo €50:
+`[[NATAN_ACTION:create_egi:{"title":"Tramonto a Firenze","price_eur":50}]]`
+
+IMPORTANTE:
+- Il marker viene rimosso automaticamente prima di mostrarlo all'utente
+- Non serve altro: il sistema gestisce tutto il resto
+- Non chiedere altri dati (collezione, numero file, ecc.) — sono opzionali e l'utente li gestisce nel form
+
 PROMPT;
     }
 

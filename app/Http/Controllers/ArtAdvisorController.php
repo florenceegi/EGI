@@ -95,14 +95,37 @@ class ArtAdvisorController extends Controller {
                     $useVision
                 );
 
+                // Detect and strip [[NATAN_ACTION:create_egi:{...}]] marker
+                $actionData = null;
+                $cleanMessage = preg_replace_callback(
+                    '/\[\[NATAN_ACTION:create_egi:(\{.*?\})\]\]/s',
+                    function ($matches) use (&$actionData) {
+                        $decoded = json_decode($matches[1], true);
+                        if ($decoded) {
+                            $actionData = $decoded;
+                        }
+                        return ''; // remove marker from text
+                    },
+                    $response['message'] ?? ''
+                );
+                $cleanMessage = trim($cleanMessage);
+
                 // Send response chunk by chunk (simulate streaming for better UX)
-                $this->streamResponse($response['message']);
+                $this->streamResponse($cleanMessage);
 
                 // Send completion event
                 $this->sendSSE('complete', [
                     'model' => $response['model'] ?? 'unknown',
                     'usage' => $response['usage'] ?? null,
                 ]);
+
+                // Send action event if marker was found
+                if ($actionData !== null) {
+                    $this->sendSSE('action', [
+                        'type' => 'create_egi',
+                        'data' => $actionData,
+                    ]);
+                }
             } catch (\Exception $e) {
                 $this->logger->error('[ArtAdvisorController] Chat error', [
                     'error' => $e->getMessage(),
