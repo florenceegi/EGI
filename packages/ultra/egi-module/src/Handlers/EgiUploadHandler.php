@@ -457,7 +457,7 @@ class EgiUploadHandler {
             'mime_type' => $mimeType,
             'crypt_filename' => $crypt_filename,
             'title' => Str::limit($egiTitle, 60),
-            'description' => $validatedData['egi-description'],
+            'description' => $validatedData['egi-description'] ?? null,
             'position' => $egiPosition,
             'floor_price' => $egiFloorPrice,
             'is_published' => $isPublished,

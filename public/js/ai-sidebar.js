@@ -617,6 +617,7 @@
                 const fd = new FormData();
                 fd.append("file", file);
                 fd.append("egi-title", title);
+                fd.append("egi-description", "");
                 fd.append("egi-floor-price", priceEur);
                 fd.append("_token", csrf);
 
