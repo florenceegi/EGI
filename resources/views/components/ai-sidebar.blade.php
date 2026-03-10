@@ -32,6 +32,23 @@
     $totalCount = count($checklist);
     $progressPercent = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
 
+    // Unpublished EGIs (only for owner)
+    $unpublishedEgis = [];
+    if ($isOwner && $user) {
+        $unpublishedEgis = $user->createdEgis()
+            ->where('is_published', false)
+            ->select('id', 'title', 'collection_id', 'user_id', 'key_file')
+            ->limit(20)
+            ->get()
+            ->map(fn($e) => [
+                'id'    => $e->id,
+                'title' => $e->title ?? __('ai_sidebar.untitled_egi'),
+                'thumb' => $e->thumbnail_image_url,
+            ])
+            ->toArray();
+    }
+    $unpublishedCount = count($unpublishedEgis);
+
     // Show sidebar if: owner with checklist OR custom context message provided
     $shouldShowSidebar = ($isOwner && $totalCount > 0) || $contextMessage;
 @endphp
@@ -149,7 +166,10 @@
     <aside id="ai-sidebar"
         class="ai-sidebar collapsed via-gray-850 fixed bottom-0 right-4 top-20 z-[1000] flex w-80 flex-col overflow-hidden rounded-2xl border border-gray-700/50 bg-gradient-to-b from-gray-900 to-gray-900 shadow-2xl md:w-96"
         data-user-id="{{ $user?->id ?? 0 }}" data-user-type="{{ $userType }}"
-        data-checklist="{{ json_encode($checklist) }}" aria-hidden="true">
+        data-checklist="{{ json_encode($checklist) }}"
+        data-unpublished-count="{{ $unpublishedCount }}"
+        data-unpublished-egis="{{ json_encode($unpublishedEgis) }}"
+        aria-hidden="true">
         {{-- Header --}}
         <div
             class="flex items-center justify-between border-b border-gray-700/50 bg-gradient-to-r from-indigo-900/40 to-purple-900/40 px-4 py-3">
@@ -263,6 +283,12 @@
                         data-message="{{ __('ai_sidebar.suggestion_create_egi_msg') }}">
                         ✨ {{ __('ai_sidebar.suggestion_create_egi_label') }}
                     </button>
+                    @if ($unpublishedCount > 0)
+                    <button type="button" id="ai-publish-chip"
+                        class="rounded-full border border-amber-500/50 bg-amber-900/30 px-3 py-1 text-xs text-amber-200 transition-colors hover:bg-amber-800/50 hover:text-white">
+                        🔵 {{ $unpublishedCount }} {{ __('ai_sidebar.chip_publish_label') }}
+                    </button>
+                    @endif
                 </div>
                 <form id="ai-sidebar-form" class="flex gap-2">
                     <input type="text" id="ai-sidebar-input"
@@ -360,6 +386,17 @@
                     form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
                 });
             });
+
+            // Publish chip: click → open sidebar + show publish flow
+            var publishChip = document.getElementById('ai-publish-chip');
+            if (publishChip) {
+                publishChip.addEventListener('click', function () {
+                    publishChip.style.display = 'none';
+                    if (typeof handlePublishFlow === 'function') {
+                        handlePublishFlow();
+                    }
+                });
+            }
         });
     </script>
 @endpush

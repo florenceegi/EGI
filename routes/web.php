@@ -613,6 +613,11 @@ Route::group(['prefix' => 'egis'], function () {
     Route::delete('/{egi}', [App\Http\Controllers\EgiController::class, 'destroy'])
         ->name('egis.destroy');
 
+    // Bulk publish EGIs (from AI sidebar)
+    Route::post('/bulk-publish', [App\Http\Controllers\EgiController::class, 'bulkPublish'])
+        ->middleware('auth')
+        ->name('egis.bulk.publish');
+
     // Dossier API endpoint
     Route::get('/{egi}/dossier', [App\Http\Controllers\EgiController::class, 'dossier'])
         ->name('egis.dossier');

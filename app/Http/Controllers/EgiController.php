@@ -1126,4 +1126,41 @@ class EgiController extends Controller {
             ], 500);
         }
     }
+
+    /**
+     * Bulk publish EGIs (set is_published = true) from the AI sidebar.
+     *
+     * @param Request $request  ids[] for selective, all=true for all
+     * @return JsonResponse
+     */
+    public function bulkPublish(Request $request): JsonResponse
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
+        }
+
+        $publishAll = $request->boolean('all', false);
+        $ids = $request->input('ids', []);
+
+        $query = Egi::where('user_id', $user->id)->where('is_published', false);
+
+        if (!$publishAll) {
+            if (empty($ids)) {
+                return response()->json(['success' => false, 'message' => 'No IDs provided'], 422);
+            }
+            $query->whereIn('id', array_map('intval', $ids));
+        }
+
+        $count = $query->update(['is_published' => true, 'status' => 'published']);
+
+        $this->logger->info('[EgiController] Bulk publish via AI sidebar', [
+            'user_id'     => $user->id,
+            'publish_all' => $publishAll,
+            'ids'         => $ids,
+            'updated'     => $count,
+        ]);
+
+        return response()->json(['success' => true, 'count' => $count]);
+    }
 }

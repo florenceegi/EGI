@@ -87,6 +87,8 @@ return [
     // Suggestions
     'suggestion_create_egi_label' => 'Peça-me para criar os seus EGIs!',
     'suggestion_create_egi_msg' => 'Quero criar o meu EGI agora. Pergunta-me o que precisas.',
+    'chip_publish_label'          => 'EGI para publicar',
+    'untitled_egi'                => 'EGI sem título',
 
     // Errors
     'errors' => [

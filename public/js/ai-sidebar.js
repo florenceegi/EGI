@@ -26,6 +26,8 @@
         isLoading: false,
         storageKey: "ai-sidebar-open:" + window.location.pathname, // per-path state
         conversationHistory: [], // storia conversazione per contesto AI
+        unpublishedCount: 0,
+        unpublishedEgis: [],
     };
 
     /**
@@ -61,6 +63,14 @@
         } catch (e) {
             console.error("AI Sidebar: Failed to parse checklist data", e);
             state.checklist = [];
+        }
+
+        // Unpublished EGIs
+        state.unpublishedCount = parseInt(state.sidebar.dataset.unpublishedCount || "0", 10);
+        try {
+            state.unpublishedEgis = JSON.parse(state.sidebar.dataset.unpublishedEgis || "[]");
+        } catch (e) {
+            state.unpublishedEgis = [];
         }
 
         // Bind events
@@ -647,7 +657,7 @@
             }
         }
 
-        // Final summary message in chat
+
         const wrap = document.getElementById(uid + "-wrap");
         const summaryEl = document.createElement("div");
         summaryEl.className =
@@ -674,6 +684,116 @@
         if (inputEl) inputEl.disabled = true;
 
         state.chatContainer.scrollTop = state.chatContainer.scrollHeight;
+    }
+
+    /**
+     * Handle the "publish EGIs" flow from the sidebar chip.
+     * Shows an inline question bubble with two choices.
+     */
+    function handlePublishFlow() {
+        if (!state.chatContainer) return;
+        openSidebar();
+
+        const n = state.unpublishedCount;
+        const bubble = document.createElement("div");
+        bubble.className = "ai-message rounded-xl bg-gradient-to-r from-indigo-900/30 to-purple-900/30 p-4 mt-4";
+        bubble.innerHTML =
+            '<div class="mb-3 flex items-center gap-2">'
+            + '<div class="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-xs">\u2728</div>'
+            + '<span class="text-xs font-medium text-indigo-300">EGI Assistant</span></div>'
+            + '<p class="text-sm text-gray-200 mb-3">Ho trovato <strong>' + n + ' EGI</strong> non ancora visibili al pubblico. Vuoi renderli tutti visibili adesso, oppure preferisci scegliere quali?</p>'
+            + '<div class="flex gap-2 flex-wrap" id="ai-publish-choice-btns">'
+            + '<button id="ai-publish-all-btn" class="rounded-lg bg-green-700 hover:bg-green-600 px-3 py-1.5 text-xs text-white font-medium transition-colors">\u2705 Pubblica tutti</button>'
+            + '<button id="ai-publish-select-btn" class="rounded-lg bg-indigo-700 hover:bg-indigo-600 px-3 py-1.5 text-xs text-white font-medium transition-colors">\ud83d\udcdd Scegli quali</button>'
+            + '</div>';
+
+        state.chatContainer.appendChild(bubble);
+        state.chatContainer.scrollTop = state.chatContainer.scrollHeight;
+
+        document.getElementById("ai-publish-all-btn").addEventListener("click", function () {
+            document.getElementById("ai-publish-choice-btns").innerHTML = '<span class="text-xs text-gray-400">\u23f3 Pubblicazione in corso\u2026</span>';
+            doBulkPublish([], true);
+        });
+        document.getElementById("ai-publish-select-btn").addEventListener("click", function () {
+            showPublishModal();
+        });
+    }
+
+    /**
+     * Show a modal overlay to let the user pick which EGIs to publish.
+     */
+    function showPublishModal() {
+        const existing = document.getElementById("ai-publish-modal");
+        if (existing) existing.remove();
+
+        const egis = state.unpublishedEgis;
+        const rows = egis.map(function (e) {
+            const thumb = e.thumb
+                ? '<img src="' + e.thumb + '" alt="" class="h-10 w-10 rounded object-cover flex-shrink-0">'
+                : '<div class="h-10 w-10 rounded bg-gray-700 flex items-center justify-center text-gray-500 flex-shrink-0">\ud83d\uddbc\ufe0f</div>';
+            return '<label class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-700/50 cursor-pointer">'
+                + '<input type="checkbox" class="ai-publish-cb h-4 w-4 accent-indigo-500" value="' + e.id + '" checked>'
+                + thumb
+                + '<span class="text-sm text-gray-200 truncate">' + (e.title || 'EGI #' + e.id) + '</span>'
+                + '</label>';
+        }).join('');
+
+        const modal = document.createElement("div");
+        modal.id = "ai-publish-modal";
+        modal.className = "fixed inset-0 z-[2000] flex items-center justify-center bg-black/70 p-4";
+        modal.innerHTML =
+            '<div class="w-full max-w-sm rounded-2xl bg-gray-900 border border-gray-700 shadow-2xl flex flex-col max-h-[80vh]">'
+            + '<div class="flex items-center justify-between px-4 py-3 border-b border-gray-700">'
+            + '<h3 class="text-sm font-semibold text-white">\ud83d\uddd2\ufe0f Seleziona EGI da pubblicare</h3>'
+            + '<button id="ai-publish-modal-close" class="text-gray-400 hover:text-white text-lg leading-none">&times;</button>'
+            + '</div>'
+            + '<div class="overflow-y-auto p-3 space-y-1 flex-1">' + rows + '</div>'
+            + '<div class="flex gap-2 p-3 border-t border-gray-700">'
+            + '<button id="ai-publish-modal-confirm" class="flex-1 rounded-lg bg-green-700 hover:bg-green-600 py-2 text-sm text-white font-medium transition-colors">\u2705 Pubblica selezionati</button>'
+            + '<button id="ai-publish-modal-cancel" class="rounded-lg bg-gray-700 hover:bg-gray-600 px-4 py-2 text-sm text-gray-300 transition-colors">Annulla</button>'
+            + '</div>'
+            + '</div>';
+
+        document.body.appendChild(modal);
+
+        document.getElementById("ai-publish-modal-close").addEventListener("click", function () { modal.remove(); });
+        document.getElementById("ai-publish-modal-cancel").addEventListener("click", function () { modal.remove(); });
+        document.getElementById("ai-publish-modal-confirm").addEventListener("click", function () {
+            const selected = Array.from(modal.querySelectorAll(".ai-publish-cb:checked")).map(function (cb) { return cb.value; });
+            if (!selected.length) return;
+            modal.remove();
+            doBulkPublish(selected, false);
+        });
+    }
+
+    /**
+     * POST /egis/bulk-publish then reload the page.
+     */
+    async function doBulkPublish(ids, publishAll) {
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content || "";
+        try {
+            const body = publishAll ? { all: true } : { ids: ids };
+            const res = await fetch("/egis/bulk-publish", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRF-TOKEN": csrf,
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                body: JSON.stringify(body),
+            });
+            const data = await res.json().catch(function () { return {}; });
+            if (res.ok && data.success) {
+                addChatMessage("\u2705 " + (data.count || "") + " EGI resi visibili! Aggiorno la pagina\u2026", "assistant");
+                setTimeout(function () { window.location.reload(); }, 1500);
+            } else {
+                addChatMessage("\u274c Errore durante la pubblicazione. Riprova.", "error");
+            }
+        } catch (e) {
+            addChatMessage("\u274c Errore di rete. Riprova.", "error");
+        }
     }
 
     /**
@@ -894,7 +1014,11 @@
         toggle: toggleSidebar,
         refresh: refreshChecklist,
         getState: () => ({ isOpen: state.isOpen, checklist: state.checklist }),
+        handlePublishFlow: handlePublishFlow,
     };
+
+    // Expose handlePublishFlow directly for inline Blade script
+    window.handlePublishFlow = handlePublishFlow;
 
     // Initialize when DOM ready
     if (document.readyState === "loading") {
