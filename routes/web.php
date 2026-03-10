@@ -868,6 +868,13 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
                 ->name('set-default');
             Route::post('/stripe/config', [App\Http\Controllers\PaymentSettingsController::class, 'updateStripeConfig'])
                 ->name('stripe.config');
+            // Stripe Connect guided onboarding wizard (replaces raw OAuth link)
+            Route::post('/stripe/start-onboarding', [App\Http\Controllers\PaymentSettingsController::class, 'startStripeOnboarding'])
+                ->name('stripe.start-onboarding');
+            Route::get('/stripe/return', [App\Http\Controllers\PaymentSettingsController::class, 'stripeReturn'])
+                ->name('stripe.return');
+            Route::get('/stripe/refresh', [App\Http\Controllers\PaymentSettingsController::class, 'stripeRefresh'])
+                ->name('stripe.refresh');
             Route::post('/bank-transfer/config', [App\Http\Controllers\PaymentSettingsController::class, 'updateBankConfig'])
                 ->name('bank-config');
             Route::get('/available', [App\Http\Controllers\PaymentSettingsController::class, 'getAvailable'])

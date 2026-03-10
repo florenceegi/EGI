@@ -277,4 +277,14 @@ return [
         'platform_fee_percentage' => (float) env('PLATFORM_FEE_PERCENTAGE', 0.5),
     ],
 
+    /**
+     * 💳 Payment System Name (PSP abstraction layer)
+     * Used in UI copy, wizard messages and chip labels.
+     * Override via EGI_PSP_NAME to change the display name without code changes.
+     * @env EGI_PSP_NAME
+     */
+    'payment' => [
+        'psp_name' => env('EGI_PSP_NAME', 'FlorenceEGI Payment System'),
+    ],
+
 ];

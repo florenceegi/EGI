@@ -172,42 +172,29 @@
                                         {{-- Optional: Disconnect button could go here --}}
                                     </div>
                                 @else
-                                    <div class="space-y-3">
-
-                                        <a href="https://connect.stripe.com/express/oauth/authorize" target="_blank"
-                                            class="flex w-full items-center justify-center space-x-2 rounded-lg bg-[#635BFF] px-4 py-2 text-sm font-medium text-white shadow-lg shadow-indigo-500/20 transition-transform hover:scale-[1.02] hover:bg-[#5851E3]">
-                                            <span>Connect with Stripe</span>
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                                stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg>
-                                        </a>
-
-                                        <div class="relative">
-                                            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                                                <div class="w-full border-t border-gray-700"></div>
-                                            </div>
-                                            <div class="relative flex justify-center">
-                                                <span
-                                                    class="bg-[#111] px-2 text-xs uppercase tracking-wider text-gray-500">OR
-                                                    ENTER ID MANUALLY</span>
+                                    <div class="space-y-4">
+                                        {{-- AI Wizard bubble --}}
+                                        <div class="flex items-start gap-3 rounded-xl border border-violet-500/20 bg-violet-900/20 p-4">
+                                            <span class="shrink-0 text-2xl">🤖</span>
+                                            <div>
+                                                <p class="mb-1 text-sm font-semibold text-violet-200">
+                                                    {{ __('payment.wizard.intro_title') }}
+                                                </p>
+                                                <p class="text-xs leading-relaxed text-gray-300">
+                                                    {{ __('payment.wizard.intro_text', ['psp_name' => $pspName]) }}
+                                                </p>
+                                                <p class="mt-2 text-[11px] text-amber-400/80">
+                                                    💡 {{ __('payment.wizard.intro_note') }}
+                                                </p>
                                             </div>
                                         </div>
-
-                                        <div class="flex space-x-2">
-                                            <input type="text" id="stripe_account_id"
-                                                class="block w-full rounded-lg border border-gray-700 bg-gray-900/50 px-3 py-2 text-sm text-white placeholder-gray-600 focus:border-[#635BFF] focus:ring-1 focus:ring-[#635BFF]"
-                                                placeholder="acct_...">
-                                            <button type="button" onclick="window.paymentModal.saveStripeConfig()"
-                                                class="rounded-lg bg-gray-800 px-3 py-2 text-sm font-medium text-gray-300 ring-1 ring-white/10 hover:bg-gray-700">
-                                                Save
-                                            </button>
-                                        </div>
-                                        <p class="text-[10px] text-gray-500">
-                                            If you already have a Stripe Connect account, enter the ID here (starts with
-                                            acct_).
-                                        </p>
+                                        {{-- CTA --}}
+                                        <button type="button" id="stripe-onboarding-btn"
+                                            onclick="window.paymentModal.startOnboarding()"
+                                            class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-green-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] hover:from-green-500 hover:to-green-400 disabled:cursor-not-allowed disabled:opacity-60">
+                                            <span>💳</span>
+                                            <span id="stripe-onboarding-btn-text">{{ __('payment.wizard.cta', ['psp_name' => $pspName]) }}</span>
+                                        </button>
                                     </div>
                                 @endif
                             </div>

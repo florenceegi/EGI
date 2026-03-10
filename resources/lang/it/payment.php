@@ -23,4 +23,17 @@ return [
         'merchant_account_incomplete' => 'Account venditore incompleto.',
         'paypal_not_configured' => 'PayPal non configurato.',
     ],
+
+    'wizard' => [
+        'chip_label'  => 'Attiva pagamenti',
+        'intro_title' => 'Attiva il sistema di pagamento',
+        'intro_text'  => 'Per iniziare a vendere le tue opere devi attivare :psp_name. È una procedura guidata che richiede solo pochi minuti.',
+        'intro_note'  => 'I pagamenti arrivano direttamente sul tuo conto. FlorenceEGI non trattiene denaro.',
+        'cta'         => 'Attiva :psp_name',
+        'processing'  => 'Avvio in corso…',
+        'link_failed' => 'Impossibile generare il link. Riprova tra qualche istante.',
+        'no_wallet'   => 'Nessun wallet configurato. Contatta il supporto.',
+        'success'     => 'Pagamenti attivati! Ora puoi vendere le tue opere.',
+        'refresh'     => 'Il link è scaduto. Clicca di nuovo su "Attiva pagamenti" per riprendere.',
+    ],
 ];

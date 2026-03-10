@@ -12,6 +12,10 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Ultra\UltraLogManager\UltraLogManager;
 use App\Services\Gdpr\AuditLogService;
 use App\Enums\Gdpr\GdprActivityCategory;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use App\Services\Payment\StripeConnectService;
+use App\Services\OnboardingChecklistService;
 
 /**
  * PaymentSettingsController
@@ -47,7 +51,9 @@ class PaymentSettingsController extends Controller {
     public function __construct(
         protected ErrorManagerInterface $errorManager,
         protected UltraLogManager $logger,
-        protected AuditLogService $auditService
+        protected AuditLogService $auditService,
+        protected StripeConnectService $stripeConnect,
+        protected OnboardingChecklistService $checklistService
     ) {
     }
 
@@ -374,7 +380,75 @@ class PaymentSettingsController extends Controller {
             'stripeConnected' => !empty($stripeAccountId),
             'stripeAccountId' => $stripeAccountId, // New variable for View
             'bankDetails' => $bankDetails,          // New variable for View
+            'pspName' => config('egi.payment.psp_name', 'FlorenceEGI Payment System'),
         ]);
+    }
+
+    /**
+     * Start Stripe Connect guided onboarding.
+     * Creates Express account (idempotent) + returns hosted onboarding URL.
+     *
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     */
+    public function startStripeOnboarding(Request $request): JsonResponse
+    {
+        try {
+            $user = Auth::user();
+            $wallet = $user->primaryWallet;
+
+            if (!$wallet) {
+                return response()->json(['success' => false, 'message' => __('payment.wizard.no_wallet')], 422);
+            }
+
+            $result = $this->stripeConnect->ensureExpressAccount($wallet, $user);
+            $accountId = $result['account']['id'];
+
+            $onboardingUrl = $this->stripeConnect->createAccountLink(
+                $accountId,
+                route('settings.payments.stripe.return'),
+                route('settings.payments.stripe.refresh')
+            );
+
+            if (!$onboardingUrl) {
+                return response()->json(['success' => false, 'message' => __('payment.wizard.link_failed')], 500);
+            }
+
+            $this->logger->info('[PaymentSettings] Stripe onboarding started', [
+                'user_id' => $user->id,
+                'stripe_account_id' => $accountId,
+            ]);
+
+            return response()->json(['success' => true, 'url' => $onboardingUrl]);
+        } catch (\Exception $e) {
+            $this->logger->error('[PaymentSettings] Stripe onboarding failed', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+            ]);
+            return response()->json(['success' => false, 'message' => __('payment.wizard.link_failed')], 500);
+        }
+    }
+
+    /**
+     * Handle Stripe return URL after successful onboarding.
+     * Refreshes checklist cache and redirects with success flash.
+     */
+    public function stripeReturn(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        $this->checklistService->refreshChecklist($user, 'creator');
+
+        $this->logger->info('[PaymentSettings] Stripe onboarding completed', ['user_id' => $user->id]);
+
+        return redirect(url('/'))->with('success', __('payment.wizard.success'));
+    }
+
+    /**
+     * Handle Stripe refresh URL (hosted onboarding link expired).
+     * Prompts user to restart the wizard.
+     */
+    public function stripeRefresh(Request $request): RedirectResponse
+    {
+        return redirect(url('/'))->with('info', __('payment.wizard.refresh'));
     }
 
     /**

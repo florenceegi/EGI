@@ -23,4 +23,17 @@ return [
         'merchant_account_incomplete' => 'Merchant account incomplete.',
         'paypal_not_configured' => 'PayPal not configured.',
     ],
+
+    'wizard' => [
+        'chip_label'  => 'Activate payments',
+        'intro_title' => 'Activate your payment system',
+        'intro_text'  => 'To start selling your artworks you need to activate :psp_name. It\'s a guided process that takes just a few minutes.',
+        'intro_note'  => 'Payments go directly to your account. FlorenceEGI never holds your money.',
+        'cta'         => 'Activate :psp_name',
+        'processing'  => 'Starting…',
+        'link_failed' => 'Could not generate the link. Please try again.',
+        'no_wallet'   => 'No wallet configured. Please contact support.',
+        'success'     => 'Payments activated! You can now sell your artworks.',
+        'refresh'     => 'The link has expired. Click "Activate payments" again to resume.',
+    ],
 ];

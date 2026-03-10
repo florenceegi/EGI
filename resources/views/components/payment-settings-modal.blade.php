@@ -230,6 +230,35 @@
                 }
             },
 
+            startOnboarding: async function() {
+                const btn = document.getElementById('stripe-onboarding-btn');
+                const btnText = document.getElementById('stripe-onboarding-btn-text');
+                const originalText = btnText ? btnText.textContent : '';
+                if (btn) btn.disabled = true;
+                if (btnText) btnText.textContent = '{{ __('payment.wizard.processing') }}';
+                try {
+                    const response = await fetch('{{ route('settings.payments.stripe.start-onboarding') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success && data.url) {
+                        window.location.href = data.url;
+                    } else {
+                        if (btn) btn.disabled = false;
+                        if (btnText) btnText.textContent = originalText;
+                        this.showNotification(data.message || '{{ __('payment.wizard.link_failed') }}', 'error');
+                    }
+                } catch (e) {
+                    if (btn) btn.disabled = false;
+                    if (btnText) btnText.textContent = originalText;
+                    this.showNotification('{{ __('payment.wizard.link_failed') }}', 'error');
+                }
+            },
+
             showNotification: function(message, type) {
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({

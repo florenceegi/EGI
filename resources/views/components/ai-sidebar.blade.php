@@ -49,6 +49,10 @@
     }
     $unpublishedCount = count($unpublishedEgis);
 
+    // Stripe connection status — true by default for guests/non-owners (hides the chip)
+    $isStripeConnected = ($isOwner && $user) ? !empty($user->stripe_account_id) : true;
+    $pspName = config('egi.payment.psp_name', 'FlorenceEGI Payment System');
+
     // Show sidebar if: owner with checklist OR custom context message provided
     $shouldShowSidebar = ($isOwner && $totalCount > 0) || $contextMessage;
 @endphp
@@ -285,6 +289,13 @@
                         ✨ {{ __('ai_sidebar.suggestion_create_egi_label') }}
                     </button>
                     @endauth
+                    @if ($isOwner && !$isStripeConnected)
+                    <button type="button" id="ai-payment-chip"
+                        onclick="window.paymentModal && window.paymentModal.open()"
+                        class="rounded-full border border-green-500/50 bg-green-900/30 px-3 py-1 text-xs text-green-200 transition-colors hover:bg-green-800/50 hover:text-white">
+                        💳 {{ __('payment.wizard.chip_label') }}
+                    </button>
+                    @endif
                     @if ($unpublishedCount > 0)
                     <button type="button" id="ai-publish-chip"
                         class="rounded-full border border-amber-500/50 bg-amber-900/30 px-3 py-1 text-xs text-amber-200 transition-colors hover:bg-amber-800/50 hover:text-white">
