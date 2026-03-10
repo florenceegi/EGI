@@ -690,6 +690,13 @@
         if (inputEl) inputEl.disabled = true;
 
         state.chatContainer.scrollTop = state.chatContainer.scrollHeight;
+
+        // Auto-reload page after successful upload so sidebar reflects new EGIs
+        if (errorCount === 0 && successCount > 0) {
+            setTimeout(function () {
+                window.location.reload();
+            }, 2000);
+        }
     }
 
     /**
