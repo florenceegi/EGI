@@ -304,20 +304,35 @@
      */
     function inferViewFromPath(pathname, archetype) {
         // Company routes - CHECK SPECIFIC ROUTES FIRST (longest match first)
-        if (pathname.match(/^\/company\/\d+\/portfolio/) || pathname.match(/^\/company\/[\w-]+\/portfolio/)) {
+        if (
+            pathname.match(/^\/company\/\d+\/portfolio/) ||
+            pathname.match(/^\/company\/[\w-]+\/portfolio/)
+        ) {
             return "company.portfolio";
         }
-        if (pathname.match(/^\/company\/\d+\/collections/) || pathname.match(/^\/company\/[\w-]+\/collections/)) {
+        if (
+            pathname.match(/^\/company\/\d+\/collections/) ||
+            pathname.match(/^\/company\/[\w-]+\/collections/)
+        ) {
             return "company.collections";
         }
-        if (pathname.match(/^\/company\/\d+\/about/) || pathname.match(/^\/company\/[\w-]+\/about/)) {
+        if (
+            pathname.match(/^\/company\/\d+\/about/) ||
+            pathname.match(/^\/company\/[\w-]+\/about/)
+        ) {
             return "company.about";
         }
-        if (pathname.match(/^\/company\/\d+\/impact/) || pathname.match(/^\/company\/[\w-]+\/impact/)) {
+        if (
+            pathname.match(/^\/company\/\d+\/impact/) ||
+            pathname.match(/^\/company\/[\w-]+\/impact/)
+        ) {
             return "company.impact";
         }
         // Company home (redirects to portfolio) - FALLBACK
-        if (pathname.match(/^\/company\/\d+$/) || pathname.match(/^\/company\/[\w-]+$/)) {
+        if (
+            pathname.match(/^\/company\/\d+$/) ||
+            pathname.match(/^\/company\/[\w-]+$/)
+        ) {
             return "company.portfolio";
         }
 
@@ -424,13 +439,18 @@
                                 try {
                                     const action = JSON.parse(line.slice(6));
                                     handleNatanAction(action, messageId);
-                                } catch (e) { /* ignore */ }
+                                } catch (e) {
+                                    /* ignore */
+                                }
                             } else {
                                 try {
                                     const data = JSON.parse(line.slice(6));
                                     if (data.content) {
                                         fullMessage += data.content;
-                                        updateChatMessage(messageId, fullMessage);
+                                        updateChatMessage(
+                                            messageId,
+                                            fullMessage,
+                                        );
                                     }
                                 } catch (e) {
                                     fullMessage += line.slice(6);
@@ -442,13 +462,20 @@
                     }
                 }
                 // Aggiorna storia conversazione
-                state.conversationHistory.push({ role: "user", content: message });
+                state.conversationHistory.push({
+                    role: "user",
+                    content: message,
+                });
                 if (fullMessage) {
-                    state.conversationHistory.push({ role: "assistant", content: fullMessage });
+                    state.conversationHistory.push({
+                        role: "assistant",
+                        content: fullMessage,
+                    });
                 }
                 // Mantieni max ultimi 20 messaggi (10 scambi)
                 if (state.conversationHistory.length > 20) {
-                    state.conversationHistory = state.conversationHistory.slice(-20);
+                    state.conversationHistory =
+                        state.conversationHistory.slice(-20);
                 }
             } else {
                 addChatMessage(
@@ -482,19 +509,29 @@
         const uid = "natan-up-" + Date.now();
 
         const uploaderHtml =
-            '<div class="mt-3 rounded-lg border border-violet-500/40 bg-gray-800/60 p-3" id="' + uid + '-wrap">' +
+            '<div class="mt-3 rounded-lg border border-violet-500/40 bg-gray-800/60 p-3" id="' +
+            uid +
+            '-wrap">' +
             '<p class="mb-2 text-xs text-violet-300">📁 Seleziona i tuoi file — li carico io:</p>' +
             '<label class="block cursor-pointer rounded-lg border-2 border-dashed border-violet-500/40 p-4 text-center hover:border-violet-400 transition-colors">' +
             '<span class="text-2xl">🖼️</span>' +
             '<p class="text-xs text-gray-300 mt-1">Clicca o trascina i file qui</p>' +
             '<p class="text-xs text-gray-500 mt-0.5">PNG, JPG, GIF, MP4, PDF, ecc.</p>' +
-            '<input type="file" multiple class="hidden" id="' + uid + '-input">' +
-            '</label>' +
-            '<div id="' + uid + '-list" class="mt-2 space-y-1"></div>' +
-            '<button id="' + uid + '-btn" class="hidden mt-2 w-full rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500 transition-colors">' +
-            '⬆️ Carica <span id="' + uid + '-count">0</span> file' +
-            '</button>' +
-            '</div>';
+            '<input type="file" multiple class="hidden" id="' +
+            uid +
+            '-input">' +
+            "</label>" +
+            '<div id="' +
+            uid +
+            '-list" class="mt-2 space-y-1"></div>' +
+            '<button id="' +
+            uid +
+            '-btn" class="hidden mt-2 w-full rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500 transition-colors">' +
+            '⬆️ Carica <span id="' +
+            uid +
+            '-count">0</span> file' +
+            "</button>" +
+            "</div>";
 
         const uploaderEl = document.createElement("div");
         uploaderEl.innerHTML = uploaderHtml;
@@ -506,9 +543,9 @@
 
         // Wire up file input
         const fileInput = document.getElementById(uid + "-input");
-        const fileList  = document.getElementById(uid + "-list");
+        const fileList = document.getElementById(uid + "-list");
         const uploadBtn = document.getElementById(uid + "-btn");
-        const countEl   = document.getElementById(uid + "-count");
+        const countEl = document.getElementById(uid + "-count");
 
         fileInput.addEventListener("change", function () {
             fileList.innerHTML = "";
@@ -518,11 +555,18 @@
                 const title = data.title + num;
                 const row = document.createElement("div");
                 row.id = uid + "-file-" + i;
-                row.className = "flex items-center gap-2 rounded bg-gray-700/60 px-2 py-1 text-xs text-gray-200";
+                row.className =
+                    "flex items-center gap-2 rounded bg-gray-700/60 px-2 py-1 text-xs text-gray-200";
                 row.innerHTML =
                     '<span class="shrink-0 text-base">🖼️</span>' +
-                    '<span class="flex-1 truncate">' + f.name + '</span>' +
-                    '<span class="shrink-0 text-gray-400 italic">' + title + ' · €' + data.price_eur + '</span>' +
+                    '<span class="flex-1 truncate">' +
+                    f.name +
+                    "</span>" +
+                    '<span class="shrink-0 text-gray-400 italic">' +
+                    title +
+                    " · €" +
+                    data.price_eur +
+                    "</span>" +
                     '<span class="shrink-0 status-dot text-gray-500">⏳</span>';
                 fileList.appendChild(row);
             });
@@ -535,7 +579,13 @@
             uploadBtn.disabled = true;
             uploadBtn.textContent = "⏳ Caricamento in corso...";
             const files = Array.from(fileInput.files);
-            uploadEgiFiles(files, data.title, data.price_eur, uid, msgEl || state.chatContainer);
+            uploadEgiFiles(
+                files,
+                data.title,
+                data.price_eur,
+                uid,
+                msgEl || state.chatContainer,
+            );
         });
     }
 
@@ -543,14 +593,22 @@
      * Upload multiple files to POST /upload/egi one by one.
      * Titles: "Cosmonauta" (1 file) or "Cosmonauta #1", "Cosmonauta #2" (many files).
      */
-    async function uploadEgiFiles(files, titleBase, priceEur, uid, appendTarget) {
-        const csrf = document.querySelector('meta[name="csrf-token"]')?.content || "";
+    async function uploadEgiFiles(
+        files,
+        titleBase,
+        priceEur,
+        uid,
+        appendTarget,
+    ) {
+        const csrf =
+            document.querySelector('meta[name="csrf-token"]')?.content || "";
         let successCount = 0;
         let errorCount = 0;
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            const title = files.length > 1 ? titleBase + " #" + (i + 1) : titleBase;
+            const title =
+                files.length > 1 ? titleBase + " #" + (i + 1) : titleBase;
             const rowEl = document.getElementById(uid + "-file-" + i);
             const dot = rowEl ? rowEl.querySelector(".status-dot") : null;
             if (dot) dot.textContent = "⏫";
@@ -564,7 +622,12 @@
 
                 const res = await fetch("/upload/egi", {
                     method: "POST",
-                    headers: { "X-CSRF-TOKEN": csrf },
+                    credentials: "same-origin",
+                    headers: {
+                        "X-CSRF-TOKEN": csrf,
+                        "Accept": "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
                     body: fd,
                 });
 
@@ -573,6 +636,8 @@
                     if (dot) dot.textContent = "✅";
                 } else {
                     errorCount++;
+                    const errBody = await res.text().catch(() => "");
+                    console.error("[EGI Upload] errore file " + i + " (HTTP " + res.status + "):", errBody.substring(0, 300));
                     if (dot) dot.textContent = "❌";
                 }
             } catch (e) {
@@ -584,11 +649,23 @@
         // Final summary message in chat
         const wrap = document.getElementById(uid + "-wrap");
         const summaryEl = document.createElement("div");
-        summaryEl.className = "mt-2 rounded-lg p-2 text-xs font-medium " +
-            (errorCount === 0 ? "bg-green-900/40 text-green-300" : "bg-yellow-900/40 text-yellow-300");
-        summaryEl.textContent = errorCount === 0
-            ? "✅ " + successCount + " EGI " + (successCount === 1 ? "caricato" : "caricati") + " con successo!"
-            : "⚠️ " + successCount + " ok, " + errorCount + " errori. Riprova quelli con ❌.";
+        summaryEl.className =
+            "mt-2 rounded-lg p-2 text-xs font-medium " +
+            (errorCount === 0
+                ? "bg-green-900/40 text-green-300"
+                : "bg-yellow-900/40 text-yellow-300");
+        summaryEl.textContent =
+            errorCount === 0
+                ? "✅ " +
+                  successCount +
+                  " EGI " +
+                  (successCount === 1 ? "caricato" : "caricati") +
+                  " con successo!"
+                : "⚠️ " +
+                  successCount +
+                  " ok, " +
+                  errorCount +
+                  " errori. Riprova quelli con ❌.";
         if (wrap) wrap.appendChild(summaryEl);
 
         // Disable input so it can't be resubmitted
