@@ -86,7 +86,7 @@ return [
 
     // Suggestions
     'suggestion_create_egi_label' => 'Frag mich, deine EGIs zu erstellen!',
-    'suggestion_create_egi_msg' => 'Ich möchte meine EGIs auf FlorenceEGI erstellen. Wie funktioniert das? Kannst du mich Schritt für Schritt führen?',
+    'suggestion_create_egi_msg' => 'Ich möchte jetzt meinen EGI erstellen. Frag mich, was du brauchst.',
 
     // Errors
     'errors' => [
