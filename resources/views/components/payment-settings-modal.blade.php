@@ -282,7 +282,7 @@
             var btnText        = document.getElementById('stripe-onboarding-btn-text');
             var popupBlockedEl = document.getElementById('sw-popup-blocked');
             var processing     = '{{ __('payment.wizard.processing') }}';
-            var ctaLabel       = '{{ __('payment.wizard.step3_cta', ['psp_name' => $pspName]) }}';
+            var ctaLabel       = '{{ __('payment.wizard.step3_cta', ['psp_name' => config('egi.payment.psp_name')]) }}';
 
             if (btn)            btn.disabled = true;
             if (btnText)        btnText.textContent = processing;
