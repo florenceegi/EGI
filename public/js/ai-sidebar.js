@@ -729,28 +729,28 @@
         const egis = state.unpublishedEgis;
         const rows = egis.map(function (e) {
             const thumb = e.thumb
-                ? '<img src="' + e.thumb + '" alt="" class="h-10 w-10 rounded object-cover flex-shrink-0">'
-                : '<div class="h-10 w-10 rounded bg-gray-700 flex items-center justify-center text-gray-500 flex-shrink-0">\ud83d\uddbc\ufe0f</div>';
-            return '<label class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-700/50 cursor-pointer">'
-                + '<input type="checkbox" class="ai-publish-cb h-4 w-4 accent-indigo-500" value="' + e.id + '" checked>'
+                ? '<img src="' + e.thumb + '" alt="" style="width:40px;height:40px;border-radius:6px;object-fit:cover;flex-shrink:0;">'
+                : '<div style="width:40px;height:40px;border-radius:6px;background:#374151;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">\ud83d\uddbc\ufe0f</div>';
+            return '<label style="display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;cursor:pointer;margin-bottom:4px;" onmouseover="this.style.background=\'#1f2937\'" onmouseout="this.style.background=\'\'">'
+                + '<input type="checkbox" class="ai-publish-cb" value="' + e.id + '" checked style="width:16px;height:16px;accent-color:#6366f1;flex-shrink:0;">'
                 + thumb
-                + '<span class="text-sm text-gray-200 truncate">' + (e.title || 'EGI #' + e.id) + '</span>'
+                + '<span style="font-size:14px;color:#e5e7eb;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (e.title || 'EGI #' + e.id) + '</span>'
                 + '</label>';
         }).join('');
 
         const modal = document.createElement("div");
         modal.id = "ai-publish-modal";
-        modal.className = "fixed inset-0 z-[2000] flex items-center justify-center bg-black/70 p-4";
+        modal.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);padding:16px;";
         modal.innerHTML =
-            '<div class="w-full max-w-sm rounded-2xl bg-gray-900 border border-gray-700 shadow-2xl flex flex-col max-h-[80vh]">'
-            + '<div class="flex items-center justify-between px-4 py-3 border-b border-gray-700">'
-            + '<h3 class="text-sm font-semibold text-white">\ud83d\uddd2\ufe0f Seleziona EGI da pubblicare</h3>'
-            + '<button id="ai-publish-modal-close" class="text-gray-400 hover:text-white text-lg leading-none">&times;</button>'
+            '<div style="width:100%;max-width:380px;border-radius:16px;background:#111827;border:1px solid #374151;box-shadow:0 25px 50px rgba(0,0,0,0.5);display:flex;flex-direction:column;max-height:80vh;">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #374151;">'
+            + '<h3 style="font-size:14px;font-weight:600;color:#fff;margin:0;">\ud83d\uddd2\ufe0f Seleziona EGI da pubblicare</h3>'
+            + '<button id="ai-publish-modal-close" style="background:none;border:none;color:#9ca3af;font-size:20px;cursor:pointer;line-height:1;padding:0 4px;">&times;</button>'
             + '</div>'
-            + '<div class="overflow-y-auto p-3 space-y-1 flex-1">' + rows + '</div>'
-            + '<div class="flex gap-2 p-3 border-t border-gray-700">'
-            + '<button id="ai-publish-modal-confirm" class="flex-1 rounded-lg bg-green-700 hover:bg-green-600 py-2 text-sm text-white font-medium transition-colors">\u2705 Pubblica selezionati</button>'
-            + '<button id="ai-publish-modal-cancel" class="rounded-lg bg-gray-700 hover:bg-gray-600 px-4 py-2 text-sm text-gray-300 transition-colors">Annulla</button>'
+            + '<div style="overflow-y:auto;padding:12px;flex:1;">' + rows + '</div>'
+            + '<div style="display:flex;gap:8px;padding:12px;border-top:1px solid #374151;">'
+            + '<button id="ai-publish-modal-confirm" style="flex:1;border-radius:8px;background:#15803d;border:none;padding:8px;font-size:14px;color:#fff;font-weight:600;cursor:pointer;">\u2705 Pubblica selezionati</button>'
+            + '<button id="ai-publish-modal-cancel" style="border-radius:8px;background:#374151;border:none;padding:8px 16px;font-size:14px;color:#d1d5db;cursor:pointer;">Annulla</button>'
             + '</div>'
             + '</div>';
 
