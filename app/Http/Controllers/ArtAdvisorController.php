@@ -35,7 +35,8 @@ class ArtAdvisorController extends Controller {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
 
-        $this->middleware('auth');
+        // 'chat' is open to guests (throttle applied at route level)
+        $this->middleware('auth')->except(['chat']);
     }
 
     /**
