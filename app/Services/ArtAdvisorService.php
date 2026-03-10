@@ -60,7 +60,8 @@ class ArtAdvisorService {
         string $expertId,
         string $userMessage,
         array $context = [],
-        bool $useVision = false
+        bool $useVision = false,
+        array $conversationHistory = []
     ): array {
         try {
             $this->logger->info('[ArtAdvisorService] Processing request', [
@@ -134,7 +135,7 @@ class ArtAdvisorService {
             $response = $this->anthropic->chat(
                 $userMessage,
                 ['system_override' => $systemPrompt],
-                [], // No conversation history (stateless helper)
+                $conversationHistory, // Conversation history per contesto multi-turn
                 'strategic' // Use base chat method
             );
 

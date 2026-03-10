@@ -25,6 +25,7 @@
         checklist: [],
         isLoading: false,
         storageKey: "ai-sidebar-open:" + window.location.pathname, // per-path state
+        conversationHistory: [], // storia conversazione per contesto AI
     };
 
     /**
@@ -386,6 +387,7 @@
                 },
                 body: JSON.stringify({
                     message: message,
+                    conversation_history: state.conversationHistory,
                     context: {
                         user_type: state.userType,
                         user_id: state.userId,
@@ -438,6 +440,15 @@
                             currentEvent = "";
                         }
                     }
+                }
+                // Aggiorna storia conversazione
+                state.conversationHistory.push({ role: "user", content: message });
+                if (fullMessage) {
+                    state.conversationHistory.push({ role: "assistant", content: fullMessage });
+                }
+                // Mantieni max ultimi 20 messaggi (10 scambi)
+                if (state.conversationHistory.length > 20) {
+                    state.conversationHistory = state.conversationHistory.slice(-20);
                 }
             } else {
                 addChatMessage(

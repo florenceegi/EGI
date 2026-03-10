@@ -51,12 +51,14 @@ class ArtAdvisorController extends Controller {
             'message' => 'required|string|max:1000',
             'context' => 'sometimes|array',
             'use_vision' => 'sometimes|boolean',
+            'conversation_history' => 'sometimes|array|max:20',
         ]);
 
         $expertId = $validated['expert'];
         $userMessage = $validated['message'];
         $context = $validated['context'] ?? [];
         $useVision = $validated['use_vision'] ?? false;
+        $conversationHistory = $validated['conversation_history'] ?? [];
 
         // Auto-detect vision need if not explicitly set
         if (!$useVision && !empty($context['image_url'])) {
@@ -72,7 +74,7 @@ class ArtAdvisorController extends Controller {
         ]);
 
         // Return SSE stream
-        return response()->stream(function () use ($expertId, $userMessage, $context, $useVision) {
+        return response()->stream(function () use ($expertId, $userMessage, $context, $useVision, $conversationHistory) {
             // Disable output buffering
             if (ob_get_level()) ob_end_clean();
 
@@ -92,7 +94,8 @@ class ArtAdvisorController extends Controller {
                     $expertId,
                     $userMessage,
                     $context,
-                    $useVision
+                    $useVision,
+                    $conversationHistory
                 );
 
                 // Detect and strip [[NATAN_ACTION:create_egi:{...}]] marker
