@@ -256,6 +256,14 @@
 
             {{-- Chat Input (for real AI questions) --}}
             <div class="border-t border-gray-700/50 bg-gray-800/50 p-3">
+                {{-- Quick suggestion chips --}}
+                <div id="ai-sidebar-suggestions" class="mb-2 flex flex-wrap gap-1.5">
+                    <button type="button"
+                        class="ai-suggestion-chip rounded-full border border-indigo-500/40 bg-indigo-900/30 px-3 py-1 text-xs text-indigo-200 transition-colors hover:bg-indigo-800/50 hover:text-white"
+                        data-message="{{ __('ai_sidebar.suggestion_create_egi_msg') }}">
+                        ✨ {{ __('ai_sidebar.suggestion_create_egi_label') }}
+                    </button>
+                </div>
                 <form id="ai-sidebar-form" class="flex gap-2">
                     <input type="text" id="ai-sidebar-input"
                         class="flex-1 rounded-lg border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
@@ -340,4 +348,18 @@
 
 @push('scripts')
     <script src="{{ asset('js/ai-sidebar.js') }}" defer></script>
+    <script>
+        // Suggestion chips: click → fill input + submit
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.ai-suggestion-chip').forEach(function (chip) {
+                chip.addEventListener('click', function () {
+                    var input = document.getElementById('ai-sidebar-input');
+                    var form = document.getElementById('ai-sidebar-form');
+                    if (!input || !form) return;
+                    input.value = chip.dataset.message || '';
+                    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                });
+            });
+        });
+    </script>
 @endpush

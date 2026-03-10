@@ -88,6 +88,10 @@ return [
         ],
     ],
 
+    // Suggestions
+    'suggestion_create_egi_label' => 'Chiedimi di creare i tuoi EGI!',
+    'suggestion_create_egi_msg' => 'Voglio creare i miei EGI su FlorenceEGI, come funziona? Puoi guidarmi passo dopo passo?',
+
     // Errors
     'errors' => [
         'request_failed' => 'Richiesta fallita. Riprova.',

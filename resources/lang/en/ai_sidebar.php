@@ -84,6 +84,10 @@ return [
         ],
     ],
 
+    // Suggestions
+    'suggestion_create_egi_label' => 'Ask me to create your EGIs!',
+    'suggestion_create_egi_msg' => 'I want to create my EGIs on FlorenceEGI, how does it work? Can you guide me step by step?',
+
     // Errors
     'errors' => [
         'request_failed' => 'Request failed. Please try again.',
