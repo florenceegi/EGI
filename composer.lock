@@ -9150,12 +9150,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/AutobookNft/UltraErrorManager.git",
-                "reference": "665bf0cb36951469ab3d033510086055e8ef9977"
+                "reference": "6ff8472710034890540fa0b510102e819dee50cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AutobookNft/UltraErrorManager/zipball/665bf0cb36951469ab3d033510086055e8ef9977",
-                "reference": "665bf0cb36951469ab3d033510086055e8ef9977",
+                "url": "https://api.github.com/repos/AutobookNft/UltraErrorManager/zipball/6ff8472710034890540fa0b510102e819dee50cc",
+                "reference": "6ff8472710034890540fa0b510102e819dee50cc",
                 "shasum": ""
             },
             "require": {
