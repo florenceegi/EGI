@@ -2,6 +2,26 @@
 
 return [
 
+
+    // Étiquettes UI génériques
+    'label_default'                   => 'Par défaut',
+    'label_toggle'                    => 'Activer/Désactiver',
+    'label_make_default'              => 'Définir par défaut',
+    // Virement bancaire
+    'bank_account_holder'             => 'Titulaire du compte',
+    'bank_holder_placeholder'         => 'Nom complet tel qu\'indiqué sur le compte bancaire',
+    'bank_config_title'               => 'Configuration du Compte Bancaire',
+    'bank_save_details'               => 'Enregistrer les coordonnées bancaires',
+    // Stripe
+    'stripe_connected'                => 'Compte Stripe connecté',
+    'stripe_connected_creator'        => 'Compte Stripe connecté (niveau Creator)',
+    'stripe_collection_inherits'      => 'La collection hérite de votre compte Stripe Connect principal.',
+    'stripe_connect_first'            => 'Veuillez d\'abord connecter votre compte Stripe dans les paramètres principaux.',
+    'stripe_connect_cta'             => 'Connecter le compte Stripe',
+    // Paramètres de collection
+    'collection_settings_title'       => 'Paramètres de Paiement de la Collection',
+    'collection_settings_description' => 'Personnalisez les méthodes de paiement pour cette collection spécifique',
+
     'wizard' => [
         'chip_label'  => 'Activer les paiements',
         'intro_title' => 'Activez votre système de paiement',

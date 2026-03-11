@@ -19,6 +19,26 @@ return [
     'stripe_description' => 'Receive payments via credit card directly to your bank account.',
     'egili_description' => 'Receive payments in Egili tokens (coming soon).',
     'bank_description' => 'Receive payments via direct bank transfer.',
+
+    // Generic UI labels
+    'label_default'                   => 'Default',
+    'label_toggle'                    => 'Toggle',
+    'label_make_default'              => 'Make Default',
+    // Bank transfer
+    'bank_account_holder'             => 'Account Holder',
+    'bank_holder_placeholder'         => 'Full name as on bank account',
+    'bank_config_title'               => 'Bank Account Configuration',
+    'bank_save_details'               => 'Save Bank Details',
+    // Stripe
+    'stripe_connected'                => 'Stripe account connected',
+    'stripe_connected_creator'        => 'Stripe account connected (Creator Level)',
+    'stripe_collection_inherits'      => 'Collection inherits your main Stripe Connect account.',
+    'stripe_connect_first'            => 'Please connect your Stripe account in main settings first.',
+    'stripe_connect_cta'             => 'Connect Stripe Account',
+    // Collection settings
+    'collection_settings_title'       => 'Collection Payment Settings',
+    'collection_settings_description' => 'Override default payment methods for this specific collection',
+
     'errors' => [
         'merchant_account_incomplete' => 'Merchant account incomplete.',
         'paypal_not_configured' => 'PayPal not configured.',

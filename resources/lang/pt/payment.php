@@ -2,6 +2,26 @@
 
 return [
 
+
+    // Etiquetas UI genéricas
+    'label_default'                   => 'Padrão',
+    'label_toggle'                    => 'Ativar/Desativar',
+    'label_make_default'              => 'Definir como padrão',
+    // Transferência bancária
+    'bank_account_holder'             => 'Titular da conta',
+    'bank_holder_placeholder'         => 'Nome completo conforme indicado na conta bancária',
+    'bank_config_title'               => 'Configuração da Conta Bancária',
+    'bank_save_details'               => 'Guardar dados bancários',
+    // Stripe
+    'stripe_connected'                => 'Conta Stripe ligada',
+    'stripe_connected_creator'        => 'Conta Stripe ligada (nível Creator)',
+    'stripe_collection_inherits'      => 'A coleção herda a sua conta Stripe Connect principal.',
+    'stripe_connect_first'            => 'Por favor, ligue primeiro a sua conta Stripe nas definições principais.',
+    'stripe_connect_cta'             => 'Ligar conta Stripe',
+    // Definições de coleção
+    'collection_settings_title'       => 'Definições de Pagamento da Coleção',
+    'collection_settings_description' => 'Personalize os métodos de pagamento para esta coleção específica',
+
     'wizard' => [
         'chip_label'  => 'Ativar pagamentos',
         'intro_title' => 'Ative o sistema de pagamentos',

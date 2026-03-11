@@ -19,6 +19,26 @@ return [
     'stripe_description' => 'Ricevi pagamenti via carta di credito direttamente sul tuo conto bancario.',
     'egili_description' => 'Ricevi pagamenti in token Egili (presto disponibile).',
     'bank_description' => 'Ricevi pagamenti tramite bonifico bancario diretto.',
+
+    // UI labels generici
+    'label_default'                   => 'Predefinito',
+    'label_toggle'                    => 'Attiva/Disattiva',
+    'label_make_default'              => 'Imposta come predefinito',
+    // Bonifico bancario
+    'bank_account_holder'             => 'Intestatario del conto',
+    'bank_holder_placeholder'         => 'Nome completo come indicato in banca',
+    'bank_config_title'               => 'Configurazione Bonifico Bancario',
+    'bank_save_details'               => 'Salva dati bancari',
+    // Stripe
+    'stripe_connected'                => 'Account Stripe collegato',
+    'stripe_connected_creator'        => 'Account Stripe collegato (livello Creator)',
+    'stripe_collection_inherits'      => 'La collezione eredita il tuo account Stripe Connect principale.',
+    'stripe_connect_first'            => 'Collega prima il tuo account Stripe nelle impostazioni principali.',
+    'stripe_connect_cta'             => 'Collega account Stripe',
+    // Impostazioni collezione
+    'collection_settings_title'       => 'Impostazioni Pagamento Collezione',
+    'collection_settings_description' => 'Personalizza i metodi di pagamento per questa specifica collezione',
+
     'errors' => [
         'merchant_account_incomplete' => 'Account venditore incompleto.',
         'paypal_not_configured' => 'PayPal non configurato.',

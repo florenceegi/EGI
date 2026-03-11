@@ -2,6 +2,26 @@
 
 return [
 
+
+    // Allgemeine UI-Labels
+    'label_default'                   => 'Standard',
+    'label_toggle'                    => 'Umschalten',
+    'label_make_default'              => 'Als Standard setzen',
+    // Banküberweisung
+    'bank_account_holder'             => 'Kontoinhaber',
+    'bank_holder_placeholder'         => 'Vollständiger Name wie auf dem Bankkonto',
+    'bank_config_title'               => 'Bankkonto-Konfiguration',
+    'bank_save_details'               => 'Bankdaten speichern',
+    // Stripe
+    'stripe_connected'                => 'Stripe-Konto verbunden',
+    'stripe_connected_creator'        => 'Stripe-Konto verbunden (Creator-Ebene)',
+    'stripe_collection_inherits'      => 'Die Sammlung übernimmt dein Stripe-Connect-Hauptkonto.',
+    'stripe_connect_first'            => 'Bitte verbinde zunächst dein Stripe-Konto in den Haupteinstellungen.',
+    'stripe_connect_cta'             => 'Stripe-Konto verbinden',
+    // Sammlungseinstellungen
+    'collection_settings_title'       => 'Zahlungseinstellungen der Sammlung',
+    'collection_settings_description' => 'Standardzahlungsmethoden für diese Sammlung anpassen',
+
     'wizard' => [
         'chip_label'  => 'Zahlungen aktivieren',
         'intro_title' => 'Zahlungssystem aktivieren',

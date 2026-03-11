@@ -1,9 +1,9 @@
 <x-platform-layout>
     <div class="container mx-auto max-w-4xl px-4 py-8">
         <div class="mb-8">
-            <h1 class="mb-2 text-3xl font-bold text-white">{{ __('Collection Payment Settings') }}</h1>
+            <h1 class="mb-2 text-3xl font-bold text-white">{{ __('payment.collection_settings_title') }}</h1>
             <p class="text-primary-400 text-xl">{{ $collection->collection_name }}</p>
-            <p class="mt-2 text-gray-400">{{ __('Override default payment methods for this specific collection') }}</p>
+            <p class="mt-2 text-gray-400">{{ __('payment.collection_settings_description') }}</p>
         </div>
 
         <div class="space-y-6">
@@ -50,13 +50,13 @@
 
                             @if ($isDefault)
                                 <span
-                                    class="rounded-full bg-green-500/20 px-3 py-1 text-xs text-green-400">{{ __('Default') }}</span>
+                                    class="rounded-full bg-green-500/20 px-3 py-1 text-xs text-green-400">{{ __('payment.label_default') }}</span>
                             @endif
 
                             <button type="button" onclick="togglePaymentMethod('{{ $methodKey }}')"
                                 class="{{ $isEnabled ? 'bg-primary-500' : 'bg-gray-600' }} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
                                 data-toggle="{{ $methodKey }}">
-                                <span class="sr-only">{{ __('Toggle') }}</span>
+                                <span class="sr-only">{{ __('payment.label_toggle') }}</span>
                                 <span
                                     class="{{ $isEnabled ? 'translate-x-5' : 'translate-x-0' }} pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
                             </button>
@@ -73,13 +73,13 @@
                                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                             clip-rule="evenodd"></path>
                                     </svg>
-                                    <span>{{ __('Stripe account connected (Creator Level)') }}</span>
+                                    <span>{{ __('payment.stripe_connected_creator') }}</span>
                                 </div>
                                 <p class="mt-1 text-xs text-gray-500">
-                                    {{ __('Collection inherits your main Stripe Connect account.') }}</p>
+                                    {{ __('payment.stripe_collection_inherits') }}</p>
                             @else
                                 <div class="text-sm text-yellow-500">
-                                    {{ __('Please connect your Stripe account in main settings first.') }}
+                                    {{ __('payment.stripe_connect_first') }}
                                 </div>
                             @endif
                         </div>
@@ -110,12 +110,12 @@
                                 </div>
                                 <div>
                                     <label for="holder"
-                                        class="mb-1 block text-sm font-medium text-gray-300">{{ __('Account Holder') }}
+                                        class="mb-1 block text-sm font-medium text-gray-300">{{ __('payment.bank_account_holder') }}
                                         *</label>
                                     <input type="text" id="holder" name="holder"
                                         value="{{ $collectionMethod?->getHolder() }}"
                                         class="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-gray-600 bg-gray-700/50 px-4 py-2 text-white placeholder-gray-400 focus:ring-1"
-                                        placeholder="{{ __('Full name as on bank account') }}">
+                                        placeholder="{{ __('payment.bank_holder_placeholder') }}">
                                 </div>
                                 <button type="button" onclick="saveBankConfig()"
                                     class="bg-primary-500 hover:bg-primary-600 rounded-lg px-4 py-2 text-white transition">

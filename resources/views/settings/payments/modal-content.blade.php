@@ -118,7 +118,7 @@
                                                 class="h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]">
                                             </div>
                                             <span
-                                                class="text-[10px] font-bold uppercase tracking-wider text-green-400 opacity-80">{{ __('Default') }}</span>
+                                                class="text-[10px] font-bold uppercase tracking-wider text-green-400 opacity-80">{{ __('payment.label_default') }}</span>
                                         </div>
                                     @endif
                                 </div>
@@ -131,7 +131,7 @@
                                 data-toggle="{{ $methodKey }}"
                                 style="{{ $isEnabled ? 'background-color: #F59E0B;' : '' }}">
                                 <!-- Amber-500 fallback -->
-                                <span class="sr-only">{{ __('Toggle') }}</span>
+                                <span class="sr-only">{{ __('payment.label_toggle') }}</span>
                                 <span
                                     class="{{ $isEnabled ? 'translate-x-5' : 'translate-x-0' }} pointer-events-none inline-block flex h-6 w-6 transform items-center justify-center rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out">
                                     @if ($isEnabled)
@@ -177,7 +177,8 @@
 
                                         {{-- Step 1: Intro --}}
                                         <div id="sw-step-1" class="sw-step">
-                                            <div class="flex items-start gap-3 rounded-xl border border-violet-500/20 bg-violet-900/20 p-4">
+                                            <div
+                                                class="flex items-start gap-3 rounded-xl border border-violet-500/20 bg-violet-900/20 p-4">
                                                 <span class="shrink-0 text-2xl">🤖</span>
                                                 <div>
                                                     <p class="mb-1 text-sm font-semibold text-violet-200">
@@ -205,15 +206,15 @@
                                             </p>
                                             <ul class="mb-4 space-y-2">
                                                 <li class="flex items-center gap-2 text-xs text-gray-300">
-                                                    <span class="text-green-400 font-bold">✓</span>
+                                                    <span class="font-bold text-green-400">✓</span>
                                                     {{ __('payment.wizard.step2_item1') }}
                                                 </li>
                                                 <li class="flex items-center gap-2 text-xs text-gray-300">
-                                                    <span class="text-green-400 font-bold">✓</span>
+                                                    <span class="font-bold text-green-400">✓</span>
                                                     {{ __('payment.wizard.step2_item2') }}
                                                 </li>
                                                 <li class="flex items-center gap-2 text-xs text-gray-300">
-                                                    <span class="text-green-400 font-bold">✓</span>
+                                                    <span class="font-bold text-green-400">✓</span>
                                                     {{ __('payment.wizard.step2_item3') }}
                                                 </li>
                                             </ul>
@@ -231,7 +232,8 @@
 
                                         {{-- Step 3: Apri finestra Stripe --}}
                                         <div id="sw-step-3" class="sw-step hidden">
-                                            <div class="mb-3 rounded-xl border border-amber-500/20 bg-amber-900/10 p-3">
+                                            <div
+                                                class="mb-3 rounded-xl border border-amber-500/20 bg-amber-900/10 p-3">
                                                 <p class="text-xs leading-relaxed text-amber-300/90">
                                                     🪟 {{ __('payment.wizard.step3_note') }}
                                                 </p>
@@ -240,9 +242,11 @@
                                                 onclick="window.stripeWizard.openPopup()"
                                                 class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-green-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] hover:from-green-500 hover:to-green-400 disabled:cursor-not-allowed disabled:opacity-60">
                                                 <span>💳</span>
-                                                <span id="stripe-onboarding-btn-text">{{ __('payment.wizard.step3_cta', ['psp_name' => $pspName]) }}</span>
+                                                <span
+                                                    id="stripe-onboarding-btn-text">{{ __('payment.wizard.step3_cta', ['psp_name' => $pspName]) }}</span>
                                             </button>
-                                            <p id="sw-popup-blocked" class="mt-2 hidden text-center text-[11px] text-red-400">
+                                            <p id="sw-popup-blocked"
+                                                class="mt-2 hidden text-center text-[11px] text-red-400">
                                                 ⚠️ {{ __('payment.wizard.popup_blocked') }}
                                             </p>
                                             <button type="button" onclick="window.stripeWizard.go(2)"
@@ -254,25 +258,35 @@
                                         {{-- Step 4: Risultato --}}
                                         <div id="sw-step-4" class="sw-step hidden">
                                             {{-- Checking spinner --}}
-                                            <div id="sw-result-checking" class="rounded-xl border border-violet-500/20 bg-violet-900/10 p-5 text-center">
-                                                <p class="text-sm text-gray-400">{{ __('payment.wizard.step4_checking') }}</p>
+                                            <div id="sw-result-checking"
+                                                class="rounded-xl border border-violet-500/20 bg-violet-900/10 p-5 text-center">
+                                                <p class="text-sm text-gray-400">
+                                                    {{ __('payment.wizard.step4_checking') }}</p>
                                             </div>
                                             {{-- Complete --}}
-                                            <div id="sw-result-complete" class="hidden rounded-xl border border-green-500/30 bg-green-900/20 p-5 text-center">
+                                            <div id="sw-result-complete"
+                                                class="hidden rounded-xl border border-green-500/30 bg-green-900/20 p-5 text-center">
                                                 <div class="text-3xl">🎉</div>
-                                                <p class="mt-2 text-sm font-semibold text-green-400">{{ __('payment.wizard.step4_complete') }}</p>
-                                                <p class="mt-1 text-xs text-gray-400">{{ __('payment.wizard.step4_complete_hint') }}</p>
+                                                <p class="mt-2 text-sm font-semibold text-green-400">
+                                                    {{ __('payment.wizard.step4_complete') }}</p>
+                                                <p class="mt-1 text-xs text-gray-400">
+                                                    {{ __('payment.wizard.step4_complete_hint') }}</p>
                                             </div>
                                             {{-- Pending / restricted --}}
-                                            <div id="sw-result-pending" class="hidden rounded-xl border border-amber-500/30 bg-amber-900/20 p-5 text-center">
+                                            <div id="sw-result-pending"
+                                                class="hidden rounded-xl border border-amber-500/30 bg-amber-900/20 p-5 text-center">
                                                 <div class="text-3xl">⏳</div>
-                                                <p class="mt-2 text-sm font-semibold text-amber-400">{{ __('payment.wizard.step4_pending') }}</p>
-                                                <p class="mt-1 text-xs text-gray-400">{{ __('payment.wizard.step4_pending_hint') }}</p>
+                                                <p class="mt-2 text-sm font-semibold text-amber-400">
+                                                    {{ __('payment.wizard.step4_pending') }}</p>
+                                                <p class="mt-1 text-xs text-gray-400">
+                                                    {{ __('payment.wizard.step4_pending_hint') }}</p>
                                             </div>
                                             {{-- Error --}}
-                                            <div id="sw-result-error" class="hidden rounded-xl border border-red-500/30 bg-red-900/20 p-5 text-center">
+                                            <div id="sw-result-error"
+                                                class="hidden rounded-xl border border-red-500/30 bg-red-900/20 p-5 text-center">
                                                 <div class="text-3xl">❌</div>
-                                                <p class="mt-2 text-sm font-semibold text-red-400">{{ __('payment.wizard.step4_error') }}</p>
+                                                <p class="mt-2 text-sm font-semibold text-red-400">
+                                                    {{ __('payment.wizard.step4_error') }}</p>
                                                 <button type="button" onclick="window.stripeWizard.go(3)"
                                                     class="mt-3 rounded-xl border border-white/10 px-4 py-2 text-xs text-gray-400 hover:text-gray-200">
                                                     {{ __('payment.wizard.step4_retry') }}
@@ -285,7 +299,7 @@
                                     <div class="mt-3 flex items-center justify-center gap-1.5">
                                         @foreach ([1, 2, 3, 4] as $s)
                                             <span id="sw-dot-{{ $s }}"
-                                                class="h-1.5 rounded-full transition-all duration-300 {{ $s === 1 ? 'w-4 bg-violet-400' : 'w-1.5 bg-white/20' }}">
+                                                class="{{ $s === 1 ? 'w-4 bg-violet-400' : 'w-1.5 bg-white/20' }} h-1.5 rounded-full transition-all duration-300">
                                             </span>
                                         @endforeach
                                     </div>
@@ -299,7 +313,7 @@
                                 <button type="button"
                                     onclick="window.paymentModal.setDefaultMethod('{{ $methodKey }}')"
                                     class="text-xs font-bold uppercase tracking-wider text-gray-500 transition-colors hover:text-amber-400">
-                                    {{ __('Make Default') }}
+                                    {{ __('payment.label_make_default') }}
                                 </button>
                             </div>
                         @endif
@@ -329,7 +343,7 @@
 
                     <h3 class="mb-6 flex items-center gap-2 text-xl font-bold text-white">
                         <span class="h-8 w-1 rounded-full bg-amber-500"></span>
-                        {{ __('Bank Account Configuration') }}
+                        {{ __('payment.bank_config_title') }}
                     </h3>
 
                     <form id="bank-config-form" class="relative z-10 space-y-6">
@@ -359,11 +373,11 @@
                         </div>
                         <div class="group">
                             <label for="holder"
-                                class="mb-2 block text-xs font-bold uppercase tracking-widest text-gray-400 transition-colors group-focus-within:text-amber-400">{{ __('Account Holder') }}</label>
+                                class="mb-2 block text-xs font-bold uppercase tracking-widest text-gray-400 transition-colors group-focus-within:text-amber-400">{{ __('payment.bank_account_holder') }}</label>
                             <input type="text" id="holder" name="holder"
                                 value="{{ $bankDetails['holder'] ?? $bankMethod?->getHolder() }}"
                                 class="block w-full rounded-xl border border-gray-700 bg-gray-900/80 px-4 py-3 text-white placeholder-gray-600 transition-all focus:border-amber-500 focus:ring-1 focus:ring-amber-500 sm:text-sm"
-                                placeholder="{{ __('Full name as on bank account') }}">
+                                placeholder="{{ __('payment.bank_holder_placeholder') }}">
                         </div>
                         <div class="flex justify-end pt-4">
                             <button type="button" onclick="window.paymentModal.saveBankConfig()"
@@ -372,7 +386,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M5 13l4 4L19 7"></path>
                                 </svg>
-                                {{ __('Save Bank Details') }}
+                                {{ __('payment.bank_save_details') }}
                             </button>
                         </div>
                     </form>
