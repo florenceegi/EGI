@@ -39,6 +39,12 @@ return [
     'collection_settings_title'       => 'Collection Payment Settings',
     'collection_settings_description' => 'Override default payment methods for this specific collection',
 
+
+    // Stripe popup return page
+    'popup_return_title'   => 'Verification complete',
+    'popup_return_heading' => 'Verification complete',
+    'popup_return_closing' => 'This window will close automatically',
+
     'errors' => [
         'merchant_account_incomplete' => 'Merchant account incomplete.',
         'paypal_not_configured' => 'PayPal not configured.',

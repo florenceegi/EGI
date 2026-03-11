@@ -22,6 +22,12 @@ return [
     'collection_settings_title'       => 'Configuración de Pago de la Colección',
     'collection_settings_description' => 'Personaliza los métodos de pago para esta colección específica',
 
+
+    // Stripe popup return page
+    'popup_return_title'   => 'Verificación completada',
+    'popup_return_heading' => 'Verificación completada',
+    'popup_return_closing' => 'Esta ventana se cerrará automáticamente',
+
     'wizard' => [
         'chip_label'  => 'Activar pagos',
         'intro_title' => 'Activa tu sistema de pagos',

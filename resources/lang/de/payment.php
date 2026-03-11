@@ -22,6 +22,12 @@ return [
     'collection_settings_title'       => 'Zahlungseinstellungen der Sammlung',
     'collection_settings_description' => 'Standardzahlungsmethoden für diese Sammlung anpassen',
 
+
+    // Stripe popup return page
+    'popup_return_title'   => 'Verifizierung abgeschlossen',
+    'popup_return_heading' => 'Verifizierung abgeschlossen',
+    'popup_return_closing' => 'Dieses Fenster schließt sich automatisch',
+
     'wizard' => [
         'chip_label'  => 'Zahlungen aktivieren',
         'intro_title' => 'Zahlungssystem aktivieren',

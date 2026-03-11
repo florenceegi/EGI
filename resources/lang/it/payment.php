@@ -39,6 +39,12 @@ return [
     'collection_settings_title'       => 'Impostazioni Pagamento Collezione',
     'collection_settings_description' => 'Personalizza i metodi di pagamento per questa specifica collezione',
 
+
+    // Stripe popup return page
+    'popup_return_title'   => 'Verifica completata',
+    'popup_return_heading' => 'Verifica completata',
+    'popup_return_closing' => 'Questa finestra si chiude automaticamente',
+
     'errors' => [
         'merchant_account_incomplete' => 'Account venditore incompleto.',
         'paypal_not_configured' => 'PayPal non configurato.',
