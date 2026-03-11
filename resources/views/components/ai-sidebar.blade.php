@@ -50,7 +50,8 @@
     $unpublishedCount = count($unpublishedEgis);
 
     // Stripe connection status — true by default for guests/non-owners (hides the chip)
-    $isStripeConnected = ($isOwner && $user) ? !empty($user->stripe_account_id) : true;
+    // Richiede ENTRAMBI: account_id presente E charges_enabled = true (onboarding completato)
+    $isStripeConnected = ($isOwner && $user) ? (!empty($user->stripe_account_id) && $user->stripe_charges_enabled) : true;
     $pspName = config('egi.payment.psp_name', 'FlorenceEGI Payment System');
 
     // Show sidebar if: owner with checklist OR custom context message provided

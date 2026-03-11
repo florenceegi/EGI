@@ -444,12 +444,13 @@ class OnboardingChecklistService {
      * @return bool
      */
     protected function hasStripeConnected(User $user): bool {
-        // Check stripe_account_id
-        if (!empty($user->stripe_account_id)) {
+        // Stripe è connesso solo se l'onboarding è completato (charges_enabled)
+        // Avere solo stripe_account_id non basta: può essere un onboarding incompleto
+        if (!empty($user->stripe_account_id) && $user->stripe_charges_enabled) {
             return true;
         }
 
-        // Check connected accounts
+        // Check connected accounts (relazione)
         if (method_exists($user, 'stripeAccount') && $user->stripeAccount) {
             return $user->stripeAccount->charges_enabled ?? false;
         }
