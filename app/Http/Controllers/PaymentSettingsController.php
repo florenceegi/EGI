@@ -389,8 +389,7 @@ class PaymentSettingsController extends Controller {
      *
      * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
      */
-    public function startStripeOnboarding(Request $request): JsonResponse
-    {
+    public function startStripeOnboarding(Request $request): JsonResponse {
         try {
             $user = Auth::user();
             $wallet = $user->primaryWallet;
@@ -431,8 +430,7 @@ class PaymentSettingsController extends Controller {
      * Handle Stripe return URL after successful onboarding.
      * Refreshes checklist cache and redirects with success flash.
      */
-    public function stripeReturn(Request $request): View
-    {
+    public function stripeReturn(Request $request): View {
         $user = Auth::user();
         $this->checklistService->refreshChecklist($user, 'creator');
 
@@ -446,8 +444,7 @@ class PaymentSettingsController extends Controller {
      * Handle Stripe refresh URL (hosted onboarding link expired).
      * Returns close-popup page — same behavior.
      */
-    public function stripeRefresh(Request $request): View
-    {
+    public function stripeRefresh(Request $request): View {
         return view('settings.payments.stripe-popup-return');
     }
 
@@ -455,8 +452,7 @@ class PaymentSettingsController extends Controller {
      * Return Stripe Connect account status as JSON.
      * Called by the wizard JS after the popup closes.
      */
-    public function stripeStatus(Request $request): JsonResponse
-    {
+    public function stripeStatus(Request $request): JsonResponse {
         $user = Auth::user();
         $accountId = $user->stripe_account_id ?? null;
 

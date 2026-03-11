@@ -143,6 +143,48 @@ Bypass: `git commit --no-verify` (solo se intenzionale)
  */
 ```
 
+---
+
+## 📚 Documentazione Ufficiale — SSOT
+
+> **L'unica fonte di verità per tutta la documentazione tecnica dell'ecosistema è `/home/fabio/EGI-DOC/docs`.**
+
+### 📁 Mappa Progetto → Cartella Docs
+
+| Progetto              | Cartella in EGI-DOC |
+| --------------------- | ------------------- |
+| FlorenceArtEGI (EGI)  | `docs/egi/`         |
+| EGI-HUB               | `docs/egi-hub/`     |
+| NATAN_LOC             | `docs/natan-loc/`   |
+| EGI-INFO              | `docs/egi-info/`    |
+| EGI-HUB-HOME-REACT    | `docs/egi-home/`    |
+| Ecosistema (generale) | `docs/ecosistema/`  |
+| AWS Infrastructure    | `docs/aws/`         |
+| Oracode OS3           | `docs/oracode/`     |
+
+❌ **VIETATO** cercare o creare documentazione fuori da `/home/fabio/EGI-DOC/docs`.
+
+### 🔄 Regola DOC-SYNC (P1 — MUST)
+
+**Ogni modifica alla codebase che cambia comportamento, architettura, API, flussi o configurazione DEVE essere seguita dall'aggiornamento del file `.md` corrispondente in EGI-DOC.**
+
+```
+Codebase change → identifica .md in EGI-DOC → aggiorna docs → commit entrambi
+```
+
+#### ✅ Checklist DOC-SYNC (obbligatoria a fine task)
+
+```
+□ Ho modificato comportamento / architettura / API / flusso?
+    → SÌ: identifica il .md in EGI-DOC/docs/<cartella-progetto>/
+□ Il file .md esiste già?
+    → SÌ: aggiornalo
+    → NO: crea il file nella cartella giusta in EGI-DOC
+□ Le modifiche alla doc sono nello stesso commit/PR della codebase
+```
+
+> 🛑 Una feature non documentata in EGI-DOC è una feature **incompleta**.
+
 <!-- ══════════════════════════════════════════════════════════════
      FINE CORE CONDIVISO — Da qui in poi: specifico per EGI
      ══════════════════════════════════════════════════════════════ -->
@@ -160,15 +202,15 @@ Browser → Laravel 11 (PHP 8.3) → PostgreSQL + pgvector (RAG)
          Algorand Blockchain (ASA)
 ```
 
-| Componente            | Tecnologia                                 | Porta |
-| --------------------- | ------------------------------------------ | ----- |
-| Backend               | Laravel 11.31 + PHP 8.2+                   | 8000  |
-| Frontend              | Vite 5.4 + React 19 + TS + Tailwind + DaisyUI | 5174  |
-| Database              | PostgreSQL + pgvector (`rag_natan` schema)  | 5432  |
-| Blockchain            | AlgoKit Microservice (Node.js)              | 3001  |
-| AI LLM                | Anthropic Claude API                        | —     |
-| Payments              | Stripe + PayPal (split payment)             | —     |
-| Storage               | AWS S3 + CloudFront (Spatie MediaLibrary)   | —     |
+| Componente | Tecnologia                                    | Porta |
+| ---------- | --------------------------------------------- | ----- |
+| Backend    | Laravel 11.31 + PHP 8.2+                      | 8000  |
+| Frontend   | Vite 5.4 + React 19 + TS + Tailwind + DaisyUI | 5174  |
+| Database   | PostgreSQL + pgvector (`rag_natan` schema)    | 5432  |
+| Blockchain | AlgoKit Microservice (Node.js)                | 3001  |
+| AI LLM     | Anthropic Claude API                          | —     |
+| Payments   | Stripe + PayPal (split payment)               | —     |
+| Storage    | AWS S3 + CloudFront (Spatie MediaLibrary)     | —     |
 
 ---
 
@@ -176,14 +218,14 @@ Browser → Laravel 11 (PHP 8.3) → PostgreSQL + pgvector (RAG)
 
 Ogni traduzione DEVE essere in **tutte e 6** le lingue:
 
-| Codice | Lingua    | Path                     |
-| ------ | --------- | ------------------------ |
-| `it`   | Italiano  | `resources/lang/it/`     |
-| `en`   | English   | `resources/lang/en/`     |
-| `de`   | Deutsch   | `resources/lang/de/`     |
-| `es`   | Español   | `resources/lang/es/`     |
-| `fr`   | Français  | `resources/lang/fr/`     |
-| `pt`   | Português | `resources/lang/pt/`     |
+| Codice | Lingua    | Path                 |
+| ------ | --------- | -------------------- |
+| `it`   | Italiano  | `resources/lang/it/` |
+| `en`   | English   | `resources/lang/en/` |
+| `de`   | Deutsch   | `resources/lang/de/` |
+| `es`   | Español   | `resources/lang/es/` |
+| `fr`   | Français  | `resources/lang/fr/` |
+| `pt`   | Português | `resources/lang/pt/` |
 
 ❌ **VIETATO** tradurre solo in `it` + `en` → 🛑 BLOCCA
 
@@ -271,26 +313,26 @@ grep "public function" app/Services/AlgorandService.php
 
 ## 📁 File Chiave EGI
 
-| Scopo                   | Path                                            |
-| ----------------------- | ----------------------------------------------- |
-| Routes web              | `routes/web.php`                                |
-| Routes API              | `routes/api.php`                                |
-| Routes company          | `routes/company.php`                            |
-| Routes creator          | `routes/creator.php`                            |
-| Routes CoA              | `routes/coa.php`                                |
-| Routes GDPR             | `routes/gdpr.php`                               |
-| AI Sidebar Service      | `app/Services/ArtAdvisorService.php`            |
-| Anthropic LLM           | `app/Services/AnthropicService.php`             |
-| Algorand Service        | `app/Services/AlgorandService.php`              |
-| Collection Service      | `app/Services/CollectionService.php`            |
-| Certificate Generator   | `app/Services/CertificateGeneratorService.php`  |
-| RAG Search              | `app/Services/AI/RAGSearchService.php`          |
-| Fee Structure           | `app/Enums/Fees/FeeStructureEnum.php`           |
-| GDPR Enums              | `app/Enums/Gdpr/`                               |
-| AI View Contexts        | `config/ai_view_contexts.php`                   |
-| EGI Config              | `config/egi.php`                                |
-| Error Manager           | `config/error-manager.php`                      |
-| Debiti Tecnici          | `docs/FlorenceEGI/debiti_tecnici.md`            |
+| Scopo                 | Path                                           |
+| --------------------- | ---------------------------------------------- |
+| Routes web            | `routes/web.php`                               |
+| Routes API            | `routes/api.php`                               |
+| Routes company        | `routes/company.php`                           |
+| Routes creator        | `routes/creator.php`                           |
+| Routes CoA            | `routes/coa.php`                               |
+| Routes GDPR           | `routes/gdpr.php`                              |
+| AI Sidebar Service    | `app/Services/ArtAdvisorService.php`           |
+| Anthropic LLM         | `app/Services/AnthropicService.php`            |
+| Algorand Service      | `app/Services/AlgorandService.php`             |
+| Collection Service    | `app/Services/CollectionService.php`           |
+| Certificate Generator | `app/Services/CertificateGeneratorService.php` |
+| RAG Search            | `app/Services/AI/RAGSearchService.php`         |
+| Fee Structure         | `app/Enums/Fees/FeeStructureEnum.php`          |
+| GDPR Enums            | `app/Enums/Gdpr/`                              |
+| AI View Contexts      | `config/ai_view_contexts.php`                  |
+| EGI Config            | `config/egi.php`                               |
+| Error Manager         | `config/error-manager.php`                     |
+| Debiti Tecnici        | `docs/FlorenceEGI/debiti_tecnici.md`           |
 
 ---
 

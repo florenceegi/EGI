@@ -198,11 +198,11 @@ class EgiController extends Controller {
             ]);
 
             // Fetch Trait Categories for the form (including Commodity trigger)
-            $traitCategories = \App\Models\TraitCategory::with(['traitTypes' => function($q) {
+            $traitCategories = \App\Models\TraitCategory::with(['traitTypes' => function ($q) {
                 $q->orderBy('name');
             }])
-            ->orderBy('order_column')
-            ->get();
+                ->orderBy('order_column')
+                ->get();
 
             return view($view, compact('collections', 'traitCategories'));
         } catch (\Exception $e) {
@@ -250,8 +250,8 @@ class EgiController extends Controller {
             }
 
             // 3. Prepare Data
-            $data = $request->except(['_token']); 
-            
+            $data = $request->except(['_token']);
+
             // Map 'commodity_data' to 'commodity_metadata' for DB if using that column name
             if ($request->filled('commodity_data')) {
                 $data['commodity_metadata'] = $request->commodity_data;
@@ -263,7 +263,6 @@ class EgiController extends Controller {
 
             return redirect()->route('egis.show', $egi)
                 ->with('success', __('EGI creato con successo!'));
-
         } catch (\Exception $e) {
             return $this->errorManager->handle('EGI_STORE_ERROR', [
                 'user_id' => FegiAuth::id(),
@@ -627,28 +626,28 @@ class EgiController extends Controller {
 
             // 🥇 GOLD BAR/COMMODITY: Handle Metadata (Logic & Sync via Observer)
             if ($request->filled('commodity_data')) {
-                 // Validate via Factory (Optional, but good practice)
-                 if ($request->filled('commodity_type') || $egi->commodity_type) {
-                     try {
-                         // CommodityFactory is redundant here if we just strictly save what the UI sends.
-                         // But if we want to validte:
-                         // $contract = \App\Egi\Commodity\CommodityFactory::make($egi->commodity_type ?: 'goldbar');
-                         // $contract->validate($request->input('commodity_data'));
-                     } catch (\Exception $e) {
-                         // Log error but allow save? Or block? 
-                         // For now, allow save to not block user flow.
-                     }
-                 }
-                 
-                 // The 'update' method of EgiService handles fillable fields.
-                 // We need to ensure 'commodity_metadata' is passed in $validated or handled separately.
-                 // Since we validated 'commodity_data' (or not), we must merge it.
-                 // BUT $validated is filtered by strict validation rules above.
-                 // We should add 'commodity_data' to validation or merge it here.
-                 
-                 // FORCE UPDATE commodity_metadata
-                 $egi->commodity_metadata = $request->input('commodity_data');
-                 $egi->save(); // This triggers Observer
+                // Validate via Factory (Optional, but good practice)
+                if ($request->filled('commodity_type') || $egi->commodity_type) {
+                    try {
+                        // CommodityFactory is redundant here if we just strictly save what the UI sends.
+                        // But if we want to validte:
+                        // $contract = \App\Egi\Commodity\CommodityFactory::make($egi->commodity_type ?: 'goldbar');
+                        // $contract->validate($request->input('commodity_data'));
+                    } catch (\Exception $e) {
+                        // Log error but allow save? Or block? 
+                        // For now, allow save to not block user flow.
+                    }
+                }
+
+                // The 'update' method of EgiService handles fillable fields.
+                // We need to ensure 'commodity_metadata' is passed in $validated or handled separately.
+                // Since we validated 'commodity_data' (or not), we must merge it.
+                // BUT $validated is filtered by strict validation rules above.
+                // We should add 'commodity_data' to validation or merge it here.
+
+                // FORCE UPDATE commodity_metadata
+                $egi->commodity_metadata = $request->input('commodity_data');
+                $egi->save(); // This triggers Observer
             }
 
             // Log GDPR audit trail
@@ -1133,8 +1132,7 @@ class EgiController extends Controller {
      * @param Request $request  ids[] for selective, all=true for all
      * @return JsonResponse
      */
-    public function bulkPublish(Request $request): JsonResponse
-    {
+    public function bulkPublish(Request $request): JsonResponse {
         $user = auth()->user();
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);

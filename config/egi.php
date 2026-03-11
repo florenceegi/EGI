@@ -178,7 +178,7 @@ return [
             'user_id_config_key' => 'egi.default_ids.natan_user_id',
         ],
 
-         // --- Natan (Platform) Wallet Configuration ---
+        // --- Natan (Platform) Wallet Configuration ---
         'Ass_Frangette' => [ // Assumes Natan represents the platform share (using FRANGETTE keys from ENV)
             /**
              * Default royalty percentage for the Platform (Natan) on the first sale (Mint).
