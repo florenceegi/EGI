@@ -134,6 +134,43 @@
                 right: 0 !important;
                 border-radius: 0 !important;
             }
+
+            /* Mobile accordion — collassa sezione AI message e checklist items */
+            #ai-msg-body {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease-out;
+            }
+            #ai-msg-body.mobile-open {
+                max-height: 600px;
+            }
+            #ai-checklist-items {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease-out;
+            }
+            #ai-checklist-items.mobile-open {
+                max-height: 1000px;
+            }
+            .mobile-section-toggle {
+                display: flex !important;
+            }
+            /* Su mobile la sezione chat non occupa tutto lo spazio quando collassata */
+            .ai-sidebar .flex-1 {
+                overflow: visible;
+            }
+        }
+
+        .mobile-section-toggle {
+            display: none;
+        }
+
+        .toggle-arrow {
+            transition: transform 0.2s ease;
+        }
+        .mobile-open .toggle-arrow,
+        .section-open > .toggle-arrow {
+            transform: rotate(180deg);
         }
     </style>
 
@@ -202,8 +239,24 @@
 
         {{-- AI Chat Section (Top) --}}
         <div class="flex-1 overflow-hidden border-b border-gray-700/50">
-            {{-- AI Message Area --}}
-            <div id="ai-sidebar-chat" class="h-full overflow-y-auto p-4 pt-8">
+            {{-- Mobile toggle: sezione messaggio AI collassabile --}}
+            <button type="button" id="ai-msg-toggle"
+                class="mobile-section-toggle w-full items-center justify-between border-b border-gray-700/50 bg-gray-800/60 px-4 py-2.5 text-left"
+                aria-expanded="false" aria-controls="ai-msg-body">
+                <span class="flex items-center gap-2 text-xs font-medium text-gray-300">
+                    <svg class="h-3.5 w-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3-3-3z" />
+                    </svg>
+                    {{ __('ai_sidebar.title') }}
+                </span>
+                <svg id="ai-msg-arrow" class="toggle-arrow h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+
+            {{-- AI Message Area (collassabile su mobile) --}}
+            <div id="ai-msg-body">
+            <div id="ai-sidebar-chat" class="overflow-y-auto p-4 pt-6 md:h-full">
                 {{-- Initial AI message - Context-aware or checklist-based --}}
                 <div class="ai-message rounded-xl bg-gradient-to-r from-indigo-900/30 to-purple-900/30 p-4">
                     <div class="mb-3 flex items-center gap-2">
@@ -278,7 +331,9 @@
                 </div>
             </div>
 
-            {{-- Chat Input (for real AI questions) --}}
+            </div>{{-- /ai-msg-body --}}
+
+            {{-- Chat Input (for real AI questions) — SEMPRE VISIBILE --}}
             <div class="border-t border-gray-700/50 bg-gray-800/50 p-3">
                 {{-- Quick suggestion chips --}}
                 <div id="ai-sidebar-suggestions" class="mb-2 flex flex-wrap gap-1.5">
@@ -321,20 +376,28 @@
 
         {{-- Checklist Section (Bottom) - Stripe-style --}}
         @if ($showChecklist && $totalCount > 0)
-            <div class="max-h-[40%] overflow-y-auto">
-                {{-- Progress Header --}}
-                <div class="sticky top-0 border-b border-gray-700/50 bg-gray-900/95 px-4 py-3 backdrop-blur">
+            <div class="overflow-y-auto md:max-h-[40%]">
+                {{-- Progress Header — su mobile funge da toggle accordion --}}
+                <button type="button" id="ai-checklist-toggle"
+                    class="sticky top-0 z-10 w-full border-b border-gray-700/50 bg-gray-900/95 px-4 py-3 text-left backdrop-blur"
+                    aria-expanded="false" aria-controls="ai-checklist-items">
                     <div class="mb-2 flex items-center justify-between">
                         <span class="text-xs font-medium text-gray-400">{{ __('ai_sidebar.checklist.progress') }}</span>
-                        <span class="text-xs font-semibold text-white">{{ $completedCount }}/{{ $totalCount }}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-semibold text-white" data-progress-text>{{ $completedCount }}/{{ $totalCount }}</span>
+                            <svg id="ai-checklist-arrow" class="toggle-arrow h-3.5 w-3.5 text-gray-500 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
                     </div>
                     <div class="h-1.5 overflow-hidden rounded-full bg-gray-700">
                         <div class="progress-fill h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
                             style="width: {{ $progressPercent }}%"></div>
                     </div>
-                </div>
+                </button>
 
-                {{-- Checklist Items --}}
+                {{-- Checklist Items — collassabili su mobile --}}
+                <div id="ai-checklist-items">
                 <ul id="ai-sidebar-checklist" class="divide-y divide-gray-700/50 p-2">
                     @foreach ($checklist as $index => $item)
                         <li class="checklist-item {{ $item['completed'] ? 'completed' : '' }} cursor-pointer rounded-lg px-3 py-2.5"
@@ -380,6 +443,7 @@
                         </li>
                     @endforeach
                 </ul>
+                </div>{{-- /ai-checklist-items --}}
             </div>
         @endif
     </aside>
@@ -410,6 +474,43 @@
                     }
                 });
             }
+
+            // ── Mobile accordion toggle ──────────────────────────────
+            function isMobile() { return window.innerWidth < 769; }
+
+            // Toggle sezione AI message
+            var aiMsgToggle = document.getElementById('ai-msg-toggle');
+            var aiMsgBody   = document.getElementById('ai-msg-body');
+            var aiMsgArrow  = document.getElementById('ai-msg-arrow');
+            if (aiMsgToggle && aiMsgBody) {
+                aiMsgToggle.addEventListener('click', function () {
+                    var isOpen = aiMsgBody.classList.toggle('mobile-open');
+                    aiMsgToggle.setAttribute('aria-expanded', isOpen);
+                    if (aiMsgArrow) aiMsgArrow.style.transform = isOpen ? 'rotate(180deg)' : '';
+                });
+            }
+
+            // Toggle sezione Checklist items
+            var aiChecklistToggle = document.getElementById('ai-checklist-toggle');
+            var aiChecklistItems  = document.getElementById('ai-checklist-items');
+            var aiChecklistArrow  = document.getElementById('ai-checklist-arrow');
+            if (aiChecklistToggle && aiChecklistItems) {
+                // Su desktop la checklist è sempre aperta — blocca il toggle se non mobile
+                aiChecklistToggle.addEventListener('click', function () {
+                    if (!isMobile()) return;
+                    var isOpen = aiChecklistItems.classList.toggle('mobile-open');
+                    aiChecklistToggle.setAttribute('aria-expanded', isOpen);
+                    if (aiChecklistArrow) aiChecklistArrow.style.transform = isOpen ? 'rotate(180deg)' : '';
+                });
+            }
+
+            // Su resize desktop → assicura che le sezioni siano sempre aperte
+            window.addEventListener('resize', function () {
+                if (!isMobile()) {
+                    if (aiMsgBody) aiMsgBody.classList.remove('mobile-open');
+                    if (aiChecklistItems) aiChecklistItems.classList.remove('mobile-open');
+                }
+            });
         });
     </script>
 @endpush
