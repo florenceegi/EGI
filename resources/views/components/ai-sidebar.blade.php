@@ -255,9 +255,9 @@
                 </svg>
             </button>
 
-            {{-- AI Message Area (collassabile su mobile) --}}
+            {{-- Messaggio informativo iniziale — collassabile su mobile --}}
             <div id="ai-msg-body">
-            <div id="ai-sidebar-chat" class="overflow-y-auto p-4 pt-6 md:h-full">
+                <div class="p-4 pt-4">
                 {{-- Initial AI message - Context-aware or checklist-based --}}
                 <div class="ai-message rounded-xl bg-gradient-to-r from-indigo-900/30 to-purple-900/30 p-4">
                     <div class="mb-3 flex items-center gap-2">
@@ -330,9 +330,11 @@
                         </div>
                     @endif
                 </div>
-            </div>
-
+                </div>
             </div>{{-- /ai-msg-body --}}
+
+            {{-- Chat Stream — SEMPRE VISIBILE (JS appende qui le risposte) --}}
+            <div id="ai-sidebar-chat" class="overflow-y-auto px-4 pb-2"></div>
 
             {{-- Chat Input (for real AI questions) — SEMPRE VISIBILE --}}
             <div class="border-t border-gray-700/50 bg-gray-800/50 p-3">
