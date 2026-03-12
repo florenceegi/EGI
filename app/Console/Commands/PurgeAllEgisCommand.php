@@ -22,7 +22,8 @@ use Illuminate\Support\Facades\Storage;
  *   php artisan egi:purge-all          → DRY-RUN (safe, no changes)
  *   php artisan egi:purge-all --force  → ACTUAL deletion (irreversible)
  */
-class PurgeAllEgisCommand extends Command {
+class PurgeAllEgisCommand extends Command
+{
     protected $signature = 'egi:purge-all
                             {--force : Execute actual deletion (default is dry-run)}
                             {--skip-s3 : Skip S3 file deletion}
@@ -33,7 +34,8 @@ class PurgeAllEgisCommand extends Command {
     /** Image variants generated for each EGI (from config/image-optimization.php) */
     private const EGI_VARIANTS = ['thumbnail', 'mobile', 'tablet', 'desktop'];
 
-    public function handle(IpfsService $ipfsService): int {
+    public function handle(IpfsService $ipfsService): int
+    {
         $isDryRun = !$this->option('force');
         $skipS3   = $this->option('skip-s3');
         $skipIpfs = $this->option('skip-ipfs');
@@ -48,7 +50,10 @@ class PurgeAllEgisCommand extends Command {
             $this->error('╔══════════════════════════════════════════════════╗');
             $this->error('║        ⚠️  LIVE MODE — IRREVERSIBLE ⚠️            ║');
             $this->error('╚══════════════════════════════════════════════════╝');
-            // --force è già la conferma esplicita (usato da SSM non-interattivo)
+            if (!$this->confirm('Are you sure you want to permanently delete ALL EGIs, their S3 files and Pinata pins?', false)) {
+                $this->info('Aborted.');
+                return self::SUCCESS;
+            }
         }
         $this->newLine();
 
