@@ -15,312 +15,331 @@
     @accessibility-trait Full ARIA landmark structure with navigation
     --}}
 
+    @push('styles')
+    <style>
+        /* Override Jetstream 3-col grid — scoped solo a questa pagina */
+        .profile-page .md\:grid-cols-3 { grid-template-columns: 1fr !important; }
+        .profile-page .md\:col-span-2,
+        .profile-page .md\:col-span-1 { grid-column: span 1 !important; }
+        .profile-page .md\:mt-0 { margin-top: 0 !important; }
+    </style>
+    @endpush
+
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl gdpr-title">
-                    {{ __('profile.management_title') }}
-                </h1>
-                <p class="mt-1 gdpr-subtitle">
-                    {{ __('profile.management_subtitle') }}
-                </p>
-            </div>
-            <div class="hidden sm:block">
-                <svg class="w-8 h-8 text-oro-fiorentino" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    aria-hidden="true">
+        <div class="flex items-center gap-3">
+            <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 shadow">
+                <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
             </div>
+            <div>
+                <h1 class="text-base font-semibold text-gray-900 dark:text-white">{{ __('profile.management_title') }}</h1>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('profile.management_subtitle') }}</p>
+            </div>
         </div>
     </x-slot>
 
-    {{-- Success/Error Messages --}}
-    @if (session('success'))
-        <div class="mb-6 gdpr-alert gdpr-alert-success" role="alert" aria-live="polite">
-            <div class="flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fill-rule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clip-rule="evenodd" />
+    <div class="profile-page mx-auto max-w-3xl">
+
+        {{-- Success/Error Messages --}}
+        @if (session('success'))
+            <div class="mb-4 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-800/40 dark:bg-green-900/20 dark:text-green-400" role="alert" aria-live="polite">
+                <svg class="h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                 </svg>
-                <span class="font-medium">{{ session('success') }}</span>
+                <span>{{ session('success') }}</span>
             </div>
-        </div>
-    @endif
+        @endif
 
-    @if (session('error'))
-        <div class="mb-6 gdpr-alert gdpr-alert-error" role="alert" aria-live="assertive">
-            <div class="flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fill-rule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                        clip-rule="evenodd" />
+        @if (session('error'))
+            <div class="mb-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800/40 dark:bg-red-900/20 dark:text-red-400" role="alert" aria-live="assertive">
+                <svg class="h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                 </svg>
-                <span class="font-medium">{{ session('error') }}</span>
+                <span>{{ session('error') }}</span>
             </div>
-        </div>
-    @endif
+        @endif
 
 
-    {{-- Navigation Tabs --}}
-    <nav class="mb-8" role="tablist" aria-label="{{ __('profile.sections_navigation') }}">
-        <div class="border-b border-gray-200/50">
-            <ul class="flex -mb-px space-x-8" role="tablist">
-                <li role="presentation">
-                    <button id="security-tab" class="gdpr-tab-button active" role="tab" aria-controls="security-panel"
-                        aria-selected="true" data-tab-target="security-panel">
-                        <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                        {{ __('profile.security_tab') }}
-                    </button>
-                </li>
-                <li role="presentation">
-                    <button id="profile-images-tab" class="gdpr-tab-button" role="tab"
-                        aria-controls="profile-images-panel" aria-selected="false"
-                        data-tab-target="profile-images-panel">
-                        <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        {{ __('profile.profile_images_tab') }}
-                    </button>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-
-    {{-- Tab Panels --}}
-    <div class="space-y-8 tab-panels">
-
-        {{-- Security Panel --}}
-        <div id="security-panel" class="tab-panel" role="tabpanel" aria-labelledby="security-tab"
-            aria-hidden="false">
-
-            <div class="space-y-6">
-                {{-- Password Management --}}
-                @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::updatePasswords()))
-                    <div class="p-6 gdpr-card rounded-2xl">
-                        <h3 class="mb-6 text-lg gdpr-title">
-                            {{ __('profile.password_security') }}
-                        </h3>
-                        @livewire('profile.update-password-form')
-                    </div>
-                @endif
-
-                {{-- Two Factor Authentication --}}
-                @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
-                    <div class="p-6 gdpr-card rounded-2xl">
-                        <h3 class="mb-6 text-lg gdpr-title">
-                            {{ __('profile.two_factor_authentication') }}
-                        </h3>
-                        @livewire('profile.two-factor-authentication-form')
-                    </div>
-                @endif
-
-                {{-- Browser Sessions --}}
-                <div class="p-6 gdpr-card rounded-2xl">
-                    <h3 class="mb-6 text-lg gdpr-title">
-                        {{ __('profile.browser_sessions') }}
-                    </h3>
-                    @livewire('profile.logout-other-browser-sessions-form')
-                </div>
+        {{-- Navigation Tabs --}}
+        <nav class="mb-8" role="tablist" aria-label="{{ __('profile.sections_navigation') }}">
+            <div class="border-b border-gray-200/50">
+                <ul class="flex -mb-px space-x-8" role="tablist">
+                    <li role="presentation">
+                        <button id="security-tab" class="gdpr-tab-button active" role="tab" aria-controls="security-panel"
+                            aria-selected="true" data-tab-target="security-panel">
+                            <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            {{ __('profile.security_tab') }}
+                        </button>
+                    </li>
+                    <li role="presentation">
+                        <button id="profile-images-tab" class="gdpr-tab-button" role="tab"
+                            aria-controls="profile-images-panel" aria-selected="false"
+                            data-tab-target="profile-images-panel">
+                            <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            {{ __('profile.profile_images_tab') }}
+                        </button>
+                    </li>
+                </ul>
             </div>
-        </div>
+        </nav>
 
-        {{-- Profile Images Panel --}}
-        <div id="profile-images-panel" class="hidden tab-panel" role="tabpanel" aria-labelledby="profile-images-tab"
-            aria-hidden="true">
 
-            <div class="space-y-6">
-                {{-- Current Profile Image Card --}}
-                <div class="p-6 gdpr-card rounded-2xl">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg gdpr-title">
-                            {{ __('profile.current_profile_image') }}
-                        </h3>
-                        <svg class="w-6 h-6 text-oro-fiorentino" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                    </div>
+        {{-- Tab Panels --}}
+        <div class="space-y-8 tab-panels">
 
-                    @if (auth()->user()->getCurrentProfileImage())
-                        <div class="flex items-center mb-4 space-x-4">
-                            <img src="{{ auth()->user()->getCurrentProfileImage()->getUrl('thumb') }}"
-                                alt="{{ __('profile.current_profile_image') }}"
-                                class="object-cover w-20 h-20 border-2 rounded-full border-oro-fiorentino aspect-square">
-                            <div>
-                                <p class="text-sm gdpr-subtitle">{{ __('profile.currently_active') }}</p>
-                                <p class="text-xs text-gray-500">
-                                    {{ auth()->user()->getCurrentProfileImage()->created_at->format('d M Y H:i') }}</p>
+            {{-- Security Panel --}}
+            <div id="security-panel" class="tab-panel" role="tabpanel" aria-labelledby="security-tab" aria-hidden="false">
+                <div class="space-y-4">
+
+                    {{-- Password --}}
+                    @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::updatePasswords()))
+                        <div class="overflow-hidden rounded-2xl border border-gray-200/60 shadow-sm dark:border-gray-700/60">
+                            <div class="flex items-center gap-2 border-b border-gray-200/60 bg-gray-50/80 px-5 py-3 dark:border-gray-700/60 dark:bg-gray-800/60">
+                                <svg class="h-4 w-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                                </svg>
+                                <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('profile.password_security') }}</h2>
                             </div>
-                        </div>
-                    @else
-                        <div class="flex items-center mb-4 space-x-4">
-                            <img src="{{ auth()->user()->defaultProfilePhotoUrl() }}"
-                                alt="{{ __('profile.default_profile_image') }}"
-                                class="object-cover w-20 h-20 border-2 rounded-full border-oro-fiorentino aspect-square">
-                            <div>
-                                <p class="text-sm gdpr-subtitle">{{ __('profile.using_default_image') }}</p>
-                                <p class="text-xs text-gray-500">{{ __('profile.no_custom_image_set') }}</p>
+                            <div class="bg-white p-5 dark:bg-gray-900">
+                                @livewire('profile.update-password-form')
                             </div>
                         </div>
                     @endif
-                </div>
 
-                {{-- Upload New Image Card --}}
-                <div class="p-6 gdpr-card rounded-2xl">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg gdpr-title">
-                            {{ __('profile.upload_new_image') }}
-                        </h3>
-                        <svg class="w-6 h-6 text-oro-fiorentino" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                    </div>
-
-                    <form action="{{ route('profile.upload-image') }}" method="POST" enctype="multipart/form-data"
-                        class="space-y-4" id="upload-form">
-                        @csrf
-
-                        {{-- Upload Area --}}
-                        <div class="p-8 text-center transition-colors border-2 border-gray-300 border-dashed rounded-lg hover:border-oro-fiorentino hover:bg-gray-50/50"
-                            id="upload-area">
-                            <input type="file" name="profile_image" id="profile_image"
-                                accept="image/jpeg,image/png,image/webp" class="sr-only" multiple>
-                            <label for="profile_image" class="block cursor-pointer">
-                                <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
+                    {{-- Two Factor Authentication --}}
+                    @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
+                        <div class="overflow-hidden rounded-2xl border border-gray-200/60 shadow-sm dark:border-gray-700/60">
+                            <div class="flex items-center gap-2 border-b border-gray-200/60 bg-gray-50/80 px-5 py-3 dark:border-gray-700/60 dark:bg-gray-800/60">
+                                <svg class="h-4 w-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                 </svg>
-                                <p class="text-lg font-medium gdpr-subtitle">{{ __('profile.drag_drop_or_click') }}
-                                </p>
-                                <p class="mt-2 text-sm text-gray-500">{{ __('profile.supported_formats_with_size') }}
-                                </p>
-                            </label>
-                        </div>
-
-                        {{-- Preview Area (Hidden by default) --}}
-                        <div id="preview-area" class="hidden space-y-4">
-                            <h4 class="text-sm font-medium gdpr-subtitle">{{ __('profile.selected_images') }}</h4>
-                            <div id="preview-container" class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                                <!-- Previews will be inserted here -->
+                                <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Two Factor Authentication') }}</h2>
+                            </div>
+                            <div class="bg-white p-5 dark:bg-gray-900">
+                                @livewire('profile.two-factor-authentication-form')
                             </div>
                         </div>
+                    @endif
 
-                        {{-- Upload Button (Hidden by default) --}}
-                        <button type="submit" id="upload-button"
-                            class="items-center justify-center hidden w-full px-4 py-3 text-sm font-medium rounded-lg gdpr-btn-primary">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {{-- Browser Sessions --}}
+                    <div class="overflow-hidden rounded-2xl border border-gray-200/60 shadow-sm dark:border-gray-700/60">
+                        <div class="flex items-center gap-2 border-b border-gray-200/60 bg-gray-50/80 px-5 py-3 dark:border-gray-700/60 dark:bg-gray-800/60">
+                            <svg class="h-4 w-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
-                            {{ __('profile.upload_selected_images') }}
-                        </button>
-                    </form>
-                </div>
+                            <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Browser Sessions') }}</h2>
+                        </div>
+                        <div class="bg-white p-5 dark:bg-gray-900">
+                            @livewire('profile.logout-other-browser-sessions-form')
+                        </div>
+                    </div>
 
-                {{-- All Profile Images Card --}}
-                @if (auth()->user()->getAllProfileImages()->count() > 0)
+                </div>
+            </div>
+
+            {{-- Profile Images Panel --}}
+            <div id="profile-images-panel" class="hidden tab-panel" role="tabpanel" aria-labelledby="profile-images-tab"
+                aria-hidden="true">
+
+                <div class="space-y-6">
+                    {{-- Current Profile Image Card --}}
                     <div class="p-6 gdpr-card rounded-2xl">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-lg gdpr-title">
-                                {{ __('profile.all_profile_images') }}
+                                {{ __('profile.current_profile_image') }}
                             </h3>
-                            <span class="text-sm text-gray-500">{{ auth()->user()->getAllProfileImages()->count() }}
-                                {{ __('profile.images') }}</span>
+                            <svg class="w-6 h-6 text-oro-fiorentino" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
                         </div>
 
-                        <div class="p-3 mb-4 text-sm text-blue-700 rounded-lg bg-blue-50">
-                            <div class="flex items-start">
-                                <svg class="mr-2 mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                        clip-rule="evenodd" />
-                                </svg>
+                        @if (auth()->user()->getCurrentProfileImage())
+                            <div class="flex items-center mb-4 space-x-4">
+                                <img src="{{ auth()->user()->getCurrentProfileImage()->getUrl('thumb') }}"
+                                    alt="{{ __('profile.current_profile_image') }}"
+                                    class="object-cover w-20 h-20 border-2 rounded-full border-oro-fiorentino aspect-square">
                                 <div>
-                                    <p class="font-medium">{{ __('profile.how_to_use_images') }}</p>
-                                    <p class="mt-1 text-blue-600">{{ __('profile.image_management_help') }}</p>
+                                    <p class="text-sm gdpr-subtitle">{{ __('profile.currently_active') }}</p>
+                                    <p class="text-xs text-gray-500">
+                                        {{ auth()->user()->getCurrentProfileImage()->created_at->format('d M Y H:i') }}</p>
                                 </div>
                             </div>
+                        @else
+                            <div class="flex items-center mb-4 space-x-4">
+                                <img src="{{ auth()->user()->defaultProfilePhotoUrl() }}"
+                                    alt="{{ __('profile.default_profile_image') }}"
+                                    class="object-cover w-20 h-20 border-2 rounded-full border-oro-fiorentino aspect-square">
+                                <div>
+                                    <p class="text-sm gdpr-subtitle">{{ __('profile.using_default_image') }}</p>
+                                    <p class="text-xs text-gray-500">{{ __('profile.no_custom_image_set') }}</p>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Upload New Image Card --}}
+                    <div class="p-6 gdpr-card rounded-2xl">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg gdpr-title">
+                                {{ __('profile.upload_new_image') }}
+                            </h3>
+                            <svg class="w-6 h-6 text-oro-fiorentino" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                            @foreach (auth()->user()->getAllProfileImages() as $image)
-                                <div class="relative w-24 group aspect-square">
-                                    <img src="{{ $image->getUrl('thumb') }}" alt="{{ __('profile.profile_image') }}"
-                                        class="object-cover w-full h-full rounded-lg">
+                        <form action="{{ route('profile.upload-image') }}" method="POST" enctype="multipart/form-data"
+                            class="space-y-4" id="upload-form">
+                            @csrf
 
-                                    @if (auth()->user()->getCurrentProfileImage() && auth()->user()->getCurrentProfileImage()->id === $image->id)
-                                        <div class="absolute p-1 text-white bg-green-500 rounded-full right-1 top-1"
-                                            title="{{ __('profile.currently_active') }}">
-                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd"
-                                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                    @endif
+                            {{-- Upload Area --}}
+                            <div class="p-8 text-center transition-colors border-2 border-gray-300 border-dashed rounded-lg hover:border-oro-fiorentino hover:bg-gray-50/50"
+                                id="upload-area">
+                                <input type="file" name="profile_image" id="profile_image"
+                                    accept="image/jpeg,image/png,image/webp" class="sr-only" multiple>
+                                <label for="profile_image" class="block cursor-pointer">
+                                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                    <p class="text-lg font-medium gdpr-subtitle">{{ __('profile.drag_drop_or_click') }}
+                                    </p>
+                                    <p class="mt-2 text-sm text-gray-500">{{ __('profile.supported_formats_with_size') }}
+                                    </p>
+                                </label>
+                            </div>
 
-                                    <div
-                                        class="absolute inset-0 flex items-center justify-center transition-all duration-200 bg-black bg-opacity-0 rounded-lg group-hover:bg-opacity-50">
+                            {{-- Preview Area (Hidden by default) --}}
+                            <div id="preview-area" class="hidden space-y-4">
+                                <h4 class="text-sm font-medium gdpr-subtitle">{{ __('profile.selected_images') }}</h4>
+                                <div id="preview-container" class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                                    <!-- Previews will be inserted here -->
+                                </div>
+                            </div>
+
+                            {{-- Upload Button (Hidden by default) --}}
+                            <button type="submit" id="upload-button"
+                                class="items-center justify-center hidden w-full px-4 py-3 text-sm font-medium rounded-lg gdpr-btn-primary">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                {{ __('profile.upload_selected_images') }}
+                            </button>
+                        </form>
+                    </div>
+
+                    {{-- All Profile Images Card --}}
+                    @if (auth()->user()->getAllProfileImages()->count() > 0)
+                        <div class="p-6 gdpr-card rounded-2xl">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg gdpr-title">
+                                    {{ __('profile.all_profile_images') }}
+                                </h3>
+                                <span class="text-sm text-gray-500">{{ auth()->user()->getAllProfileImages()->count() }}
+                                    {{ __('profile.images') }}</span>
+                            </div>
+
+                            <div class="p-3 mb-4 text-sm text-blue-700 rounded-lg bg-blue-50">
+                                <div class="flex items-start">
+                                    <svg class="mr-2 mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor"
+                                        viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    <div>
+                                        <p class="font-medium">{{ __('profile.how_to_use_images') }}</p>
+                                        <p class="mt-1 text-blue-600">{{ __('profile.image_management_help') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                                @foreach (auth()->user()->getAllProfileImages() as $image)
+                                    <div class="relative w-24 group aspect-square">
+                                        <img src="{{ $image->getUrl('thumb') }}" alt="{{ __('profile.profile_image') }}"
+                                            class="object-cover w-full h-full rounded-lg">
+
+                                        @if (auth()->user()->getCurrentProfileImage() && auth()->user()->getCurrentProfileImage()->id === $image->id)
+                                            <div class="absolute p-1 text-white bg-green-500 rounded-full right-1 top-1"
+                                                title="{{ __('profile.currently_active') }}">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
+                                        @endif
+
                                         <div
-                                            class="space-x-2 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
-                                            @if (!auth()->user()->getCurrentProfileImage() || auth()->user()->getCurrentProfileImage()->id !== $image->id)
-                                                <form action="{{ route('profile.set-current-image') }}"
-                                                    method="POST" class="inline">
+                                            class="absolute inset-0 flex items-center justify-center transition-all duration-200 bg-black bg-opacity-0 rounded-lg group-hover:bg-opacity-50">
+                                            <div
+                                                class="space-x-2 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
+                                                @if (!auth()->user()->getCurrentProfileImage() || auth()->user()->getCurrentProfileImage()->id !== $image->id)
+                                                    <form action="{{ route('profile.set-current-image') }}"
+                                                        method="POST" class="inline">
+                                                        @csrf
+                                                        <input type="hidden" name="media_id"
+                                                            value="{{ $image->id }}">
+                                                        <button type="submit"
+                                                            class="p-2 text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
+                                                            title="{{ __('profile.set_as_profile') }}">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                                viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                            </svg>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                                <form action="{{ route('profile.delete-image') }}" method="POST"
+                                                    class="inline">
                                                     @csrf
-                                                    <input type="hidden" name="media_id"
-                                                        value="{{ $image->id }}">
+                                                    @method('DELETE')
+                                                    <input type="hidden" name="media_id" value="{{ $image->id }}">
                                                     <button type="submit"
-                                                        class="p-2 text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
-                                                        title="{{ __('profile.set_as_profile') }}">
+                                                        class="p-2 text-white transition-colors bg-red-500 rounded-full hover:bg-red-600"
+                                                        onclick="return confirm('{{ __('profile.confirm_delete_image') }}')"
+                                                        title="{{ __('profile.delete_image') }}">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
-                                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                         </svg>
                                                     </button>
                                                 </form>
-                                            @endif
-                                            <form action="{{ route('profile.delete-image') }}" method="POST"
-                                                class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <input type="hidden" name="media_id" value="{{ $image->id }}">
-                                                <button type="submit"
-                                                    class="p-2 text-white transition-colors bg-red-500 rounded-full hover:bg-red-600"
-                                                    onclick="return confirm('{{ __('profile.confirm_delete_image') }}')"
-                                                    title="{{ __('profile.delete_image') }}">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
-                                            </form>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-                @endif
+                    @endif
+                </div>
             </div>
         </div>
+
     </div>
 
     {{-- JavaScript for Tab Navigation --}}
