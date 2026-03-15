@@ -48,15 +48,15 @@ class SystemUsersSeeder extends Seeder {
     protected array $systemUsers = [
         [
             'id' => 1,
-            'name' => 'natan',
-            'email' => 'natan@gmail.com',
+            'name' => 'Fabio',
+            'email' => 'fabio@florenceegi.com',
             'usertype' => 'natan',
             'role' => 'superadmin'
         ],
         [
             'id' => 2,
             'name' => 'frangette',
-            'email' => 'frangette@gmail.com',
+            'email' => 'frangette@florenceegi.com',
             'usertype' => 'frangette',
             'role' => 'frangette_entity'
         ],
@@ -314,7 +314,7 @@ class SystemUsersSeeder extends Seeder {
             $user->refresh();
 
             // Only user ID 3 (Fabio) should have ecosystem creation capability -> DISABLED
-            $canCreateEcosystem = false; 
+            $canCreateEcosystem = false;
 
             $this->safeLog('info', '[Seeder] Role assigned and permissions checked', [
                 'user_id' => $user->id,

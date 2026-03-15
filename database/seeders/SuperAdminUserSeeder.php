@@ -12,7 +12,7 @@ class SuperAdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $adminEmail = 'natan@gmail.com';
+        $adminEmail = 'fabio@florenceegi.com';
 
         $user = User::where('email', $adminEmail)->first();
 

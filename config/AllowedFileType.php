@@ -16,8 +16,10 @@ return [
     'collection' => [
         // Maximum size for all files (100MB)
         'post_max_size' => 100 * 1024 * 1024, // 100 MB
-        // Maximum size for a single file (10MB)
-        'upload_max_filesize' => 10 * 1024 * 1024, // 10 MB
+        // Maximum size for a single file (100MB — allineato a post_max_size e size_limits)
+        'upload_max_filesize' => 100 * 1024 * 1024, // 100 MB
+        // Alias usato da AppConfigController → window.maxSize nel JS
+        'max_size' => 100 * 1024 * 1024, // 100 MB
         // Maximum number of files in a single request
         'max_file_uploads' => 40,
 
