@@ -22,6 +22,13 @@
         .profile-page .md\:col-span-2,
         .profile-page .md\:col-span-1 { grid-column: span 1 !important; }
         .profile-page .md\:mt-0 { margin-top: 0 !important; }
+
+        /* Fix contrasto label/testo su bg-gray-800 di Jetstream (hardcoded dark) */
+        .profile-page .bg-gray-800 label,
+        .profile-page .bg-gray-800 .text-gray-700 { color: #d1d5db !important; }
+        .profile-page .bg-gray-800 h3 { color: #f3f4f6 !important; }
+        .profile-page .bg-gray-50.dark\:bg-gray-800,
+        .profile-page .bg-gray-50 { background-color: #f9fafb; }
     </style>
     @endpush
 
