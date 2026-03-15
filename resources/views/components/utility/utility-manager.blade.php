@@ -395,7 +395,8 @@
                         <div class="grid grid-cols-4 gap-2">
                             @foreach ($utility->getMedia('utility_gallery') as $media)
                                 <div class="group relative">
-                                    <img src="{{ $media->getUrl('thumb') }}"
+                                    <img src="{{ $media->hasGeneratedConversion('thumb') ? $media->getUrl('thumb') : $media->getUrl() }}"
+                                        onerror="this.src='/images/no-image.jpg'"
                                         class="h-24 w-full rounded border border-gray-600 object-cover">
                                     <button type="button" onclick="removeMedia({{ $media->id }})"
                                         class="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 p-1 text-xs text-white opacity-0 transition group-hover:opacity-100">
@@ -644,8 +645,7 @@
             const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
 
             if (imageFiles.length === 0) {
-                console.log('File non validi'); // Debug temporaneo
-                // ToastManager.error(utilityTranslations.selectImagesOnly, '🚫 File non validi');
+                ToastManager.error(utilityTranslations.selectImagesOnly, '🚫 File non validi');
                 return;
             }
 
@@ -654,8 +654,7 @@
             const oversizedFiles = imageFiles.filter(file => file.size > maxSize);
 
             if (oversizedFiles.length > 0) {
-                console.log('File troppo grandi'); // Debug temporaneo
-                // ToastManager.error(utilityTranslations.imagesTooLarge, '📏 File troppo grandi');
+                ToastManager.error(utilityTranslations.imagesTooLarge, '📏 File troppo grandi');
                 return;
             }
 

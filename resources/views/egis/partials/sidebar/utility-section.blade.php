@@ -33,8 +33,9 @@
             </p>
             <div class="flex gap-2 overflow-x-auto">
                 @foreach($egi->utility->getMedia('utility_gallery')->take(3) as $media)
-                <img src="{{ $media->getUrl('thumb') }}" 
-                     alt="Utility image" 
+                <img src="{{ $media->hasGeneratedConversion('thumb') ? $media->getUrl('thumb') : $media->getUrl() }}"
+                     onerror="this.src='/images/no-image.jpg'"
+                     alt="Utility image"
                      class="flex-shrink-0 object-cover w-12 h-12 border rounded-lg border-orange-500/30">
                 @endforeach
                 @if($egi->utility->getMedia('utility_gallery')->count() > 3)
