@@ -223,21 +223,16 @@ class CoaIssueService {
                             'user_id' => $user->id
                         ]);
                     } catch (\Throwable $e) {
-                        // Durable UEM handling with context
-                        app(\Ultra\ErrorManager\Interfaces\ErrorManagerInterface::class)
-                            ->handle('COA_AUTO_PDF_GENERATION_ERROR', [
-                                'coa_id' => $coa->id,
-                                'serial' => $coa->serial,
-                                'user_id' => $user->id,
-                                'ip_address' => request()->ip(),
-                                'timestamp' => now()->toIso8601String()
-                            ], $e);
-
-                        app(\Ultra\UltraLogManager\UltraLogManager::class)->warning('[CoA Issue] Post-commit Auto-PDF failed', [
+                        // Non-critical: auto-PDF failure MUST NOT break CoA issuance.
+                        // UEM is intentionally skipped here — calling handle() with an
+                        // undefined code throws UNEXPECTED and would propagate out of the
+                        // afterCommit closure, killing the entire response.
+                        app(\Ultra\UltraLogManager\UltraLogManager::class)->warning('[CoA Issue] Post-commit Auto-PDF failed (non-critical)', [
                             'coa_id' => $coa->id,
                             'serial' => $coa->serial,
                             'user_id' => $user->id,
-                            'error' => $e->getMessage()
+                            'error' => $e->getMessage(),
+                            'error_class' => get_class($e),
                         ]);
                     }
                 });
