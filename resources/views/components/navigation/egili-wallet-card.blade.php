@@ -15,7 +15,7 @@
         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-purple-500 to-blue-500">
             <span class="text-xl">💎</span>
         </div>
-        <h4 class="font-semibold text-gray-100">{{ __('egili.wallet.title') }}</h4>
+        <h4 class="font-semibold text-gray-800 dark:text-gray-100">{{ __('egili.wallet.title') }}</h4>
     </div>
 
     {{-- Current Balance --}}
@@ -37,7 +37,7 @@
     @if ($recentTransactions->count() > 0)
         <details class="group">
             <summary
-                class="flex cursor-pointer list-none items-center justify-between rounded-lg px-2 py-1.5 text-sm text-gray-300 transition-colors hover:bg-black/20 hover:text-purple-400">
+                class="flex cursor-pointer list-none items-center justify-between rounded-lg px-2 py-1.5 text-sm text-gray-600 transition-colors hover:bg-black/20 hover:text-purple-500 dark:text-gray-300 dark:hover:text-purple-400">
                 <span>📊 {{ __('egili.wallet.recent_transactions') }}</span>
                 <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
@@ -78,7 +78,7 @@
             @endif
         </details>
     @else
-        <div class="rounded-lg bg-black/10 px-3 py-2 text-center text-xs text-gray-400">
+        <div class="rounded-lg bg-black/10 px-3 py-2 text-center text-xs text-gray-500 dark:text-gray-400">
             {{ __('egili.wallet.no_transactions') }}
         </div>
     @endif
