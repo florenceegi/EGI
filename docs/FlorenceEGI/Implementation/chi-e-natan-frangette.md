@@ -1,1 +1,0 @@
-# Chi è Natan Frangette

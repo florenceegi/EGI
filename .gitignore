@@ -85,3 +85,6 @@ egi.env
 forge-backups_accessKeys.csv
 natan_admin_credentials.csv
 *.csv:Zone.Identifier
+
+# Claude Code plans (work in progress — non committare)
+.claude/plans/

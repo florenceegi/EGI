@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "../../EGI-DOC"
+		},
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../EGI-HUB"
+		},
+		{
+			"path": "../../EGI-HUB-HOME-REACT"
+		},
+		{
+			"path": "../../EGI-INFO"
+		},
+		{
+			"path": "../../NATAN_LOC"
+		}
+	],
+	"settings": {}
+}

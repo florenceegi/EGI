@@ -1,0 +1,30 @@
+Success	Updating 5179cde2..9dc66033
+Fast-forward
+ app/Http/Controllers/PaymentSettingsController.php | 76 +++++++++++++++++++++-
+ config/egi.php                                     | 10 +++
+ resources/lang/de/payment.php                      | 18 +++++
+ resources/lang/en/payment.php                      | 13 ++++
+ resources/lang/es/payment.php                      | 18 +++++
+ resources/lang/fr/payment.php                      | 18 +++++
+ resources/lang/it/payment.php                      | 13 ++++
+ resources/lang/pt/payment.php                      | 18 +++++
+ resources/views/components/ai-sidebar.blade.php    | 11 ++++
+ .../components/payment-settings-modal.blade.php    | 29 +++++++++
+ .../settings/payments/modal-content.blade.php      | 55 ++++++----------
+ routes/web.php                                     |  7 ++
+ 12 files changed, 251 insertions(+), 35 deletions(-)
+ create mode 100644 resources/lang/de/payment.php
+ create mode 100644 resources/lang/es/payment.php
+ create mode 100644 resources/lang/fr/payment.php
+ create mode 100644 resources/lang/pt/payment.php
+                        
+   INFO  Routes cached successfully.  
+
+                        
+   INFO  Configuration cached successfully.  
+
+
+   INFO  Application cache cleared successfully.  
+
+DONE
+
