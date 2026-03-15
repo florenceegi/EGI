@@ -188,7 +188,7 @@
                 <!-- Admin Tools Card -->
                 @can('manage_roles')
                     <div
-                        class="mega-card col-span-1 rounded-2xl border border-gray-200/30 bg-gradient-to-br from-gray-50 to-slate-50 p-4 dark:border-gray-800/30 dark:from-gray-900/20 dark:to-slate-900/20 sm:col-span-2">
+                        class="mega-card rounded-2xl border border-gray-200/30 bg-gradient-to-br from-gray-50 to-slate-50 p-4 dark:border-gray-800/30 dark:from-gray-900/20 dark:to-slate-900/20">
                         <div class="mb-3 flex items-center space-x-3">
                             <div
                                 class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-gray-600 to-slate-600">
