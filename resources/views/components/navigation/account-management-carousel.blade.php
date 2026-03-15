@@ -35,10 +35,11 @@
             'label' => __('Profile'),
             'href' => route('profile.show'),
         ];
-        $accountActions[] = [
-            'label' => __('menu.profile_images'),
-            'href' => route('gdpr.profile-images'),
-        ];
+        // [DISABLED] Immagini Profilo — gestite dalla home del profilo
+        // $accountActions[] = [
+        //     'label' => __('menu.profile_images'),
+        //     'href' => route('gdpr.profile-images'),
+        // ];
         $accountActions[] = [
             'label' => __('menu.biography_items.manage'),
             'href' => route('biography.manage'),
