@@ -204,7 +204,7 @@
                         <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
                             {{-- SuperAdmin Dashboard - Only for superadmin role --}}
                             @if ($user && $user->hasRole('superadmin'))
-                                <a href="{{ route('superadmin.dashboard') }}"
+                                <a href="https://hub.florenceegi.com" target="_blank"
                                     class="flex items-center gap-2 rounded-lg bg-gradient-to-r from-yellow-500/20 to-amber-500/20 px-3 py-2 text-sm font-semibold text-yellow-300 ring-1 ring-yellow-500/30 transition-all duration-200 hover:from-yellow-500/30 hover:to-amber-500/30 hover:ring-yellow-400/50">
                                     <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                                         <path
